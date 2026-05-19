@@ -6,6 +6,15 @@
 (function () {
   'use strict';
 
+  // Helper to get robust path for shared components
+  function getComponentPath(fileName) {
+    const pathname = window.location.pathname.toLowerCase();
+    if (pathname === '/user' || pathname.startsWith('/user/')) {
+      return '/user/components/' + fileName;
+    }
+    return 'components/' + fileName;
+  }
+
   // ======================================================
   // 0. LOAD COMPONENTS (Header & Footer)
   // ======================================================
@@ -13,13 +22,31 @@
     const headerPh = document.getElementById('header-placeholder');
     if (headerPh) {
       try {
-        const res = await fetch('components/header.html');
+        const res = await fetch(getComponentPath('header.html'));
         if (res.ok) {
           const html = await res.text();
           headerPh.insertAdjacentHTML('beforebegin', html);
           const newHeader = document.getElementById('site-header');
-          if (newHeader && headerPh.className) {
-            newHeader.className = headerPh.className;
+          if (newHeader) {
+            if (headerPh.className) {
+              newHeader.className = headerPh.className;
+            }
+            // Fix relative images and links in the header for subfolder root compatibility
+            const pathname = window.location.pathname.toLowerCase();
+            if (pathname === '/user' || pathname.startsWith('/user/')) {
+              newHeader.querySelectorAll('img').forEach(function (img) {
+                const src = img.getAttribute('src');
+                if (src && !src.startsWith('http') && !src.startsWith('/')) {
+                  img.src = '/user/' + src;
+                }
+              });
+              newHeader.querySelectorAll('a').forEach(function (a) {
+                const href = a.getAttribute('href');
+                if (href && !href.startsWith('http') && !href.startsWith('/') && !href.startsWith('#')) {
+                  a.href = '/user/' + href;
+                }
+              });
+            }
           }
           headerPh.remove();
         }
@@ -31,10 +58,29 @@
     const footerPh = document.getElementById('footer-placeholder');
     if (footerPh) {
       try {
-        const res = await fetch('components/footer.html');
+        const res = await fetch(getComponentPath('footer.html'));
         if (res.ok) {
           const html = await res.text();
           footerPh.insertAdjacentHTML('beforebegin', html);
+          const newFooter = document.getElementById('site-footer');
+          if (newFooter) {
+            // Fix relative images and links in the footer for subfolder root compatibility
+            const pathname = window.location.pathname.toLowerCase();
+            if (pathname === '/user' || pathname.startsWith('/user/')) {
+              newFooter.querySelectorAll('img').forEach(function (img) {
+                const src = img.getAttribute('src');
+                if (src && !src.startsWith('http') && !src.startsWith('/')) {
+                  img.src = '/user/' + src;
+                }
+              });
+              newFooter.querySelectorAll('a').forEach(function (a) {
+                const href = a.getAttribute('href');
+                if (href && !href.startsWith('http') && !href.startsWith('/') && !href.startsWith('#')) {
+                  a.href = '/user/' + href;
+                }
+              });
+            }
+          }
           footerPh.remove();
         }
       } catch (err) {
