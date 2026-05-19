@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Xem chi tiết sản phẩm gốm sứ thủ công Bát Tràng của Phúc Gia Tiên – thông số, hình ảnh và mua hàng trực tuyến.">
+  <title>Chi Tiết Sản Phẩm – Phúc Gia Tiên</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/product.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+</head>
+
+<body class="page-body">
+
+  <!-- HEADER -->
+  <div id="header-placeholder"></div>
+
+  <main id="main-content">
+
+    <!-- BREADCRUMB -->
+    <div class="section--sm section--mid">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
+          <span class="breadcrumb__item"><a class="breadcrumb__link" href="products.html">Sản Phẩm</a></span>
+          <span class="breadcrumb__item"><span class="breadcrumb__current" id="breadcrumb-product-name">Chi Tiết Sản
+              Phẩm</span></span>
+        </nav>
+      </div>
+    </div>
+
+    <!-- PRODUCT DETAIL — populated by product.js -->
+    <section class="product-detail section--dark" aria-label="Chi tiết sản phẩm">
+      <div class="container">
+        <div id="product-detail-container" aria-live="polite">
+          <!-- JS renders product detail here -->
+          <div class="spinner" style="margin: 4rem auto;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RELATED PRODUCTS -->
+    <section class="section section--mid" aria-labelledby="related-heading">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-header__label">Có Thể Bạn Thích</span>
+          <h2 id="related-heading" class="section-header__title">Sản Phẩm Liên Quan</h2>
+        </div>
+        <div class="product-grid related-products__grid" id="related-products-grid" aria-label="Sản phẩm liên quan">
+          <!-- populated by product.js (future enhancement) -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <div id="footer-placeholder"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/product.js"></script>
+  <script>
+    // Update breadcrumb after product loads
+    document.addEventListener('DOMContentLoaded', function () {
+      var observer = new MutationObserver(function () {
+        var nameEl = document.querySelector('.product-info__name');
+        var breadEl = document.getElementById('breadcrumb-product-name');
+        if (nameEl && breadEl) {
+          breadEl.textContent = nameEl.textContent;
+          observer.disconnect();
+        }
+      });
+      var container = document.getElementById('product-detail-container');
+      if (container) observer.observe(container, { childList: true, subtree: true });
+    });
+  </script>
+</body>
+
+</html>

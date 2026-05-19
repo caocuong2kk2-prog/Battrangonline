@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Giới thiệu về Phúc Gia Tiên – thương hiệu gốm sứ thủ công Bát Tràng với hơn 5 năm kinh nghiệm, cam kết chất lượng và giá trị truyền thống.">
+  <title>Giới Thiệu – Phúc Gia Tiên</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    /* ===== ABOUT PAGE STYLES ===== */
+    .about-hero {
+      position: relative;
+      min-height: 420px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .about-hero__bg {
+      position: absolute;
+      inset: 0;
+    }
+
+    .about-hero__bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.35;
+    }
+
+    .about-hero__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(26, 15, 5, 0.95) 30%, rgba(26, 15, 5, 0.5));
+    }
+
+    .about-hero__content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .about-hero__title {
+      font-family: var(--font-heading);
+      font-size: var(--fs-4xl);
+      font-weight: var(--fw-bold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-4);
+      line-height: 1.2;
+    }
+
+    .about-hero__sub {
+      font-size: var(--fs-md);
+      color: var(--color-text-muted);
+      max-width: 560px;
+      line-height: 1.8;
+    }
+
+    /* About body layout */
+    .about-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-16);
+      align-items: center;
+    }
+
+    .about-layout--reverse {
+      direction: rtl;
+    }
+
+    .about-layout--reverse>* {
+      direction: ltr;
+    }
+
+    .about-img-wrap {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .about-img-wrap img {
+      width: 100%;
+      height: 420px;
+      object-fit: cover;
+      display: block;
+      transition: transform var(--transition-slow);
+    }
+
+    .about-img-wrap:hover img {
+      transform: scale(1.04);
+    }
+
+    /* Stats */
+    .about-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+      padding: var(--space-10) 0;
+      border-top: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+      margin: var(--space-10) 0;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-item__number {
+      font-family: var(--font-heading);
+      font-size: var(--fs-4xl);
+      font-weight: var(--fw-bold);
+      color: var(--color-accent);
+      line-height: 1;
+      display: block;
+      margin-bottom: var(--space-2);
+    }
+
+    .stat-item__label {
+      font-size: var(--fs-sm);
+      color: var(--color-text-muted);
+    }
+
+    /* Core values */
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-5);
+    }
+
+    .value-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-8) var(--space-6);
+      text-align: center;
+      transition: transform var(--transition-normal), border-color var(--transition-normal);
+    }
+
+    .value-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-border-hover);
+    }
+
+    .value-card__icon {
+      font-size: 2.5rem;
+      margin-bottom: var(--space-4);
+      display: block;
+    }
+
+    .value-card__title {
+      font-family: var(--font-heading);
+      font-size: var(--fs-lg);
+      font-weight: var(--fw-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-3);
+    }
+
+    .value-card__desc {
+      font-size: var(--fs-sm);
+      color: var(--color-text-muted);
+      line-height: 1.7;
+    }
+
+    /* Team */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-8);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .team-card {
+      text-align: center;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-8) var(--space-6);
+      transition: transform var(--transition-normal);
+    }
+
+    .team-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .team-card__avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto var(--space-4);
+      border: 3px solid var(--color-accent);
+      display: block;
+    }
+
+    .team-card__name {
+      font-family: var(--font-heading);
+      font-size: var(--fs-lg);
+      font-weight: var(--fw-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-1);
+    }
+
+    .team-card__role {
+      font-size: var(--fs-sm);
+      color: var(--color-accent);
+      margin-bottom: var(--space-3);
+    }
+
+    .team-card__bio {
+      font-size: var(--fs-sm);
+      color: var(--color-text-muted);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .about-layout {
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+      }
+
+      .about-layout--reverse {
+        direction: ltr;
+      }
+
+      .values-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .about-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+</head>
+
+<body class="page-body">
+
+  <!-- HEADER -->
+  <div id="header-placeholder"></div>
+
+  <main id="main-content">
+
+    <!-- HERO -->
+    <section class="about-hero" aria-label="Giới thiệu Phúc Gia Tiên">
+      <div class="about-hero__bg">
+        <img src="assets/images/about-hero.jpg" alt="" role="presentation" loading="eager">
+        <div class="about-hero__overlay"></div>
+      </div>
+      <div class="container">
+        <div class="about-hero__content">
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
+            <span class="breadcrumb__item"><span class="breadcrumb__current">Giới Thiệu</span></span>
+          </nav>
+          <h1 class="about-hero__title">GIỚI THIỆU</h1>
+          <p class="about-hero__sub">Tìm hiểu về câu chuyện, con người và giá trị cốt lõi của Phúc Gia Tiên.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT BODY -->
+    <section class="section section--dark" aria-labelledby="about-story-heading">
+      <div class="container">
+        <div class="about-layout">
+          <div class="about-img-wrap reveal-left">
+            <img src="assets/images/about-workshop.jpg"
+              alt="Xưởng gốm Phúc Gia Tiên" loading="lazy">
+          </div>
+          <div class="reveal-right">
+            <span class="section-header__label">Về Phúc Gia Tiên</span>
+            <h2 id="about-story-heading" class="section-header__title" style="text-align:left;">Từ Tâm Mê Đến Thương
+              Hiệu</h2>
+            <p style="color:var(--color-text-muted);line-height:1.9;margin-bottom:var(--space-5);">
+              Phúc Gia Tiên ra đời từ tình yêu thuần khiết với nghề gốm thủ công Bát Tràng. Từ năm 2018, hai vợ chồng
+              chúng tôi bắt đầu học nghề, và đến nay đã xây dựng được một xưởng gốm uy tín với hàng trăm mẫu sản phẩm
+              độc đáo.
+            </p>
+            <p style="color:var(--color-text-muted);line-height:1.9;margin-bottom:var(--space-6);">
+              Mỗi sản phẩm từ Phúc Gia Tiên đều được tạo ra hoàn toàn thủ công – từ khâu nhào đất, tạo hình, vẽ hoa văn
+              đến tráng men và nung trong lò ở nhiệt độ 1.200°C. Chúng tôi cam kết mang đến những tác phẩm gốm sứ chất
+              lượng cao, giữ trọn giá trị nghề truyền thống.
+            </p>
+
+            <!-- Stats -->
+            <div class="about-stats">
+              <div class="stat-item">
+                <span class="stat-item__number" data-count="4">4+</span>
+                <span class="stat-item__label">Năm kinh nghiệm</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-item__number" data-count="1000">1000+</span>
+                <span class="stat-item__label">Sản phẩm đã bán</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-item__number" data-count="500">500+</span>
+                <span class="stat-item__label">Khách hàng tin tưởng</span>
+              </div>
+            </div>
+            <a class="btn btn--primary" href="products.html" id="about-view-products-btn">Khám Phá Sản Phẩm</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CORE VALUES -->
+    <section class="section section--mid" aria-labelledby="values-heading">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-header__label">Cam Kết</span>
+          <h2 id="values-heading" class="section-header__title">Giá Trị Cốt Lõi</h2>
+          <p class="section-header__desc">Những nguyên tắc không đổi tạo nên Phúc Gia Tiên.</p>
+        </div>
+        <div class="values-grid">
+          <div class="value-card reveal" data-delay="0">
+            <span class="value-card__icon">🏺</span>
+            <h3 class="value-card__title">Chất Lượng</h3>
+            <p class="value-card__desc">Mỗi sản phẩm qua kiểm tra kỹ càng trước khi đến tay khách hàng. Cam kết 100% gốm
+              sứ thủ công chính hiệu.</p>
+          </div>
+          <div class="value-card reveal" data-delay="120">
+            <span class="value-card__icon">💡</span>
+            <h3 class="value-card__title">Sáng Tạo</h3>
+            <p class="value-card__desc">Kết hợp họa tiết truyền thống với thiết kế hiện đại, mỗi sản phẩm là một tác
+              phẩm nghệ thuật độc đáo.</p>
+          </div>
+          <div class="value-card reveal" data-delay="240">
+            <span class="value-card__icon">🤝</span>
+            <h3 class="value-card__title">Uy Tín</h3>
+            <p class="value-card__desc">Đặt lợi ích khách hàng lên hàng đầu. Hỗ trợ tận tình và chính sách đổi trả minh
+              bạch.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEAM -->
+    <section class="section section--dark" aria-labelledby="team-heading">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-header__label">Con Người</span>
+          <h2 id="team-heading" class="section-header__title">Đội Ngũ Của Chúng Tôi</h2>
+        </div>
+        <div class="team-grid">
+          <div class="team-card reveal">
+            <img class="team-card__avatar"
+              src="assets/images/team-husband.jpg"
+              alt="Anh - Nghệ nhân chính" loading="lazy">
+            <h3 class="team-card__name">Nguyễn Văn Phúc</h3>
+            <p class="team-card__role">Nghệ Nhân Chính</p>
+            <p class="team-card__bio">Phụ trách tạo hình và nung gốm. Hơn 6 năm kinh nghiệm với bàn xoay và lò nung
+              truyền thống.</p>
+          </div>
+          <div class="team-card reveal" data-delay="150">
+            <img class="team-card__avatar"
+              src="assets/images/team-wife.jpg"
+              alt="Chị - Nghệ nhân vẽ" loading="lazy">
+            <h3 class="team-card__name">Lê Thị Tiên</h3>
+            <p class="team-card__role">Nghệ Nhân Vẽ & Sáng Tạo</p>
+            <p class="team-card__bio">Phụ trách vẽ hoa văn và sáng tạo mẫu mới. Mỗi nét vẽ là một câu chuyện được kể
+              trên đất sét.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <div id="footer-placeholder"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+</body>
+
+</html>

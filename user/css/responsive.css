@@ -1,0 +1,299 @@
+/* ============================================
+   RESPONSIVE.CSS - Breakpoints & Mobile Styles
+   Phúc Gia Tiên - Gốm Sứ Thủ Công
+   ============================================
+   Breakpoints:
+   - xs:  < 480px   (small phones)
+   - sm:  < 640px   (phones)
+   - md:  < 768px   (tablets portrait)
+   - lg:  < 1024px  (tablets landscape / small laptop)
+   - xl:  < 1200px  (laptop)
+   - 2xl: ≥ 1200px  (desktop, default)
+   ============================================ */
+
+/* ====== TABLET LANDSCAPE & SMALL LAPTOP ====== */
+@media (max-width: 1024px) {
+  :root {
+    --fs-4xl: 2.8rem;
+    --fs-3xl: 2rem;
+  }
+
+  .container {
+    padding: 0 var(--space-5);
+  }
+
+  /* Footer grid: 2 columns */
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+  }
+}
+
+/* ====== TABLET PORTRAIT ====== */
+@media (max-width: 768px) {
+  :root {
+    --fs-4xl: 2.2rem;
+    --fs-3xl: 1.75rem;
+    --fs-2xl: 1.5rem;
+    --header-height: 60px;
+  }
+
+  /* ---------- Header / Nav (mobile) ---------- */
+  .nav-toggle {
+    display: flex;
+  }
+
+  #site-nav {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(26, 15, 5, 0.98);
+    backdrop-filter: blur(16px);
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: var(--space-8) var(--space-6);
+    gap: var(--space-2);
+    transform: translateX(100%);
+    transition: transform var(--transition-normal);
+    overflow-y: auto;
+  }
+
+  #site-nav.is-open {
+    transform: translateX(0);
+  }
+
+  .nav-list {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+  }
+
+  .nav-list__link {
+    font-size: var(--fs-lg);
+    padding: var(--space-4) var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    border-radius: 0;
+  }
+
+  .nav-list__link.active::after {
+    display: none;
+  }
+
+  .btn-header-cta {
+    margin-top: var(--space-6);
+    padding: var(--space-4) var(--space-6);
+    justify-content: center;
+    font-size: var(--fs-base);
+    width: 100%;
+  }
+
+  /* ---------- Sections ---------- */
+  .section {
+    padding: var(--space-12) 0;
+  }
+
+  .section-header__title {
+    font-size: var(--fs-2xl);
+  }
+
+  /* ---------- Footer ---------- */
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .footer-brand__desc {
+    max-width: 100%;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-3);
+  }
+
+  /* ---------- Product grid: 2 cols ---------- */
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* ---------- Home Hero ---------- */
+  .hero-content {
+    padding: var(--space-12) 0;
+  }
+
+  .hero__title {
+    font-size: var(--fs-3xl);
+  }
+
+  /* ---------- Process steps ---------- */
+  .process-steps {
+    flex-wrap: wrap;
+    gap: var(--space-6);
+  }
+
+  .process-step {
+    flex: 0 0 calc(50% - var(--space-3));
+  }
+
+  .process-connector {
+    display: none;
+  }
+
+  /* ---------- About stats ---------- */
+  .about-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* ---------- Contact grid ---------- */
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* ---------- Product detail ---------- */
+  .product-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-thumbnails {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+}
+
+/* ====== PHONE ====== */
+@media (max-width: 640px) {
+  :root {
+    --fs-4xl: 1.8rem;
+    --fs-3xl: 1.5rem;
+  }
+
+  .container {
+    padding: 0 var(--space-4);
+  }
+
+  /* ---------- Product grid: 1 col ---------- */
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn--lg {
+    padding: var(--space-3) var(--space-8);
+    font-size: var(--fs-sm);
+  }
+
+  /* ---------- Hero ---------- */
+  .hero__cta-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  /* ---------- Feature badges ---------- */
+  .feature-badges {
+    flex-direction: column;
+  }
+
+  /* ---------- Filter bar ---------- */
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-bar select,
+  .filter-bar input {
+    width: 100%;
+  }
+
+  /* ---------- Story tabs ---------- */
+  .story-tabs {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  /* ---------- About stats: 2 col ---------- */
+  .about-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+
+  /* ---------- Journey video grid ---------- */
+  .video-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* ---------- Footer links ---------- */
+  .footer-bottom__links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+
+  /* ---------- Section header ---------- */
+  .section-header {
+    margin-bottom: var(--space-8);
+  }
+}
+
+/* ====== SMALL PHONES ====== */
+@media (max-width: 480px) {
+  :root {
+    --fs-4xl: 1.6rem;
+  }
+
+  .site-logo__tagline {
+    display: none;
+  }
+
+  /* Product detail quantity */
+  .quantity-control {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Product actions */
+  .product-actions {
+    flex-direction: column;
+  }
+
+  .product-actions .btn {
+    width: 100%;
+  }
+}
+
+/* ====== PRINT ====== */
+@media print {
+  #site-header,
+  #site-footer,
+  .nav-toggle,
+  .btn-header-cta {
+    display: none !important;
+  }
+
+  .page-body {
+    padding-top: 0;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+}
+
+/* ====== PREFERS REDUCED MOTION ====== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

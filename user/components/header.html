@@ -1,0 +1,60 @@
+<!--
+  header.html - Shared header component
+  Include this via fetch() in common.js or copy-paste into each page.
+  Phúc Gia Tiên - Gốm Sứ Thủ Công
+-->
+<header id="site-header" role="banner">
+  <div class="container">
+    <div class="header-inner">
+
+      <!-- LOGO -->
+      <a class="site-logo" href="index.html" aria-label="Phúc Gia Tiên - Trang Chủ">
+        <img class="site-logo__img" src="assets/images/logo.png" alt="Logo Phúc Gia Tiên" width="44" height="44">
+        <div class="site-logo__text">
+          <span class="site-logo__name">PHÚC GIA TIÊN</span>
+          <span class="site-logo__tagline">Tinh Hoa Gốm Sứ Thủ Công</span>
+        </div>
+      </a>
+
+      <!-- MAIN NAVIGATION -->
+      <nav id="site-nav" aria-label="Menu chính">
+        <ul class="nav-list" role="list">
+          <li class="nav-list__item">
+            <a class="nav-list__link" href="index.html">Trang Chủ</a>
+          </li>
+          <li class="nav-list__item">
+            <a class="nav-list__link" href="products.html">Sản Phẩm</a>
+          </li>
+          <li class="nav-list__item">
+            <a class="nav-list__link" href="journey.html">Hành Trình</a>
+          </li>
+          <li class="nav-list__item">
+            <a class="nav-list__link" href="about.html">Giới Thiệu</a>
+          </li>
+          <li class="nav-list__item">
+            <a class="nav-list__link" href="contact.html">Liên Hệ</a>
+          </li>
+        </ul>
+
+        <!-- CTA Button -->
+        <a class="btn-header-cta" href="contact.html" id="header-cta-btn">
+          ✉ Liên Hệ Ngay
+        </a>
+      </nav>
+
+      <!-- MOBILE HAMBURGER -->
+      <button
+        class="nav-toggle"
+        id="nav-toggle-btn"
+        aria-label="Mở menu"
+        aria-expanded="false"
+        aria-controls="site-nav"
+      >
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+
+    </div>
+  </div>
+</header>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Khám phá bộ sưu tập gốm sứ thủ công Bát Tràng của Phúc Gia Tiên – lộc bình, đồ thờ, tranh gốm, bình hoa cao cấp.">
+  <title>Sản Phẩm – Phúc Gia Tiên</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/product.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+</head>
+
+<body class="page-body">
+
+  <!-- HEADER (same on all pages) -->
+  <div id="header-placeholder"></div>
+
+  <main id="main-content">
+
+    <!-- PAGE HERO -->
+    <section class="page-hero" aria-label="Banner trang sản phẩm">
+      <div class="page-hero__bg">
+        <img src="assets/images/products-banner.jpg" alt="" role="presentation" loading="eager">
+      </div>
+      <div class="container">
+        <div class="page-hero__content">
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
+            <span class="breadcrumb__item"><span class="breadcrumb__current">Sản Phẩm</span></span>
+          </nav>
+          <h1 class="page-hero__title">SẢN PHẨM</h1>
+        </div>
+      </div>
+    </section>
+
+    <!-- FILTER BAR -->
+    <section class="section--sm section--dark" aria-label="Bộ lọc sản phẩm">
+      <div class="container">
+        <div class="filter-bar">
+          <div class="filter-bar__group">
+            <label class="filter-bar__label" for="filter-category">Danh mục:</label>
+            <select class="filter-select" id="filter-category" aria-label="Lọc theo danh mục">
+              <!-- populated by product.js -->
+            </select>
+            <select class="filter-select" id="filter-quality" aria-label="Lọc theo chất lượng">
+              <!-- populated by product.js -->
+            </select>
+            <select class="filter-select" id="filter-size" aria-label="Lọc theo kích thước">
+              <!-- populated by product.js -->
+            </select>
+          </div>
+          <div class="filter-bar__sort">
+            <span class="filter-bar__count" id="product-count" aria-live="polite">Đang tải...</span>
+            <select class="filter-select" id="sort-select" aria-label="Sắp xếp theo">
+              <option value="newest">Mới Nhất</option>
+              <option value="price-asc">Giá Tăng Dần</option>
+              <option value="price-desc">Giá Giảm Dần</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- PRODUCT GRID -->
+        <div class="product-grid" id="product-list-grid" role="list" aria-label="Danh sách sản phẩm" aria-live="polite">
+          <!-- populated by product.js -->
+        </div>
+
+        <!-- PAGINATION -->
+        <nav class="pagination" id="product-pagination" aria-label="Phân trang sản phẩm">
+          <!-- populated by product.js -->
+        </nav>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <div id="footer-placeholder"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/product.js"></script>
+</body>
+
+</html>

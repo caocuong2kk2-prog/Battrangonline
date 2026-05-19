@@ -1,0 +1,23 @@
+Thư mục chứa ảnh dự án Phúc Gia Tiên.
+
+Danh sách file ảnh cần thêm vào:
+- logo.png
+- favicon.ico
+- hero-bg.jpg
+- products-banner.jpg
+- journey-hero.jpg
+- about-hero.jpg
+- about-workshop.jpg
+- contact-hero.jpg
+- story-couple.jpg
+- team-husband.jpg
+- team-wife.jpg
+- video-thumb-1.jpg
+- video-thumb-2.jpg
+- video-thumb-3.jpg
+- video-thumb-4.jpg
+- video-thumb-5.jpg
+- video-thumb-6.jpg
+- product-1-1.jpg
+- product-2-1.jpg
+- ... (ảnh sản phẩm)

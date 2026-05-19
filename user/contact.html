@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Liên hệ Phúc Gia Tiên – tư vấn, đặt hàng gốm sứ thủ công Bát Tràng. Hotline 0986 123 456 – phucgatien@gmail.com – Thôn Bát Tràng, Gia Lâm, Hà Nội.">
+  <title>Liên Hệ – Phúc Gia Tiên</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    /* ===== CONTACT PAGE STYLES ===== */
+    .contact-hero {
+      position: relative;
+      height: 280px;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      background: var(--color-bg-mid);
+    }
+
+    .contact-hero__bg {
+      position: absolute;
+      inset: 0;
+    }
+
+    .contact-hero__bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.3;
+    }
+
+    .contact-hero__overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(26, 15, 5, 0.75);
+    }
+
+    .contact-hero__content {
+      position: relative;
+      z-index: 1;
+      padding-bottom: var(--space-10);
+      width: 100%;
+    }
+
+    .contact-hero__title {
+      font-family: var(--font-heading);
+      font-size: var(--fs-3xl);
+      font-weight: var(--fw-bold);
+      color: var(--color-text-primary);
+      text-align: center;
+    }
+
+    /* Contact grid */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: var(--space-12);
+      align-items: flex-start;
+    }
+
+    /* Info panel */
+    .contact-info-panel {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+
+    .contact-info-item {
+      display: flex;
+      gap: var(--space-4);
+      padding: var(--space-5);
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      transition: border-color var(--transition-fast);
+    }
+
+    .contact-info-item:hover {
+      border-color: var(--color-border-hover);
+    }
+
+    .contact-info-item__icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(212, 168, 83, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      color: var(--color-accent);
+    }
+
+    .contact-info-item__label {
+      font-size: var(--fs-xs);
+      font-weight: var(--fw-semibold);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: var(--space-1);
+    }
+
+    .contact-info-item__value {
+      font-size: var(--fs-base);
+      color: var(--color-text-primary);
+      font-weight: var(--fw-medium);
+    }
+
+    .contact-info-item__value a {
+      color: inherit;
+      transition: color var(--transition-fast);
+    }
+
+    .contact-info-item__value a:hover {
+      color: var(--color-accent);
+    }
+
+    /* Social icons in contact */
+    .contact-social {
+      display: flex;
+      gap: var(--space-3);
+      margin-top: var(--space-2);
+    }
+
+    .contact-social__link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      font-size: var(--fs-base);
+      color: var(--color-accent);
+      transition: all var(--transition-fast);
+    }
+
+    .contact-social__link:hover {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: var(--color-text-dark);
+      transform: translateY(-2px);
+    }
+
+    /* Map embed */
+    .contact-map {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+      margin-top: var(--space-6);
+      height: 200px;
+      background: var(--color-bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--fs-sm);
+      color: var(--color-text-muted);
+    }
+
+    .contact-map iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* Form */
+    .contact-form-panel {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-10);
+    }
+
+    .contact-form-title {
+      font-family: var(--font-heading);
+      font-size: var(--fs-xl);
+      font-weight: var(--fw-semibold);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-6);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin-bottom: var(--space-5);
+    }
+
+    .form-label {
+      font-size: var(--fs-sm);
+      font-weight: var(--fw-medium);
+      color: var(--color-text-muted);
+    }
+
+    .form-label .required {
+      color: #e07070;
+      margin-left: 2px;
+    }
+
+    .form-control {
+      background: var(--color-bg-dark);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-3) var(--space-4);
+      color: var(--color-text-primary);
+      font-size: var(--fs-base);
+      font-family: var(--font-body);
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+      width: 100%;
+      resize: vertical;
+    }
+
+    .form-control::placeholder {
+      color: var(--color-text-muted);
+      opacity: 0.7;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(212, 168, 83, 0.15);
+    }
+
+    .form-control.error {
+      border-color: #e07070;
+    }
+
+    .form-error-msg {
+      font-size: var(--fs-xs);
+      color: #e07070;
+      display: none;
+    }
+
+    .form-group.has-error .form-error-msg {
+      display: block;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-5);
+    }
+
+    .form-submit-wrap {
+      margin-top: var(--space-6);
+    }
+
+    .form-submit-wrap .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-form-panel {
+        padding: var(--space-6);
+      }
+    }
+  </style>
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+</head>
+
+<body class="page-body">
+
+  <!-- HEADER -->
+  <div id="header-placeholder"></div>
+
+  <main id="main-content">
+
+    <!-- HERO -->
+    <section class="contact-hero" aria-label="Liên hệ Phúc Gia Tiên">
+      <div class="contact-hero__bg">
+        <img src="assets/images/contact-hero.jpg" alt="" role="presentation" loading="eager">
+        <div class="contact-hero__overlay"></div>
+      </div>
+      <div class="container">
+        <div class="contact-hero__content">
+          <nav class="breadcrumb" aria-label="Breadcrumb" style="justify-content:center;">
+            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
+            <span class="breadcrumb__item"><span class="breadcrumb__current">Liên Hệ</span></span>
+          </nav>
+          <h1 class="contact-hero__title">LIÊN HỆ</h1>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN CONTACT SECTION -->
+    <section class="section section--dark" aria-labelledby="contact-heading">
+      <div class="container">
+        <h2 id="contact-heading" class="sr-only">Thông tin liên hệ và form gửi tin</h2>
+        <div class="contact-grid">
+
+          <!-- LEFT: Info -->
+          <div class="contact-info-panel">
+            <div class="section-header" style="text-align:left;margin-bottom:var(--space-2);">
+              <span class="section-header__label">Thông Tin</span>
+              <h3 class="section-header__title" style="font-size:var(--fs-2xl);">Liên Hệ Với Chúng Tôi</h3>
+            </div>
+
+            <div class="contact-info-item reveal" data-delay="0">
+              <div class="contact-info-item__icon">📞</div>
+              <div>
+                <p class="contact-info-item__label">Điện Thoại / Zalo</p>
+                <p class="contact-info-item__value"><a href="tel:0986123456">0986 123 456</a></p>
+              </div>
+            </div>
+
+            <div class="contact-info-item reveal" data-delay="80">
+              <div class="contact-info-item__icon">✉</div>
+              <div>
+                <p class="contact-info-item__label">Email</p>
+                <p class="contact-info-item__value"><a href="mailto:phucgatien@gmail.com">phucgatien@gmail.com</a></p>
+              </div>
+            </div>
+
+            <div class="contact-info-item reveal" data-delay="160">
+              <div class="contact-info-item__icon">📍</div>
+              <div>
+                <p class="contact-info-item__label">Địa Chỉ</p>
+                <p class="contact-info-item__value">Thôn Bát Tràng, Xã Bát Tràng,<br>Huyện Gia Lâm, Hà Nội</p>
+              </div>
+            </div>
+
+            <!-- Social -->
+            <div class="reveal" data-delay="240">
+              <p class="contact-info-item__label" style="margin-bottom:var(--space-3);">Theo Dõi Chúng Tôi</p>
+              <div class="contact-social" aria-label="Mạng xã hội">
+                <a class="contact-social__link" href="#" target="_blank" rel="noopener" aria-label="Facebook">f</a>
+                <a class="contact-social__link" href="#" target="_blank" rel="noopener" aria-label="YouTube">▶</a>
+                <a class="contact-social__link" href="#" target="_blank" rel="noopener" aria-label="TikTok">T</a>
+                <a class="contact-social__link" href="#" target="_blank" rel="noopener" aria-label="Zalo"
+                  style="font-size:10px;font-weight:700;">Zalo</a>
+              </div>
+            </div>
+
+            <!-- Map placeholder -->
+            <div class="contact-map reveal" data-delay="300">
+              <!--
+                Replace with real Google Maps embed:
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!..."
+                  allowfullscreen loading="lazy">
+                </iframe>
+              -->
+              <span>📍 Bản đồ Bát Tràng, Gia Lâm, Hà Nội</span>
+            </div>
+          </div>
+
+          <!-- RIGHT: Form -->
+          <div class="contact-form-panel reveal-right">
+            <h3 class="contact-form-title">Gửi Tin Nhắn Cho Chúng Tôi</h3>
+            <form id="contact-form" novalidate aria-label="Form liên hệ">
+
+              <div class="form-row">
+                <div class="form-group" id="group-name">
+                  <label class="form-label" for="contact-name">Họ và tên <span class="required">*</span></label>
+                  <input class="form-control" type="text" id="contact-name" name="name" placeholder="Nguyễn Văn A"
+                    autocomplete="name" required>
+                  <span class="form-error-msg" id="error-name">Vui lòng nhập họ tên.</span>
+                </div>
+                <div class="form-group" id="group-phone">
+                  <label class="form-label" for="contact-phone">Số điện thoại <span class="required">*</span></label>
+                  <input class="form-control" type="tel" id="contact-phone" name="phone" placeholder="0986 123 456"
+                    autocomplete="tel" required>
+                  <span class="form-error-msg" id="error-phone">Vui lòng nhập số điện thoại hợp lệ.</span>
+                </div>
+              </div>
+
+              <div class="form-group" id="group-email">
+                <label class="form-label" for="contact-email">Email</label>
+                <input class="form-control" type="email" id="contact-email" name="email" placeholder="example@email.com"
+                  autocomplete="email">
+                <span class="form-error-msg" id="error-email">Email không hợp lệ.</span>
+              </div>
+
+              <div class="form-group" id="group-message">
+                <label class="form-label" for="contact-message">Nội dung <span class="required">*</span></label>
+                <textarea class="form-control" id="contact-message" name="message" rows="5"
+                  placeholder="Tôi muốn tư vấn về sản phẩm lộc bình..." required></textarea>
+                <span class="form-error-msg" id="error-message">Vui lòng nhập nội dung tin nhắn.</span>
+              </div>
+
+              <div class="form-submit-wrap">
+                <button type="submit" class="btn btn--accent btn--lg" id="contact-submit-btn">
+                  Gửi Tin Nhắn
+                </button>
+              </div>
+
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <div id="footer-placeholder"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    // Contact form validation & submission
+    document.addEventListener('DOMContentLoaded', function () {
+      var form = document.getElementById('contact-form');
+      if (!form) return;
+
+      function setError(groupId, errorId, show) {
+        var group = document.getElementById(groupId);
+        var input = group ? group.querySelector('.form-control') : null;
+        var msg = document.getElementById(errorId);
+        if (group) group.classList.toggle('has-error', show);
+        if (input) input.classList.toggle('error', show);
+        return !show;
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var name = document.getElementById('contact-name').value.trim();
+        var phone = document.getElementById('contact-phone').value.trim();
+        var email = document.getElementById('contact-email').value.trim();
+        var message = document.getElementById('contact-message').value.trim();
+
+        var valid = true;
+        valid = setError('group-name', 'error-name', !name) && valid;
+        valid = setError('group-phone', 'error-phone', !/^[0-9+\s]{8,15}$/.test(phone)) && valid;
+        valid = setError('group-email', 'error-email', email && !/\S+@\S+\.\S+/.test(email)) && valid;
+        valid = setError('group-message', 'error-message', !message) && valid;
+
+        if (!valid) return;
+
+        var btn = document.getElementById('contact-submit-btn');
+        btn.textContent = 'Đang gửi…';
+        btn.disabled = true;
+
+        PhucGiaTienAPI.submitContact({ name: name, phone: phone, email: email, message: message })
+          .then(function (res) {
+            if (res.success) {
+              window.showToast('Tin nhắn đã được gửi thành công! Chúng tôi sẽ liên hệ trong thời gian sớm nhất.', 'success', 5000);
+              form.reset();
+            }
+          })
+          .catch(function () {
+            window.showToast('Có lỗi xảy ra. Vui lòng thử lại hoặc gọi trực tiếp.', 'error');
+          })
+          .finally(function () {
+            btn.textContent = 'Gửi Tin Nhắn';
+            btn.disabled = false;
+          });
+      });
+
+      // Clear error on input
+      form.querySelectorAll('.form-control').forEach(function (input) {
+        input.addEventListener('input', function () {
+          var group = input.closest('.form-group');
+          if (group) { group.classList.remove('has-error'); input.classList.remove('error'); }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>
