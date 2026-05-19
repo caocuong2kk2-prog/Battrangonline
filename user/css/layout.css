@@ -15,7 +15,7 @@
 
   --color-bg-dark: #f9f2ec;
   --color-bg-mid: #2C1A0C;
-  --color-bg-card: #28170B;
+  --color-bg-card: #fbf7f3;
   --color-bg-overlay: rgba(26, 15, 5, 0.85);
 
   --color-text-primary: #F5EDD8;
@@ -287,6 +287,56 @@ select {
   background: var(--color-primary-dark);
   box-shadow: var(--shadow-gold);
   transform: translateY(-1px);
+}
+
+/* ---------- HEADER ACTIONS ---------- */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.header-action-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--color-text-primary);
+  border-radius: 50%;
+  transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.header-action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--color-accent);
+  transform: translateY(-1px);
+}
+
+.header-action-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.cart-count-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  font-size: 9px;
+  font-weight: var(--fw-bold);
+  font-family: var(--font-body);
+  color: var(--color-text-dark);
+  background-color: var(--color-accent);
+  border-radius: 8px;
+  border: 1.5px solid rgba(26, 15, 5, 0.98);
 }
 
 /* Mobile Hamburger */
@@ -884,5 +934,50 @@ select {
   font-family: var(--font-body);
   font-size: var(--fs-sm);
   font-weight: var(--fw-medium);
+  color: var(--color-text-black);
+}
+
+/* ========== FEATURE BADGES (GLOBAL COMPONENT) ========== */
+.feature-badges {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #ffffff; /* Gives it a beautiful premium clean card feel! */
+}
+
+.feature-badge {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-6);
+  border-right: 1px solid var(--color-border);
+  transition: background var(--transition-fast);
+}
+
+.feature-badge:last-child {
+  border-right: none;
+}
+
+.feature-badge:hover {
+  background: rgba(200, 146, 42, 0.05); /* Uses the gold theme accent with opacity for a luxury hover! */
+}
+
+.feature-badge__icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.feature-badge__title {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--color-text-black);
+  margin-bottom: var(--space-1);
+}
+
+.feature-badge__desc {
+  font-size: var(--fs-xs);
   color: var(--color-text-black);
 }
