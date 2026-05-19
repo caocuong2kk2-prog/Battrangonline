@@ -36,7 +36,7 @@
       ? '<span class="product-card__badge">' + p.badge + '</span>'
       : '';
 
-    var imgSrc = (p.images && p.images[0]) ? p.images[0] : '../user/assets/images/placeholder.jpg';
+    var imgSrc = (p.images && p.images[0]) ? p.images[0] : 'assets/images/placeholder.jpg';
 
     article.innerHTML =
       '<a class="product-card__media" href="product-detail.html?slug=' + p.slug + '" aria-label="' + p.name + '">' +

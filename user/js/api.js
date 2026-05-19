@@ -30,7 +30,7 @@
       size: '1.6m',
       status: 'Còn hàng',
       badge: 'Nổi bật',
-      images: ['../assets/images/product-1-1.jpg', '../assets/images/product-1-2.jpg'],
+      images: ['assets/images/product-1-1.jpg', 'assets/images/product-1-2.jpg'],
       description:
         'Lộc bình vẽ tay 1M6 thuộc chất liệu gốm sứ cao cấp, qua tay nghệ nhân thủ công với hàng chục năm kinh nghiệm...',
     },
@@ -47,7 +47,7 @@
       size: '1.2m',
       status: 'Còn hàng',
       badge: null,
-      images: ['../assets/images/product-2-1.jpg'],
+      images: ['assets/images/product-2-1.jpg'],
       description: 'Lộc bình men ra đặc trưng với màu xanh lam tinh tế...',
     },
     {
@@ -63,7 +63,7 @@
       size: '1.0m',
       status: 'Còn hàng',
       badge: null,
-      images: ['../assets/images/product-3-1.jpg'],
+      images: ['assets/images/product-3-1.jpg'],
       description: 'Lộc bình trổ với kỹ thuật điêu khắc tinh xảo...',
     },
     {
@@ -79,7 +79,7 @@
       size: '60x90cm',
       status: 'Còn hàng',
       badge: 'Mới',
-      images: ['../assets/images/product-4-1.jpg'],
+      images: ['assets/images/product-4-1.jpg'],
       description: 'Tranh gốm Phúc Lộc Thọ mang ý nghĩa may mắn, thịnh vượng...',
     },
     {
@@ -95,7 +95,7 @@
       size: 'Bộ 5 món',
       status: 'Còn hàng',
       badge: null,
-      images: ['../assets/images/product-5-1.jpg'],
+      images: ['assets/images/product-5-1.jpg'],
       description: 'Bộ đồ thờ cao cấp gồm 5 món, chế tác thủ công bởi nghệ nhân Bát Tràng...',
     },
     {
@@ -111,7 +111,7 @@
       size: '60cm',
       status: 'Còn hàng',
       badge: null,
-      images: ['../assets/images/product-6-1.jpg'],
+      images: ['assets/images/product-6-1.jpg'],
       description: 'Bình hút lộc phong thủy, mang lại tài lộc và bình an...',
     },
     {
@@ -127,7 +127,7 @@
       size: '20 lít',
       status: 'Còn hàng',
       badge: null,
-      images: ['../assets/images/product-7-1.jpg'],
+      images: ['assets/images/product-7-1.jpg'],
       description: 'Chum ngâm rượu truyền thống Bát Tràng, giúp rượu thêm thơm ngon...',
     },
     {
@@ -143,7 +143,7 @@
       size: '40cm',
       status: 'Còn hàng',
       badge: null,
-      images: ['../assets/images/product-8-1.jpg'],
+      images: ['assets/images/product-8-1.jpg'],
       description: 'Đĩa gốm phong thuỷ, hoa văn tinh tế, thích hợp trưng bày...',
     },
   ];

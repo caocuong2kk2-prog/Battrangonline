@@ -437,7 +437,7 @@
 
 .cta-banner {
   position: relative;
-  background-image: url('/user/assets/images/bg.jpeg');
+  background-image: url('../assets/images/bg.jpeg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
