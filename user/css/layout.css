@@ -792,7 +792,7 @@ select {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   font-size: var(--fs-sm);
-  color: var(--color-text-primary);
+  color: var(--color-text-black);
   min-width: 260px;
   animation: slideInRight 0.3s ease forwards;
 }
