@@ -70,7 +70,6 @@
       gap: var(--space-2);
       border-bottom: 1px solid var(--color-border);
       margin-bottom: var(--space-8);
-      overflow-x: auto;
       padding-bottom: 0;
     }
 
@@ -88,7 +87,7 @@
     }
 
     .story-tab-btn:hover {
-      color: var(--color-text-primary);
+      opacity: 0.8;
     }
 
     .story-tab-btn.active {
@@ -153,8 +152,8 @@
     }
 
     .timeline-item__date {
-      font-size: var(--fs-xs);
-      font-weight: var(--fw-semibold);
+      font-size: var(--fs-base);
+      font-weight: var(--fw-bold);
       color: var(--color-accent);
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -165,13 +164,13 @@
       font-family: var(--font-heading);
       font-size: var(--fs-xl);
       font-weight: var(--fw-bold);
-      color: var(--color-text-primary);
+      color: var(--color-accent);
       margin-bottom: var(--space-3);
     }
 
     .timeline-item__desc {
       font-size: var(--fs-base);
-      color: var(--color-text-muted);
+      color: var(--color-primary);
       line-height: 1.8;
     }
 
@@ -253,8 +252,18 @@
     }
 
     .btn-load-more {
+      width: fit-content;
       display: block;
+      color: var(--color-accent);
+      background-color: var(--color-bg-card);
       margin: var(--space-8) auto 0;
+      transition: transform 0.25s ease,
+        opacity 0.25s ease;
+    }
+
+    .btn-load-more:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
     }
   </style>
   <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
@@ -288,8 +297,7 @@
       <div class="container">
         <h2 id="story-tabs-heading" class="sr-only">Nội dung hành trình</h2>
         <nav class="story-tabs" role="tablist" aria-label="Các tab hành trình">
-          <button class="story-tab-btn active" role="tab" data-tab="toc-ky" aria-selected="true" id="tab-toc-ky">Tóc
-            Ký</button>
+          <button class="story-tab-btn active" role="tab" data-tab="tat-ca" aria-selected="true" id="tab-tat-ca">Tất cả</button>
           <button class="story-tab-btn" role="tab" data-tab="qua-trinh" aria-selected="false" id="tab-qua-trinh">Quá
             Trình Xây Dựng</button>
           <button class="story-tab-btn" role="tab" data-tab="hau-truong" aria-selected="false" id="tab-hau-truong">Hậu
@@ -298,34 +306,59 @@
             Chuyện</button>
         </nav>
 
-        <!-- Tab: Tóc Ký (Timeline) -->
-        <div class="story-panel active" id="panel-toc-ky" role="tabpanel" aria-labelledby="tab-toc-ky">
-          <div class="timeline">
-            <div class="timeline-item reveal">
-              <p class="timeline-item__date">01/2018</p>
-              <h3 class="timeline-item__title">Khởi Đầu Từ Tình Yêu</h3>
-              <p class="timeline-item__desc">Từ niềm đam mê với nghề gốm truyền thống, hai vợ chồng bắt đầu học nghề tại
-                làng Bát Tràng. Mỗi ngày là hàng giờ đồng hồ ngồi bên bàn xoay, tìm hiểu từng kỹ thuật tạo hình.</p>
+        <!-- Tab: Tóc Ký (Timeline replaced by Video Grid) -->
+        <div class="story-panel active" id="panel-tat-ca" role="tabpanel" aria-labelledby="tab-tat-ca">
+          <div class="video-grid" id="video-grid-tat-ca">
+            <div class="video-card reveal">
+              <img class="video-card__thumb" src="assets/images/video-thumb-1.jpg" alt="Video" loading="lazy">
+              <div class="video-card__overlay">
+                <div class="video-card__play" aria-label="Phát video">▶</div>
+                <span class="video-card__duration">05:43</span>
+              </div>
+              <p class="video-card__title">Khởi đầu từ tình yêu</p>
             </div>
-            <div class="timeline-item reveal" data-delay="150">
-              <p class="timeline-item__date">06/2019</p>
-              <h3 class="timeline-item__title">Mở Xưởng Riêng</h3>
-              <p class="timeline-item__desc">Sau hơn một năm học hỏi, chúng tôi mạnh dạn thuê mặt bằng nhỏ và mở xưởng
-                gốm đầu tiên. Chỉ có 2 người và một lò nung nhỏ, nhưng đầy nhiệt huyết.</p>
+            <div class="video-card reveal" data-delay="100">
+              <img class="video-card__thumb" src="assets/images/video-thumb-2.jpg" alt="Video" loading="lazy">
+              <div class="video-card__overlay">
+                <div class="video-card__play" aria-label="Phát video">▶</div>
+                <span class="video-card__duration">03:15</span>
+              </div>
+              <p class="video-card__title">Mở xưởng riêng</p>
             </div>
-            <div class="timeline-item reveal" data-delay="300">
-              <p class="timeline-item__date">03/2020</p>
-              <h3 class="timeline-item__title">Vượt Qua Đại Dịch</h3>
-              <p class="timeline-item__desc">COVID-19 khiến nhiều xưởng gốm phải đóng cửa. Chúng tôi chuyển sang bán
-                hàng online và điều đó lại mở ra cơ hội tiếp cận khách hàng toàn quốc.</p>
+            <div class="video-card reveal" data-delay="200">
+              <img class="video-card__thumb" src="assets/images/video-thumb-3.jpg" alt="Video" loading="lazy">
+              <div class="video-card__overlay">
+                <div class="video-card__play" aria-label="Phát video">▶</div>
+                <span class="video-card__duration">04:20</span>
+              </div>
+              <p class="video-card__title">Vượt qua đại dịch</p>
             </div>
-            <div class="timeline-item reveal" data-delay="450">
-              <p class="timeline-item__date">2021 – Hiện Tại</p>
-              <h3 class="timeline-item__title">Phát Triển & Lan Rộng</h3>
-              <p class="timeline-item__desc">Phúc Gia Tiên ngày càng lớn mạnh với hàng trăm sản phẩm thủ công và hàng
-                nghìn khách hàng tin tưởng trên khắp Việt Nam.</p>
+            <div class="video-card reveal" data-delay="300">
+              <img class="video-card__thumb" src="assets/images/video-thumb-4.jpg" alt="Video" loading="lazy">
+              <div class="video-card__overlay">
+                <div class="video-card__play" aria-label="Phát video">▶</div>
+                <span class="video-card__duration">06:12</span>
+              </div>
+              <p class="video-card__title">Phát triển và lan rộng</p>
+            </div>
+            <div class="video-card reveal" data-delay="400">
+              <img class="video-card__thumb" src="assets/images/video-thumb-5.jpg" alt="Video" loading="lazy">
+              <div class="video-card__overlay">
+                <div class="video-card__play" aria-label="Phát video">▶</div>
+                <span class="video-card__duration">02:50</span>
+              </div>
+              <p class="video-card__title">Giao lưu nghệ nhân</p>
+            </div>
+            <div class="video-card reveal" data-delay="500">
+              <img class="video-card__thumb" src="assets/images/video-thumb-6.jpg" alt="Video" loading="lazy">
+              <div class="video-card__overlay">
+                <div class="video-card__play" aria-label="Phát video">▶</div>
+                <span class="video-card__duration">08:05</span>
+              </div>
+              <p class="video-card__title">Thành quả năm nay</p>
             </div>
           </div>
+          <a class="btn btn--outline btn-load-more" href="#" id="load-more-tat-ca-btn">Xem Thêm Video</a>
         </div>
 
         <!-- Tab: Video gallery -->
@@ -395,22 +428,57 @@
 
         <!-- Tab: Câu chuyện -->
         <div class="story-panel" id="panel-cau-chuyen" role="tabpanel" aria-labelledby="tab-cau-chuyen">
-          <div style="max-width:720px;margin:0 auto;">
-            <p style="font-size:var(--fs-md);color:var(--color-text-muted);line-height:2;margin-bottom:var(--space-6);">
-              Câu chuyện của Phúc Gia Tiên bắt đầu từ một buổi chiều tại làng Bát Tràng, khi hai vợ chồng tình cờ ghé
-              thăm xưởng gốm của một nghệ nhân lớn tuổi. Nhìn đôi tay khéo léo nhào nặn đất sét, chúng tôi bị cuốn hút
-              ngay lập tức.
-            </p>
-            <p style="font-size:var(--fs-md);color:var(--color-text-muted);line-height:2;margin-bottom:var(--space-6);">
-              Từ đó, chúng tôi quyết định học nghề, rồi mở xưởng, rồi xây dựng thương hiệu Phúc Gia Tiên với sứ mệnh:
-              <strong style="color:var(--color-accent);">gìn giữ nghề gốm thủ công truyền thống và đưa sản phẩm đến mọi
-                gia đình Việt.</strong>
-            </p>
-            <blockquote
-              style="border-left:3px solid var(--color-accent);padding-left:var(--space-5);font-family:var(--font-heading);font-size:var(--fs-xl);font-style:italic;color:var(--color-text-primary);margin:var(--space-8) 0;">
-              "Mỗi chiếc bình, mỗi nét vẽ – là một phần tâm huyết của chúng tôi gửi vào đó."
-            </blockquote>
+          <div class="video-grid" id="video-grid-cau-chuyen">
+            <div class="video-card reveal">
+              <img class="video-card__thumb" src="assets/images/video-thumb-4.jpg" alt="Video" loading="lazy">
+              <div class="video-card__overlay">
+                <div class="video-card__play" aria-label="Phát video">▶</div>
+                <span class="video-card__duration">07:20</span>
+              </div>
+              <p class="video-card__title">Câu chuyện làm gốm</p>
+            </div>
+            <div class="video-card reveal" data-delay="100">
+              <img class="video-card__thumb" src="assets/images/video-thumb-5.jpg" alt="Video" loading="lazy">
+              <div class="video-card__overlay">
+                <div class="video-card__play" aria-label="Phát video">▶</div>
+                <span class="video-card__duration">04:15</span>
+              </div>
+              <p class="video-card__title">Tâm huyết người thợ</p>
+            </div>
+            <div class="video-card reveal" data-delay="200">
+              <img class="video-card__thumb" src="assets/images/video-thumb-6.jpg" alt="Video" loading="lazy">
+              <div class="video-card__overlay">
+                <div class="video-card__play" aria-label="Phát video">▶</div>
+                <span class="video-card__duration">05:10</span>
+              </div>
+              <p class="video-card__title">Những mẻ lò đầu tiên</p>
+            </div>
+            <div class="video-card reveal" data-delay="300">
+              <img class="video-card__thumb" src="assets/images/video-thumb-1.jpg" alt="Video" loading="lazy">
+              <div class="video-card__overlay">
+                <div class="video-card__play" aria-label="Phát video">▶</div>
+                <span class="video-card__duration">06:45</span>
+              </div>
+              <p class="video-card__title">Giữ lửa truyền thống</p>
+            </div>
+            <div class="video-card reveal" data-delay="400">
+              <img class="video-card__thumb" src="assets/images/video-thumb-2.jpg" alt="Video" loading="lazy">
+              <div class="video-card__overlay">
+                <div class="video-card__play" aria-label="Phát video">▶</div>
+                <span class="video-card__duration">03:30</span>
+              </div>
+              <p class="video-card__title">Kỷ niệm Bát Tràng</p>
+            </div>
+            <div class="video-card reveal" data-delay="500">
+              <img class="video-card__thumb" src="assets/images/video-thumb-3.jpg" alt="Video" loading="lazy">
+              <div class="video-card__overlay">
+                <div class="video-card__play" aria-label="Phát video">▶</div>
+                <span class="video-card__duration">08:20</span>
+              </div>
+              <p class="video-card__title">Hành trình vạn dặm</p>
+            </div>
           </div>
+          <a class="btn btn--outline btn-load-more" href="#" id="load-more-cau-chuyen-btn">Xem Thêm Video</a>
         </div>
 
       </div>
