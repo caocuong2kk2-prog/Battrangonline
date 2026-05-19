@@ -13,7 +13,7 @@
   --color-accent: #C8922A;
   --color-accent-hover: #E5B85A;
 
-  --color-bg-dark: #1A0F05;
+  --color-bg-dark: #f9f2ec;
   --color-bg-mid: #2C1A0C;
   --color-bg-card: #28170B;
   --color-bg-overlay: rgba(26, 15, 5, 0.85);
@@ -501,7 +501,7 @@ select {
   display: inline-block;
   font-size: var(--fs-xs);
   font-weight: var(--fw-semibold);
-  color: var(--color-accent);
+  color: #000000;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   margin-bottom: var(--space-3);
@@ -511,14 +511,14 @@ select {
   font-family: var(--font-heading);
   font-size: var(--fs-3xl);
   font-weight: var(--fw-bold);
-  color: var(--color-text-primary);
+  color: #000000;
   line-height: 1.2;
   margin-bottom: var(--space-4);
 }
 
 .section-header__desc {
   font-size: var(--fs-md);
-  color: var(--color-text-muted);
+  color: #000000;
   max-width: 560px;
   margin: 0 auto;
   line-height: 1.7;
