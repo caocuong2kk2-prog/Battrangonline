@@ -350,7 +350,7 @@
     });
   }
 
-  // -- Add to cart (placeholder) --
+  // -- Add to cart (real CartAPI) --
   function initAddToCart(product) {
     var cartBtn = document.getElementById('btn-add-cart');
     var buyNowBtn = document.getElementById('btn-buy-now');
@@ -358,14 +358,21 @@
     if (cartBtn) {
       cartBtn.addEventListener('click', function () {
         var qty = parseInt(document.getElementById('qty-input').value, 10) || 1;
-        // TODO: implement real cart logic
-        window.showToast('Đã thêm "' + product.name + '" (x' + qty + ') vào giỏ hàng!', 'success');
+        if (window.CartAPI) {
+          window.CartAPI.addItem(product, qty);
+        } else {
+          window.showToast('Đã thêm "' + product.name + '" vào giỏ hàng!', 'success');
+        }
       });
     }
 
     if (buyNowBtn) {
       buyNowBtn.addEventListener('click', function () {
-        window.showToast('Tính năng đặt hàng sẽ sớm ra mắt!', 'info');
+        var qty = parseInt(document.getElementById('qty-input').value, 10) || 1;
+        if (window.CartAPI) {
+          window.CartAPI.addItem(product, qty);
+        }
+        window.location.href = 'cart.html';
       });
     }
   }

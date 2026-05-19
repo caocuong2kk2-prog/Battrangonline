@@ -401,6 +401,15 @@
     initFooter();
     initScrollReveal();
     initLazyImages();
+    // Sync cart badge count after header is injected into the DOM
+    if (window.CartAPI) {
+      var badge = document.getElementById('cart-count');
+      if (badge) {
+        var count = window.CartAPI.getCount();
+        badge.textContent = count;
+        badge.style.display = count > 0 ? 'flex' : 'none';
+      }
+    }
   }
 
   if (document.readyState === 'loading') {

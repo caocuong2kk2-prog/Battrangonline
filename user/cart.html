@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Giỏ hàng của bạn – Phúc Gia Tiên. Xem lại và hoàn tất đơn hàng gốm sứ thủ công Bát Tràng.">
+  <title>Giỏ Hàng – Phúc Gia Tiên</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/cart.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+</head>
+
+<body class="page-body">
+
+  <!-- HEADER -->
+  <div id="header-placeholder"></div>
+
+  <main id="cart-page">
+
+    <!-- PAGE HERO -->
+    <section class="cart-hero">
+      <div class="container">
+        <h1 class="cart-hero__title">Giỏ Hàng</h1>
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
+          <span class="breadcrumb__item"><span class="breadcrumb__current">Giỏ Hàng</span></span>
+        </nav>
+      </div>
+    </section>
+
+    <!-- CART CONTENT -->
+    <section class="section section--dark" aria-label="Nội dung giỏ hàng">
+      <div class="container">
+        <div class="cart-layout" id="cart-layout">
+
+          <!-- CART ITEMS (LEFT) -->
+          <div class="cart-items-col">
+
+            <!-- Cart Header -->
+            <div class="cart-items-header">
+              <h2 class="cart-items-header__title">Sản Phẩm Đã Chọn</h2>
+              <div class="cart-header-actions">
+                <button class="cart-clear-btn" id="cart-clear-btn" aria-label="Xóa tất cả">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                    <path d="M10 11v6M14 11v6"></path>
+                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                  </svg>
+                  Xóa tất cả
+                </button>
+              </div>
+            </div>
+            <div>
+              <button class="cart-select-all-btn" id="cart-select-all-btn" aria-label="Chọn tất cả">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span id="select-all-label">Bỏ chọn tất cả</span>
+              </button>
+            </div>
+
+            <!-- Cart Item List -->
+            <div class="cart-item-list" id="cart-item-list" role="list" aria-live="polite">
+              <!-- populated by cart.js -->
+            </div>
+
+            <!-- Empty Cart State -->
+            <div class="cart-empty" id="cart-empty" hidden>
+              <div class="cart-empty__icon">🏺</div>
+              <h3 class="cart-empty__title">Giỏ hàng của bạn đang trống</h3>
+              <p class="cart-empty__desc">Hãy khám phá bộ sưu tập gốm sứ thủ công Bát Tràng cao cấp của chúng tôi.</p>
+              <a class="btn btn--primary btn--lg" href="products.html" id="cart-empty-browse-btn">Xem Sản Phẩm</a>
+            </div>
+
+            <!-- Continue Shopping -->
+            <div class="cart-continue" id="cart-continue">
+              <a class="cart-continue__link" href="products.html" id="cart-continue-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+                Tiếp tục mua sắm
+              </a>
+            </div>
+          </div>
+
+          <!-- ORDER SUMMARY (RIGHT) -->
+          <aside class="cart-summary-col" aria-label="Tóm tắt đơn hàng">
+            <div class="cart-summary">
+              <h2 class="cart-summary__title">Tóm Tắt Đơn Hàng</h2>
+
+              <div class="cart-summary__rows">
+                <div class="cart-summary__row">
+                  <span class="cart-summary__label">Tạm tính</span>
+                  <span class="cart-summary__value" id="summary-subtotal">0₫</span>
+                </div>
+                <div class="cart-summary__row">
+                  <span class="cart-summary__label">Phí vận chuyển</span>
+                  <span class="cart-summary__value cart-summary__value--accent" id="summary-shipping">Miễn phí</span>
+                </div>
+                <div class="cart-summary__row cart-summary__row--promo" id="promo-row" hidden>
+                  <span class="cart-summary__label">Giảm giá</span>
+                  <span class="cart-summary__value cart-summary__value--discount" id="summary-discount">-0₫</span>
+                </div>
+              </div>
+
+              <div class="cart-summary__divider"></div>
+
+              <div class="cart-summary__total-row">
+                <span class="cart-summary__total-label">Tổng cộng</span>
+                <span class="cart-summary__total-value" id="summary-total">0₫</span>
+              </div>
+
+              <!-- Promo Code -->
+              <div class="cart-promo">
+                <label class="cart-promo__label" for="promo-input">Mã giảm giá</label>
+                <div class="cart-promo__input-group">
+                  <input class="cart-promo__input" type="text" id="promo-input" placeholder="Nhập mã của bạn...">
+                  <button class="cart-promo__btn" id="promo-apply-btn">Áp dụng</button>
+                </div>
+                <p class="cart-promo__msg" id="promo-msg" aria-live="polite"></p>
+              </div>
+
+              <button class="btn btn--accent btn--lg cart-checkout-btn" id="cart-checkout-btn">
+                Tiến Hành Thanh Toán
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+
+              <!-- Guarantee badges -->
+              <div class="cart-guarantees">
+                <div class="cart-guarantee-item">
+                  <span>🔒</span>
+                  <span>Thanh toán an toàn & bảo mật</span>
+                </div>
+                <div class="cart-guarantee-item">
+                  <span>🚚</span>
+                  <span>Giao hàng COD toàn quốc</span>
+                </div>
+                <div class="cart-guarantee-item">
+                  <span>↩️</span>
+                  <span>Đổi trả miễn phí trong 7 ngày</span>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <div id="footer-placeholder"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/cart.js"></script>
+</body>
+
+</html>
