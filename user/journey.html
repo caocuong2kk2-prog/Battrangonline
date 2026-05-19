@@ -18,11 +18,13 @@
     /* ===== JOURNEY PAGE SPECIFIC STYLES ===== */
     .journey-hero {
       position: relative;
-      height: 480px;
+      height: 320px;
       display: flex;
       align-items: center;
+      justify-content: center;
       overflow: hidden;
       background: var(--color-bg-dark);
+      text-align: center;
     }
 
     .journey-hero__bg {
@@ -40,28 +42,25 @@
     .journey-hero__overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to right, rgba(26, 15, 5, 0.9) 40%, rgba(26, 15, 5, 0.3));
+      background: rgba(26, 15, 5, 0.6);
     }
 
     .journey-hero__content {
       position: relative;
       z-index: 1;
+      width: 100%;
     }
 
     .journey-hero__title {
       font-family: var(--font-heading);
-      font-size: var(--fs-4xl);
+      font-size: clamp(2.5rem, 5vw, 4rem);
       font-weight: var(--fw-bold);
-      color: var(--color-text-primary);
+      color: #F5EDD8;
       line-height: 1.2;
-      margin-bottom: var(--space-4);
-    }
-
-    .journey-hero__sub {
-      font-size: var(--fs-md);
-      color: var(--color-text-muted);
-      max-width: 500px;
-      line-height: 1.7;
+      margin-bottom: var(--space-2);
+      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
 
     /* Story Tabs */
@@ -284,10 +283,12 @@
       </div>
       <div class="container">
         <div class="journey-hero__content">
-          <span class="section-header__label">Câu Chuyện</span>
           <h1 class="journey-hero__title">HÀNH TRÌNH</h1>
-          <p class="journey-hero__sub">Từ tình yêu với đất sét và lửa nung – chúng tôi cùng nhau tạo nên những tác phẩm
-            mang linh hồn Bát Tràng.</p>
+          <nav class="breadcrumb" aria-label="Breadcrumb" style="justify-content: center; padding: 0;">
+            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html"">Trang chủ</a></span>
+            <span class=" breadcrumb__item"><span class="breadcrumb__current" style="color: #F5EDD8;">Hành
+                  trình</span></span>
+          </nav>
         </div>
       </div>
     </section>
@@ -297,7 +298,8 @@
       <div class="container">
         <h2 id="story-tabs-heading" class="sr-only">Nội dung hành trình</h2>
         <nav class="story-tabs" role="tablist" aria-label="Các tab hành trình">
-          <button class="story-tab-btn active" role="tab" data-tab="tat-ca" aria-selected="true" id="tab-tat-ca">Tất cả</button>
+          <button class="story-tab-btn active" role="tab" data-tab="tat-ca" aria-selected="true" id="tab-tat-ca">Tất
+            cả</button>
           <button class="story-tab-btn" role="tab" data-tab="qua-trinh" aria-selected="false" id="tab-qua-trinh">Quá
             Trình Xây Dựng</button>
           <button class="story-tab-btn" role="tab" data-tab="hau-truong" aria-selected="false" id="tab-hau-truong">Hậu

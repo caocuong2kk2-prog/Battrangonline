@@ -23,11 +23,12 @@
 
     .contact-hero {
       position: relative;
-      height: 280px;
+      height: 320px;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
-      background: var(--color-bg-mid);
+      text-align: center;
     }
 
     .contact-hero__bg {
@@ -39,28 +40,31 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.3;
+      opacity: 0.4;
     }
 
     .contact-hero__overlay {
       position: absolute;
       inset: 0;
-      background: rgba(26, 15, 5, 0.75);
+      background: rgba(26, 15, 5, 0.6);
     }
 
     .contact-hero__content {
       position: relative;
       z-index: 1;
-      padding-bottom: var(--space-10);
       width: 100%;
     }
 
     .contact-hero__title {
       font-family: var(--font-heading);
-      font-size: var(--fs-3xl);
+      font-size: clamp(2.5rem, 5vw, 4rem);
       font-weight: var(--fw-bold);
-      color: var(--color-text-primary);
-      text-align: center;
+      color: #F5EDD8;
+      line-height: 1.2;
+      margin-bottom: var(--space-2);
+      text-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
 
     /* Contact grid */
@@ -307,11 +311,11 @@
       </div>
       <div class="container">
         <div class="contact-hero__content">
-          <nav class="breadcrumb" aria-label="Breadcrumb" style="justify-content:center;">
-            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
-            <span class="breadcrumb__item"><span class="breadcrumb__current">Liên Hệ</span></span>
-          </nav>
           <h1 class="contact-hero__title">LIÊN HỆ</h1>
+          <nav class="breadcrumb" aria-label="Breadcrumb" style="justify-content:center; padding:0;">
+            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang chủ</a></span>
+            <span class="breadcrumb__item"><span class="breadcrumb__current" style="color:#F5EDD8;">Liên hệ</span></span>
+          </nav>
         </div>
       </div>
     </section>
@@ -370,7 +374,6 @@
           <div class="contact-form-panel reveal-right">
             <h3 class="contact-form-title">Gửi Tin Nhắn Cho Chúng Tôi</h3>
             <form id="contact-form" novalidate aria-label="Form liên hệ">
-
               <div class="form-row">
                 <div class="form-group" id="group-name">
                   <label class="form-label" for="contact-name">Họ và tên <span class="required">*</span></label>

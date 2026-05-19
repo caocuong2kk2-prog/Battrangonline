@@ -513,7 +513,6 @@ select {
   font-weight: var(--fw-bold);
   color: var(--color-text-black);
   line-height: 1.2;
-  margin-bottom: var(--space-4);
 }
 
 .section-header__desc {
@@ -609,7 +608,7 @@ select {
 }
 
 .breadcrumb__link:hover {
-  color: var(--color-accent);
+  color: var(--color-accent-hover);
 }
 
 .breadcrumb__current {

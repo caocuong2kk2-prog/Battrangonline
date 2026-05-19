@@ -22,8 +22,10 @@
       position: relative;
       height: 320px;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
+      text-align: center;
     }
 
     .about-hero__bg {
@@ -35,21 +37,19 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.28;
+      opacity: 0.4;
     }
 
     .about-hero__overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(26,15,5,0.92) 40%, rgba(26,15,5,0.55));
+      background: rgba(26, 15, 5, 0.6);
     }
 
     .about-hero__content {
       position: relative;
       z-index: 1;
-      padding-bottom: var(--space-12);
       width: 100%;
-      text-align: center;
     }
 
     .about-hero__eyebrow {
@@ -64,11 +64,14 @@
 
     .about-hero__title {
       font-family: var(--font-heading);
-      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-size: clamp(2.5rem, 5vw, 4rem);
       font-weight: var(--fw-bold);
       color: #F5EDD8;
-      line-height: 1.15;
-      letter-spacing: 0.04em;
+      line-height: 1.2;
+      margin-bottom: var(--space-2);
+      text-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
 
     /* ---------- About Story Section ---------- */
@@ -427,11 +430,11 @@
       </div>
       <div class="container">
         <div class="about-hero__content">
-          <nav class="breadcrumb" aria-label="Breadcrumb">
-            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
-            <span class="breadcrumb__item"><span class="breadcrumb__current">Giới Thiệu</span></span>
-          </nav>
           <h1 class="about-hero__title">GIỚI THIỆU</h1>
+          <nav class="breadcrumb" aria-label="Breadcrumb" style="justify-content: center; padding: 0;">
+            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html"">Trang chủ</a></span>
+            <span class="breadcrumb__item"><span class="breadcrumb__current" style="color: #F5EDD8;">Giới thiệu</span></span>
+          </nav>
         </div>
       </div>
     </section>
