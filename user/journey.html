@@ -16,52 +16,7 @@
   <link rel="stylesheet" href="css/responsive.css">
   <style>
     /* ===== JOURNEY PAGE SPECIFIC STYLES ===== */
-    .journey-hero {
-      position: relative;
-      height: 320px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      background: var(--color-bg-dark);
-      text-align: center;
-    }
 
-    .journey-hero__bg {
-      position: absolute;
-      inset: 0;
-    }
-
-    .journey-hero__bg img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0.4;
-    }
-
-    .journey-hero__overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(26, 15, 5, 0.6);
-    }
-
-    .journey-hero__content {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-    }
-
-    .journey-hero__title {
-      font-family: var(--font-heading);
-      font-size: clamp(2.5rem, 5vw, 4rem);
-      font-weight: var(--fw-bold);
-      color: #F5EDD8;
-      line-height: 1.2;
-      margin-bottom: var(--space-2);
-      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
 
     /* Story Tabs */
     .story-tabs {
@@ -192,8 +147,8 @@
     }
 
     .video-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px) !important;
+      box-shadow: var(--shadow-md);
     }
 
     .video-card__thumb {
@@ -275,19 +230,17 @@
 
   <main id="main-content">
 
-    <!-- HERO -->
-    <section class="journey-hero" aria-label="Hành trình Phúc Gia Tiên">
-      <div class="journey-hero__bg">
+    <!-- PAGE HERO -->
+    <section class="page-hero" aria-label="Hành trình Phúc Gia Tiên">
+      <div class="page-hero__bg">
         <img src="assets/images/journey-hero.jpg" alt="" role="presentation" loading="eager">
-        <div class="journey-hero__overlay"></div>
       </div>
       <div class="container">
-        <div class="journey-hero__content">
-          <h1 class="journey-hero__title">HÀNH TRÌNH</h1>
-          <nav class="breadcrumb" aria-label="Breadcrumb" style="justify-content: center; padding: 0;">
-            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html"">Trang chủ</a></span>
-            <span class=" breadcrumb__item"><span class="breadcrumb__current" style="color: #F5EDD8;">Hành
-                  trình</span></span>
+        <div class="page-hero__content">
+          <h1 class="page-hero__title">HÀNH TRÌNH</h1>
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
+            <span class="breadcrumb__item"><span class="breadcrumb__current">Hành Trình</span></span>
           </nav>
         </div>
       </div>

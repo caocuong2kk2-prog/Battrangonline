@@ -177,6 +177,37 @@
         }
       });
     });
+
+    // Check Auth and render user avatar if logged in
+    if (window.AuthService) {
+      const user = window.AuthService.getCurrentUser();
+      if (user) {
+        const userBtn = document.querySelector('.header-action-btn--user');
+        if (userBtn) {
+          userBtn.removeAttribute('href');
+          userBtn.classList.add('is-logged-in');
+          const initial = (user.firstName || user.name || 'U').charAt(0).toUpperCase();
+          const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.name || 'Người dùng';
+          
+          userBtn.innerHTML = `
+            <div class="user-avatar-wrap">
+              <div class="user-avatar">${initial}</div>
+              <div class="user-dropdown-menu">
+                <div class="user-dropdown-header">
+                  <span class="user-name">${fullName}</span>
+                  <span class="user-email">${user.email}</span>
+                </div>
+                <div class="user-dropdown-body">
+                  <a href="#" class="user-dropdown-item">Tài khoản của tôi</a>
+                  <a href="#" class="user-dropdown-item">Đơn mua</a>
+                  <button type="button" class="user-dropdown-item btn-logout" onclick="AuthService.logout()">Đăng xuất</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+      }
+    }
   }
 
   // ======================================================
@@ -232,7 +263,45 @@
   }
 
   // ======================================================
-  // 3. OTHER GLOBALS (Toast, LazyLoad, Debounce, ScrollReveal)
+  // 3. AUTH SERVICE (Mock DB using LocalStorage)
+  // ======================================================
+  window.AuthService = {
+    getUsers: function() {
+      return JSON.parse(localStorage.getItem('mock_users') || '[]');
+    },
+    saveUsers: function(users) {
+      localStorage.setItem('mock_users', JSON.stringify(users));
+    },
+    getCurrentUser: function() {
+      return JSON.parse(localStorage.getItem('current_user') || 'null');
+    },
+    login: function(email, password) {
+      const users = this.getUsers();
+      const user = users.find(u => u.email === email && u.password === password);
+      if (user) {
+        localStorage.setItem('current_user', JSON.stringify(user));
+        return { success: true, user: user };
+      }
+      return { success: false, message: 'Email hoặc mật khẩu không chính xác.' };
+    },
+    register: function(userData) {
+      const users = this.getUsers();
+      if (users.find(u => u.email === userData.email)) {
+        return { success: false, message: 'Email đã được sử dụng.' };
+      }
+      users.push(userData);
+      this.saveUsers(users);
+      return { success: true };
+    },
+    logout: function() {
+      localStorage.removeItem('current_user');
+      window.showToast('Đã đăng xuất thành công!', 'success');
+      setTimeout(() => window.location.reload(), 1000);
+    }
+  };
+
+  // ======================================================
+  // 4. OTHER GLOBALS (Toast, LazyLoad, Debounce, ScrollReveal)
   // ======================================================
   window.debounce = function (fn, wait) {
     let timer;
@@ -269,6 +338,8 @@
   window.formatVND = function (amount) {
     return Number(amount).toLocaleString('vi-VN') + 'đ';
   };
+
+
 
   function initLazyImages() {
     if (!window.IntersectionObserver) return;

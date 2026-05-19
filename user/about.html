@@ -17,66 +17,11 @@
   <style>
     /* ===== ABOUT PAGE STYLES ===== */
 
-    /* ---------- Hero ---------- */
-    .about-hero {
-      position: relative;
-      height: 320px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      text-align: center;
-    }
 
-    .about-hero__bg {
-      position: absolute;
-      inset: 0;
-    }
-
-    .about-hero__bg img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0.4;
-    }
-
-    .about-hero__overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(26, 15, 5, 0.6);
-    }
-
-    .about-hero__content {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-    }
-
-    .about-hero__eyebrow {
-      display: inline-block;
-      font-size: var(--fs-xs);
-      font-weight: var(--fw-semibold);
-      color: var(--color-accent);
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      margin-bottom: var(--space-3);
-    }
-
-    .about-hero__title {
-      font-family: var(--font-heading);
-      font-size: clamp(2.5rem, 5vw, 4rem);
-      font-weight: var(--fw-bold);
-      color: #F5EDD8;
-      line-height: 1.2;
-      margin-bottom: var(--space-2);
-      text-shadow: 0 4px 12px rgba(0,0,0,0.6);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
 
     /* ---------- About Story Section ---------- */
     .about-story-section {
-      background: var(--color-bg-dark);
+      background: #ffffff;
       padding: var(--space-20) 0;
     }
 
@@ -91,14 +36,14 @@
       position: relative;
       border-radius: var(--radius-xl);
       overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.08);
     }
 
     .about-img-wrap::before {
       content: '';
       position: absolute;
       inset: -4px;
-      border: 1px solid rgba(200, 146, 42, 0.35);
+      border: 1px solid rgba(200, 146, 42, 0.25);
       border-radius: calc(var(--radius-xl) + 4px);
       z-index: -1;
     }
@@ -123,9 +68,9 @@
 
     .about-label {
       display: inline-block;
-      font-size: var(--fs-xl);
+      font-size: var(--fs-sm);
       font-weight: var(--fw-semibold);
-      color: var(--color-primary);
+      color: var(--color-accent);
       letter-spacing: 0.15em;
       text-transform: uppercase;
     }
@@ -134,7 +79,7 @@
       font-family: var(--font-heading);
       font-size: clamp(1.75rem, 3vw, 2.5rem);
       font-weight: var(--fw-bold);
-      color: #F5EDD8;
+      color: #2C1A0C;
       line-height: 1.25;
     }
 
@@ -145,12 +90,8 @@
 
     .about-body-text {
       font-size: var(--fs-base);
-      color: var(--color-primary-light);
+      color: #5C3A1E;
       line-height: 1.9;
-    }
-
-    #about-story-heading{
-      color: var(--color-accent);
     }
 
     /* ---------- Stats Bar ---------- */
@@ -188,7 +129,7 @@
     .stat-item__label {
       font-size: var(--fs-xs);
       font-weight: 500;
-      color: var(--color-primary);
+      color: var(--color-primary-light);
       letter-spacing: 0.05em;
     }
 
@@ -282,7 +223,7 @@
 
     /* ---------- Team ---------- */
     .team-section {
-      background: var(--color-bg-dark);
+      background: #ffffff;
       padding: var(--space-20) 0;
     }
 
@@ -301,17 +242,18 @@
 
     .team-card {
       text-align: center;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(200,146,42,0.2);
+      background: #fbf7f2;
+      border: 1px solid rgba(200,146,42,0.15);
       border-radius: var(--radius-xl);
       padding: var(--space-10) var(--space-8);
       transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
     }
 
     .team-card:hover {
       transform: translateY(-6px);
-      border-color: rgba(200,146,42,0.5);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+      border-color: var(--color-accent);
+      box-shadow: 0 16px 40px rgba(200,146,42,0.12);
     }
 
     .team-card__avatar {
@@ -329,7 +271,7 @@
       font-family: var(--font-heading);
       font-size: var(--fs-xl);
       font-weight: var(--fw-semibold);
-      color: var(--color-primary);
+      color: #2C1A0C;
       margin-bottom: var(--space-1);
     }
 
@@ -344,15 +286,11 @@
 
     .team-card__bio {
       font-size: var(--fs-sm);
-      color: var(--color-primary-light);
+      color: #6B5740;
       line-height: 1.7;
     }
 
-    /* ---------- Breadcrumb ---------- */
-    .breadcrumb {
-      justify-content: center;
-      margin-bottom: var(--space-3);
-    }
+
 
     /* ---------- CTA Strip ---------- */
     .about-cta-strip {
@@ -422,18 +360,17 @@
 
   <main id="main-content">
 
-    <!-- HERO -->
-    <section class="about-hero" aria-label="Giới thiệu Phúc Gia Tiên">
-      <div class="about-hero__bg">
+    <!-- PAGE HERO -->
+    <section class="page-hero" aria-label="Giới thiệu Phúc Gia Tiên">
+      <div class="page-hero__bg">
         <img src="assets/images/about-hero.jpg" alt="" role="presentation" loading="eager">
-        <div class="about-hero__overlay"></div>
       </div>
       <div class="container">
-        <div class="about-hero__content">
-          <h1 class="about-hero__title">GIỚI THIỆU</h1>
-          <nav class="breadcrumb" aria-label="Breadcrumb" style="justify-content: center; padding: 0;">
-            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html"">Trang chủ</a></span>
-            <span class="breadcrumb__item"><span class="breadcrumb__current" style="color: #F5EDD8;">Giới thiệu</span></span>
+        <div class="page-hero__content">
+          <h1 class="page-hero__title">GIỚI THIỆU</h1>
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
+            <span class="breadcrumb__item"><span class="breadcrumb__current">Giới Thiệu</span></span>
           </nav>
         </div>
       </div>
@@ -540,9 +477,9 @@
     <section class="team-section" aria-labelledby="team-heading">
       <div class="container">
         <div class="team-section-header">
-          <span class="section-header__label">Con Người</span>
-          <h2 id="team-heading" class="section-header__title">Đội Ngũ Của Chúng Tôi</h2>
-          <p class="section-header__desc">Hai nghệ nhân – một tâm huyết – vô vàn tác phẩm.</p>
+          <span class="section-header__label" style="color: var(--color-accent); margin-bottom: var(--space-3);">Con Người</span>
+          <h2 id="team-heading" class="section-header__title" style="color: #2C1A0C; margin-bottom: var(--space-4);">Đội Ngũ Của Chúng Tôi</h2>
+          <p class="section-header__desc" style="color: #6B5740;">Hai nghệ nhân – một tâm huyết – vô vàn tác phẩm.</p>
         </div>
         <div class="team-grid">
           <div class="team-card reveal" data-delay="0">

@@ -1,656 +1,639 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Phúc Gia Tiên — Đăng nhập / Đăng ký</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Đăng nhập hoặc Đăng ký tài khoản Phúc Gia Tiên để mua sắm và theo dõi đơn hàng gốm sứ.">
+  <title>Tài khoản – Phúc Gia Tiên</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 
-  :root {
-    --clay:     #3B2612;
-    --clay-mid: #5C3A1E;
-    --gold:     #C8922A;
-    --gold-lt:  #E5B85A;
-    --cream:    #F5EDD8;
-    --cream-dk: #EBD9B4;
-    --ash:      #D4C4A0;
-    --ink:      #1A0F05;
-    --smoke:    rgba(255,255,255,0.07);
-    --err:      #C0392B;
-  }
+  <style>
+    .auth-page-section {
+      background-color: #faf7f2;
+      padding: var(--space-12) 0;
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  body {
-    min-height: 100vh;
-    font-family: 'Be Vietnam Pro', sans-serif;
-    background: var(--ink);
-    display: flex;
-    align-items: stretch;
-    overflow-x: hidden;
-  }
+    .auth-page-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      border-radius: var(--radius-xl);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.06);
+      padding: 48px;
+      border: 1px solid rgba(200, 146, 42, 0.15);
+    }
 
-  /* ── Left panel ── */
-  .panel-left {
-    position: relative;
-    width: 48%;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
+    .auth-tab-bar {
+      display: flex;
+      background: #fbf7f2;
+      border-radius: 8px;
+      padding: 6px;
+      margin-bottom: 32px;
+    }
 
-  .panel-left-bg {
-    position: absolute; inset: 0;
-    background:
-      linear-gradient(160deg, rgba(26,15,5,0.55) 0%, rgba(58,30,10,0.7) 50%, rgba(26,15,5,0.85) 100%),
-      url('https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=900&q=80') center/cover no-repeat;
-  }
+    .auth-tab-btn {
+      flex: 1;
+      padding: 12px 0;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      color: #6B5740;
+      border-radius: 6px;
+      transition: all 0.25s ease;
+    }
 
-  /* Decorative gold circle pattern */
-  .deco-ring {
-    position: absolute;
-    border-radius: 50%;
-    border: 1px solid rgba(200,146,42,0.18);
-    pointer-events: none;
-  }
-  .deco-ring-1 { width: 380px; height: 380px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
-  .deco-ring-2 { width: 520px; height: 520px; top: 50%; left: 50%; transform: translate(-50%,-50%); border-color: rgba(200,146,42,0.09); }
-  .deco-ring-3 { width: 660px; height: 660px; top: 50%; left: 50%; transform: translate(-50%,-50%); border-color: rgba(200,146,42,0.05); }
+    .auth-tab-btn.active {
+      background: #fff;
+      color: var(--color-accent);
+      box-shadow: 0 2px 12px rgba(200, 146, 42, 0.15);
+      font-weight: 600;
+    }
 
-  /* Gold horizontal rule ornament */
-  .ornament {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 16px;
-  }
-  .ornament-line { width: 36px; height: 1px; background: var(--gold); opacity: .6; }
-  .ornament-diamond {
-    width: 6px; height: 6px; background: var(--gold);
-    transform: rotate(45deg); flex-shrink: 0;
-  }
+    .auth-form-panel {
+      display: none;
+      animation: authFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
 
-  .left-content {
-    position: relative; z-index: 2;
-    text-align: center;
-    padding: 40px;
-    max-width: 380px;
-  }
+    .auth-form-panel.active {
+      display: block;
+    }
 
-  .brand-logo {
-    display: flex; align-items: center; gap: 10px;
-    justify-content: center;
-    margin-bottom: 32px;
-  }
-  .brand-logo svg { width: 38px; height: 38px; }
-  .brand-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 500;
-    color: var(--cream);
-    letter-spacing: .04em;
-  }
+    @keyframes authFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-  .left-tagline {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 40px;
-    font-weight: 300;
-    color: var(--cream);
-    line-height: 1.2;
-    margin-bottom: 16px;
-    letter-spacing: .01em;
-  }
-  .left-tagline em { color: var(--gold-lt); font-style: italic; }
+    .auth-heading {
+      font-family: var(--font-heading);
+      font-size: 28px;
+      font-weight: 600;
+      color: #2C1A0C;
+      margin-bottom: 6px;
+      text-align: center;
+    }
 
-  .left-desc {
-    font-size: 13px;
-    font-weight: 300;
-    color: var(--ash);
-    line-height: 1.75;
-    letter-spacing: .02em;
-  }
+    .auth-sub {
+      font-size: 14px;
+      color: #6B5740;
+      margin-bottom: 32px;
+      text-align: center;
+    }
 
-  .left-badges {
-    display: flex; gap: 20px; justify-content: center;
-    margin-top: 36px;
-  }
-  .left-badge {
-    display: flex; flex-direction: column; align-items: center; gap: 5px;
-  }
-  .left-badge-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 26px; font-weight: 500; color: var(--gold-lt);
-  }
-  .left-badge-lbl {
-    font-size: 11px; color: var(--ash); letter-spacing: .06em; text-transform: uppercase;
-  }
-  .sep-v { width: 1px; background: rgba(200,146,42,0.25); align-self: stretch; }
+    .auth-input-group {
+      margin-bottom: 20px;
+    }
 
-  /* ── Right panel ── */
-  .panel-right {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 24px;
-    background: var(--cream);
-    position: relative;
-  }
+    .auth-input-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #5C3A1E;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
 
-  /* Subtle top border accent */
-  .panel-right::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--clay-mid), var(--gold), var(--clay-mid));
-  }
+    .auth-input-wrap {
+      position: relative;
+    }
 
-  .auth-box {
-    width: 100%;
-    max-width: 420px;
-  }
+    .auth-input-field {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid #eae1d6;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: #1A0F05;
+      background: #fff;
+      transition: all 0.2s ease;
+    }
 
-  /* Tab switcher */
-  .tab-bar {
-    display: flex;
-    background: var(--cream-dk);
-    border-radius: 10px;
-    padding: 4px;
-    margin-bottom: 32px;
-  }
-  .tab-btn {
-    flex: 1;
-    padding: 10px 0;
-    border: none; background: none; cursor: pointer;
-    font-family: 'Be Vietnam Pro', sans-serif;
-    font-size: 14px; font-weight: 500;
-    color: var(--clay-mid);
-    border-radius: 7px;
-    transition: all .25s ease;
-    letter-spacing: .02em;
-    position: relative;
-  }
-  .tab-btn.active {
-    background: var(--clay);
-    color: var(--cream);
-    box-shadow: 0 2px 10px rgba(58,30,10,0.3);
-  }
+    .auth-input-field:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 4px rgba(200, 146, 42, 0.1);
+    }
 
-  /* Form heading */
-  .form-heading {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 30px;
-    font-weight: 500;
-    color: var(--clay);
-    margin-bottom: 4px;
-    letter-spacing: .01em;
-  }
-  .form-sub {
-    font-size: 13px; color: #8a7055; margin-bottom: 28px;
-    font-weight: 300;
-  }
+    .auth-eye-toggle {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      padding: 0;
+      color: #b09470;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
 
-  /* Input groups */
-  .input-group {
-    margin-bottom: 18px;
-    position: relative;
-  }
-  .input-label {
-    display: block;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--clay-mid);
-    margin-bottom: 7px;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-  }
-  .input-wrap {
-    position: relative;
-  }
-  .input-icon {
-    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-    color: var(--ash); pointer-events: none;
-    transition: color .2s;
-  }
-  .input-field {
-    width: 100%;
-    padding: 13px 14px 13px 42px;
-    border: 1.5px solid var(--cream-dk);
-    border-radius: 8px;
-    background: #fff;
-    font-family: 'Be Vietnam Pro', sans-serif;
-    font-size: 14px;
-    color: var(--ink);
-    outline: none;
-    transition: border-color .2s, box-shadow .2s;
-    letter-spacing: .01em;
-  }
-  .input-field::placeholder { color: #c4ae88; }
-  .input-field:focus {
-    border-color: var(--gold);
-    box-shadow: 0 0 0 3px rgba(200,146,42,0.12);
-  }
-  .input-field:focus + .input-icon { color: var(--gold); }
+    .auth-eye-toggle:hover {
+      color: var(--color-accent);
+    }
 
-  /* Eye toggle for password */
-  .eye-toggle {
-    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
-    background: none; border: none; cursor: pointer;
-    color: var(--ash); padding: 0; line-height: 1;
-    transition: color .2s;
-  }
-  .eye-toggle:hover { color: var(--gold); }
-  .password-field { padding-right: 44px !important; }
+    .auth-error-hint {
+      font-size: 12px;
+      color: #C0392B;
+      margin-top: 6px;
+      display: none;
+    }
 
-  /* Two-col row */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .auth-extra-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: -10px;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
 
-  /* Checkbox */
-  .check-row {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 22px;
-  }
-  .check-box {
-    width: 17px; height: 17px; flex-shrink: 0;
-    border: 1.5px solid var(--cream-dk);
-    border-radius: 4px; cursor: pointer;
-    appearance: none; background: #fff;
-    transition: all .2s;
-  }
-  .check-box:checked {
-    background: var(--clay);
-    border-color: var(--clay);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='8' viewBox='0 0 10 8'%3E%3Cpath d='M1 4l3 3 5-6' stroke='%23F5EDD8' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: center;
-  }
-  .check-lbl {
-    font-size: 13px; color: #8a7055;
-  }
-  .check-lbl a { color: var(--gold); text-decoration: none; }
-  .check-lbl a:hover { text-decoration: underline; }
+    .auth-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #5C3A1E;
+      cursor: pointer;
+    }
 
-  /* Forgot password */
-  .forgot-row {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 22px;
-  }
-  .forgot-link {
-    font-size: 13px; color: var(--gold); text-decoration: none;
-    transition: opacity .2s;
-  }
-  .forgot-link:hover { opacity: .75; }
+    .auth-checkbox-label input {
+      accent-color: var(--color-accent);
+      cursor: pointer;
+    }
 
-  /* Submit button */
-  .btn-submit {
-    width: 100%;
-    padding: 15px;
-    background: var(--clay);
-    color: var(--cream);
-    border: none; border-radius: 8px;
-    font-family: 'Be Vietnam Pro', sans-serif;
-    font-size: 14px; font-weight: 500;
-    letter-spacing: .08em; text-transform: uppercase;
-    cursor: pointer;
-    transition: background .25s, transform .15s, box-shadow .25s;
-    position: relative; overflow: hidden;
-  }
-  .btn-submit::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
-    transform: translateX(-100%);
-    transition: transform .5s ease;
-  }
-  .btn-submit:hover { background: var(--clay-mid); box-shadow: 0 6px 20px rgba(58,30,10,0.35); }
-  .btn-submit:hover::after { transform: translateX(100%); }
-  .btn-submit:active { transform: scale(0.98); }
+    .auth-link {
+      color: var(--color-accent);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
 
-  /* Divider */
-  .divider {
-    display: flex; align-items: center; gap: 12px;
-    margin: 22px 0;
-  }
-  .divider-line { flex: 1; height: 1px; background: var(--cream-dk); }
-  .divider-text { font-size: 12px; color: #b09470; letter-spacing: .04em; }
+    .auth-link:hover {
+      color: var(--color-accent-hover);
+      text-decoration: underline;
+    }
 
-  /* Social login */
-  .btn-social {
-    width: 100%;
-    padding: 12px;
-    background: #fff;
-    border: 1.5px solid var(--cream-dk);
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    font-family: 'Be Vietnam Pro', sans-serif;
-    font-size: 13px; font-weight: 500;
-    color: var(--clay);
-    cursor: pointer;
-    transition: border-color .2s, box-shadow .2s;
-    margin-bottom: 10px;
-    text-decoration: none;
-  }
-  .btn-social:hover {
-    border-color: var(--gold);
-    box-shadow: 0 2px 10px rgba(200,146,42,0.12);
-  }
+    .auth-btn-submit {
+      width: 100%;
+      padding: 16px;
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 12px;
+    }
 
-  /* Panel hidden/shown */
-  .form-panel { display: none; }
-  .form-panel.active { display: block; }
+    .auth-btn-submit:hover {
+      background: var(--color-primary-light);
+      box-shadow: 0 8px 24px rgba(59, 38, 18, 0.25);
+      transform: translateY(-2px);
+    }
 
-  /* Error hint */
-  .error-hint {
-    font-size: 12px; color: var(--err);
-    margin-top: 5px; display: none;
-  }
+    .auth-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
 
-  /* Password strength */
-  .strength-row { display: flex; gap: 4px; margin-top: 7px; }
-  .strength-bar {
-    flex: 1; height: 3px; border-radius: 2px;
-    background: var(--cream-dk);
-    transition: background .3s;
-  }
-  .strength-label { font-size: 11px; color: #b09470; margin-top: 4px; }
+    /* Separator */
+    .auth-separator {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 24px 0;
+      color: #b09470;
+      font-size: 13px;
+    }
 
-  /* Scroll fix for small screens */
-  @media (max-width: 840px) {
-    body { flex-direction: column; }
-    .panel-left { width: 100%; min-height: auto; padding: 48px 24px 36px; }
-    .panel-right { min-height: auto; }
-    .left-tagline { font-size: 32px; }
-    .two-col { grid-template-columns: 1fr; }
-  }
+    .auth-separator::before,
+    .auth-separator::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1.5px solid #eae1d6;
+    }
 
-  /* Fade-in animation */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .auth-box { animation: fadeUp .5s ease both; }
-</style>
+    .auth-separator:not(:empty)::before {
+      margin-right: 16px;
+    }
+
+    .auth-separator:not(:empty)::after {
+      margin-left: 16px;
+    }
+
+    /* Social Login Buttons */
+    .auth-social-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .auth-btn-social {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px;
+      border: 1.5px solid #eae1d6;
+      border-radius: 8px;
+      background: #ffffff;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      color: #5C3A1E;
+      transition: all 0.25s ease;
+    }
+
+    .auth-btn-social:hover {
+      background: #faf7f2;
+      border-color: var(--color-accent);
+      transform: translateY(-1.5px);
+      box-shadow: 0 4px 12px rgba(200, 146, 42, 0.08);
+    }
+
+    .auth-social-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 600px) {
+      .auth-page-card {
+        padding: 32px 24px;
+        border-radius: 12px;
+      }
+      .auth-two-col {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+      .auth-social-group {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+    }
+  </style>
 </head>
-<body>
 
-<!-- ══════════ LEFT PANEL ══════════ -->
-<div class="panel-left">
-  <div class="panel-left-bg"></div>
-  <div class="deco-ring deco-ring-1"></div>
-  <div class="deco-ring deco-ring-2"></div>
-  <div class="deco-ring deco-ring-3"></div>
+<body class="page-body">
+  <!-- HEADER -->
+  <div id="header-placeholder"></div>
 
-  <div class="left-content">
-    <!-- Logo -->
-    <div class="brand-logo">
-      <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="19" cy="19" r="18" stroke="#C8922A" stroke-width="1"/>
-        <ellipse cx="19" cy="19" rx="8" ry="13" stroke="#C8922A" stroke-width="1" fill="none"/>
-        <ellipse cx="19" cy="19" rx="8" ry="4" stroke="#C8922A" stroke-width="0.8" fill="none"/>
-        <line x1="5" y1="19" x2="33" y2="19" stroke="#C8922A" stroke-width="0.8"/>
-      </svg>
-      <span class="brand-name">PHÚC GIA TIÊN</span>
-    </div>
-
-    <div class="ornament">
-      <div class="ornament-line"></div>
-      <div class="ornament-diamond"></div>
-      <div class="ornament-line"></div>
-    </div>
-
-    <h1 class="left-tagline">
-      Tinh hoa gốm sứ<br>
-      <em>thủ công truyền thống</em>
-    </h1>
-
-    <p class="left-desc">
-      Mỗi sản phẩm là một hành trình tự đất, lửa và tâm huyết của người nghệ nhân — mang giá trị vượt thời gian vào không gian sống của bạn.
-    </p>
-
-    <div class="left-badges">
-      <div class="left-badge">
-        <span class="left-badge-num">4+</span>
-        <span class="left-badge-lbl">Năm kinh nghiệm</span>
+  <main id="main-content">
+    <!-- PAGE HERO BANNER (Dùng hình nền trang chủ) -->
+    <section class="page-hero" aria-label="Banner trang tài khoản">
+      <div class="page-hero__bg">
+        <img src="assets/images/home_bg.jpeg" alt="Tài khoản Phúc Gia Tiên" role="presentation" loading="eager">
       </div>
-      <div class="sep-v"></div>
-      <div class="left-badge">
-        <span class="left-badge-num">1000+</span>
-        <span class="left-badge-lbl">Sản phẩm</span>
-      </div>
-      <div class="sep-v"></div>
-      <div class="left-badge">
-        <span class="left-badge-num">500+</span>
-        <span class="left-badge-lbl">Khách hàng</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════ RIGHT PANEL ══════════ -->
-<div class="panel-right">
-  <div class="auth-box">
-
-    <!-- Tab switcher -->
-    <div class="tab-bar" role="tablist">
-      <button class="tab-btn active" id="tab-login" role="tab" onclick="switchTab('login')">Đăng nhập</button>
-      <button class="tab-btn"        id="tab-register" role="tab" onclick="switchTab('register')">Đăng ký</button>
-    </div>
-
-    <!-- ── LOGIN FORM ── -->
-    <div class="form-panel active" id="panel-login">
-      <h2 class="form-heading">Chào mừng trở lại</h2>
-      <p class="form-sub">Đăng nhập để theo dõi đơn hàng và khám phá sản phẩm mới</p>
-
-      <form onsubmit="handleLogin(event)" novalidate>
-        <div class="input-group">
-          <label class="input-label" for="login-email">Email</label>
-          <div class="input-wrap">
-            <input class="input-field" id="login-email" type="email" placeholder="email@example.com" autocomplete="email">
-            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 7l10 7 10-7"/></svg>
-          </div>
-          <div class="error-hint" id="login-email-err">Vui lòng nhập email hợp lệ</div>
+      <div class="container">
+        <div class="page-hero__content">
+          <h1 class="page-hero__title">TÀI KHOẢN</h1>
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
+            <span class="breadcrumb__item"><span class="breadcrumb__current">Tài Khoản</span></span>
+          </nav>
         </div>
-
-        <div class="input-group">
-          <label class="input-label" for="login-pass">Mật khẩu</label>
-          <div class="input-wrap">
-            <input class="input-field password-field" id="login-pass" type="password" placeholder="Nhập mật khẩu" autocomplete="current-password">
-            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            <button type="button" class="eye-toggle" onclick="togglePass('login-pass',this)" aria-label="Hiện mật khẩu">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-          <div class="error-hint" id="login-pass-err">Mật khẩu không được để trống</div>
-        </div>
-
-        <div class="forgot-row">
-          <div class="check-row" style="margin-bottom:0">
-            <input type="checkbox" class="check-box" id="remember">
-            <label class="check-lbl" for="remember">Ghi nhớ đăng nhập</label>
-          </div>
-          <a href="#" class="forgot-link">Quên mật khẩu?</a>
-        </div>
-
-        <button type="submit" class="btn-submit">Đăng nhập</button>
-      </form>
-
-      <div class="divider">
-        <div class="divider-line"></div>
-        <span class="divider-text">hoặc tiếp tục với</span>
-        <div class="divider-line"></div>
       </div>
+    </section>
 
-      <a href="#" class="btn-social">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-        Tiếp tục với Google
-      </a>
+    <!-- AUTHENTICATION FORM -->
+    <section class="auth-page-section">
+      <div class="container">
+        <div class="auth-page-card">
+          <div class="auth-tab-bar" role="tablist">
+            <button class="auth-tab-btn active" id="modal-tab-login" onclick="switchAuthTab('login')">Đăng nhập</button>
+            <button class="auth-tab-btn" id="modal-tab-register" onclick="switchAuthTab('register')">Đăng ký</button>
+          </div>
 
-      <a href="#" class="btn-social">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-        Tiếp tục với Facebook
-      </a>
-    </div>
+          <!-- LOGIN PANEL -->
+          <div class="auth-form-panel active" id="modal-panel-login">
+            <h3 class="auth-heading">Chào mừng trở lại</h3>
+            <p class="auth-sub">Đăng nhập để theo dõi đơn hàng và khám phá sản phẩm</p>
+            <form onsubmit="handleModalLogin(event)" novalidate>
+              <div class="auth-input-group">
+                <label class="auth-input-label" for="mod-login-email">Email / Số điện thoại</label>
+                <div class="auth-input-wrap">
+                  <input class="auth-input-field" id="mod-login-email" type="email" placeholder="email@example.com hoặc SĐT">
+                </div>
+                <div class="auth-error-hint" id="mod-login-email-err">Vui lòng nhập Email hoặc Số điện thoại hợp lệ</div>
+              </div>
+              <div class="auth-input-group">
+                <label class="auth-input-label" for="mod-login-pass">Mật khẩu</label>
+                <div class="auth-input-wrap">
+                  <input class="auth-input-field" id="mod-login-pass" type="password" placeholder="Nhập mật khẩu">
+                  <button type="button" class="auth-eye-toggle" onclick="toggleAuthPass('mod-login-pass', this)" aria-label="Hiện mật khẩu">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+                <div class="auth-error-hint" id="mod-login-pass-err">Vui lòng nhập mật khẩu</div>
+              </div>
+              
+              <div class="auth-extra-row">
+                <label class="auth-checkbox-label">
+                  <input type="checkbox" id="mod-login-remember">
+                  <span>Ghi nhớ đăng nhập</span>
+                </label>
+                <a href="#" class="auth-link" onclick="window.showToast('Chức năng khôi phục mật khẩu đang được phát triển.', 'info'); return false;">Quên mật khẩu?</a>
+              </div>
 
-    <!-- ── REGISTER FORM ── -->
-    <div class="form-panel" id="panel-register">
-      <h2 class="form-heading">Tạo tài khoản</h2>
-      <p class="form-sub">Tham gia cùng Phúc Gia Tiên để nhận ưu đãi và cập nhật sản phẩm mới</p>
+              <button type="submit" class="auth-btn-submit">Đăng nhập</button>
+            </form>
 
-      <form onsubmit="handleRegister(event)" novalidate>
-        <div class="two-col">
-          <div class="input-group">
-            <label class="input-label" for="reg-fname">Họ</label>
-            <div class="input-wrap">
-              <input class="input-field" id="reg-fname" type="text" placeholder="Nguyễn" autocomplete="family-name">
-              <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            <div class="auth-separator">
+              <span>Hoặc đăng nhập bằng</span>
+            </div>
+
+            <div class="auth-social-group">
+              <button type="button" class="auth-btn-social" onclick="handleSocialLogin('Google')">
+                <svg class="auth-social-icon" viewBox="0 0 24 24">
+                  <path fill="#EA4335" d="M12 5.04c1.66 0 3.2.57 4.38 1.69l3.27-3.27C17.68 1.54 14.98 1 12 1 7.35 1 3.4 3.65 1.54 7.54l3.87 3a7 7 0 0 1 6.59-5.5M1.54 7.54A11.95 11.95 0 0 0 1 12c0 1.61.32 3.15.9 4.56l3.87-3a7 7 0 0 1-.23-1.56c0-1.42.42-2.73 1.13-3.84L1.54 7.54z"/>
+                  <path fill="#4285F4" d="M23.49 12.27c0-.82-.07-1.61-.21-2.38H12v4.51h6.44a5.5 5.5 0 0 1-2.38 3.61l3.7 2.87c2.16-2 3.73-4.94 3.73-8.61z"/>
+                  <path fill="#34A853" d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.7-2.87a7 7 0 0 1-10.85-3.88l-3.88 3A11.95 11.95 0 0 0 12 23z"/>
+                  <path fill="#FBBC05" d="M5.41 13.34a7 7 0 0 1 0-2.68l-3.87-3A11.95 11.95 0 0 0 1 12c0 1.61.32 3.15.9 4.56l3.51-2.72z"/>
+                </svg>
+                <span>Google</span>
+              </button>
+              <button type="button" class="auth-btn-social" onclick="handleSocialLogin('Facebook')">
+                <svg class="auth-social-icon" viewBox="0 0 24 24" fill="#1877F2">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                <span>Facebook</span>
+              </button>
             </div>
           </div>
-          <div class="input-group">
-            <label class="input-label" for="reg-lname">Tên</label>
-            <div class="input-wrap">
-              <input class="input-field" id="reg-lname" type="text" placeholder="Văn An" autocomplete="given-name">
-              <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+
+          <!-- REGISTER PANEL -->
+          <div class="auth-form-panel" id="modal-panel-register">
+            <h3 class="auth-heading">Tạo tài khoản</h3>
+            <p class="auth-sub">Tham gia cùng Phúc Gia Tiên ngay hôm nay</p>
+            <form onsubmit="handleModalRegister(event)" novalidate>
+              <div class="auth-two-col">
+                <div class="auth-input-group">
+                  <label class="auth-input-label" for="mod-reg-fname">Họ</label>
+                  <div class="auth-input-wrap"><input class="auth-input-field" id="mod-reg-fname" type="text" placeholder="Nguyễn"></div>
+                </div>
+                <div class="auth-input-group">
+                  <label class="auth-input-label" for="mod-reg-lname">Tên <span style="color:red">*</span></label>
+                  <div class="auth-input-wrap"><input class="auth-input-field" id="mod-reg-lname" type="text" placeholder="Văn An"></div>
+                  <div class="auth-error-hint" id="mod-reg-lname-err">Vui lòng nhập Tên</div>
+                </div>
+              </div>
+              <div class="auth-input-group">
+                <label class="auth-input-label" for="mod-reg-phone">Số điện thoại <span style="color:red">*</span></label>
+                <div class="auth-input-wrap">
+                  <input class="auth-input-field" id="mod-reg-phone" type="tel" placeholder="0987xxxxxx">
+                </div>
+                <div class="auth-error-hint" id="mod-reg-phone-err">Số điện thoại không hợp lệ (từ 10 chữ số)</div>
+              </div>
+              <div class="auth-input-group">
+                <label class="auth-input-label" for="mod-reg-email">Email <span style="color:red">*</span></label>
+                <div class="auth-input-wrap">
+                  <input class="auth-input-field" id="mod-reg-email" type="email" placeholder="email@example.com">
+                </div>
+                <div class="auth-error-hint" id="mod-reg-email-err">Email không hợp lệ</div>
+              </div>
+              <div class="auth-input-group">
+                <label class="auth-input-label" for="mod-reg-pass">Mật khẩu <span style="color:red">*</span></label>
+                <div class="auth-input-wrap">
+                  <input class="auth-input-field" id="mod-reg-pass" type="password" placeholder="Tối thiểu 8 ký tự">
+                  <button type="button" class="auth-eye-toggle" onclick="toggleAuthPass('mod-reg-pass', this)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+                <div class="auth-error-hint" id="mod-reg-pass-err">Mật khẩu tối thiểu 8 ký tự</div>
+              </div>
+              <div class="auth-input-group">
+                <label class="auth-input-label" for="mod-reg-confirm">Xác nhận mật khẩu <span style="color:red">*</span></label>
+                <div class="auth-input-wrap">
+                  <input class="auth-input-field" id="mod-reg-confirm" type="password" placeholder="Nhập lại mật khẩu">
+                  <button type="button" class="auth-eye-toggle" onclick="toggleAuthPass('mod-reg-confirm', this)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+                <div class="auth-error-hint" id="mod-reg-confirm-err">Mật khẩu xác nhận không khớp</div>
+              </div>
+
+              <div class="auth-input-group" style="margin-top: 15px; margin-bottom: 25px;">
+                <label class="auth-checkbox-label" style="align-items: flex-start; font-size: 13px; line-height: 1.5;">
+                  <input type="checkbox" id="mod-reg-agree" style="margin-top: 2px;">
+                  <span>Tôi đồng ý với các <a href="#" class="auth-link">Điều khoản dịch vụ</a> và <a href="#" class="auth-link">Chính sách bảo mật</a> của Phúc Gia Tiên.</span>
+                </label>
+              </div>
+
+              <button type="submit" class="auth-btn-submit">Đăng ký</button>
+            </form>
+
+            <div class="auth-separator">
+              <span>Hoặc đăng ký bằng</span>
+            </div>
+
+            <div class="auth-social-group">
+              <button type="button" class="auth-btn-social" onclick="handleSocialLogin('Google')">
+                <svg class="auth-social-icon" viewBox="0 0 24 24">
+                  <path fill="#EA4335" d="M12 5.04c1.66 0 3.2.57 4.38 1.69l3.27-3.27C17.68 1.54 14.98 1 12 1 7.35 1 3.4 3.65 1.54 7.54l3.87 3a7 7 0 0 1 6.59-5.5M1.54 7.54A11.95 11.95 0 0 0 1 12c0 1.61.32 3.15.9 4.56l3.87-3a7 7 0 0 1-.23-1.56c0-1.42.42-2.73 1.13-3.84L1.54 7.54z"/>
+                  <path fill="#4285F4" d="M23.49 12.27c0-.82-.07-1.61-.21-2.38H12v4.51h6.44a5.5 5.5 0 0 1-2.38 3.61l3.7 2.87c2.16-2 3.73-4.94 3.73-8.61z"/>
+                  <path fill="#34A853" d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.7-2.87a7 7 0 0 1-10.85-3.88l-3.88 3A11.95 11.95 0 0 0 12 23z"/>
+                  <path fill="#FBBC05" d="M5.41 13.34a7 7 0 0 1 0-2.68l-3.87-3A11.95 11.95 0 0 0 1 12c0 1.61.32 3.15.9 4.56l3.51-2.72z"/>
+                </svg>
+                <span>Google</span>
+              </button>
+              <button type="button" class="auth-btn-social" onclick="handleSocialLogin('Facebook')">
+                <svg class="auth-social-icon" viewBox="0 0 24 24" fill="#1877F2">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                <span>Facebook</span>
+              </button>
             </div>
           </div>
+
         </div>
-
-        <div class="input-group">
-          <label class="input-label" for="reg-email">Email</label>
-          <div class="input-wrap">
-            <input class="input-field" id="reg-email" type="email" placeholder="email@example.com" autocomplete="email">
-            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 7l10 7 10-7"/></svg>
-          </div>
-          <div class="error-hint" id="reg-email-err">Vui lòng nhập email hợp lệ</div>
-        </div>
-
-        <div class="input-group">
-          <label class="input-label" for="reg-phone">Số điện thoại</label>
-          <div class="input-wrap">
-            <input class="input-field" id="reg-phone" type="tel" placeholder="0912 345 678" autocomplete="tel">
-            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-          </div>
-        </div>
-
-        <div class="input-group">
-          <label class="input-label" for="reg-pass">Mật khẩu</label>
-          <div class="input-wrap">
-            <input class="input-field password-field" id="reg-pass" type="password" placeholder="Tối thiểu 8 ký tự" autocomplete="new-password" oninput="checkStrength(this.value)">
-            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            <button type="button" class="eye-toggle" onclick="togglePass('reg-pass',this)" aria-label="Hiện mật khẩu">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-          <div class="strength-row" id="strength-bars">
-            <div class="strength-bar" id="sb1"></div>
-            <div class="strength-bar" id="sb2"></div>
-            <div class="strength-bar" id="sb3"></div>
-            <div class="strength-bar" id="sb4"></div>
-          </div>
-          <div class="strength-label" id="strength-label"></div>
-          <div class="error-hint" id="reg-pass-err">Mật khẩu phải ít nhất 8 ký tự</div>
-        </div>
-
-        <div class="input-group" style="margin-bottom:20px">
-          <label class="input-label" for="reg-confirm">Xác nhận mật khẩu</label>
-          <div class="input-wrap">
-            <input class="input-field password-field" id="reg-confirm" type="password" placeholder="Nhập lại mật khẩu" autocomplete="new-password">
-            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            <button type="button" class="eye-toggle" onclick="togglePass('reg-confirm',this)" aria-label="Hiện mật khẩu">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-          <div class="error-hint" id="reg-confirm-err">Mật khẩu xác nhận không khớp</div>
-        </div>
-
-        <div class="check-row">
-          <input type="checkbox" class="check-box" id="agree" required>
-          <label class="check-lbl" for="agree">Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và <a href="#">Chính sách bảo mật</a></label>
-        </div>
-
-        <button type="submit" class="btn-submit">Tạo tài khoản</button>
-      </form>
-
-      <div class="divider">
-        <div class="divider-line"></div>
-        <span class="divider-text">hoặc đăng ký với</span>
-        <div class="divider-line"></div>
       </div>
+    </section>
+  </main>
 
-      <a href="#" class="btn-social">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-        Đăng ký với Google
-      </a>
-    </div>
+  <!-- FOOTER -->
+  <div id="footer-placeholder"></div>
 
-  </div>
-</div>
+  <!-- LOAD COMMON SCRIPT -->
+  <script src="js/common.js"></script>
+  
+  <!-- SCRIPT XỬ LÝ FORM LOCAL CỦA LOGIN PAGE -->
+  <script>
+    function switchAuthTab(tab) {
+      const loginPanel = document.getElementById('modal-panel-login');
+      const registerPanel = document.getElementById('modal-panel-register');
+      const loginTabBtn = document.getElementById('modal-tab-login');
+      const registerTabBtn = document.getElementById('modal-tab-register');
+      
+      if (loginPanel && registerPanel) {
+        loginPanel.classList.toggle('active', tab === 'login');
+        registerPanel.classList.toggle('active', tab === 'register');
+        loginTabBtn.classList.toggle('active', tab === 'login');
+        registerTabBtn.classList.toggle('active', tab === 'register');
+      }
+    }
 
-<script>
-function switchTab(tab) {
-  document.getElementById('panel-login').classList.toggle('active', tab === 'login');
-  document.getElementById('panel-register').classList.toggle('active', tab === 'register');
-  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
-  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
-}
+    function toggleAuthPass(id, btn) {
+      const input = document.getElementById(id);
+      if (!input) return;
+      const isText = input.type === 'text';
+      input.type = isText ? 'password' : 'text';
+      btn.innerHTML = isText
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+    }
 
-function togglePass(id, btn) {
-  const input = document.getElementById(id);
-  const isText = input.type === 'text';
-  input.type = isText ? 'password' : 'text';
-  btn.innerHTML = isText
-    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
-    : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
-}
+    function handleModalLogin(e) {
+      e.preventDefault();
+      let ok = true;
+      const email = document.getElementById('mod-login-email').value.trim();
+      const pass = document.getElementById('mod-login-pass').value;
+      const errEmail = document.getElementById('mod-login-email-err');
+      const errPass = document.getElementById('mod-login-pass-err');
 
-function showErr(id, show) {
-  const el = document.getElementById(id);
-  if (el) el.style.display = show ? 'block' : 'none';
-}
+      if (!email) {
+        if (errEmail) errEmail.style.display = 'block';
+        ok = false;
+      } else {
+        if (errEmail) errEmail.style.display = 'none';
+      }
 
-function handleLogin(e) {
-  e.preventDefault();
-  let ok = true;
-  const email = document.getElementById('login-email').value;
-  const pass  = document.getElementById('login-pass').value;
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr('login-email-err', true); ok = false; } else showErr('login-email-err', false);
-  if (!pass) { showErr('login-pass-err', true); ok = false; } else showErr('login-pass-err', false);
-  if (ok) alert('Đăng nhập thành công! (demo)');
-}
+      if (!pass) {
+        if (errPass) errPass.style.display = 'block';
+        ok = false;
+      } else {
+        if (errPass) errPass.style.display = 'none';
+      }
+      
+      if (ok && window.AuthService) {
+        const result = window.AuthService.login(email, pass);
+        if (result.success) {
+          window.showToast('Đăng nhập thành công!', 'success');
+          setTimeout(function() { window.location.href = 'index.html'; }, 800);
+        } else {
+          window.showToast(result.message, 'error');
+        }
+      }
+    }
 
-function handleRegister(e) {
-  e.preventDefault();
-  let ok = true;
-  const email   = document.getElementById('reg-email').value;
-  const pass    = document.getElementById('reg-pass').value;
-  const confirm = document.getElementById('reg-confirm').value;
-  const agree   = document.getElementById('agree').checked;
+    function handleModalRegister(e) {
+      e.preventDefault();
+      let ok = true;
+      const fname = document.getElementById('mod-reg-fname').value.trim();
+      const lname = document.getElementById('mod-reg-lname').value.trim();
+      const phone = document.getElementById('mod-reg-phone').value.trim();
+      const email = document.getElementById('mod-reg-email').value.trim();
+      const pass = document.getElementById('mod-reg-pass').value;
+      const confirm = document.getElementById('mod-reg-confirm').value;
+      const agree = document.getElementById('mod-reg-agree').checked;
 
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr('reg-email-err', true); ok = false; } else showErr('reg-email-err', false);
-  if (!pass || pass.length < 8) { showErr('reg-pass-err', true); ok = false; } else showErr('reg-pass-err', false);
-  if (pass !== confirm) { showErr('reg-confirm-err', true); ok = false; } else showErr('reg-confirm-err', false);
-  if (!agree) { alert('Vui lòng đồng ý với điều khoản dịch vụ'); ok = false; }
-  if (ok) alert('Đăng ký thành công! (demo)');
-}
+      const errLname = document.getElementById('mod-reg-lname-err');
+      const errPhone = document.getElementById('mod-reg-phone-err');
+      const errEmail = document.getElementById('mod-reg-email-err');
+      const errPass = document.getElementById('mod-reg-pass-err');
+      const errConfirm = document.getElementById('mod-reg-confirm-err');
 
-const colors = ['#EBD9B4','#C8922A','#E5B85A','#3B6D11'];
-const labels = ['','Yếu','Trung bình','Mạnh','Rất mạnh'];
-function checkStrength(v) {
-  let s = 0;
-  if (v.length >= 8) s++;
-  if (/[A-Z]/.test(v) || /[a-z]/.test(v)) s++;
-  if (/[0-9]/.test(v)) s++;
-  if (/[^A-Za-z0-9]/.test(v)) s++;
-  for (let i = 1; i <= 4; i++) {
-    const bar = document.getElementById('sb' + i);
-    bar.style.background = i <= s ? colors[s-1] : 'var(--cream-dk)';
-  }
-  document.getElementById('strength-label').textContent = v.length ? labels[s] : '';
-  document.getElementById('strength-label').style.color =
-    s <= 1 ? '#C0392B' : s === 2 ? '#C8922A' : '#3B6D11';
-}
-</script>
+      // Validate Lname
+      if (!lname) {
+        if (errLname) errLname.style.display = 'block';
+        ok = false;
+      } else {
+        if (errLname) errLname.style.display = 'none';
+      }
+
+      // Validate Phone
+      if (!phone || phone.length < 10 || !/^[0-9]+$/.test(phone)) {
+        if (errPhone) errPhone.style.display = 'block';
+        ok = false;
+      } else {
+        if (errPhone) errPhone.style.display = 'none';
+      }
+
+      // Validate Email
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (errEmail) errEmail.style.display = 'block';
+        ok = false;
+      } else {
+        if (errEmail) errEmail.style.display = 'none';
+      }
+
+      // Validate Password
+      if (!pass || pass.length < 8) {
+        if (errPass) errPass.style.display = 'block';
+        ok = false;
+      } else {
+        if (errPass) errPass.style.display = 'none';
+      }
+
+      // Validate Confirm Password
+      if (pass !== confirm) {
+        if (errConfirm) errConfirm.style.display = 'block';
+        ok = false;
+      } else {
+        if (errConfirm) errConfirm.style.display = 'none';
+      }
+
+      // Validate Terms Checkbox
+      if (!agree) {
+        window.showToast('Vui lòng đồng ý với Điều khoản dịch vụ & Chính sách bảo mật.', 'error');
+        ok = false;
+      }
+      
+      if (ok && window.AuthService) {
+        const userData = { 
+          firstName: fname, 
+          lastName: lname, 
+          phone: phone,
+          email: email, 
+          password: pass 
+        };
+        const result = window.AuthService.register(userData);
+        if (result.success) {
+          window.showToast('Đăng ký tài khoản thành công! Vui lòng đăng nhập.', 'success');
+          switchAuthTab('login');
+          document.getElementById('mod-login-email').value = email;
+          document.getElementById('mod-login-pass').value = '';
+        } else {
+          window.showToast(result.message, 'error');
+        }
+      }
+    }
+
+    function handleSocialLogin(provider) {
+      if (window.AuthService) {
+        const mockUser = {
+          firstName: provider,
+          lastName: 'User',
+          email: provider.toLowerCase() + '@example.com',
+          phone: '0988888888'
+        };
+        // Save current user inside localStorage for integration with common.js
+        localStorage.setItem('current_user', JSON.stringify(mockUser));
+        window.showToast(`Đăng nhập bằng ${provider} thành công!`, 'success');
+        setTimeout(function() { window.location.href = 'index.html'; }, 800);
+      }
+    }
+  </script>
 </body>
 </html>
