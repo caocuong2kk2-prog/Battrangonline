@@ -319,7 +319,7 @@
   width: 36px; height: 36px;
   display: flex; align-items: center; justify-content: center;
   background: var(--color-bg-card);
-  color: var(--color-text-primary);
+  color: var(--color-primary);
   font-size: var(--fs-lg);
   border: none;
   cursor: pointer;
@@ -329,6 +329,7 @@
 
 .quantity-btn:hover {
   background: var(--color-accent);
+  opacity: 0.9;
   color: var(--color-text-dark);
 }
 
