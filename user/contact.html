@@ -115,12 +115,17 @@
     }
 
     .contact-social__link:hover {
-      background: var(--color-accent);
-      border-color: var(--color-accent);
-      color: #ffffff;
       transform: translateY(-3px);
-      box-shadow: 0 5px 15px rgba(212, 168, 83, 0.3);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+      color: #ffffff;
     }
+
+    .contact-social__link--fb:hover   { background: #1877F2; border-color: #1877F2; }
+    .contact-social__link--yt:hover   { background: #FF0000; border-color: #FF0000; }
+    .contact-social__link--tt:hover   { background: #010101; border-color: #010101; }
+    .contact-social__link--zalo:hover { background: #0068FF; border-color: #0068FF; }
+
+    .contact-social__link svg { width: 20px; height: 20px; fill: currentColor; display: block; }
 
     /* Map embed */
     .contact-map {
@@ -284,7 +289,6 @@
           <!-- LEFT: Info -->
           <div class="contact-info-panel">
             <div class="section-header" style="text-align:left;margin-bottom:var(--space-2);">
-              <span class="section-header__label">Thông Tin</span>
               <h3 class="section-header__title" style="font-size:var(--fs-2xl); color:#222222;">Liên Hệ Với Chúng Tôi</h3>
             </div>
 
@@ -316,11 +320,30 @@
             <div class="reveal" data-delay="240">
               <p class="contact-info-item__label" style="margin-bottom:var(--space-3);">Theo Dõi Chúng Tôi</p>
               <div class="contact-social" aria-label="Mạng xã hội">
-                <a class="contact-social__link" href="#" target="_blank" rel="noopener" aria-label="Facebook">f</a>
-                <a class="contact-social__link" href="#" target="_blank" rel="noopener" aria-label="YouTube">▶</a>
-                <a class="contact-social__link" href="#" target="_blank" rel="noopener" aria-label="TikTok">T</a>
-                <a class="contact-social__link" href="#" target="_blank" rel="noopener" aria-label="Zalo"
-                  style="font-size:10px;font-weight:700;">Zalo</a>
+                <!-- Facebook -->
+                <a class="contact-social__link contact-social__link--fb" href="#" target="_blank" rel="noopener" aria-label="Facebook">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M24 12.073C24 5.404 18.627 0 12 0S0 5.404 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.532-4.697 1.313 0 2.686.236 2.686.236v2.971h-1.513c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
+                  </svg>
+                </a>
+                <!-- YouTube -->
+                <a class="contact-social__link contact-social__link--yt" href="#" target="_blank" rel="noopener" aria-label="YouTube">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                  </svg>
+                </a>
+                <!-- TikTok -->
+                <a class="contact-social__link contact-social__link--tt" href="#" target="_blank" rel="noopener" aria-label="TikTok">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.53V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
+                  </svg>
+                </a>
+                <!-- Zalo -->
+                <a class="contact-social__link contact-social__link--zalo" href="#" target="_blank" rel="noopener" aria-label="Zalo">
+                  <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M25 2C12.318 2 2 12.317 2 25c0 3.96 1.023 7.854 2.963 11.29L2.037 46.73a1 1 0 0 0 1.232 1.232l10.44-2.926C17.15 46.977 21.044 48 25 48c12.683 0 23-10.317 23-23S37.683 2 25 2zm-8.988 15h12.501a1 1 0 0 1 .73 1.684L20.56 27H29a1 1 0 1 1 0 2H16.5a1 1 0 0 1-.73-1.684L24.44 19H16.012a1 1 0 1 1 0-2zm-1.512 8c0-.553.447-1 1-1 .553 0 1 .447 1 1s-.447 1-1 1c-.553 0-1-.447-1-1zm13 6c-2.206 0-4-1.794-4-4s1.794-4 4-4 4 1.794 4 4-1.794 4-4 4zm0-6c-1.103 0-2 .897-2 2s.897 2 2 2 2-.897 2-2-.897-2-2-2z"/>
+                  </svg>
+                </a>
               </div>
             </div>
           </div>

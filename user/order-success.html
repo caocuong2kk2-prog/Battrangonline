@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Đặt hàng thành công – Phúc Gia Tiên. Cảm ơn quý khách đã lựa chọn gốm sứ thủ công Bát Tràng cao cấp.">
+  <title>Đặt Hàng Thành Công – Phúc Gia Tiên</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/checkout.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+
+  <style>
+    /* Override bg cho trang xác nhận đơn hàng */
+    body.page-body { background-color: #2a1508; }
+    #site-header { border-bottom-color: transparent !important; }
+    #success-page {
+      background: #2a1508;
+      min-height: calc(100vh - var(--header-height));
+      padding: var(--space-8) 0 var(--space-16);
+    }
+  </style>
+</head>
+
+<body class="page-body">
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- HEADER -->
+  <div id="header-placeholder"></div>
+
+  <main id="success-page">
+    <div class="container">
+      
+      <!-- SUCCESS CARD -->
+      <div class="success-card">
+        
+        <!-- Animated Badge -->
+        <div class="success-badge">✔</div>
+        
+        <h1 class="success-title">Đặt Hàng Thành Công!</h1>
+        <p class="success-subtitle">
+          Cảm ơn quý khách đã tin chọn <strong>Phúc Gia Tiên</strong>.<br>
+          Đơn hàng đang được tiếp nhận và chuẩn bị chế tác với sự tỉ mỉ và tâm huyết.
+        </p>
+
+        <!-- Order Information Box -->
+        <div class="success-order-box" id="order-box-details">
+          
+          <div class="success-order-header">
+            <span class="success-order-code">
+              Mã đơn: <strong id="order-code-val">PGT123456</strong>
+              <button class="btn-copy-code" id="btn-copy-order-code" type="button">Copy</button>
+            </span>
+            <span class="success-order-date" id="order-date-val">20/05/2026</span>
+          </div>
+
+          <div class="success-grid">
+            <div>
+              <p class="success-grid__title">Thông tin giao nhận</p>
+              <p><strong id="customer-name">Nguyễn Văn A</strong></p>
+              <p id="customer-phone" style="color: rgba(255,255,255,0.6); margin-top: 2px;"></p>
+              <p id="customer-address" style="margin-top: 4px; color: rgba(255,255,255,0.45); font-size: var(--fs-xs); line-height: 1.5;"></p>
+              <!-- Notes (hiện nếu có) -->
+              <p class="success-grid__note" id="customer-notes-row" style="display:none;"></p>
+            </div>
+            <div>
+              <p class="success-grid__title">Hình thức thanh toán</p>
+              <p><strong id="payment-method-val">Thanh toán khi nhận hàng (COD)</strong></p>
+            </div>
+          </div>
+
+          <!-- Order Items Breakdown -->
+          <div class="success-order-items" id="success-items-breakdown">
+            <p class="success-items-title">Sản phẩm đã đặt</p>
+            <!-- populated dynamically -->
+          </div>
+
+          <!-- Grand Total Row -->
+          <div class="success-order-total">
+            <span class="success-order-total__label">Tổng thanh toán</span>
+            <span class="success-order-total__val" id="order-total-val">0₫</span>
+          </div>
+
+          <!-- Timeline Tracking -->
+          <div class="success-timeline-card" id="success-timeline-card"></div>
+
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="success-actions" style="display: flex; flex-direction: column; gap: var(--space-2); align-items: center; width: 100%;">
+          <a class="btn btn--primary btn--lg" href="products.html" id="btn-continue-shopping" style="width: 100%;">TIẾP TỤC MUA SẮM</a>
+          <p style="font-size: var(--fs-xs); color: rgba(255,255,255,0.45); margin-top: var(--space-2); text-align: center;">
+            Quý khách có thể theo dõi đơn hàng bất kỳ lúc nào tại <a href="order-tracking.html" style="color: var(--color-accent); text-decoration: underline;">Trang tra cứu đơn hàng</a>.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <div id="footer-placeholder"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/cart.js"></script>
+
+  <script>
+    // ============================================
+    // ORDER SUCCESS CONTROLLER
+    // ============================================
+    (function() {
+      'use strict';
+
+      // ── Confetti Animation ────────────────────
+      function launchConfetti() {
+        var canvas = document.getElementById('confetti-canvas');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        var colors = ['#C8922A', '#E5B85A', '#ffffff', '#55b555', '#ff9f43', '#D4A030'];
+        var particles = [];
+        var count = 120;
+
+        for (var i = 0; i < count; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * -canvas.height * 0.5,
+            w: Math.random() * 10 + 4,
+            h: Math.random() * 5 + 3,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            speed: Math.random() * 3 + 1.5,
+            angle: Math.random() * Math.PI * 2,
+            spin: (Math.random() - 0.5) * 0.15,
+            drift: (Math.random() - 0.5) * 1.5,
+            opacity: 1
+          });
+        }
+
+        var frame;
+        var startTime = Date.now();
+        var duration = 3500;
+
+        function draw() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          var elapsed = Date.now() - startTime;
+          var progress = elapsed / duration;
+
+          particles.forEach(function(p) {
+            p.y += p.speed;
+            p.x += p.drift;
+            p.angle += p.spin;
+            p.opacity = Math.max(0, 1 - Math.max(0, progress - 0.6) * 2.5);
+
+            ctx.save();
+            ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+            ctx.rotate(p.angle);
+            ctx.globalAlpha = p.opacity;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            ctx.restore();
+          });
+
+          if (elapsed < duration) {
+            frame = requestAnimationFrame(draw);
+          } else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        }
+
+        frame = requestAnimationFrame(draw);
+
+        // Resize handle
+        window.addEventListener('resize', function() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        });
+      }
+
+      // ── Populate page ─────────────────────────
+      function initSuccessPage() {
+        var rawData = localStorage.getItem('pgt_last_order');
+        if (!rawData) {
+          window.location.href = 'index.html';
+          return;
+        }
+
+        var order;
+        try {
+          order = JSON.parse(rawData);
+        } catch(e) {
+          window.location.href = 'index.html';
+          return;
+        }
+
+        // Header
+        var codeEl = document.getElementById('order-code-val');
+        if (codeEl) codeEl.textContent = order.orderCode;
+        var dateEl = document.getElementById('order-date-val');
+        if (dateEl) dateEl.textContent = order.date;
+
+        // Customer details
+        var nameEl = document.getElementById('customer-name');
+        if (nameEl) nameEl.textContent = order.name;
+        var phoneEl = document.getElementById('customer-phone');
+        if (phoneEl) phoneEl.textContent = order.phone;
+        var addressEl = document.getElementById('customer-address');
+        if (addressEl) addressEl.textContent = order.address;
+
+        // Notes (tùy chọn)
+        if (order.notes) {
+          var notesRow = document.getElementById('customer-notes-row');
+          if (notesRow) {
+            notesRow.textContent = '📝 ' + order.notes;
+            notesRow.style.display = 'block';
+          }
+        }
+
+        // Payment method
+        var pmEl = document.getElementById('payment-method-val');
+        if (pmEl) pmEl.textContent = order.paymentMethod;
+
+        // Items breakdown
+        var breakdownEl = document.getElementById('success-items-breakdown');
+        if (breakdownEl && order.items) {
+          var titleEl = breakdownEl.querySelector('.success-items-title');
+          var itemsHtml = order.items.map(function(item) {
+            var priceVal = window.formatVND ? window.formatVND(item.price * item.qty) : ((item.price * item.qty) + '₫');
+            
+            // Image resolution logic (use item.image if present, else fallback based on name)
+            var imgUrl = item.image;
+            if (!imgUrl) {
+              var cleanName = (item.name || '').toLowerCase().trim();
+              if (cleanName.indexOf('lộc bình vẽ tay') >= 0) imgUrl = 'assets/images/product-1-1.jpg';
+              else if (cleanName.indexOf('lộc bình men ra') >= 0 || cleanName.indexOf('lộc bình men rạn') >= 0) imgUrl = 'assets/images/product-2-1.jpg';
+              else if (cleanName.indexOf('lộc bình trổ') >= 0) imgUrl = 'assets/images/product-3-1.jpg';
+              else if (cleanName.indexOf('tranh gốm phúc lộc thọ') >= 0) imgUrl = 'assets/images/product-4-1.jpg';
+              else if (cleanName.indexOf('bộ đồ thờ') >= 0 || cleanName.indexOf('chóe bày') >= 0) imgUrl = 'assets/images/product-5-1.jpg';
+              else if (cleanName.indexOf('bình hút lộc') >= 0 || cleanName.indexOf('bình hoa sen') >= 0) imgUrl = 'assets/images/product-6-1.jpg';
+              else if (cleanName.indexOf('chum ngâm rượu') >= 0 || cleanName.indexOf('chum rượu') >= 0) imgUrl = 'assets/images/product-7-1.jpg';
+              else if (cleanName.indexOf('đĩa gốm') >= 0 || cleanName.indexOf('đĩa cảnh') >= 0) imgUrl = 'assets/images/product-8-1.jpg';
+              else if (cleanName.indexOf('tượng gốm di lặc') >= 0) imgUrl = 'assets/images/product-3-1.jpg';
+              else imgUrl = 'assets/images/placeholder.jpg';
+            }
+
+            return [
+              '<div class="success-item-row" style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-3); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: var(--space-2);">',
+                '<div style="display: flex; align-items: center; gap: var(--space-3);">',
+                  '<img src="' + imgUrl + '" alt="' + item.name + '" style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.15); flex-shrink: 0;">',
+                  '<div style="display: flex; flex-direction: column; text-align: left;">',
+                    '<span class="success-item-row__name" style="color: #ffffff; font-weight: 500; font-size: var(--fs-sm);">' + item.name + '</span>',
+                    '<span style="font-size: var(--fs-xs); color: rgba(255,255,255,0.5); margin-top: 2px;">Số lượng: ' + item.qty + '</span>',
+                  '</div>',
+                '</div>',
+                '<span class="success-item-row__price" style="color: var(--color-accent); font-weight: 600; font-size: var(--fs-sm);">' + priceVal + '</span>',
+              '</div>'
+            ].join('');
+          }).join('');
+
+          if (titleEl) {
+            titleEl.insertAdjacentHTML('afterend', itemsHtml);
+          } else {
+            breakdownEl.innerHTML += itemsHtml;
+          }
+        }
+
+        // Discount row (if any)
+        if (order.discount && order.discount > 0) {
+          var totalSection = document.querySelector('.success-order-total');
+          if (totalSection) {
+            var discountRow = '<div class="success-item-row" style="color: #6ec96e;"><span>Giảm giá</span><span>−' + window.formatVND(order.discount) + '</span></div>';
+            totalSection.insertAdjacentHTML('beforebegin', discountRow);
+          }
+        }
+
+        // Grand total
+        var totalEl = document.getElementById('order-total-val');
+        if (totalEl) totalEl.textContent = window.formatVND(order.total);
+
+        // Copy order code
+        var copyCodeBtn = document.getElementById('btn-copy-order-code');
+        if (copyCodeBtn) {
+          copyCodeBtn.addEventListener('click', function() {
+            navigator.clipboard.writeText(order.orderCode).then(function() {
+              copyCodeBtn.textContent = '✓ Đã Copy';
+              setTimeout(function() { copyCodeBtn.textContent = 'Copy'; }, 2000);
+            });
+          });
+        }
+
+        // Render Timeline
+        var timelineCard = document.getElementById('success-timeline-card');
+        if (timelineCard && order.statusHistory) {
+          var steps = [
+            { key: 'pending', label: 'Đặt hàng thành công', defaultNote: 'Đơn hàng đã được tiếp nhận.' },
+            { key: 'confirmed', label: 'Đã xác nhận', defaultNote: 'Shop đã xác nhận đơn.' },
+            { key: 'packing', label: 'Đang đóng gói', defaultNote: 'Sản phẩm đang được đóng gói.' },
+            { key: 'shipping', label: 'Đang giao hàng', defaultNote: 'Đã bàn giao cho vận chuyển.' },
+            { key: 'delivered', label: 'Giao hàng thành công', defaultNote: 'Cảm ơn quý khách!' }
+          ];
+          var currentStep = steps.findIndex(function(s) { return s.key === order.status; });
+          if (currentStep === -1 && order.status === 'pending') currentStep = 0;
+          
+          var timelineHtml = '';
+          steps.forEach(function(step, idx) {
+            var histEntry = order.statusHistory.filter(function(h) { return h.status === step.key; }).pop();
+            var isDone = idx < currentStep;
+            var isActive = idx === currentStep;
+            var cls = isDone ? 'done' : (isActive ? 'active' : '');
+            var time = histEntry ? histEntry.time : '';
+            var note = histEntry ? histEntry.note : (isActive ? step.defaultNote : '');
+            
+            timelineHtml += '<div class="success-step ' + cls + '">'
+              + '<div class="success-step__dot">' + (isDone || isActive ? '✓' : '') + '</div>'
+              + '<div class="success-step__label">' + step.label + '</div>'
+              + (time ? '<div class="success-step__time">' + time + '</div>' : '')
+              + (note && (isDone || isActive) ? '<div class="success-step__note">' + note + '</div>' : '')
+              + '</div>';
+          });
+          
+          timelineCard.innerHTML = '<h3 class="success-timeline-title">Tiến Độ Đơn Hàng</h3>' 
+            + '<div class="success-timeline">' + timelineHtml + '</div>';
+        }
+
+        // Launch confetti after a short delay
+        setTimeout(launchConfetti, 300);
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+          setTimeout(initSuccessPage, 600);
+        });
+      } else {
+        setTimeout(initSuccessPage, 600);
+      }
+    })();
+  </script>
+</body>
+
+</html>

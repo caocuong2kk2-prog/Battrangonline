@@ -162,11 +162,19 @@
   /* ---------- Product detail ---------- */
   .product-detail-grid {
     grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .product-gallery {
+    position: relative;
+    top: auto;
+    z-index: 1;
   }
 
   .product-thumbnails {
     flex-direction: row;
     overflow-x: auto;
+    padding-bottom: var(--space-2);
   }
 }
 
@@ -291,14 +299,4 @@
   }
 }
 
-/* ====== PREFERS REDUCED MOTION ====== */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
+

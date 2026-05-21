@@ -44,6 +44,7 @@
           <li><a class="footer-links__item" href="journey.html">Hành Trình</a></li>
           <li><a class="footer-links__item" href="about.html">Giới Thiệu</a></li>
           <li><a class="footer-links__item" href="contact.html">Liên Hệ</a></li>
+          <li><a class="footer-links__item" href="order-tracking.html">Tra Cứu Đơn Hàng</a></li>
         </ul>
       </nav>
 
@@ -118,25 +119,263 @@
 
 </footer>
 
-<!-- Back to top button -->
-<button
-  id="back-to-top"
-  aria-label="Về đầu trang"
-  title="Về đầu trang"
-  style="
-    position:fixed; bottom:var(--space-6); right:var(--space-6);
-    z-index:999;
-    width:44px; height:44px;
-    border-radius:50%;
-    background:var(--color-accent);
-    color:var(--color-text-dark);
-    border:none;
-    cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:var(--shadow-md);
-    opacity:0; pointer-events:none;
-    transition:opacity 0.3s ease, transform 0.2s ease;
-    font-size:1.2rem;
-  "
->↑</button>
+<!-- Back to top button — cùng size với contact widget, trượt vào/ra từ phải -->
+
+<!-- Floating Quick Contact Widget + Back-to-top -->
+<style>
+  /* ===== WIDGET CONTAINER ===== */
+  .quick-contact-widget {
+    position: fixed;
+    bottom: var(--space-8);
+    right: var(--space-6);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: center;
+    /* Slide-in từ phải khi trang load */
+    transform: translateX(0);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+  }
+
+  /* ===== BACK-TO-TOP (cùng size với contact buttons) ===== */
+  #back-to-top {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--color-accent, #c8a97e);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
+    /* Hidden by default: trượt ra phải + fade out */
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(80px);
+    transition:
+      opacity 0.35s ease,
+      transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-shrink: 0;
+  }
+
+  #back-to-top.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+
+  #back-to-top:hover {
+    transform: translateX(0) scale(1.1);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  #back-to-top svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ===== CONTACT BUTTONS ===== */
+  .quick-contact-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    text-decoration: none;
+    flex-shrink: 0;
+    /* KHÔNG overflow:hidden ở đây — phone cần ::before/::after ra ngoài biên */
+    overflow: visible;
+  }
+
+  .quick-contact-btn:hover {
+    transform: scale(1.12);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.38);
+  }
+
+  /* --- Phone: beacon pulse + ring-ring vibrate --- */
+  .quick-contact-btn--phone {
+    background: #e74c3c;
+    color: #fff;
+  }
+
+  /* Sóng mở rộng: dùng rgba background bắt đầu từ mép nút, rõ ràng không bị hoà màu */
+  .quick-contact-btn--phone::before,
+  .quick-contact-btn--phone::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(231, 76, 60, 0.55);
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .quick-contact-btn--phone::before { animation: phoneBeacon 2.5s ease-out infinite; }
+  .quick-contact-btn--phone::after  { animation: phoneBeacon 2.5s ease-out infinite 1.25s; }
+
+  .quick-contact-btn--phone .btn-icon {
+    width: 28px;
+    height: 28px;
+    position: relative;
+    z-index: 1;
+    animation: phoneVibrate 4s ease-in-out infinite;
+  }
+
+  /* --- Zalo: full SVG icon --- */
+  .quick-contact-btn--zalo {
+    background: transparent;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .quick-contact-btn--zalo svg {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: block;
+  }
+
+  /* --- Messenger: full SVG icon --- */
+  .quick-contact-btn--messenger {
+    background: transparent;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .quick-contact-btn--messenger svg {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: block;
+  }
+
+  /* ===== KEYFRAMES ===== */
+
+  /* Beacon pulse: nở từ size nút → lớn gấp đôi → mờ dần */
+  @keyframes phoneBeacon {
+    0%   { transform: scale(1);   opacity: 0.7; }
+    70%  { transform: scale(2.2); opacity: 0; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+
+  /* Ring-ring: 2 lần rung mỗi 4s — giống điện thoại thật đổ chuông */
+  @keyframes phoneVibrate {
+    /* Nghỉ ban đầu */
+    0%  { transform: rotate(0deg) scale(1); }
+    /* Ring lần 1: 5-20% = 0.2s–0.8s */
+    5%  { transform: rotate(-22deg) scale(1.12); }
+    8%  { transform: rotate(20deg)  scale(1.12); }
+    11% { transform: rotate(-22deg) scale(1.12); }
+    14% { transform: rotate(20deg)  scale(1.12); }
+    17% { transform: rotate(-18deg) scale(1.08); }
+    20% { transform: rotate(10deg)  scale(1.04); }
+    23% { transform: rotate(0deg)   scale(1); }
+    /* Nghỉ ngắn: 23-48% */
+    48% { transform: rotate(0deg)   scale(1); }
+    /* Ring lần 2: 48-63% */
+    51% { transform: rotate(-22deg) scale(1.12); }
+    54% { transform: rotate(20deg)  scale(1.12); }
+    57% { transform: rotate(-22deg) scale(1.12); }
+    60% { transform: rotate(20deg)  scale(1.12); }
+    63% { transform: rotate(-15deg) scale(1.06); }
+    66% { transform: rotate(8deg)   scale(1.02); }
+    70% { transform: rotate(0deg)   scale(1); }
+    /* Nghỉ dài: 70-100% */
+    100% { transform: rotate(0deg)  scale(1); }
+  }
+
+  @media print {
+    .quick-contact-widget { display: none !important; }
+  }
+</style>
+
+<div class="quick-contact-widget" aria-label="Liên hệ nhanh">
+
+  <!-- Back-to-top nằm trong widget để cùng cột -->
+  <button id="back-to-top" aria-label="Về đầu trang" title="Về đầu trang">
+    <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+
+  <!-- Gọi ngay -->
+  <a href="tel:0986123456" class="quick-contact-btn quick-contact-btn--phone"
+     title="Gọi ngay: 0986 123 456" aria-label="Gọi ngay để được tư vấn">
+    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07
+               A19.5 19.5 0 0 1 3.07 10.8 19.79 19.79 0 0 1 2 2.18
+               A2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81
+               a2 2 0 0 1-.45 2.11L8.09 9.91A16 16 0 0 0 14.09 15.91
+               l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7
+               A2 2 0 0 1 22 16.92z"/>
+    </svg>
+  </a>
+
+  <!-- Zalo — full brand SVG icon (blue bg + white Zalo logomark) -->
+  <a href="https://zalo.me/0986123456" target="_blank" rel="noopener"
+     class="quick-contact-btn quick-contact-btn--zalo"
+     title="Chat Zalo với chúng tôi" aria-label="Chat Zalo">
+    <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="zaloGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#1A8FFF"/>
+          <stop offset="100%" stop-color="#0055DD"/>
+        </linearGradient>
+      </defs>
+      <!-- Background circle -->
+      <circle cx="28" cy="28" r="28" fill="url(#zaloGrad)"/>
+      <!-- White chat bubble shape -->
+      <path d="M11 20a4 4 0 0 1 4-4h26a4 4 0 0 1 4 4v13a4 4 0 0 1-4 4H33l-5 5-5-5H15a4 4 0 0 1-4-4V20z"
+            fill="white" opacity="0.15"/>
+      <!-- Zalo wordmark in white, bold italic -->
+      <text x="28" y="32"
+            text-anchor="middle"
+            font-family="'Arial Black', 'Helvetica Neue', Arial, sans-serif"
+            font-size="14.5"
+            font-weight="900"
+            font-style="italic"
+            fill="white"
+            letter-spacing="0.5">Zalo</text>
+      <!-- Small bottom-right dot indicator (chat online status) -->
+      <circle cx="42" cy="40" r="6" fill="#00E676"/>
+      <path d="M39.5 40 L41.5 42 L44.5 37.5" stroke="white" stroke-width="1.5"
+            fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </a>
+
+  <!-- Messenger — official gradient + lightning bolt -->
+  <a href="https://m.me/phucgatien" target="_blank" rel="noopener"
+     class="quick-contact-btn quick-contact-btn--messenger"
+     title="Gửi tin nhắn Messenger" aria-label="Chat Messenger">
+    <svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="messGrad" cx="25%" cy="100%" r="120%">
+          <stop offset="0%"  stop-color="#FF6968"/>
+          <stop offset="30%" stop-color="#A334FA"/>
+          <stop offset="60%" stop-color="#006AFF"/>
+          <stop offset="100%" stop-color="#00B2FF"/>
+        </radialGradient>
+      </defs>
+      <!-- Background circle -->
+      <circle cx="28" cy="28" r="28" fill="url(#messGrad)"/>
+      <!-- Official Messenger speech bubble + lightning bolt path -->
+      <path d="M28 12C19.163 12 12 18.72 12 27.035c0 4.572 2.027 8.66 5.247 11.504v5.461l5.04-2.773A17.23 17.23 0 0 0 28 42.07c8.837 0 16-6.72 16-15.035C44 18.72 36.837 12 28 12zm1.573 20.23l-3.98-4.24L18.5 32.23l7.818-8.303 4.075 4.24 7.107-4.24-7.927 8.303z"
+            fill="white"/>
+    </svg>
+  </a>
+
+</div>
 </body>
+</html>

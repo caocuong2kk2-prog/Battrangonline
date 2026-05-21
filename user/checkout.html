@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Thanh toán đơn hàng của bạn – Phúc Gia Tiên. Nhập thông tin giao nhận hàng thủ công Bát Tràng cao cấp.">
+  <title>Thanh Toán Đơn Hàng – Phúc Gia Tiên</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/checkout.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+  <style>
+    /* Đặt nền body khớp với section kem, ẩn đường kẻ header */
+    body.page-body { background-color: #f8f2ec; }
+    #site-header { border-bottom-color: transparent !important; }
+  </style>
+</head>
+
+<body class="page-body">
+
+  <!-- HEADER -->
+  <div id="header-placeholder"></div>
+
+  <main id="checkout-page">
+
+    <!-- PAGE HERO -->
+    <section class="checkout-hero">
+      <div class="container">
+        <h1 class="checkout-hero__title">Thanh Toán</h1>
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
+          <span class="breadcrumb__item"><a class="breadcrumb__link" href="cart.html">Giỏ Hàng</a></span>
+          <span class="breadcrumb__item"><span class="breadcrumb__current">Thanh Toán</span></span>
+        </nav>
+
+        <!-- Step Progress Indicator -->
+        <div class="checkout-steps" aria-label="Các bước thanh toán">
+          <div class="checkout-step done" aria-current="false">
+            <div class="checkout-step__bubble">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <span class="checkout-step__label">Giỏ Hàng</span>
+          </div>
+          <div class="checkout-step-line done"></div>
+          <div class="checkout-step active" aria-current="step">
+            <div class="checkout-step__bubble">2</div>
+            <span class="checkout-step__label">Thanh Toán</span>
+          </div>
+          <div class="checkout-step-line"></div>
+          <div class="checkout-step" aria-current="false">
+            <div class="checkout-step__bubble">3</div>
+            <span class="checkout-step__label">Xác Nhận</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHECKOUT CONTENT -->
+    <section class="section section--dark" aria-label="Tiến hành thanh toán">
+      <div class="container">
+        
+        <form class="checkout-layout" id="checkout-form" novalidate>
+          
+          <!-- LEFT SIDE - FORMS -->
+          <div class="checkout-forms-col">
+            
+            <!-- Shipping Info Card -->
+            <div class="checkout-card checkout-card--shipping">
+              <h2 class="checkout-card__title">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="3" width="15" height="13" rx="1"></rect>
+                  <path d="M16 8h4l3 5v3h-7V8z"></path>
+                  <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                  <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                </svg>
+                Thông Tin Giao Hàng
+              </h2>
+              
+              <div class="form-row">
+                <div class="form-group" id="group-name">
+                  <label for="shipping-name">Họ và tên *</label>
+                  <input class="form-control" type="text" id="shipping-name" placeholder="Nguyễn Văn A" required autocomplete="name">
+                  <span class="field-error-msg" id="err-name">Vui lòng nhập họ và tên.</span>
+                </div>
+                <div class="form-group" id="group-phone">
+                  <label for="shipping-phone">Số điện thoại *</label>
+                  <input class="form-control" type="tel" id="shipping-phone" placeholder="0989 123 456" required autocomplete="tel">
+                  <span class="field-error-msg" id="err-phone">Số điện thoại không hợp lệ (9–12 số).</span>
+                </div>
+              </div>
+              
+              <div class="form-group" id="group-email">
+                <label for="shipping-email">
+                  Email (Nhận hóa đơn)
+                  <span style="font-weight:400; font-size:0.75em; color:rgba(44,26,12,0.4); text-transform:none; letter-spacing:0; margin-left:4px;">(Tùy chọn)</span>
+                </label>
+                <input class="form-control" type="email" id="shipping-email" placeholder="example@gmail.com" autocomplete="email">
+                <span class="field-error-msg" id="err-email">Email không đúng định dạng (VD: ten@gmail.com).</span>
+              </div>
+              
+              <div class="form-group" id="group-address">
+                <label for="shipping-address">Địa chỉ giao hàng *</label>
+                <input class="form-control" type="text" id="shipping-address" placeholder="Số nhà, ngõ/đường, phường/xã, quận/huyện, tỉnh/TP" required autocomplete="street-address">
+                <span class="field-error-msg" id="err-address">Vui lòng nhập địa chỉ giao hàng.</span>
+              </div>
+              
+              <div class="form-group">
+                <label for="shipping-notes">Ghi chú đơn hàng (Tùy chọn)</label>
+                <textarea class="form-control" id="shipping-notes" placeholder="Ghi chú về thời gian giao hàng, yêu cầu đóng gói quà tặng..."></textarea>
+              </div>
+            </div>
+
+            <!-- Payment Methods Card -->
+            <div class="checkout-card checkout-card--payment">
+              <h2 class="checkout-card__title">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                  <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+                Phương Thức Thanh Toán
+              </h2>
+              
+              <div class="payment-methods">
+                
+                <!-- COD Method -->
+                <label class="payment-method-item active" id="method-cod-label">
+                  <input type="radio" name="payment_method" value="COD" checked>
+                  <div class="payment-method-item__icon">🚚</div>
+                  <div class="payment-method-item__info">
+                    <span class="payment-method-item__name">Thanh toán khi nhận hàng (COD)</span>
+                    <span class="payment-method-item__desc">Thanh toán bằng tiền mặt khi shipper giao hàng tận nơi. An toàn, không cần tài khoản ngân hàng.</span>
+                  </div>
+                </label>
+                
+                <!-- BANK Method -->
+                <label class="payment-method-item" id="method-bank-label">
+                  <input type="radio" name="payment_method" value="BANK">
+                  <div class="payment-method-item__icon">🏦</div>
+                  <div class="payment-method-item__info">
+                    <span class="payment-method-item__name">Chuyển khoản ngân hàng qua QR <span style="font-size:var(--fs-xs); color: var(--color-accent); font-weight: var(--fw-semibold);">(Khuyên dùng)</span></span>
+                    <span class="payment-method-item__desc">Quét mã QR Techcombank để chuyển khoản nhanh, bảo mật và được ưu tiên xử lý sớm.</span>
+                  </div>
+                </label>
+                
+              </div>
+
+              <!-- Bank Transfer Details Container (Initially Hidden) -->
+              <div class="bank-transfer-details" id="bank-details-box" style="display: none;">
+                <div class="bank-transfer-details__qr">
+                  <img id="vietqr-img" src="" alt="Mã QR Chuyển Khoản Ngân Hàng">
+                </div>
+                <div class="bank-transfer-info">
+                  <p>Quý khách vui lòng quét mã QR hoặc chuyển khoản theo thông tin:</p>
+                  <p><strong>Ngân hàng:</strong> Techcombank</p>
+                  <p><strong>Số tài khoản:</strong> 1903 5498 7650 12</p>
+                  <p><strong>Chủ tài khoản:</strong> NGUYEN VAN PHUC</p>
+                  <p class="bank-transfer-info__copy-row">
+                    <strong>Nội dung CK:</strong>&nbsp;<span id="transfer-memo" style="color: var(--color-accent); font-weight: 600;"></span>
+                    <button type="button" class="btn-copy" id="btn-copy-memo">Copy</button>
+                  </p>
+                  <p class="bank-transfer-info__warning">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0; margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    Đơn hàng được xử lý ngay sau khi nhận được chuyển khoản. Vui lòng nhập đúng nội dung để tránh nhầm lẫn.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- RIGHT SIDE - SUMMARY -->
+          <aside class="checkout-summary-col" aria-label="Đơn hàng của bạn">
+            <div class="checkout-card checkout-summary-card">
+              <h2 class="checkout-card__title" style="border-bottom: none; margin-bottom: var(--space-4);">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                Đơn Hàng Của Bạn
+              </h2>
+              
+              <!-- Items Summary Grid -->
+              <div class="checkout-summary-items" id="summary-items-list">
+                <!-- populated dynamically -->
+              </div>
+              
+              <!-- Subtotals -->
+              <div class="checkout-summary-pricing">
+                <div class="checkout-summary-pricing__row">
+                  <span>Tạm tính</span>
+                  <span id="summary-subtotal">0₫</span>
+                </div>
+                <div class="checkout-summary-pricing__row">
+                  <span>Phí vận chuyển</span>
+                  <span style="color: var(--color-accent);">Miễn phí</span>
+                </div>
+                <div class="checkout-summary-pricing__row checkout-summary-pricing__row--discount" id="discount-row" style="display: none;">
+                  <span>Mã giảm giá</span>
+                  <span id="summary-discount">-0₫</span>
+                </div>
+              </div>
+              
+              <!-- Grand Total -->
+              <div class="checkout-summary-total">
+                <span class="checkout-summary-total__label">Tổng thanh toán</span>
+                <span class="checkout-summary-total__val" id="summary-total">0₫</span>
+              </div>
+              
+              <button type="submit" class="btn-place-order" id="btn-submit-order">
+                <div class="btn-spinner"></div>
+                <span class="btn-text">XÁC NHẬN ĐẶT HÀNG</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </button>
+
+              <!-- Trust Badges -->
+              <div class="checkout-trust-badges">
+                <div class="checkout-trust-badge">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                  <span>Thanh toán an toàn & bảo mật 100%</span>
+                </div>
+                <div class="checkout-trust-badge">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"></rect><path d="M16 8h4l3 5v3h-7V8z"></path><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                  <span>Giao hàng COD toàn quốc, miễn phí</span>
+                </div>
+                <div class="checkout-trust-badge">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-4.5"></path></svg>
+                  <span>Đổi trả miễn phí trong 7 ngày</span>
+                </div>
+              </div>
+              
+            </div>
+          </aside>
+
+        </form>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <div id="footer-placeholder"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/cart.js"></script>
+  
+  <script>
+    // ============================================
+    // CHECKOUT PAGE CONTROLLER
+    // ============================================
+    (function() {
+      'use strict';
+
+      var isSubmitting = false;
+
+      // ── Helpers ──────────────────────────────
+      function setFieldError(groupId, show) {
+        var grp = document.getElementById(groupId);
+        if (!grp) return;
+        if (show) {
+          grp.classList.add('has-error');
+        } else {
+          grp.classList.remove('has-error');
+        }
+      }
+
+      function clearErrors() {
+        document.querySelectorAll('.form-group.has-error').forEach(function(g) {
+          g.classList.remove('has-error');
+        });
+      }
+
+      // ── Init ─────────────────────────────────
+      function initCheckout() {
+        if (!window.CartAPI) return;
+        
+        var cart = window.CartAPI.getCart();
+        var selectedItems = cart.filter(function(i) { return i.selected; });
+
+        if (selectedItems.length === 0) {
+          if (typeof window.showToast === 'function') {
+            window.showToast('Giỏ hàng trống hoặc chưa chọn sản phẩm để thanh toán.', 'error');
+          }
+          setTimeout(function() { window.location.href = 'cart.html'; }, 1500);
+          return;
+        }
+
+        renderSummary(selectedItems);
+        setupPaymentToggle();
+        setupFormSubmit(selectedItems);
+
+        // Real-time clear error on input
+        ['shipping-name', 'shipping-phone', 'shipping-email', 'shipping-address'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) {
+            el.addEventListener('input', function() {
+              var groupMap = {
+                'shipping-name': 'group-name',
+                'shipping-phone': 'group-phone',
+                'shipping-email': 'group-email',
+                'shipping-address': 'group-address'
+              };
+              setFieldError(groupMap[id], false);
+            });
+          }
+        });
+      }
+
+      // ── Render summary ───────────────────────
+      function renderSummary(items) {
+        var listEl = document.getElementById('summary-items-list');
+        var subtotal = items.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
+        
+        var discount = 0;
+        var discountRow = document.getElementById('discount-row');
+        var elDiscount = document.getElementById('summary-discount');
+        
+        var appliedPromo = sessionStorage.getItem('applied_promo_percent');
+        if (appliedPromo) {
+          var pct = parseInt(appliedPromo, 10);
+          discount = Math.round(subtotal * pct / 100);
+          if (discountRow && elDiscount) {
+            discountRow.style.display = 'flex';
+            elDiscount.textContent = '−' + window.formatVND(discount);
+          }
+        }
+
+        var total = subtotal - discount;
+
+        // Render item rows
+        if (listEl) {
+          listEl.innerHTML = items.map(function(item) {
+            var imgPath = item.image.startsWith('http') || item.image.startsWith('/') ? item.image : '/user/' + item.image;
+            return [
+              '<div class="checkout-item-row">',
+                '<img class="checkout-item-row__img" src="' + imgPath + '" alt="' + item.name + '" loading="lazy">',
+                '<div class="checkout-item-row__info">',
+                  '<p class="checkout-item-row__name">' + item.name + '</p>',
+                  '<p class="checkout-item-row__qty">x' + item.qty + '</p>',
+                '</div>',
+                '<span class="checkout-item-row__price">' + window.formatVND(item.price * item.qty) + '</span>',
+              '</div>'
+            ].join('');
+          }).join('');
+        }
+
+        // Prices
+        var elSub = document.getElementById('summary-subtotal');
+        var elTotal = document.getElementById('summary-total');
+        if (elSub) elSub.textContent = window.formatVND(subtotal);
+        if (elTotal) elTotal.textContent = window.formatVND(total);
+
+        // VietQR + Memo
+        var memoCode = 'PGT' + Math.floor(100000 + Math.random() * 900000);
+        sessionStorage.setItem('temp_memo_code', memoCode);
+        
+        var transferMemo = document.getElementById('transfer-memo');
+        if (transferMemo) transferMemo.textContent = memoCode;
+
+        var qrImg = document.getElementById('vietqr-img');
+        if (qrImg) {
+          var qrUrl = 'https://img.vietqr.io/image/tcb-19035498765012-compact.png?amount=' + total + '&addInfo=' + encodeURIComponent(memoCode) + '&accountName=NGUYEN%20VAN%20PHUC';
+          qrImg.src = qrUrl;
+        }
+      }
+
+      // ── Payment toggle ───────────────────────
+      function setupPaymentToggle() {
+        var rads = document.querySelectorAll('input[name="payment_method"]');
+        var detailsBox = document.getElementById('bank-details-box');
+        
+        rads.forEach(function(rad) {
+          rad.addEventListener('change', function() {
+            document.querySelectorAll('.payment-method-item').forEach(function(lbl) {
+              lbl.classList.remove('active');
+            });
+            
+            var label = document.getElementById('method-' + rad.value.toLowerCase() + '-label');
+            if (label) label.classList.add('active');
+
+            if (rad.value === 'BANK') {
+              detailsBox.style.display = 'flex';
+            } else {
+              detailsBox.style.display = 'none';
+            }
+          });
+        });
+
+        // Copy memo button
+        var copyBtn = document.getElementById('btn-copy-memo');
+        if (copyBtn) {
+          copyBtn.addEventListener('click', function() {
+            var code = sessionStorage.getItem('temp_memo_code') || 'PGT123456';
+            navigator.clipboard.writeText(code).then(function() {
+              copyBtn.textContent = '✓ Đã Copy!';
+              setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
+            });
+          });
+        }
+      }
+
+      // ── Form submit ──────────────────────────
+      function setupFormSubmit(items) {
+        var form = document.getElementById('checkout-form');
+        var submitBtn = document.getElementById('btn-submit-order');
+
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          if (isSubmitting) return;
+
+          var name = document.getElementById('shipping-name').value.trim();
+          var phone = document.getElementById('shipping-phone').value.trim();
+          var email = document.getElementById('shipping-email').value.trim();
+          var address = document.getElementById('shipping-address').value.trim();
+          var notes = document.getElementById('shipping-notes').value.trim();
+          var method = form.querySelector('input[name="payment_method"]:checked').value;
+
+          // Inline validation
+          clearErrors();
+          var hasError = false;
+
+          if (!name) { setFieldError('group-name', true); hasError = true; }
+
+          var phoneRegex = /^[0-9\s\-\+\(\)]{9,15}$/;
+          if (!phone || !phoneRegex.test(phone)) { setFieldError('group-phone', true); hasError = true; }
+
+          var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (email && !emailRegex.test(email)) { setFieldError('group-email', true); hasError = true; }
+
+          if (!address) { setFieldError('group-address', true); hasError = true; }
+
+          if (hasError) {
+            // Scroll to first error
+            var firstError = document.querySelector('.form-group.has-error');
+            if (firstError) {
+              firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              firstError.querySelector('.form-control').focus();
+            }
+            return;
+          }
+
+          // Loading state
+          isSubmitting = true;
+          if (submitBtn) {
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+          }
+
+          // Build order data
+          var orderCode = sessionStorage.getItem('temp_memo_code') || ('PGT' + Math.floor(100000 + Math.random() * 900000));
+          var subtotal = items.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
+          var discount = 0;
+          var appliedPromo = sessionStorage.getItem('applied_promo_percent');
+          if (appliedPromo) {
+            discount = Math.round(subtotal * parseInt(appliedPromo, 10) / 100);
+          }
+          var total = subtotal - discount;
+
+          var orderData = {
+            orderCode: orderCode,
+            date: new Date().toLocaleDateString('vi-VN'),
+            timestamp: Date.now(),
+            name: name,
+            phone: phone.replace(/\D/g, ''), // chuẩn hóa SĐT chỉ số
+            email: email,
+            address: address,
+            notes: notes,
+            paymentMethod: method === 'BANK' ? 'Chuyển khoản Techcombank (QR)' : 'Thanh toán khi nhận hàng (COD)',
+            items: items.map(function(i) {
+              return { name: i.name, qty: i.qty, price: i.price, image: i.image };
+            }),
+            subtotal: subtotal,
+            discount: discount,
+            total: total,
+            status: 'pending',                              // Trạng thái ban đầu
+            statusHistory: [
+              { status: 'pending', time: new Date().toLocaleString('vi-VN'), note: 'Đơn hàng đã được tiếp nhận thành công.' }
+            ]
+          };
+
+          // Lưu đơn mới nhất (cho order-success.html)
+          localStorage.setItem('pgt_last_order', JSON.stringify(orderData));
+
+          // Lưu vào mảng tất cả đơn (cho tra cứu)
+          var allOrders = [];
+          try { allOrders = JSON.parse(localStorage.getItem('pgt_orders') || '[]'); } catch(e) {}
+          allOrders.unshift(orderData); // đơn mới nhất lên đầu
+          if (allOrders.length > 50) allOrders = allOrders.slice(0, 50); // giới hạn 50 đơn
+          localStorage.setItem('pgt_orders', JSON.stringify(allOrders));
+
+
+          // Clear purchased items from cart
+          if (window.CartAPI) {
+            var cart = window.CartAPI.getCart();
+            var remaining = cart.filter(function(i) { return !i.selected; });
+            localStorage.setItem('pgt_cart', JSON.stringify(remaining));
+            document.dispatchEvent(new CustomEvent('cart-updated'));
+          }
+
+          // Clear applied promo
+          sessionStorage.removeItem('applied_promo_percent');
+
+          // Small delay for UX feedback then redirect
+          setTimeout(function() {
+            window.location.href = 'order-success.html';
+          }, 600);
+        });
+      }
+
+      // Run on load (wait for cart.js + common.js to init)
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+          setTimeout(initCheckout, 650);
+        });
+      } else {
+        setTimeout(initCheckout, 650);
+      }
+    })();
+  </script>
+</body>
+
+</html>

@@ -22,7 +22,7 @@
     const headerPh = document.getElementById('header-placeholder');
     if (headerPh) {
       try {
-        const res = await fetch(getComponentPath('header.html'));
+        const res = await fetch(getComponentPath('header.html') + '?v=' + new Date().getTime());
         if (res.ok) {
           const html = await res.text();
           headerPh.insertAdjacentHTML('beforebegin', html);
@@ -49,6 +49,7 @@
             }
           }
           headerPh.remove();
+          document.dispatchEvent(new Event('search-ready'));
         }
       } catch (err) {
         console.error('Failed to load header', err);
@@ -58,7 +59,7 @@
     const footerPh = document.getElementById('footer-placeholder');
     if (footerPh) {
       try {
-        const res = await fetch(getComponentPath('footer.html'));
+        const res = await fetch(getComponentPath('footer.html') + '?v=' + new Date().getTime());
         if (res.ok) {
           const html = await res.text();
           footerPh.insertAdjacentHTML('beforebegin', html);
@@ -94,12 +95,33 @@
   // ======================================================
   function initHeader() {
     const header = document.getElementById('site-header');
-    const navToggle = document.querySelector('.nav-toggle');
+    if (!header) return;
+
+    const inner = header.querySelector('.header-inner');
+    if (!inner) return;
+
+    let navToggle = inner.querySelector('.nav-toggle');
     const siteNav = document.getElementById('site-nav');
+
+    // Self-healing: Tạo động nút hamburger nếu bị thiếu hụt hoặc bị cache lướt qua
+    if (!navToggle) {
+      console.log('[Header-Bust] Mobile nav-toggle not found in DOM. Programmatically reconstructing...');
+      navToggle = document.createElement('button');
+      navToggle.className = 'nav-toggle';
+      navToggle.id = 'nav-toggle-btn';
+      navToggle.setAttribute('aria-label', 'Mở menu');
+      navToggle.setAttribute('aria-expanded', 'false');
+      navToggle.setAttribute('aria-controls', 'site-nav');
+      navToggle.innerHTML = `
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      `;
+      inner.appendChild(navToggle);
+    }
 
     // Sticky header on scroll
     function handleHeaderScroll() {
-      if (!header) return;
       if (window.scrollY > 60) {
         header.classList.add('scrolled');
       } else {
@@ -178,33 +200,61 @@
       });
     });
 
-    // Check Auth and render user avatar if logged in
-    if (window.AuthService) {
+    // ── Self-healing user button ──────────────────────────────────────────
+    // Đảm bảo icon user luôn tồn tại dù header.html bị cache cũ
+    const headerActions = header.querySelector('.header-actions');
+    let userBtn = header.querySelector('.header-action-btn--user');
+
+    if (!userBtn && headerActions) {
+      // Tạo và inject user button vào DOM
+      userBtn = document.createElement('a');
+      userBtn.className = 'header-action-btn header-action-btn--user';
+      userBtn.href = 'login.html';
+      userBtn.setAttribute('aria-label', 'Đăng nhập');
+      userBtn.innerHTML = `
+        <svg class="header-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      `;
+      headerActions.appendChild(userBtn);
+      console.log('[Header] User button was missing from DOM — injected programmatically.');
+    }
+
+    // ── Auth: đổi icon sang avatar nếu đã đăng nhập ────────────────────────
+    if (window.AuthService && userBtn) {
       const user = window.AuthService.getCurrentUser();
       if (user) {
-        const userBtn = document.querySelector('.header-action-btn--user');
-        if (userBtn) {
-          userBtn.removeAttribute('href');
-          userBtn.classList.add('is-logged-in');
-          const initial = (user.firstName || user.name || 'U').charAt(0).toUpperCase();
-          const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.name || 'Người dùng';
-          
-          userBtn.innerHTML = `
-            <div class="user-avatar-wrap">
-              <div class="user-avatar">${initial}</div>
-              <div class="user-dropdown-menu">
-                <div class="user-dropdown-header">
-                  <span class="user-name">${fullName}</span>
-                  <span class="user-email">${user.email}</span>
-                </div>
-                <div class="user-dropdown-body">
-                  <a href="#" class="user-dropdown-item">Tài khoản của tôi</a>
-                  <a href="#" class="user-dropdown-item">Đơn mua</a>
-                  <button type="button" class="user-dropdown-item btn-logout" onclick="AuthService.logout()">Đăng xuất</button>
-                </div>
+        userBtn.removeAttribute('href');
+        userBtn.classList.add('is-logged-in');
+        const initial = (user.firstName || user.name || 'U').charAt(0).toUpperCase();
+        const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.name || 'Người dùng';
+
+        // Fix href của dropdown links khi đang ở /user/ subfolder
+        const trackingHref = window.location.pathname.startsWith('/user/')
+          ? '/user/order-tracking.html'
+          : 'order-tracking.html';
+
+        userBtn.innerHTML = `
+          <div class="user-avatar-wrap">
+            <div class="user-avatar">${initial}</div>
+            <div class="user-dropdown-menu">
+              <div class="user-dropdown-header">
+                <span class="user-name">${fullName}</span>
+                <span class="user-email">${user.email}</span>
+              </div>
+              <div class="user-dropdown-body">
+                <a href="#" class="user-dropdown-item">Tài khoản của tôi</a>
+                <a href="${trackingHref}" class="user-dropdown-item">Đơn mua</a>
+                <button type="button" class="user-dropdown-item btn-logout" onclick="AuthService.logout()">Đăng xuất</button>
               </div>
             </div>
-          `;
+          </div>
+        `;
+      } else {
+        // Không đăng nhập: fix href cho /user/ subfolder
+        if (window.location.pathname.startsWith('/user/')) {
+          userBtn.href = '/user/login.html';
         }
       }
     }
@@ -219,13 +269,63 @@
 
     const btn = document.getElementById('back-to-top');
     if (btn) {
-      window.addEventListener('scroll', window.debounce(function () {
-        btn.style.opacity = window.scrollY > 500 ? '1' : '0';
-        btn.style.pointerEvents = window.scrollY > 500 ? 'auto' : 'none';
-      }, 100), { passive: true });
+      // ── Ẩn/hiện: class toggle để CSS transition slide từ phải ──
+      let lastScrollY = window.scrollY;
+      let ticking = false;
+
+      function onScroll() {
+        lastScrollY = window.scrollY;
+        if (!ticking) {
+          requestAnimationFrame(function () {
+            if (lastScrollY > 500) {
+              btn.classList.add('is-visible');
+            } else {
+              btn.classList.remove('is-visible');
+            }
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      // ── Cuộn lên: easeInOutQuart — luxury smooth ──
+      let isScrolling = false;
 
       btn.addEventListener('click', function () {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (isScrolling) return; // chống double-click khi đang chạy
+
+        const startY = window.scrollY;
+        if (startY === 0) return;
+
+        // Duration tỷ lệ với khoảng cách: 300ms (gần) → 1000ms (xa)
+        // Clamp trong khoảng 400–950ms để luôn cảm thấy sang trọng
+        const duration = Math.min(950, Math.max(400, startY * 0.55));
+        const startTime = performance.now();
+        isScrolling = true;
+
+        // easeInOutQuart: khởi động chậm → tăng tốc → dừng rất êm ái
+        function easeInOutQuart(t) {
+          return t < 0.5
+            ? 8 * t * t * t * t
+            : 1 - Math.pow(-2 * t + 2, 4) / 2;
+        }
+
+        function step(currentTime) {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const ease = easeInOutQuart(progress);
+
+          window.scrollTo(0, startY * (1 - ease));
+
+          if (progress < 1) {
+            requestAnimationFrame(step);
+          } else {
+            isScrolling = false;
+          }
+        }
+
+        requestAnimationFrame(step);
       });
     }
 
@@ -360,19 +460,22 @@
   }
 
   function initScrollReveal() {
-    const style = document.createElement('style');
-    style.textContent =
-      '.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }' +
-      '.reveal.revealed { opacity: 1; transform: translateY(0); }' +
-      '.reveal-left  { opacity:0; transform:translateX(-28px); transition:opacity 0.65s ease,transform 0.65s ease; }' +
-      '.reveal-left.revealed { opacity:1; transform:translateX(0); }' +
-      '.reveal-right { opacity:0; transform:translateX(28px); transition:opacity 0.65s ease,transform 0.65s ease; }' +
-      '.reveal-right.revealed { opacity:1; transform:translateX(0); }';
-    document.head.appendChild(style);
+    if (!document.getElementById('scroll-reveal-styles')) {
+      const style = document.createElement('style');
+      style.id = 'scroll-reveal-styles';
+      style.textContent =
+        '.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }' +
+        '.reveal.revealed { opacity: 1; transform: translateY(0); }' +
+        '.reveal-left  { opacity:0; transform:translateX(-28px); transition:opacity 0.65s ease,transform 0.65s ease; }' +
+        '.reveal-left.revealed { opacity:1; transform:translateX(0); }' +
+        '.reveal-right { opacity:0; transform:translateX(28px); transition:opacity 0.65s ease,transform 0.65s ease; }' +
+        '.reveal-right.revealed { opacity:1; transform:translateX(0); }';
+      document.head.appendChild(style);
+    }
 
-    const els = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+    const els = document.querySelectorAll('.reveal:not(.revealed), .reveal-left:not(.revealed), .reveal-right:not(.revealed)');
     if (!els.length || !window.IntersectionObserver) {
-      els.forEach(function (el) { el.classList.add('revealed'); });
+      document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(function (el) { el.classList.add('revealed'); });
       return;
     }
     const observer = new IntersectionObserver(
@@ -392,6 +495,9 @@
     els.forEach(function (el) { observer.observe(el); });
   }
 
+  // Expose globally for dynamic page elements
+  window.initScrollReveal = initScrollReveal;
+
   // ======================================================
   // INIT SCRIPT ON LOAD
   // ======================================================
@@ -401,15 +507,36 @@
     initFooter();
     initScrollReveal();
     initLazyImages();
-    // Sync cart badge count after header is injected into the DOM
-    if (window.CartAPI) {
+    // Sync cart badge count after header is injected into the DOM.
+    // Read directly from localStorage so this works on every page,
+    // regardless of whether cart.js is loaded (avoids timing/dependency issues).
+    (function syncCartBadge() {
       var badge = document.getElementById('cart-count');
-      if (badge) {
-        var count = window.CartAPI.getCount();
+      if (!badge) {
+        // Self-healing fallback: construct badge element if it's missing in the DOM (e.g. due to server caching)
+        var cartIcon = document.querySelector('.header-action-btn--cart');
+        if (cartIcon) {
+          badge = document.createElement('span');
+          badge.className = 'cart-count-badge';
+          badge.id = 'cart-count';
+          badge.style.display = 'none';
+          badge.textContent = '0';
+          cartIcon.appendChild(badge);
+        }
+      }
+      if (!badge) return;
+      function update() {
+        var count = 0;
+        try {
+          var cart = JSON.parse(localStorage.getItem('pgt_cart') || '[]');
+          count = cart.reduce(function(s, i) { return s + (parseInt(i.qty, 10) || 0); }, 0);
+        } catch(e) {}
         badge.textContent = count;
         badge.style.display = count > 0 ? 'flex' : 'none';
       }
-    }
+      update();
+      document.addEventListener('cart-updated', update);
+    })();
   }
 
   if (document.readyState === 'loading') {
@@ -417,5 +544,181 @@
   } else {
     initAll();
   }
+
+  // ======================================================
+  // SEARCH OVERLAY
+  // ======================================================
+  function initSearch() {
+    // Inject overlay HTML once
+    if (document.getElementById('search-overlay')) return;
+
+    var overlayHTML =
+      '<div class="search-overlay" id="search-overlay" role="dialog" aria-modal="true" aria-label="Tìm kiếm sản phẩm">' +
+        '<button class="search-overlay__close" id="search-close-btn" aria-label="Đóng tìm kiếm">✕</button>' +
+        '<div class="search-overlay__input-wrap">' +
+          '<span class="search-overlay__label">Tìm kiếm sản phẩm</span>' +
+          '<div class="search-overlay__input-row">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>' +
+            '<input class="search-overlay__input" id="search-input" type="search" placeholder="Lộc bình, đồ thờ, tranh gốm…" autocomplete="off" spellcheck="false">' +
+            '<button class="search-overlay__clear" id="search-clear-btn" aria-label="Xóa từ khóa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>' +
+          '</div>' +
+          '<div class="search-overlay__hints">' +
+            '<span class="search-overlay__hint-label">Gợi ý:</span>' +
+            '<button class="search-overlay__hint-tag" data-hint="Lộc bình">Lộc bình</button>' +
+            '<button class="search-overlay__hint-tag" data-hint="Tranh gốm">Tranh gốm</button>' +
+            '<button class="search-overlay__hint-tag" data-hint="Đồ thờ">Đồ thờ</button>' +
+            '<button class="search-overlay__hint-tag" data-hint="Bình hoa">Bình hoa</button>' +
+            '<button class="search-overlay__hint-tag" data-hint="Chum">Chum</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="search-overlay__results" id="search-results" aria-live="polite"></div>' +
+      '</div>';
+
+    document.body.insertAdjacentHTML('beforeend', overlayHTML);
+
+    var overlay     = document.getElementById('search-overlay');
+    var input       = document.getElementById('search-input');
+    var clearBtn    = document.getElementById('search-clear-btn');
+    var closeBtn    = document.getElementById('search-close-btn');
+    var resultsEl   = document.getElementById('search-results');
+    var debounceTimer;
+
+    // Helper: format VND
+    function fmt(n) {
+      return new Intl.NumberFormat('vi-VN').format(n) + 'đ';
+    }
+
+    // Open overlay
+    function openSearch() {
+      overlay.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      setTimeout(function() { input.focus(); }, 50);
+      var triggerBtn = document.getElementById('search-trigger-btn');
+      if (triggerBtn) triggerBtn.setAttribute('aria-expanded', 'true');
+    }
+
+    // Close overlay
+    function closeSearch() {
+      overlay.classList.remove('is-open');
+      document.body.style.overflow = '';
+      input.value = '';
+      clearBtn.classList.remove('visible');
+      resultsEl.innerHTML = '';
+      var triggerBtn = document.getElementById('search-trigger-btn');
+      if (triggerBtn) triggerBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    // Render results
+    function renderResults(products, query) {
+      if (!products || !products.length) {
+        resultsEl.innerHTML =
+          '<div class="search-overlay__empty">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>' +
+            '<p>Không tìm thấy kết quả</p>' +
+            '<small>Thử tìm với từ khóa khác như "lộc bình", "tranh gốm"</small>' +
+          '</div>';
+        return;
+      }
+
+      var basePath = (function() {
+        var pn = window.location.pathname.toLowerCase();
+        return (pn === '/user' || pn.startsWith('/user/')) ? '/user/' : '';
+      })();
+
+      var countHTML = '<p class="search-results__count">Tìm thấy ' + products.length + ' sản phẩm cho "' + query + '"</p>';
+      var gridHTML  = '<div class="search-results__grid">';
+      products.forEach(function(p) {
+        var img  = (p.images && p.images[0]) ? basePath + p.images[0] : basePath + 'assets/images/placeholder.jpg';
+        var href = basePath + 'product-detail.html?slug=' + p.slug;
+        gridHTML +=
+          '<a class="search-result-card" href="' + href + '">' +
+            '<img class="search-result-card__img" src="' + img + '" alt="' + p.name + '" loading="lazy">' +
+            '<div class="search-result-card__body">' +
+              '<p class="search-result-card__name">' + p.name + '</p>' +
+              '<p class="search-result-card__price">' + fmt(p.price) + '</p>' +
+            '</div>' +
+          '</a>';
+      });
+      gridHTML += '</div>';
+      resultsEl.innerHTML = countHTML + gridHTML;
+    }
+
+    // Search logic (client-side filter from API)
+    function doSearch(query) {
+      var q = query.trim().toLowerCase();
+      if (!q) { resultsEl.innerHTML = ''; return; }
+
+      if (window.PhucGiaTienAPI) {
+        window.PhucGiaTienAPI.getProducts({ limit: 100 }).then(function(res) {
+          var filtered = (res.data || []).filter(function(p) {
+            return p.name.toLowerCase().includes(q) ||
+                   (p.category || '').toLowerCase().includes(q) ||
+                   (p.material || '').toLowerCase().includes(q) ||
+                   (p.style || '').toLowerCase().includes(q);
+          });
+          renderResults(filtered, query.trim());
+        });
+      }
+    }
+
+    // Debounced input
+    input.addEventListener('input', function() {
+      var val = input.value;
+      clearBtn.classList.toggle('visible', val.length > 0);
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(function() { doSearch(val); }, 280);
+    });
+
+    // Clear button
+    clearBtn.addEventListener('click', function() {
+      input.value = '';
+      clearBtn.classList.remove('visible');
+      resultsEl.innerHTML = '';
+      input.focus();
+    });
+
+    // Hint tags
+    overlay.querySelectorAll('.search-overlay__hint-tag').forEach(function(tag) {
+      tag.addEventListener('click', function() {
+        input.value = tag.dataset.hint;
+        clearBtn.classList.add('visible');
+        doSearch(tag.dataset.hint);
+      });
+    });
+
+    // Close button
+    closeBtn.addEventListener('click', closeSearch);
+
+    // Click backdrop to close
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeSearch();
+    });
+
+    // Keyboard: Escape to close, Ctrl/Cmd+K to open
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && overlay.classList.contains('is-open')) {
+        closeSearch();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        overlay.classList.contains('is-open') ? closeSearch() : openSearch();
+      }
+    });
+
+    // Wire trigger button (may not exist yet if header hasn't loaded)
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest('#search-trigger-btn');
+      if (btn) openSearch();
+    });
+  }
+
+  // Run after all components (header) have loaded
+  var _origInitAll = initAll;
+  // Patch: call initSearch after header is injected
+  document.addEventListener('search-ready', initSearch);
+  // Fallback: init on DOMContentLoaded + small delay for async header
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(initSearch, 600);
+  });
 
 })();

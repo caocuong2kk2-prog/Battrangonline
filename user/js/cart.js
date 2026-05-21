@@ -25,13 +25,15 @@
   function saveCart(cart) {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
     updateCartBadge(cart);
+    // Dispatch event so any listener (e.g. common.js) can re-sync the badge
+    document.dispatchEvent(new CustomEvent('cart-updated', { detail: { cart: cart } }));
   }
 
   // ─── Public API exposed to other pages ──────────────────────────────────────
   window.CartAPI = {
     getCart: loadCart,
 
-    addItem: function (product, qty) {
+    addItem: function (product, qty, event) {
       var cart = loadCart();
       var qty = qty || 1;
       var idx = cart.findIndex(function (i) { return i.id === product.id; });
@@ -44,10 +46,15 @@
           name: product.name,
           price: product.price,
           image: (product.images && product.images[0]) ? product.images[0] : 'assets/images/placeholder.jpg',
-          qty: qty
+          qty: qty,
+          selected: true
         });
       }
       saveCart(cart);
+      
+      if (event) {
+        flyToCartAnimation(event);
+      }
       showCartToast(product.name, qty);
     },
 
@@ -91,6 +98,65 @@
     if (typeof window.showToast === 'function') {
       window.showToast('Đã thêm ' + qty + ' × "' + name + '" vào giỏ hàng!', 'success');
     }
+  }
+
+  function flyToCartAnimation(event) {
+    if (!event) return;
+    var btn = event.currentTarget || event.target;
+    if (!btn) return;
+    
+    // Tìm thẻ sản phẩm gần nhất (dùng chung cho cả trang chủ, trang sản phẩm và trang chi tiết)
+    var card = btn.closest('.product-card, .home-product-card, .product-detail-grid');
+    if (!card) return;
+
+    // Tìm ảnh sản phẩm tương ứng để bay
+    var img = card.querySelector('.product-card__img, .home-product-card__img, .product-gallery__main-img');
+    if (!img) return;
+
+    var cartIcon = document.querySelector('.header-action-btn--cart');
+    if (!cartIcon) return;
+
+    // Lấy tọa độ tuyệt đối
+    var imgRect = img.getBoundingClientRect();
+    var cartRect = cartIcon.getBoundingClientRect();
+
+    // Tạo bản sao ảnh
+    var clone = img.cloneNode(true);
+    clone.style.position = 'fixed';
+    clone.style.top = imgRect.top + 'px';
+    clone.style.left = imgRect.left + 'px';
+    clone.style.width = imgRect.width + 'px';
+    clone.style.height = imgRect.height + 'px';
+    clone.style.borderRadius = window.getComputedStyle(img).borderRadius;
+    clone.style.zIndex = '9999';
+    clone.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+    clone.style.objectFit = 'cover';
+    clone.style.pointerEvents = 'none';
+    
+    document.body.appendChild(clone);
+
+    // Ép trình duyệt tính toán lại layout để kích hoạt animation
+    clone.offsetWidth;
+
+    // Thiết lập đích đến là biểu tượng giỏ hàng ở navbar
+    clone.style.top = (cartRect.top + cartRect.height / 2 - 20) + 'px';
+    clone.style.left = (cartRect.left + cartRect.width / 2 - 20) + 'px';
+    clone.style.width = '40px';
+    clone.style.height = '40px';
+    clone.style.opacity = '0.3';
+    clone.style.transform = 'scale(0.5)';
+    clone.style.borderRadius = '50%';
+
+    // Dọn dẹp sau khi bay xong và rung biểu tượng giỏ hàng
+    setTimeout(function() {
+      if (clone.parentNode) clone.parentNode.removeChild(clone);
+      
+      cartIcon.style.transition = 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      cartIcon.style.transform = 'scale(1.3)';
+      setTimeout(function() {
+        cartIcon.style.transform = 'scale(1)';
+      }, 200);
+    }, 600);
   }
 
   // ─── Cart Page Logic ─────────────────────────────────────────────────────────
@@ -149,10 +215,10 @@
           }
           return;
         }
-        // Placeholder – replace with real checkout flow
-        alert('Chức năng thanh toán đang được phát triển. Vui lòng liên hệ zalo/fb để đặt hàng!');
+        window.location.href = 'checkout.html';
       });
     }
+
   }
 
   function renderCart() {
@@ -310,11 +376,13 @@
 
     if (PROMO_CODES[code]) {
       appliedPromo = PROMO_CODES[code];
+      sessionStorage.setItem('applied_promo_percent', appliedPromo);
       msg.textContent = 'Áp dụng thành công! Giảm ' + appliedPromo + '% cho đơn hàng.';
       msg.className = 'cart-promo__msg cart-promo__msg--success';
       updateSummary(loadCart());
     } else {
       appliedPromo = null;
+      sessionStorage.removeItem('applied_promo_percent');
       msg.textContent = 'Mã giảm giá không hợp lệ hoặc đã hết hạn.';
       msg.className = 'cart-promo__msg cart-promo__msg--error';
       updateSummary(loadCart());

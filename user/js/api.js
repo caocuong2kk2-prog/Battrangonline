@@ -146,6 +146,168 @@
       images: ['assets/images/product-8-1.jpg'],
       description: 'Đĩa gốm phong thuỷ, hoa văn tinh tế, thích hợp trưng bày...',
     },
+    // --- BẢN SAO ĐỂ TEST PHÂN TRANG (Trang 2) ---
+    {
+      id: 9,
+      name: 'Lộc Bình Men Lam (Test)',
+      slug: 'loc-binh-men-lam-test',
+      price: 38000000,
+      originalPrice: null,
+      category: 'loc-binh',
+      material: 'Gốm sứ',
+      style: 'Vẽ tay',
+      color: 'Trắng xanh',
+      size: '1.4m',
+      status: 'Còn hàng',
+      badge: null,
+      images: ['assets/images/product-1-1.jpg'],
+      description: 'Sản phẩm thử nghiệm phân trang...',
+    },
+    {
+      id: 10,
+      name: 'Chóe Bày Ban Thờ',
+      slug: 'choe-bay-ban-tho',
+      price: 15500000,
+      originalPrice: null,
+      category: 'do-tho',
+      material: 'Gốm sứ',
+      style: 'Đắp nổi',
+      color: 'Nâu – Vàng',
+      size: '40cm',
+      status: 'Còn hàng',
+      badge: null,
+      images: ['assets/images/product-5-1.jpg'],
+      description: 'Sản phẩm thử nghiệm phân trang...',
+    },
+    {
+      id: 11,
+      name: 'Tranh Gốm Đồng Quê',
+      slug: 'tranh-gom-dong-que',
+      price: 25000000,
+      originalPrice: null,
+      category: 'tranh-gom',
+      material: 'Gốm sứ',
+      style: 'Đắp nổi 3D',
+      color: 'Đa sắc',
+      size: '80x120cm',
+      status: 'Còn hàng',
+      badge: null,
+      images: ['assets/images/product-4-1.jpg'],
+      description: 'Sản phẩm thử nghiệm phân trang...',
+    },
+    {
+      id: 12,
+      name: 'Bình Hoa Sen',
+      slug: 'binh-hoa-sen',
+      price: 4500000,
+      originalPrice: null,
+      category: 'binh-hoa',
+      material: 'Gốm sứ',
+      style: 'Vẽ tay',
+      color: 'Trắng – Hồng',
+      size: '30cm',
+      status: 'Còn hàng',
+      badge: null,
+      images: ['assets/images/product-6-1.jpg'],
+      description: 'Sản phẩm thử nghiệm phân trang...',
+    },
+    {
+      id: 13,
+      name: 'Chum Rượu Khắc Nổi',
+      slug: 'chum-ruou-khac-noi',
+      price: 18000000,
+      originalPrice: null,
+      category: 'chum-vat',
+      material: 'Gốm sứ',
+      style: 'Khắc nổi',
+      color: 'Nâu sẫm',
+      size: '50 lít',
+      status: 'Còn hàng',
+      badge: null,
+      images: ['assets/images/product-7-1.jpg'],
+      description: 'Sản phẩm thử nghiệm phân trang...',
+    },
+    {
+      id: 14,
+      name: 'Đĩa Cảnh Phú Quý',
+      slug: 'dia-canh-phu-quy',
+      price: 11000000,
+      originalPrice: null,
+      category: 'dia-gom',
+      material: 'Gốm sứ',
+      style: 'Vẽ vàng 24k',
+      color: 'Đỏ – Vàng',
+      size: '50cm',
+      status: 'Còn hàng',
+      badge: null,
+      images: ['assets/images/product-8-1.jpg'],
+      description: 'Sản phẩm thử nghiệm phân trang...',
+    },
+    {
+      id: 15,
+      name: 'Bộ Ấm Chén Hoàng Gia',
+      slug: 'bo-am-chen-hoang-gia',
+      price: 3500000,
+      originalPrice: null,
+      category: 'do-tho', // Reusing category for test
+      material: 'Gốm sứ',
+      style: 'Men ngọc',
+      color: 'Xanh ngọc',
+      size: 'Tiêu chuẩn',
+      status: 'Còn hàng',
+      badge: null,
+      images: ['assets/images/product-5-1.jpg'],
+      description: 'Sản phẩm thử nghiệm phân trang...',
+    },
+    {
+      id: 16,
+      name: 'Lộc Bình Tứ Quý',
+      slug: 'loc-binh-tu-quy',
+      price: 50000000,
+      originalPrice: null,
+      category: 'loc-binh',
+      material: 'Gốm sứ',
+      style: 'Khắc kỹ',
+      color: 'Trắng – Xanh',
+      size: '1.8m',
+      status: 'Còn hàng',
+      badge: 'Bán chạy',
+      images: ['assets/images/product-2-1.jpg'],
+      description: 'Sản phẩm thử nghiệm phân trang...',
+    },
+    // --- BẢN SAO ĐỂ TEST PHÂN TRANG (Trang 3) ---
+    {
+      id: 17,
+      name: 'Tượng Gốm Di Lặc',
+      slug: 'tuong-gom-di-lac',
+      price: 14000000,
+      originalPrice: null,
+      category: 'do-tho',
+      material: 'Gốm sứ',
+      style: 'Men rạn',
+      color: 'Nâu cổ',
+      size: '40cm',
+      status: 'Còn hàng',
+      badge: null,
+      images: ['assets/images/product-3-1.jpg'],
+      description: 'Sản phẩm thử nghiệm phân trang...',
+    },
+    {
+      id: 18,
+      name: 'Lộc Bình Bát Tiên',
+      slug: 'loc-binh-bat-tien',
+      price: 65000000,
+      originalPrice: null,
+      category: 'loc-binh',
+      material: 'Gốm sứ',
+      style: 'Vẽ tay cao cấp',
+      color: 'Đa sắc',
+      size: '1.8m',
+      status: 'Còn hàng',
+      badge: null,
+      images: ['assets/images/product-1-2.jpg'],
+      description: 'Sản phẩm thử nghiệm phân trang...',
+    }
   ];
 
   var MOCK_CATEGORIES = [
@@ -207,6 +369,51 @@
         if (filters.category && filters.category !== 'all') {
           products = products.filter(function (p) {
             return p.category === filters.category;
+          });
+        }
+
+        // Filter by quality
+        if (filters.quality && filters.quality !== 'all') {
+          products = products.filter(function (p) {
+            var material = (p.material || '').toLowerCase();
+            var name = (p.name || '').toLowerCase();
+            if (filters.quality === 'cao-cap') {
+              return material.indexOf('cao cấp') >= 0 || name.indexOf('cao cấp') >= 0;
+            } else if (filters.quality === 'trung') {
+              return material.indexOf('cao cấp') === -1 && name.indexOf('cao cấp') === -1;
+            }
+            return true;
+          });
+        }
+
+        // Filter by size
+        if (filters.size && filters.size !== 'all') {
+          products = products.filter(function (p) {
+            var sizeStr = (p.size || '').toLowerCase();
+            if (filters.size === 'nho') {
+              if (sizeStr.indexOf('lít') >= 0 || sizeStr.indexOf('bộ') >= 0) return true;
+              var match = sizeStr.match(/(\d+)\s*cm/);
+              if (match) {
+                return parseInt(match[1], 10) < 60;
+              }
+              return true; // fallback
+            } else if (filters.size === 'vua') {
+              if (sizeStr.indexOf('1.0m') >= 0) return true;
+              var match = sizeStr.match(/(\d+)\s*cm/);
+              if (match) {
+                var val = parseInt(match[1], 10);
+                return val >= 60 && val <= 100;
+              }
+              return false;
+            } else if (filters.size === 'lon') {
+              if (sizeStr.indexOf('1.0m') >= 0) return false;
+              if (sizeStr.indexOf('m') >= 0 && sizeStr.indexOf('cm') === -1) {
+                var val = parseFloat(sizeStr);
+                return val >= 1.0;
+              }
+              return false;
+            }
+            return true;
           });
         }
 

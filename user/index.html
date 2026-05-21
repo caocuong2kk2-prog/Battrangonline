@@ -60,16 +60,22 @@
           </div>
         </div>
       </div>
-      <div class="hero__scroll" aria-hidden="true">
+      <!-- Nút cuộn xuống: click để smooth scroll tới nội dung phía dưới -->
+      <button
+        class="hero__scroll"
+        id="hero-scroll-btn"
+        aria-label="Cuộn xuống xem nội dung"
+        title="Cuộn xuống"
+      >
         <span>Cuộn xuống</span>
         <span class="hero__scroll-arrow"></span>
-      </div>
+      </button>
     </section>
 
 
 
     <!-- ========== STORY TEASER ========== -->
-    <section class="section section--dark" aria-labelledby="story-heading">
+    <section id="hero-next-section" class="section section--dark" aria-labelledby="story-heading">
       <div class="container">
         <div class="story-teaser" style="flex-direction: row-reverse;">
           <div class="story-teaser__media reveal-right">
@@ -95,16 +101,51 @@
     <!-- ========== FEATURED PRODUCTS ========== -->
     <section class="section home-products" aria-labelledby="featured-products-heading">
       <div class="container">
-        <div class="home-products__header" style="justify-content: center;">
-          <div class="section-header" style="text-align:center;margin-bottom:var(--space-8);">
-            <h2 id="featured-products-heading" class="section-header__title" style="font-size: var(--fs-3xl);">SẢN PHẨM
-              NỔI BẬT</h2>
+        <!-- Header hàng ngang mới chứa cả Tiêu đề và Nút điều hướng -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--space-10);">
+          <div class="section-header" style="text-align: left; margin-bottom: 0;">
+            <span class="section-header__label">Tinh Hoa Bát Tràng</span>
+            <h2 id="featured-products-heading" class="section-header__title" style="font-size:var(--fs-3xl);margin-top:var(--space-2);">
+              SẢN PHẨM NỔI BẬT
+            </h2>
+            <p class="section-header__desc" style="margin-top:var(--space-3);">
+              Từng tác phẩm là kết tinh của đất, lửa và đôi bàn tay nghệ nhân.
+            </p>
+          </div>
+          
+          <!-- Cụm nút điều hướng đặt phía trên -->
+          <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+            <button class="conveyor-arrow-top" id="conveyor-prev-btn" aria-label="Xem sản phẩm trước">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <button class="conveyor-arrow-top" id="conveyor-next-btn" aria-label="Xem sản phẩm tiếp theo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
           </div>
         </div>
-        <!-- JS will populate this grid -->
-        <div class="product-grid" id="home-product-grid" aria-live="polite" aria-label="Sản phẩm nổi bật">
-          <!-- populated by home.js -->
+      </div>
+
+      <!-- Container bọc băng chuyền -->
+      <div class="products-conveyor-container">
+        <!-- Full-width conveyor belt -->
+        <div class="products-conveyor" id="home-product-conveyor" aria-live="polite" aria-label="Sản phẩm nổi bật">
+          <div class="products-track" id="home-product-track">
+            <!-- Skeleton placeholders hiện trước khi JS load xong -->
+            <div class="home-product-skeleton"><div class="skeleton-img skeleton-block"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:60%"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:40%"></div></div></div></div>
+            <div class="home-product-skeleton"><div class="skeleton-img skeleton-block"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:70%"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:45%"></div></div></div></div>
+            <div class="home-product-skeleton"><div class="skeleton-img skeleton-block"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:55%"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:38%"></div></div></div></div>
+            <div class="home-product-skeleton"><div class="skeleton-img skeleton-block"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:65%"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:42%"></div></div></div></div>
+            <div class="home-product-skeleton"><div class="skeleton-img skeleton-block"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:58%"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:36%"></div></div></div></div>
+            <div class="home-product-skeleton"><div class="skeleton-img skeleton-block"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:72%"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:44%"></div></div></div></div>
+          </div>
         </div>
+      </div>
+
+      <div class="container">
         <div style="text-align:center;margin-top:var(--space-10);">
           <a class="btn btn--primary btn--lg" href="products.html" id="home-more-products-btn"
             style="text-transform: uppercase;">XEM TẤT CẢ SẢN PHẨM</a>
@@ -116,74 +157,144 @@
     <section class="section process-section" aria-labelledby="process-heading">
       <div class="container">
         <div class="section-header">
-          <span class="section-header__label">Quy Trình</span>
           <h2 id="process-heading" class="section-header__title">Quy Trình Chế Tác</h2>
           <p class="section-header__desc">Từ đất sét đến tác phẩm nghệ thuật – 5 công đoạn thủ công tỉ mỉ.</p>
         </div>
         <div class="process-steps" role="list">
+
+          <!-- Bước 1: Chuẩn bị đất — Bàn tay nhào đất sét -->
           <div class="process-step" role="listitem">
             <div class="process-step__icon-wrap">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
+              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6"
                 stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                <path d="M12 8v4"></path>
-                <path d="M12 16h.01"></path>
+                <!-- Khối đất sét / đất đồi -->
+                <ellipse cx="24" cy="36" rx="16" ry="5"/>
+                <path d="M8 36 C8 28 14 24 24 24 C34 24 40 28 40 36"/>
+                <!-- Bàn tay nhào đất - các ngón tay -->
+                <path d="M18 24 C17 18 16 13 17 10 C17.5 8 19 8 19.5 10 L20 18"/>
+                <path d="M21 23 C20.5 17 20 12 21 9 C21.5 7 23 7 23.5 9 L24 18"/>
+                <path d="M24 23 C24 17 24 12 25 9 C25.5 7 27 7 27.5 9 L28 18"/>
+                <path d="M27 23 C27.5 18 28 13 30 10.5 C31 9 32.5 9.5 32 12 L31 19"/>
+                <!-- Lòng bàn tay -->
+                <path d="M18 24 Q19 26 24 27 Q29 26 31 24"/>
               </svg>
             </div>
             <p class="process-step__label">1. Chuẩn bị đất</p>
+            <p class="process-step__desc">Chọn lựa và nhào đất sét Bát Tràng đúng độ dẻo</p>
           </div>
+
           <div class="process-connector" aria-hidden="true"></div>
+
+          <!-- Bước 2: Tạo hình — Bàn xoay gốm (pottery wheel) -->
           <div class="process-step" role="listitem">
             <div class="process-step__icon-wrap">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
+              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6"
                 stroke-linecap="round" stroke-linejoin="round">
-                <path d="M8 22h8"></path>
-                <path d="M12 2v6"></path>
-                <path d="M12 18V8"></path>
-                <path d="M7 10c0-2 2-2 5-2s5 0 5 2c0 2-2 4-5 4s-5-2-5-4z"></path>
-                <path d="M7 16c0-2 2-2 5-2s5 0 5 2c0 2-2 4-5 4s-5-2-5-4z"></path>
+                <!-- Mâm xoay -->
+                <ellipse cx="24" cy="39" rx="15" ry="4"/>
+                <line x1="9" y1="39" x2="9" y2="41"/>
+                <line x1="39" y1="39" x2="39" y2="41"/>
+                <!-- Trụ xoay -->
+                <line x1="24" y1="35" x2="24" y2="39"/>
+                <!-- Thân bình gốm đang tạo hình -->
+                <path d="M18 35 C16 28 15 20 18 14 Q24 10 30 14 C33 20 32 28 30 35 Z"/>
+                <!-- Miệng bình đang mở -->
+                <ellipse cx="24" cy="14" rx="6" ry="2.5"/>
+                <!-- 2 bàn tay vuốt đất hai bên -->
+                <path d="M14 22 Q11 22 10 25 Q11 28 14 27"/>
+                <path d="M34 22 Q37 22 38 25 Q37 28 34 27"/>
               </svg>
             </div>
             <p class="process-step__label">2. Tạo hình</p>
+            <p class="process-step__desc">Vuốt đất trên bàn xoay bằng đôi bàn tay điêu luyện</p>
           </div>
+
           <div class="process-connector" aria-hidden="true"></div>
+
+          <!-- Bước 3: Vẽ tay — Bút lông vẽ hoa văn lên bình -->
           <div class="process-step" role="listitem">
             <div class="process-step__icon-wrap">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
+              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6"
                 stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20.5 3.5a2.828 2.828 0 0 0-4 0L4 16v4h4L20.5 7.5a2.828 2.828 0 0 0 0-4z"></path>
-                <path d="M13.5 6.5l4 4"></path>
-                <path d="M4 20h16"></path>
+                <!-- Thân bình gốm -->
+                <path d="M17 40 C15 33 15 22 18 16 Q24 12 30 16 C33 22 33 33 31 40 Z"/>
+                <ellipse cx="24" cy="16" rx="6" ry="2.5"/>
+                <ellipse cx="24" cy="40" rx="7" ry="2.5"/>
+                <!-- Hoa văn trên bình (hoa sen cách điệu) -->
+                <path d="M20 27 Q24 23 28 27" stroke-width="1"/>
+                <path d="M19 31 Q24 26 29 31" stroke-width="1"/>
+                <circle cx="24" cy="32" r="1" fill="currentColor"/>
+                <!-- Cán bút lông -->
+                <line x1="35" y1="10" x2="28" y2="26"/>
+                <!-- Đầu bút -->
+                <path d="M35 10 L38 7 L37 12 Z" fill="currentColor"/>
+                <!-- Ngọn bút chạm vào bình -->
+                <path d="M28 26 L27 29" stroke-width="1"/>
               </svg>
             </div>
             <p class="process-step__label">3. Vẽ tay</p>
+            <p class="process-step__desc">Trang trí hoa văn truyền thống bằng bút lông thủ công</p>
           </div>
+
           <div class="process-connector" aria-hidden="true"></div>
+
+          <!-- Bước 4: Nung lò — Lò nung với ngọn lửa -->
           <div class="process-step" role="listitem">
             <div class="process-step__icon-wrap">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
+              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6"
                 stroke-linecap="round" stroke-linejoin="round">
-                <path d="M8 22h8"></path>
-                <path d="M10 22V8"></path>
-                <path d="M14 22V8"></path>
-                <path d="M5 8h14"></path>
-                <path d="M12 2L9 8h6l-3-6z"></path>
-                <path d="M7 14h10"></path>
-                <path d="M7 18h10"></path>
+                <!-- Thân lò nung hình vòm -->
+                <path d="M8 38 L8 22 Q8 10 24 10 Q40 10 40 22 L40 38 Z"/>
+                <!-- Cửa lò -->
+                <path d="M17 38 L17 30 Q17 26 24 26 Q31 26 31 30 L31 38"/>
+                <!-- Vạch gạch lò -->
+                <line x1="8" y1="30" x2="16" y2="30"/>
+                <line x1="32" y1="30" x2="40" y2="30"/>
+                <!-- Ngọn lửa trong lò -->
+                <path d="M22 35 C21 32 22 28 24 26 C26 28 27 32 26 35" stroke-width="1.2"/>
+                <path d="M24 35 C23 31 24 27 24 26 C24 27 25 31 24 35" stroke-width="1"/>
+                <!-- Khói/nhiệt bay lên -->
+                <path d="M16 10 C15 7 17 5 16 3" stroke-width="1" stroke-dasharray="2 2"/>
+                <path d="M24 10 C23 6 25 4 24 2" stroke-width="1" stroke-dasharray="2 2"/>
+                <path d="M32 10 C31 7 33 5 32 3" stroke-width="1" stroke-dasharray="2 2"/>
               </svg>
             </div>
             <p class="process-step__label">4. Nung lò</p>
+            <p class="process-step__desc">Nung ở nhiệt độ 1.280°C trong lò truyền thống</p>
           </div>
+
           <div class="process-connector" aria-hidden="true"></div>
+
+          <!-- Bước 5: Hoàn thiện — Bình gốm hoàn chỉnh với ánh sáng -->
           <div class="process-step" role="listitem">
             <div class="process-step__icon-wrap">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
+              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6"
                 stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2l3 6h6l-5 4 2 6-6-4-6 4 2-6-5-4h6z"></path>
+                <!-- Bình gốm hoàn chỉnh đẹp -->
+                <path d="M16 42 C14 35 13 24 17 16 Q24 10 31 16 C35 24 34 35 32 42 Z"/>
+                <ellipse cx="24" cy="16" rx="7" ry="3"/>
+                <!-- Cổ bình -->
+                <path d="M21 10 Q24 8 27 10 L27 16 Q24 17 21 16 Z"/>
+                <!-- Miệng bình -->
+                <ellipse cx="24" cy="10" rx="4" ry="1.5"/>
+                <!-- Đế bình -->
+                <ellipse cx="24" cy="42" rx="8" ry="2.5"/>
+                <!-- Hoa văn hoàn thiện -->
+                <path d="M18 28 Q24 24 30 28" stroke-width="1"/>
+                <path d="M17 33 Q24 28 31 33" stroke-width="1"/>
+                <!-- Tia sáng lấp lánh - hoàn chỉnh -->
+                <line x1="8" y1="12" x2="12" y2="12" stroke-width="1.2"/>
+                <line x1="10" y1="10" x2="10" y2="14" stroke-width="1.2"/>
+                <line x1="38" y1="18" x2="42" y2="18" stroke-width="1.2"/>
+                <line x1="40" y1="16" x2="40" y2="20" stroke-width="1.2"/>
+                <line x1="37" y1="8" x2="40" y2="11" stroke-width="1"/>
+                <line x1="40" y1="8" x2="37" y2="11" stroke-width="1"/>
               </svg>
             </div>
             <p class="process-step__label">5. Hoàn thiện</p>
+            <p class="process-step__desc">Kiểm tra, đánh bóng và đóng gói tác phẩm hoàn hảo</p>
           </div>
+
         </div>
       </div>
     </section>

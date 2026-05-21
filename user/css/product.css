@@ -184,6 +184,9 @@
 .product-gallery {
   position: sticky;
   top: calc(var(--header-height) + var(--space-6));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
 .product-gallery__main {
@@ -192,7 +195,7 @@
   overflow: hidden;
   background: var(--color-bg-card);
   aspect-ratio: 1;
-  margin-bottom: var(--space-4);
+  margin-bottom: 0;
   border: 1px solid var(--color-border);
 }
 
@@ -208,6 +211,7 @@
 
 .product-thumbnails {
   display: flex;
+  flex-direction: row;
   gap: var(--space-3);
   flex-wrap: wrap;
 }
@@ -281,9 +285,9 @@
   flex-shrink: 0;
   padding: 0;
   font-size: var(--fs-sm);
-  color: var(--color-text-black);
+  color: var(--color-text-muted); /* Chữ nhạt hơn giống mockup */
   background: transparent;
-  font-weight: var(--fw-semibold);
+  font-weight: normal; /* Chữ thường giống mockup */
   border-right: none;
 }
 
@@ -356,22 +360,61 @@
 /* Product actions */
 .product-actions {
   display: flex;
-  gap: var(--space-4);
-  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
 }
 
-.product-actions .btn {
+.btn-add-to-cart-outline {
   flex: 1;
-  min-width: 140px;
+  background: transparent;
+  border: 2px solid #5a3c22;
+  color: #5a3c22;
+  font-weight: var(--fw-bold);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  transition: all 0.3s;
+  cursor: pointer;
 }
 
-/* Guarantee badges */
-.guarantee-badges {
+.btn-add-to-cart-outline:hover {
+  background: rgba(90, 60, 34, 0.1);
+}
+
+.btn-buy-now-solid {
+  flex: 1;
+  background: #a45a32;
+  border: 2px solid #a45a32;
+  color: #ffffff;
+  font-weight: var(--fw-bold);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.btn-buy-now-solid:hover {
+  background: #8b4927;
+  border-color: #8b4927;
+}
+
+/* Guarantee badges Full Width */
+.guarantee-badges-full {
   display: flex;
-  gap: var(--space-5);
-  padding: var(--space-5) 0;
+  justify-content: space-between;
   border-top: 1px solid var(--color-border);
-  flex-wrap: wrap;
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-6) 0;
+  margin-top: var(--space-12);
+  gap: var(--space-4);
+}
+
+.guarantee-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-black);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
 }
 
 .guarantee-badge {

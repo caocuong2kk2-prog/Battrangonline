@@ -91,6 +91,11 @@
       }
 
       renderPagination(paginationEl, state.page, Math.ceil(state.total / state.limit));
+
+      // Re-trigger scroll reveal for newly injected cards
+      if (typeof window.initScrollReveal === 'function') {
+        window.initScrollReveal();
+      }
     }).catch(function () {
       grid.innerHTML =
         '<p style="text-align:center;color:var(--color-text-muted)">Lỗi tải dữ liệu, vui lòng thử lại.</p>';
@@ -108,18 +113,81 @@
 
     var imgSrc = (p.images && p.images[0]) ? p.images[0] : 'assets/images/placeholder.jpg';
 
+    // Stars: dùng rating từ data hoặc ngẫu nhiên 4-5 sao
+    var rating = p.rating || (4 + Math.floor(Math.random() * 2));
+    var starsHTML = '';
+    for (var j = 1; j <= 5; j++) {
+      starsHTML += '<span class="product-card__star' +
+        (j > rating ? ' product-card__star--empty' : '') + '">&#9733;</span>';
+    }
+
+    var pSafe = JSON.stringify({
+      id: p.id, slug: p.slug, name: p.name, price: p.price, images: p.images
+    }).replace(/'/g, '&#39;');
+
     article.innerHTML =
-      '<a class="product-card__media" href="product-detail.html?slug=' + p.slug + '">' +
-      badgeHTML +
-      '<img class="product-card__img" src="' + imgSrc + '" alt="' + p.name + '" loading="lazy">' +
-      '<div class="product-card__overlay">' +
-      '<span class="product-card__quick-view">Xem Chi Tiết</span>' +
+      '<div class="product-card__media">' +
+        badgeHTML +
+        '<img class="product-card__img" src="' + imgSrc + '" alt="' + p.name + '" loading="lazy">' +
+        '<div class="product-card__action">' +
+          '<div class="product-card__action-row">' +
+            '<button class="product-card__btn-cart" data-product=\'' + pSafe + '\'>' +
+              '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+                '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>' +
+                '<path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>' +
+              '</svg>' +
+              'Thêm giỏ hàng' +
+            '</button>' +
+            '<button class="product-card__btn-detail" title="Xem chi tiết" data-slug="' + p.slug + '">' +
+              '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+                '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>' +
+              '</svg>' +
+            '</button>' +
+          '</div>' +
+        '</div>' +
       '</div>' +
-      '</a>' +
       '<div class="product-card__body">' +
-      '<h2 class="product-card__name">' + p.name + '</h2>' +
-      '<p class="product-card__price">' + window.formatVND(p.price) + '</p>' +
+        '<div class="product-card__stars">' + starsHTML + '</div>' +
+        '<h3 class="product-card__name">' + p.name + '</h3>' +
+        '<div class="product-card__price-row">' +
+          '<span class="product-card__price">' + window.formatVND(p.price) + '</span>' +
+          '<span class="product-card__tag">Thủ công</span>' +
+        '</div>' +
       '</div>';
+
+    // Bind event for Add to Cart
+    var cartBtn = article.querySelector('.product-card__btn-cart');
+    if (cartBtn) {
+      cartBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (window.CartAPI) window.CartAPI.addItem(p, 1, e);
+      });
+    }
+
+    // Bind event for Details (click anywhere on the media or details button)
+    var mediaEl = article.querySelector('.product-card__media');
+    if (mediaEl) {
+      mediaEl.addEventListener('click', function () {
+        window.location.href = 'product-detail.html?slug=' + p.slug;
+      });
+    }
+
+    var detBtn = article.querySelector('.product-card__btn-detail');
+    if (detBtn) {
+      detBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        window.location.href = 'product-detail.html?slug=' + p.slug;
+      });
+    }
+
+    // Click anywhere on body leads to detail
+    var bodyEl = article.querySelector('.product-card__body');
+    if (bodyEl) {
+      bodyEl.addEventListener('click', function () {
+        window.location.href = 'product-detail.html?slug=' + p.slug;
+      });
+    }
 
     return article;
   }
@@ -245,7 +313,6 @@
       '<p class="product-info__price">' + window.formatVND(p.price) + '</p>' +
       '<div class="product-specs">' + specsHTML + '</div>' +
       '<div class="quantity-control">' +
-      '<span class="quantity-control__label">Số lượng:</span>' +
       '<div class="quantity-input-group">' +
       '<button class="quantity-btn" id="qty-minus" aria-label="Giảm">−</button>' +
       '<input class="quantity-input" id="qty-input" type="number" value="1" min="1" max="99" aria-label="Số lượng">' +
@@ -253,15 +320,15 @@
       '</div>' +
       '</div>' +
       '<div class="product-actions">' +
-      '<button class="btn btn--primary btn--lg" id="btn-add-cart">Thêm Vào Giỏ</button>' +
-      '<button class="btn btn--accent btn--lg" id="btn-buy-now">Mua Ngay</button>' +
+      '<button class="btn btn-add-to-cart-outline" id="btn-add-cart">THÊM VÀO GIỎ</button>' +
+      '<button class="btn btn-buy-now-solid" id="btn-buy-now">MUA NGAY</button>' +
       '</div>' +
-      '<div class="guarantee-badges">' +
+      '</div>' + // end product-info
+      '</div>' + // end product-detail-grid
+      '<div class="guarantee-badges-full">' +
       '<div class="guarantee-badge"><span class="guarantee-badge__icon">✔</span><span>Cam kết chất lượng<br><small>100% gốm sứ thủ công</small></span></div>' +
-      '<div class="guarantee-badge"><span class="guarantee-badge__icon">🚚</span><span>Đổi trả miễn phí<br><small>Trong 7 ngày</small></span></div>' +
-      '<div class="guarantee-badge"><span class="guarantee-badge__icon">📦</span><span>Giao hàng toàn quốc<br><small>Ship COD tận nơi</small></span></div>' +
-      '</div>' +
-      '</div>' +
+      '<div class="guarantee-badge"><span class="guarantee-badge__icon">🔄</span><span>Đổi trả miễn phí<br><small>Trong 7 ngày</small></span></div>' +
+      '<div class="guarantee-badge"><span class="guarantee-badge__icon">🚚</span><span>Giao hàng toàn quốc<br><small>Ship COD tận nơi</small></span></div>' +
       '</div>' +
       '<div class="product-tabs">' +
       '<nav class="tab-nav" role="tablist">' +
@@ -356,10 +423,10 @@
     var buyNowBtn = document.getElementById('btn-buy-now');
 
     if (cartBtn) {
-      cartBtn.addEventListener('click', function () {
+      cartBtn.addEventListener('click', function (e) {
         var qty = parseInt(document.getElementById('qty-input').value, 10) || 1;
         if (window.CartAPI) {
-          window.CartAPI.addItem(product, qty);
+          window.CartAPI.addItem(product, qty, e);
         } else {
           window.showToast('Đã thêm "' + product.name + '" vào giỏ hàng!', 'success');
         }
