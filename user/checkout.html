@@ -137,42 +137,8 @@
                     <span class="payment-method-item__desc">Thanh toán bằng tiền mặt khi shipper giao hàng tận nơi. An toàn, không cần tài khoản ngân hàng.</span>
                   </div>
                 </label>
-                
-                <!-- BANK Method -->
-                <label class="payment-method-item" id="method-bank-label">
-                  <input type="radio" name="payment_method" value="BANK">
-                  <div class="payment-method-item__icon">🏦</div>
-                  <div class="payment-method-item__info">
-                    <span class="payment-method-item__name">Chuyển khoản ngân hàng qua QR <span style="font-size:var(--fs-xs); color: var(--color-accent); font-weight: var(--fw-semibold);">(Khuyên dùng)</span></span>
-                    <span class="payment-method-item__desc">Quét mã QR Techcombank để chuyển khoản nhanh, bảo mật và được ưu tiên xử lý sớm.</span>
-                  </div>
-                </label>
-                
               </div>
-
-              <!-- Bank Transfer Details Container (Initially Hidden) -->
-              <div class="bank-transfer-details" id="bank-details-box" style="display: none;">
-                <div class="bank-transfer-details__qr">
-                  <img id="vietqr-img" src="" alt="Mã QR Chuyển Khoản Ngân Hàng">
-                </div>
-                <div class="bank-transfer-info">
-                  <p>Quý khách vui lòng quét mã QR hoặc chuyển khoản theo thông tin:</p>
-                  <p><strong>Ngân hàng:</strong> Techcombank</p>
-                  <p><strong>Số tài khoản:</strong> 1903 5498 7650 12</p>
-                  <p><strong>Chủ tài khoản:</strong> NGUYEN VAN PHUC</p>
-                  <p class="bank-transfer-info__copy-row">
-                    <strong>Nội dung CK:</strong>&nbsp;<span id="transfer-memo" style="color: var(--color-accent); font-weight: 600;"></span>
-                    <button type="button" class="btn-copy" id="btn-copy-memo">Copy</button>
-                  </p>
-                  <p class="bank-transfer-info__warning">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0; margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                    Đơn hàng được xử lý ngay sau khi nhận được chuyển khoản. Vui lòng nhập đúng nội dung để tránh nhầm lẫn.
-                  </p>
-                </div>
-              </div>
-
             </div>
-
           </div>
 
           <!-- RIGHT SIDE - SUMMARY -->
@@ -201,10 +167,6 @@
                 <div class="checkout-summary-pricing__row">
                   <span>Phí vận chuyển</span>
                   <span style="color: var(--color-accent);">Miễn phí</span>
-                </div>
-                <div class="checkout-summary-pricing__row checkout-summary-pricing__row--discount" id="discount-row" style="display: none;">
-                  <span>Mã giảm giá</span>
-                  <span id="summary-discount">-0₫</span>
                 </div>
               </div>
               
@@ -297,7 +259,6 @@
         }
 
         renderSummary(selectedItems);
-        setupPaymentToggle();
         setupFormSubmit(selectedItems);
 
         // Real-time clear error on input
@@ -322,21 +283,7 @@
         var listEl = document.getElementById('summary-items-list');
         var subtotal = items.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
         
-        var discount = 0;
-        var discountRow = document.getElementById('discount-row');
-        var elDiscount = document.getElementById('summary-discount');
-        
-        var appliedPromo = sessionStorage.getItem('applied_promo_percent');
-        if (appliedPromo) {
-          var pct = parseInt(appliedPromo, 10);
-          discount = Math.round(subtotal * pct / 100);
-          if (discountRow && elDiscount) {
-            discountRow.style.display = 'flex';
-            elDiscount.textContent = '−' + window.formatVND(discount);
-          }
-        }
-
-        var total = subtotal - discount;
+        var total = subtotal;
 
         // Render item rows
         if (listEl) {
@@ -361,53 +308,6 @@
         if (elSub) elSub.textContent = window.formatVND(subtotal);
         if (elTotal) elTotal.textContent = window.formatVND(total);
 
-        // VietQR + Memo
-        var memoCode = 'PGT' + Math.floor(100000 + Math.random() * 900000);
-        sessionStorage.setItem('temp_memo_code', memoCode);
-        
-        var transferMemo = document.getElementById('transfer-memo');
-        if (transferMemo) transferMemo.textContent = memoCode;
-
-        var qrImg = document.getElementById('vietqr-img');
-        if (qrImg) {
-          var qrUrl = 'https://img.vietqr.io/image/tcb-19035498765012-compact.png?amount=' + total + '&addInfo=' + encodeURIComponent(memoCode) + '&accountName=NGUYEN%20VAN%20PHUC';
-          qrImg.src = qrUrl;
-        }
-      }
-
-      // ── Payment toggle ───────────────────────
-      function setupPaymentToggle() {
-        var rads = document.querySelectorAll('input[name="payment_method"]');
-        var detailsBox = document.getElementById('bank-details-box');
-        
-        rads.forEach(function(rad) {
-          rad.addEventListener('change', function() {
-            document.querySelectorAll('.payment-method-item').forEach(function(lbl) {
-              lbl.classList.remove('active');
-            });
-            
-            var label = document.getElementById('method-' + rad.value.toLowerCase() + '-label');
-            if (label) label.classList.add('active');
-
-            if (rad.value === 'BANK') {
-              detailsBox.style.display = 'flex';
-            } else {
-              detailsBox.style.display = 'none';
-            }
-          });
-        });
-
-        // Copy memo button
-        var copyBtn = document.getElementById('btn-copy-memo');
-        if (copyBtn) {
-          copyBtn.addEventListener('click', function() {
-            var code = sessionStorage.getItem('temp_memo_code') || 'PGT123456';
-            navigator.clipboard.writeText(code).then(function() {
-              copyBtn.textContent = '✓ Đã Copy!';
-              setTimeout(function() { copyBtn.textContent = 'Copy'; }, 2000);
-            });
-          });
-        }
       }
 
       // ── Form submit ──────────────────────────
@@ -425,7 +325,7 @@
           var email = document.getElementById('shipping-email').value.trim();
           var address = document.getElementById('shipping-address').value.trim();
           var notes = document.getElementById('shipping-notes').value.trim();
-          var method = form.querySelector('input[name="payment_method"]:checked').value;
+          var method = 'COD'; // Forced to COD only
 
           // Inline validation
           clearErrors();
@@ -461,12 +361,7 @@
           // Build order data
           var orderCode = sessionStorage.getItem('temp_memo_code') || ('PGT' + Math.floor(100000 + Math.random() * 900000));
           var subtotal = items.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
-          var discount = 0;
-          var appliedPromo = sessionStorage.getItem('applied_promo_percent');
-          if (appliedPromo) {
-            discount = Math.round(subtotal * parseInt(appliedPromo, 10) / 100);
-          }
-          var total = subtotal - discount;
+          var total = subtotal;
 
           var orderData = {
             orderCode: orderCode,
@@ -477,12 +372,11 @@
             email: email,
             address: address,
             notes: notes,
-            paymentMethod: method === 'BANK' ? 'Chuyển khoản Techcombank (QR)' : 'Thanh toán khi nhận hàng (COD)',
+            paymentMethod: 'Thanh toán khi nhận hàng (COD)',
             items: items.map(function(i) {
               return { name: i.name, qty: i.qty, price: i.price, image: i.image };
             }),
             subtotal: subtotal,
-            discount: discount,
             total: total,
             status: 'pending',                              // Trạng thái ban đầu
             statusHistory: [

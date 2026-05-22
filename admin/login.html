@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Đăng Nhập – Phúc Gia Tiên Admin</title>
+<meta name="description" content="Trang đăng nhập quản trị viên Phúc Gia Tiên Gốm Sứ">
+<link rel="stylesheet" href="css/admin.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+.login-form-group{margin-bottom:var(--sp-5)}
+.login-label{display:block;font-size:var(--fs-sm);font-weight:var(--fw-semibold);color:var(--text-secondary);margin-bottom:var(--sp-2)}
+.login-input{width:100%;padding:12px var(--sp-4);border:1.5px solid var(--border);border-radius:var(--r-md);font-size:var(--fs-base);color:var(--text-primary);background:#fff;outline:none;transition:border-color var(--t-fast),box-shadow var(--t-fast)}
+.login-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(200,146,42,.12)}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#fff;border:none;border-radius:var(--r-md);font-size:var(--fs-base);font-weight:var(--fw-bold);cursor:pointer;letter-spacing:.04em;transition:all var(--t-fast);margin-top:var(--sp-2)}
+.login-btn:hover{opacity:.92;transform:translateY(-1px);box-shadow:var(--shadow-gold)}
+.login-error{background:var(--danger-bg);border:1px solid rgba(220,38,38,.25);color:var(--danger);border-radius:var(--r-md);padding:var(--sp-3) var(--sp-4);font-size:var(--fs-sm);margin-bottom:var(--sp-4);display:none}
+.login-hint{background:var(--accent-bg);border:1px solid var(--accent-bg-strong);border-radius:var(--r-md);padding:var(--sp-3) var(--sp-4);font-size:var(--fs-xs);color:var(--text-secondary);margin-top:var(--sp-6);text-align:center}
+.login-hint code{background:rgba(200,146,42,.15);padding:1px 6px;border-radius:4px;font-family:monospace;color:var(--accent-dark)}
+.login-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.particle{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(200,146,42,.4);animation:float linear infinite}
+@keyframes float{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body class="admin-login-body">
+<div class="login-particles" id="particles"></div>
+<div class="login-card">
+  <div class="login-card__header">
+    <div class="login-card__logo">⚱️</div>
+    <h1 class="login-card__title">Phúc Gia Tiên</h1>
+    <p class="login-card__subtitle">Trang quản trị hệ thống</p>
+  </div>
+  <div id="login-error" class="login-error">❌ Tài khoản hoặc mật khẩu không đúng.</div>
+  <form id="login-form" autocomplete="off">
+    <div class="login-form-group">
+      <label class="login-label" for="admin-username">Tài khoản quản trị</label>
+      <input id="admin-username" class="login-input" type="text" placeholder="admin" required autocomplete="username">
+    </div>
+    <div class="login-form-group">
+      <label class="login-label" for="admin-password">Mật khẩu</label>
+      <input id="admin-password" class="login-input" type="password" placeholder="••••••••" required autocomplete="current-password">
+    </div>
+    <button type="submit" class="login-btn">🔐 Đăng Nhập</button>
+  </form>
+  <div class="login-hint">Demo: <code>admin</code> / <code>admin</code></div>
+</div>
+<div id="admin-toast-container"></div>
+<script>
+// Redirect if already logged in
+if(localStorage.getItem('pgt_admin_session')){location.href='index.html';}
+// Particles
+(function(){
+  var c=document.getElementById('particles');
+  for(var i=0;i<18;i++){
+    var p=document.createElement('div');
+    p.className='particle';
+    p.style.left=Math.random()*100+'%';
+    p.style.animationDuration=(6+Math.random()*10)+'s';
+    p.style.animationDelay=(Math.random()*8)+'s';
+    p.style.width=p.style.height=(2+Math.random()*4)+'px';
+    c.appendChild(p);
+  }
+})();
+// Login
+document.getElementById('login-form').addEventListener('submit',function(e){
+  e.preventDefault();
+  var username=document.getElementById('admin-username').value.trim();
+  var pass=document.getElementById('admin-password').value;
+  var err=document.getElementById('login-error');
+  var btn=document.querySelector('.login-btn');
+  btn.disabled = true;
+  btn.textContent = 'Đang xử lý...';
+
+  fetch('http://localhost:5080/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: username, password: pass })
+  })
+  .then(function(res) {
+    if (!res.ok) throw new Error('Unauthorized');
+    return res.json();
+  })
+  .then(function(data) {
+    localStorage.setItem('pgt_admin_session', JSON.stringify({
+        token: data.token,
+        name: data.name,
+        username: data.username,
+        role: 'admin'
+    }));
+    location.href = 'index.html';
+  })
+  .catch(function(e) {
+    err.style.display='block';
+    setTimeout(function(){err.style.display='none';},3000);
+    btn.disabled = false;
+    btn.textContent = '🔐 Đăng Nhập';
+  });
+});
+</script>
+</body>
+</html>

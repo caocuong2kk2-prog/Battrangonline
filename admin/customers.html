@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Khách Hàng – Phúc Gia Tiên Admin</title>
+<link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/components.css">
+</head>
+<body class="admin-layout">
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="sidebar-header"><div class="sidebar-brand"><div class="sidebar-brand__icon">⚱️</div><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
+  <nav class="sidebar-nav">
+    <span class="sidebar-section-label">Tổng quan</span>
+    <ul class="sidebar-nav__list"><li><a href="index.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li></ul>
+    <span class="sidebar-section-label">Kinh doanh</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="products.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
+      <li><a href="orders.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
+      <li><a href="customers.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
+    </ul>
+    <span class="sidebar-section-label">Danh mục</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="sidebar-nav__text">Danh mục</span></a></li>
+      <li><a href="journey.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
+      <li><a href="analytics.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
+    </ul>
+    <span class="sidebar-section-label">Hệ thống</span>
+    <ul class="sidebar-nav__list"><li><a href="settings.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-nav__text">Cài đặt</span></a></li></ul>
+  </nav>
+  <div class="sidebar-footer"><div class="sidebar-user js-logout"><div class="sidebar-user__avatar js-admin-initial">A</div><div class="sidebar-user__info"><div class="sidebar-user__name js-admin-name">Admin</div><div class="sidebar-user__role">Quản trị viên</div></div><button class="sidebar-user__logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="admin-main-wrapper">
+  <header class="admin-topbar">
+    <button class="topbar-toggle" id="sidebarToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="topbar-breadcrumb"><span class="topbar-breadcrumb__item">Kinh doanh</span><span class="topbar-breadcrumb__separator">›</span><span class="topbar-breadcrumb__current">Khách hàng</span></div>
+    <div class="topbar-actions"><div class="topbar-user" id="topbarUser"><div class="topbar-user__avatar js-admin-initial">A</div><span class="topbar-user__name js-admin-name">Admin</span></div></div>
+  </header>
+
+  <main class="admin-content">
+    <div class="page-header">
+      <div><h1 class="page-title">Quản Lý Khách Hàng</h1><p class="page-subtitle">Danh sách khách hàng và lịch sử giao dịch</p></div>
+    </div>
+    <div class="toolbar">
+      <div class="search-box">
+        <svg class="search-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-box__input" id="cust-search" type="search" placeholder="Tìm tên, email, số điện thoại...">
+      </div>
+      <select class="filter-select" id="cust-status-filter"><option value="all">Tất cả</option><option value="active">Đang hoạt động</option><option value="inactive">Không hoạt động</option></select>
+      <div class="toolbar__spacer"></div>
+      <span style="font-size:var(--fs-xs);color:var(--text-muted)" id="cust-count"></span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Khách hàng</th><th class="hide-mobile">Liên hệ</th><th class="hide-mobile">Địa chỉ</th><th>Đơn hàng</th><th>Tổng chi tiêu</th><th class="hide-mobile">Ngày tham gia</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
+        <tbody id="customers-table-body"></tbody>
+      </table>
+      <div class="pagination" id="customers-pagination"></div>
+    </div>
+  </main>
+</div>
+
+<!-- Customer Detail Modal -->
+<div class="modal-overlay" id="customerModal">
+  <div class="modal modal--lg">
+    <div class="modal-header"><h2 class="modal-title">Hồ Sơ Khách Hàng</h2><button class="modal-close" data-close-modal="customerModal">✕</button></div>
+    <div class="modal-body"><div id="customer-detail-content"></div></div>
+    <div class="modal-footer"><button class="btn btn--secondary" data-close-modal="customerModal">Đóng</button></div>
+  </div>
+</div>
+
+<div id="admin-toast-container"></div>
+<script src="js/admin-data.js"></script><script src="js/admin-core.js"></script>
+<script>
+(function(){
+  var customers, allOrders=[], search='', filterStatus='all', page=1, size=10;
+  document.addEventListener('DOMContentLoaded',function(){
+    Promise.all([AdminData.customers.load(), AdminData.orders.load()]).then(function(res){
+      customers=res[0];
+      allOrders=res[1];
+      render();
+      document.getElementById('cust-search').addEventListener('input',function(){search=this.value;page=1;render();});
+      document.getElementById('cust-status-filter').addEventListener('change',function(){filterStatus=this.value;page=1;render();});
+      document.getElementById('customers-table-body').addEventListener('click',function(e){
+        var btn=e.target.closest('.btn-view-cust');
+        if(btn)viewCustomer(+btn.dataset.id);
+      });
+    }).catch(function(e){console.error(e);});
+  });
+
+  function getFiltered(){
+    return customers.filter(function(c){
+      var q=search.toLowerCase();
+      var mq=!q||c.name.toLowerCase().includes(q)||c.email.toLowerCase().includes(q)||c.phone.includes(q);
+      var ms=filterStatus==='all'||c.status===filterStatus;
+      return mq&&ms;
+    });
+  }
+
+  function render(){
+    var f=getFiltered(), total=f.length, pages=Math.ceil(total/size)||1;
+    if(page>pages)page=1;
+    var slice=f.slice((page-1)*size, page*size);
+    var tbody=document.getElementById('customers-table-body');
+    document.getElementById('cust-count').textContent=total+' khách hàng';
+    if(!slice.length){tbody.innerHTML='<tr><td colspan="8"><div class="empty-state"><div class="empty-state__icon">👥</div><div class="empty-state__title">Không có khách hàng</div></div></td></tr>';return;}
+    tbody.innerHTML=slice.map(function(c){
+      var init=c.name.charAt(0).toUpperCase();
+      var statusBadge=c.status==='active'?'<span class="badge badge--success">Hoạt động</span>':'<span class="badge badge--muted">Không HĐ</span>';
+      return '<tr>'+
+        '<td><div style="display:flex;align-items:center;gap:var(--sp-3)"><div class="avatar-cell">'+init+'</div><div><div style="font-weight:600">'+c.name+'</div></div></div></td>'+
+        '<td class="hide-mobile"><div style="font-size:var(--fs-sm)">'+c.email+'</div><div style="font-size:var(--fs-xs);color:var(--text-muted)">'+c.phone+'</div></td>'+
+        '<td class="hide-mobile" style="font-size:var(--fs-xs);max-width:150px">'+c.address+'</td>'+
+        '<td style="text-align:center"><strong>'+c.orders+'</strong></td>'+
+        '<td><strong style="color:var(--accent)">'+AdminData.fmtShort(c.totalSpent)+'</strong></td>'+
+        '<td class="hide-mobile" style="font-size:var(--fs-xs)">'+c.joined+'</td>'+
+        '<td>'+statusBadge+'</td>'+
+        '<td><button class="btn btn--sm btn--secondary btn-view-cust" data-id="'+c.id+'">Xem</button></td>'+
+      '</tr>';
+    }).join('');
+    // Pagination
+    var pag=document.getElementById('customers-pagination');
+    var html='<div class="pagination__info">Trang '+page+'/'+pages+'</div><div class="pagination__btns">';
+    html+='<button class="pag-btn" id="cp-prev" '+(page===1?'disabled':'')+'>‹</button>';
+    for(var i=1;i<=Math.min(pages,5);i++)html+='<button class="pag-btn'+(i===page?' active':'')+'" data-pg="'+i+'">'+i+'</button>';
+    html+='<button class="pag-btn" id="cp-next" '+(page===pages?'disabled':'')+'>›</button></div>';
+    pag.innerHTML=html;
+    pag.querySelectorAll('[data-pg]').forEach(function(b){b.addEventListener('click',function(){page=+b.dataset.pg;render();});});
+    var pp=pag.querySelector('#cp-prev'),pn=pag.querySelector('#cp-next');
+    if(pp)pp.addEventListener('click',function(){if(page>1){page--;render();}});
+    if(pn)pn.addEventListener('click',function(){if(page<pages){page++;render();}});
+  }
+
+  function viewCustomer(id){
+    var c=customers.find(function(x){return x.id===id;});
+    if(!c)return;
+    var orders=allOrders.filter(function(o){return o.customer===c.name;});
+    var html='<div class="customer-profile">'+
+      '<div class="customer-profile__avatar">'+c.name.charAt(0)+'</div>'+
+      '<div><div class="customer-profile__name">'+c.name+'</div>'+
+      '<div class="customer-profile__meta">'+c.email+' · '+c.phone+'</div>'+
+      '<div class="customer-stats">'+
+        '<div class="customer-stat"><div class="customer-stat__value">'+c.orders+'</div><div class="customer-stat__label">Đơn hàng</div></div>'+
+        '<div class="customer-stat"><div class="customer-stat__value">'+AdminData.fmtShort(c.totalSpent)+'</div><div class="customer-stat__label">Chi tiêu</div></div>'+
+        '<div class="customer-stat"><div class="customer-stat__value">'+(c.status==='active'?'✓':'✗')+'</div><div class="customer-stat__label">Trạng thái</div></div>'+
+      '</div></div></div>';
+    html+='<div class="order-detail-box" style="margin-bottom:var(--sp-4)"><div class="order-detail-box__title">📍 Thông tin liên hệ</div>'+
+      '<div class="order-detail-line"><span>Địa chỉ</span><strong>'+c.address+'</strong></div>'+
+      '<div class="order-detail-line"><span>Ngày tham gia</span><strong>'+c.joined+'</strong></div></div>';
+    if(orders.length){
+      html+='<div class="order-detail-box"><div class="order-detail-box__title">🛒 Lịch sử đơn hàng ('+orders.length+' đơn)</div>'+
+        orders.map(function(o){return '<div class="order-detail-line"><span>'+o.id+' – '+o.date+'</span><div><span class="badge '+AdminData.getStatusBadge(o.status)+'">'+AdminData.getStatusLabel(o.status)+'</span> <strong>'+AdminData.fmt(o.total)+'</strong></div></div>';}).join('')+
+      '</div>';
+    }
+    document.getElementById('customer-detail-content').innerHTML=html;
+    openModal('customerModal');
+  }
+}());
+</script>
+</body></html>

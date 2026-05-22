@@ -7,7 +7,8 @@
   'use strict';
 
   var CART_KEY = 'pgt_cart';
-  var PROMO_CODES = { 'BATRANG10': 10, 'GIAOTIEN15': 15, 'WELCOME20': 20 };
+
+
 
   // ─── Persistence ────────────────────────────────────────────────────────────
   function loadCart() {
@@ -160,7 +161,7 @@
   }
 
   // ─── Cart Page Logic ─────────────────────────────────────────────────────────
-  var appliedPromo = null;
+
 
   function initCartPage() {
     if (!document.getElementById('cart-item-list')) return; // not on cart page
@@ -185,23 +186,12 @@
       clearBtn.addEventListener('click', function () {
         if (confirm('Xóa tất cả sản phẩm trong giỏ hàng?')) {
           window.CartAPI.clearCart();
-          appliedPromo = null;
+
           renderCart();
         }
       });
     }
 
-    // Promo code
-    var promoBtn = document.getElementById('promo-apply-btn');
-    if (promoBtn) {
-      promoBtn.addEventListener('click', applyPromo);
-    }
-    var promoInput = document.getElementById('promo-input');
-    if (promoInput) {
-      promoInput.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') applyPromo();
-      });
-    }
 
     // Checkout
     var checkoutBtn = document.getElementById('cart-checkout-btn');
@@ -350,44 +340,17 @@
   function updateSummary(cart) {
     var selectedItems = cart.filter(function (i) { return i.selected; });
     var subtotal = selectedItems.reduce(function (s, i) { return s + i.price * i.qty; }, 0);
-    var discount = appliedPromo ? Math.round(subtotal * appliedPromo / 100) : 0;
-    var total = subtotal - discount;
+    var total = subtotal;
 
     var elSub = document.getElementById('summary-subtotal');
     var elTotal = document.getElementById('summary-total');
-    var elDiscount = document.getElementById('summary-discount');
-    var promoRow = document.getElementById('promo-row');
     var checkoutBtn = document.getElementById('cart-checkout-btn');
 
     if (elSub) elSub.textContent = window.formatVND(subtotal);
     if (elTotal) elTotal.textContent = window.formatVND(total);
-    if (elDiscount) elDiscount.textContent = '−' + window.formatVND(discount);
-    if (promoRow) promoRow.hidden = !appliedPromo;
     if (checkoutBtn) checkoutBtn.disabled = selectedItems.length === 0;
   }
 
-  function applyPromo() {
-    var input = document.getElementById('promo-input');
-    var msg = document.getElementById('promo-msg');
-    if (!input || !msg) return;
-
-    var code = input.value.trim().toUpperCase();
-    if (!code) { msg.textContent = 'Vui lòng nhập mã giảm giá.'; msg.className = 'cart-promo__msg cart-promo__msg--error'; return; }
-
-    if (PROMO_CODES[code]) {
-      appliedPromo = PROMO_CODES[code];
-      sessionStorage.setItem('applied_promo_percent', appliedPromo);
-      msg.textContent = 'Áp dụng thành công! Giảm ' + appliedPromo + '% cho đơn hàng.';
-      msg.className = 'cart-promo__msg cart-promo__msg--success';
-      updateSummary(loadCart());
-    } else {
-      appliedPromo = null;
-      sessionStorage.removeItem('applied_promo_percent');
-      msg.textContent = 'Mã giảm giá không hợp lệ hoặc đã hết hạn.';
-      msg.className = 'cart-promo__msg cart-promo__msg--error';
-      updateSummary(loadCart());
-    }
-  }
 
   // ─── Init ────────────────────────────────────────────────────────────────────
   document.addEventListener('DOMContentLoaded', function () {

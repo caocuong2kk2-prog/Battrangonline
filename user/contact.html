@@ -267,7 +267,7 @@
     <!-- PAGE HERO -->
     <section class="page-hero" aria-label="Liên hệ Phúc Gia Tiên">
       <div class="page-hero__bg">
-        <img src="assets/images/contact-hero.jpg" alt="" role="presentation" loading="eager">
+        <img class="js-config-page-banner-img" src="assets/images/contact-hero.jpg" alt="" role="presentation" loading="eager">
       </div>
       <div class="container">
         <div class="page-hero__content">
@@ -296,7 +296,7 @@
               <div class="contact-info-item__icon">📞</div>
               <div>
                 <p class="contact-info-item__label">Điện Thoại / Zalo</p>
-                <p class="contact-info-item__value"><a href="tel:0986123456">0986 123 456</a></p>
+                <p class="contact-info-item__value"><a href="tel:0986123456" class="js-config-phone-link"><span class="js-config-phone-text">0986 123 456</span></a></p>
               </div>
             </div>
 
@@ -304,7 +304,7 @@
               <div class="contact-info-item__icon">✉</div>
               <div>
                 <p class="contact-info-item__label">Email</p>
-                <p class="contact-info-item__value"><a href="mailto:phucgatien@gmail.com">phucgatien@gmail.com</a></p>
+                <p class="contact-info-item__value"><a href="mailto:phucgatien@gmail.com" class="js-config-email-link"><span class="js-config-email-text">phucgatien@gmail.com</span></a></p>
               </div>
             </div>
 
@@ -312,7 +312,15 @@
               <div class="contact-info-item__icon">📍</div>
               <div>
                 <p class="contact-info-item__label">Địa Chỉ</p>
-                <p class="contact-info-item__value">Thôn Bát Tràng, Xã Bát Tràng,<br>Huyện Gia Lâm, Hà Nội</p>
+                <p class="contact-info-item__value js-config-address-text">Thôn Bát Tràng, Xã Bát Tràng,<br>Huyện Gia Lâm, Hà Nội</p>
+              </div>
+            </div>
+
+            <div class="contact-info-item reveal" data-delay="200">
+              <div class="contact-info-item__icon">⏰</div>
+              <div>
+                <p class="contact-info-item__label">Giờ Mở Cửa</p>
+                <p class="contact-info-item__value js-config-working-hours">08:00 - 18:00 (Từ Thứ 2 - Chủ Nhật)</p>
               </div>
             </div>
 
@@ -321,25 +329,25 @@
               <p class="contact-info-item__label" style="margin-bottom:var(--space-3);">Theo Dõi Chúng Tôi</p>
               <div class="contact-social" aria-label="Mạng xã hội">
                 <!-- Facebook -->
-                <a class="contact-social__link contact-social__link--fb" href="#" target="_blank" rel="noopener" aria-label="Facebook">
+                <a class="contact-social__link contact-social__link--fb js-config-fb-link" href="#" target="_blank" rel="noopener" aria-label="Facebook">
                   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M24 12.073C24 5.404 18.627 0 12 0S0 5.404 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.532-4.697 1.313 0 2.686.236 2.686.236v2.971h-1.513c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
                   </svg>
                 </a>
                 <!-- YouTube -->
-                <a class="contact-social__link contact-social__link--yt" href="#" target="_blank" rel="noopener" aria-label="YouTube">
+                <a class="contact-social__link contact-social__link--yt js-config-yt-link" href="#" target="_blank" rel="noopener" aria-label="YouTube">
                   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                   </svg>
                 </a>
                 <!-- TikTok -->
-                <a class="contact-social__link contact-social__link--tt" href="#" target="_blank" rel="noopener" aria-label="TikTok">
+                <a class="contact-social__link contact-social__link--tt js-config-tt-link" href="#" target="_blank" rel="noopener" aria-label="TikTok">
                   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.53V6.75a4.85 4.85 0 0 1-1.01-.06z"/>
                   </svg>
                 </a>
                 <!-- Zalo -->
-                <a class="contact-social__link contact-social__link--zalo" href="#" target="_blank" rel="noopener" aria-label="Zalo">
+                <a class="contact-social__link contact-social__link--zalo js-config-zalo-link" href="#" target="_blank" rel="noopener" aria-label="Zalo">
                   <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
                     <path d="M25 2C12.318 2 2 12.317 2 25c0 3.96 1.023 7.854 2.963 11.29L2.037 46.73a1 1 0 0 0 1.232 1.232l10.44-2.926C17.15 46.977 21.044 48 25 48c12.683 0 23-10.317 23-23S37.683 2 25 2zm-8.988 15h12.501a1 1 0 0 1 .73 1.684L20.56 27H29a1 1 0 1 1 0 2H16.5a1 1 0 0 1-.73-1.684L24.44 19H16.012a1 1 0 1 1 0-2zm-1.512 8c0-.553.447-1 1-1 .553 0 1 .447 1 1s-.447 1-1 1c-.553 0-1-.447-1-1zm13 6c-2.206 0-4-1.794-4-4s1.794-4 4-4 4 1.794 4 4-1.794 4-4 4zm0-6c-1.103 0-2 .897-2 2s.897 2 2 2 2-.897 2-2-.897-2-2-2z"/>
                   </svg>
@@ -391,8 +399,8 @@
           </div>
         </div>
       </div>
-      <div class="contact-map reveal" data-delay="300">
-              <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3725.286118035743!2d105.91164137525527!3d20.981164980656313!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjDCsDU4JzUyLjIiTiAxMDXCsDU0JzUxLjIiRQ!5e0!3m2!1svi!2s!4v1779173413286!5m2!1svi!2s" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <div class="contact-map reveal js-config-map-iframe" data-delay="300">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3725.286118035743!2d105.91164137525527!3d20.981164980656313!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjDCsDU4JzUyLjIiTiAxMDXCsDU0JzUxLjIiRQ!5e0!3m2!1svi!2s!4v1779173413286!5m2!1svi!2s" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
     </section>
 

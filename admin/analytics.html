@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Thống Kê – Phúc Gia Tiên Admin</title>
+<link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/components.css">
+</head>
+<body class="admin-layout">
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="sidebar-header"><div class="sidebar-brand"><div class="sidebar-brand__icon">⚱️</div><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
+  <nav class="sidebar-nav">
+    <span class="sidebar-section-label">Tổng quan</span>
+    <ul class="sidebar-nav__list"><li><a href="index.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li></ul>
+    <span class="sidebar-section-label">Kinh doanh</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="products.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
+      <li><a href="orders.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
+      <li><a href="customers.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
+    </ul>
+    <span class="sidebar-section-label">Danh mục</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="sidebar-nav__text">Danh mục</span></a></li>
+      <li><a href="journey.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
+      <li><a href="analytics.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
+    </ul>
+    <span class="sidebar-section-label">Hệ thống</span>
+    <ul class="sidebar-nav__list"><li><a href="settings.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-nav__text">Cài đặt</span></a></li></ul>
+  </nav>
+  <div class="sidebar-footer"><div class="sidebar-user js-logout"><div class="sidebar-user__avatar js-admin-initial">A</div><div class="sidebar-user__info"><div class="sidebar-user__name js-admin-name">Admin</div><div class="sidebar-user__role">Quản trị viên</div></div><button class="sidebar-user__logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="admin-main-wrapper">
+  <header class="admin-topbar">
+    <button class="topbar-toggle" id="sidebarToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="topbar-breadcrumb"><span class="topbar-breadcrumb__item">Danh mục</span><span class="topbar-breadcrumb__separator">›</span><span class="topbar-breadcrumb__current">Thống kê</span></div>
+    <div class="topbar-actions"><div class="topbar-user" id="topbarUser"><div class="topbar-user__avatar js-admin-initial">A</div><span class="topbar-user__name js-admin-name">Admin</span></div></div>
+  </header>
+
+  <main class="admin-content">
+    <div class="page-header">
+      <div><h1 class="page-title">Thống Kê & Báo Cáo</h1><p class="page-subtitle">Phân tích doanh thu và hiệu suất kinh doanh</p></div>
+    </div>
+
+    <!-- KPI Row -->
+    <div class="analytics-kpi-grid">
+      <div class="kpi-card"><div class="kpi-card__icon kpi-card__icon--gold"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C8922A" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div class="kpi-card__body"><div class="kpi-card__label">Doanh thu T5/2026</div><div class="kpi-card__value" id="an-revenue">512tr</div><div class="kpi-card__change kpi-card__change--up">↑ 32% so T4</div></div></div>
+      <div class="kpi-card"><div class="kpi-card__icon kpi-card__icon--green"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="kpi-card__body"><div class="kpi-card__label">Giá trị đơn TB (AOV)</div><div class="kpi-card__value" id="an-aov">33tr</div><div class="kpi-card__change kpi-card__change--up">↑ 8% tháng này</div></div></div>
+      <div class="kpi-card"><div class="kpi-card__icon kpi-card__icon--blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="kpi-card__body"><div class="kpi-card__label">Khách quay lại</div><div class="kpi-card__value" id="an-return">68%</div><div class="kpi-card__change kpi-card__change--up">↑ 5% so kỳ trước</div></div></div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="dashboard-grid" style="margin-bottom:var(--sp-6)">
+      <div class="card">
+        <div class="card-header"><span class="card-title">📈 Doanh Thu 6 Tháng</span></div>
+        <div class="card-body"><div class="chart-wrap" id="monthly-chart" style="min-height:260px"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">🥧 Phân Bổ Doanh Thu Theo Danh Mục</span></div>
+        <div class="card-body">
+          <div class="analytics-donut-wrap" style="display:flex;align-items:center;justify-content:center;gap:var(--sp-8)">
+            <div id="donut-chart"></div>
+            <div id="donut-legend" class="chart-legend" style="flex-direction:column;gap:var(--sp-3)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly breakdown table -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">📊 Chi Tiết Doanh Thu Theo Tháng</span></div>
+      <div class="table-wrap" style="border:none;box-shadow:none;border-radius:0">
+        <table class="data-table">
+          <thead><tr><th>Tháng</th><th>Doanh thu</th><th>So tháng trước</th><th>Tỉ trọng</th></tr></thead>
+          <tbody id="monthly-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="admin-toast-container"></div>
+<script src="js/admin-data.js"></script><script src="js/admin-core.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  AdminData.analytics.getDashboardData().then(function(data){
+    
+  // Monthly line chart
+  var chartEl=document.getElementById('monthly-chart');
+  if(chartEl){
+    var d=data.monthlyRevenue;
+    var W=chartEl.clientWidth||560, H=250;
+    var pad={top:20,right:20,bottom:40,left:65};
+    var cW=W-pad.left-pad.right, cH=H-pad.top-pad.bottom;
+    var maxV=Math.max.apply(null,d.map(function(x){return x.revenue;}));
+    function xP(i){return pad.left+i*(cW/(d.length-1));}
+    function yP(v){return pad.top+cH-((v/maxV)*cH);}
+    var pts=d.map(function(x,i){return{x:xP(i),y:yP(x.revenue)};});
+    function smoothPath(pts){
+      var s='M '+pts[0].x+' '+pts[0].y;
+      for(var i=0;i<pts.length-1;i++){var cx=(pts[i].x+pts[i+1].x)/2;s+=' C '+cx+' '+pts[i].y+','+cx+' '+pts[i+1].y+','+pts[i+1].x+' '+pts[i+1].y;}
+      return s;
+    }
+    var lp=smoothPath(pts);
+    var ap=lp+' L '+pts[pts.length-1].x+' '+(pad.top+cH)+' L '+pts[0].x+' '+(pad.top+cH)+' Z';
+    var svg='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">';
+    svg+='<defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C8922A" stop-opacity=".2"/><stop offset="100%" stop-color="#C8922A" stop-opacity="0"/></linearGradient></defs>';
+    for(var g=0;g<=4;g++){var gy=pad.top+cH-(g/4)*cH;svg+='<line x1="'+pad.left+'" y1="'+gy+'" x2="'+(pad.left+cW)+'" y2="'+gy+'" stroke="rgba(0,0,0,.05)" stroke-dasharray="4,4"/><text x="'+(pad.left-8)+'" y="'+(gy+4)+'" text-anchor="end" font-size="11" fill="#9B8B75">'+Math.round(maxV*g/4/1e6)+'tr</text>';}
+    d.forEach(function(x,i){svg+='<text x="'+xP(i)+'" y="'+(pad.top+cH+22)+'" text-anchor="middle" font-size="11" fill="#9B8B75">'+x.label+'</text>';});
+    svg+='<path d="'+ap+'" fill="url(#mg)"/>';
+    svg+='<path d="'+lp+'" fill="none" stroke="#C8922A" stroke-width="2.5" stroke-linecap="round"/>';
+    pts.forEach(function(p,i){svg+='<circle cx="'+p.x+'" cy="'+p.y+'" r="5" fill="#C8922A" stroke="#fff" stroke-width="2.5"/><title>'+d[i].label+': '+(d[i].revenue/1e6).toFixed(0)+'tr</title>';});
+    svg+='</svg>';
+    chartEl.innerHTML=svg;
+  }
+
+  // Donut chart
+  var donutEl=document.getElementById('donut-chart');
+  var legendEl=document.getElementById('donut-legend');
+  if(donutEl){
+    var cats=data.categoryRevenue;
+    var R=80, r=50, cx=100, cy=100;
+    var total=cats.reduce(function(s,c){return s+c.value;},0);
+    var svg='<svg width="200" height="200" viewBox="0 0 200 200">';
+    var angle=-90;
+    cats.forEach(function(c){
+      var slice=(c.value/total)*360;
+      var rad=Math.PI/180;
+      var x1=cx+R*Math.cos(angle*rad), y1=cy+R*Math.sin(angle*rad);
+      var x2=cx+R*Math.cos((angle+slice)*rad), y2=cy+R*Math.sin((angle+slice)*rad);
+      var xi1=cx+r*Math.cos(angle*rad), yi1=cy+r*Math.sin(angle*rad);
+      var xi2=cx+r*Math.cos((angle+slice)*rad), yi2=cy+r*Math.sin((angle+slice)*rad);
+      var large=slice>180?1:0;
+      svg+='<path d="M '+x1+' '+y1+' A '+R+' '+R+' 0 '+large+' 1 '+x2+' '+y2+' L '+xi2+' '+yi2+' A '+r+' '+r+' 0 '+large+' 0 '+xi1+' '+yi1+' Z" fill="'+c.color+'" stroke="#fff" stroke-width="2"/>';
+      angle+=slice;
+    });
+    svg+='<text x="100" y="95" text-anchor="middle" font-size="14" font-weight="700" fill="#1A0F05">Doanh thu</text>';
+    svg+='<text x="100" y="115" text-anchor="middle" font-size="12" fill="#9B8B75">danh mục</text>';
+    svg+='</svg>';
+    donutEl.innerHTML=svg;
+    legendEl.innerHTML=cats.map(function(c){return '<div class="chart-legend__item"><div class="chart-legend__dot" style="background:'+c.color+'"></div><span>'+c.name+' ('+c.value+'%)</span></div>';}).join('');
+  }
+
+  // Monthly table
+  var d=data.monthlyRevenue;
+  var maxRev=Math.max.apply(null,d.map(function(x){return x.revenue;}));
+  var tbody=document.getElementById('monthly-table');
+  if(tbody){
+    tbody.innerHTML=d.map(function(x,i){
+      var prev=i>0?d[i-1].revenue:null;
+      var change=prev?((x.revenue-prev)/prev*100).toFixed(1):null;
+      var changeHtml=change?('<span style="color:'+(change>0?'var(--success)':'var(--danger)')+';">'+(change>0?'↑':'↓')+Math.abs(change)+'%</span>'):'—';
+      var pct=Math.round(x.revenue/maxRev*100);
+      return '<tr>'+
+        '<td><strong>'+x.label+'</strong></td>'+
+        '<td><strong style="color:var(--accent)">'+AdminData.fmtShort(x.revenue)+'</strong></td>'+
+        '<td>'+changeHtml+'</td>'+
+        '<td style="min-width:120px"><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="flex:1;margin:0"><div class="progress-bar__fill" style="width:'+pct+'%"></div></div><span style="font-size:var(--fs-xs);color:var(--text-muted);white-space:nowrap">'+pct+'%</span></div></td>'+
+      '</tr>';
+    }).join('');
+  }
+  }).catch(function(e) { console.error("Error loading analytics:", e); });
+});
+</script>
+</body></html>

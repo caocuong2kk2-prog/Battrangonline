@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Đơn Hàng – Phúc Gia Tiên Admin</title>
+<link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/components.css">
+<style>
+.status-tab-bar{display:flex;gap:var(--sp-2);flex-wrap:wrap;margin-bottom:var(--sp-5)}
+.status-tab{padding:8px 14px;border-radius:var(--r-full);font-size:var(--fs-xs);font-weight:var(--fw-semibold);color:var(--text-muted);background:#fff;border:1.5px solid var(--border);cursor:pointer;transition:all var(--t-fast);white-space:nowrap}
+.status-tab.active,.status-tab:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tab-count{background:rgba(255,255,255,.25);border-radius:var(--r-full);padding:0 5px;font-size:10px;margin-left:3px}
+.order-lines{margin-top:var(--sp-3)}
+.order-lines__head{display:grid;grid-template-columns:1fr 90px 110px 36px;gap:var(--sp-3);font-size:var(--fs-xs);font-weight:var(--fw-semibold);color:var(--text-muted);margin-bottom:var(--sp-2);padding:0 var(--sp-1)}
+.order-line{display:grid;grid-template-columns:1fr 90px 110px 36px;gap:var(--sp-3);align-items:center;margin-bottom:var(--sp-3)}
+.order-line__subtotal{font-size:var(--fs-sm);font-weight:var(--fw-semibold);color:var(--accent);text-align:right}
+.order-create-total{display:flex;justify-content:space-between;align-items:center;padding:var(--sp-4) 0;border-top:2px solid var(--border);margin-top:var(--sp-2)}
+@media(max-width:640px){
+  .order-lines__head{display:none}
+  .order-line{grid-template-columns:1fr;gap:var(--sp-2)}
+  .order-line__subtotal{text-align:left}
+}
+</style>
+</head>
+<body class="admin-layout">
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="sidebar-header"><div class="sidebar-brand"><div class="sidebar-brand__icon">⚱️</div><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
+  <nav class="sidebar-nav">
+    <span class="sidebar-section-label">Tổng quan</span>
+    <ul class="sidebar-nav__list"><li><a href="index.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li></ul>
+    <span class="sidebar-section-label">Kinh doanh</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="products.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
+      <li><a href="orders.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
+      <li><a href="customers.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
+    </ul>
+    <span class="sidebar-section-label">Danh mục</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="sidebar-nav__text">Danh mục</span></a></li>
+      <li><a href="journey.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
+      <li><a href="analytics.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
+    </ul>
+    <span class="sidebar-section-label">Hệ thống</span>
+    <ul class="sidebar-nav__list"><li><a href="settings.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-nav__text">Cài đặt</span></a></li></ul>
+  </nav>
+  <div class="sidebar-footer"><div class="sidebar-user js-logout"><div class="sidebar-user__avatar js-admin-initial">A</div><div class="sidebar-user__info"><div class="sidebar-user__name js-admin-name">Admin</div><div class="sidebar-user__role">Quản trị viên</div></div><button class="sidebar-user__logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="admin-main-wrapper">
+  <header class="admin-topbar">
+    <button class="topbar-toggle" id="sidebarToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="topbar-breadcrumb"><span class="topbar-breadcrumb__item">Kinh doanh</span><span class="topbar-breadcrumb__separator">›</span><span class="topbar-breadcrumb__current">Đơn hàng</span></div>
+    <div class="topbar-actions"><div class="topbar-user" id="topbarUser"><div class="topbar-user__avatar js-admin-initial">A</div><span class="topbar-user__name js-admin-name">Admin</span></div></div>
+  </header>
+
+  <main class="admin-content">
+    <div class="page-header">
+      <div><h1 class="page-title">Quản Lý Đơn Hàng</h1><p class="page-subtitle">Theo dõi và xử lý đơn hàng từ khách hàng</p></div>
+      <div class="page-header__actions"><button class="btn btn--primary" id="btn-add-order" type="button">➕ Thêm đơn hàng</button></div>
+    </div>
+
+    <div class="status-tab-bar" id="order-status-tabs"></div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <svg class="search-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-box__input" id="order-search" type="search" placeholder="Tìm mã đơn, tên khách, SĐT...">
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th class="hide-mobile">Sản phẩm</th><th>Tổng tiền</th><th class="hide-mobile">Ngày đặt</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
+        <tbody id="orders-table-body"></tbody>
+      </table>
+      <div class="pagination" id="orders-pagination"></div>
+    </div>
+  </main>
+</div>
+
+<!-- Create Order Modal -->
+<div class="modal-overlay" id="orderCreateModal">
+  <div class="modal modal--lg">
+    <div class="modal-header">
+      <h2 class="modal-title">Thêm Đơn Hàng Mới</h2>
+      <button class="modal-close" data-close-modal="orderCreateModal" type="button">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="order-create-form">
+        <div class="order-detail-box" style="margin-bottom:var(--sp-5)">
+          <div class="order-detail-box__title">👤 Thông tin khách hàng</div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Họ tên <span>*</span></label><input class="form-control" name="customer" type="text" placeholder="Nguyễn Văn A" required></div>
+            <div class="form-group"><label class="form-label">Số điện thoại <span>*</span></label><input class="form-control" name="phone" type="tel" placeholder="0901234567" required></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Email</label><input class="form-control" name="email" type="email" placeholder="email@example.com"></div>
+            <div class="form-group"><label class="form-label">Trạng thái</label>
+              <select class="form-control" name="status">
+                <option value="pending">Chờ xác nhận</option>
+                <option value="confirmed">Đã xác nhận</option>
+                <option value="shipping">Đang giao hàng</option>
+                <option value="completed">Hoàn thành</option>
+                <option value="cancelled">Đã huỷ</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Địa chỉ giao hàng <span>*</span></label><input class="form-control" name="address" type="text" placeholder="Số nhà, phường, quận, tỉnh..." required></div>
+          <div class="form-group" style="margin-bottom:0"><label class="form-label">Ghi chú</label><textarea class="form-control" name="note" rows="2" placeholder="Ghi chú đơn hàng (tuỳ chọn)"></textarea></div>
+        </div>
+        <div class="order-detail-box">
+          <div class="order-detail-box__title" style="display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3)">
+            <span>🛒 Sản phẩm</span>
+            <button class="btn btn--sm btn--secondary" type="button" id="btn-add-order-line">➕ Thêm dòng</button>
+          </div>
+          <div class="order-lines">
+            <div class="order-lines__head"><span>Sản phẩm</span><span>Số lượng</span><span style="text-align:right">Thành tiền</span><span></span></div>
+            <div id="order-create-lines"></div>
+          </div>
+          <div class="order-create-total">
+            <span style="font-weight:var(--fw-semibold)">Tổng cộng</span>
+            <span id="order-create-total" style="font-family:var(--font-heading);font-size:var(--fs-xl);font-weight:var(--fw-bold);color:var(--accent)">0đ</span>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--secondary" data-close-modal="orderCreateModal" type="button">Huỷ</button>
+      <button class="btn btn--primary" id="btn-save-order" type="button">💾 Tạo đơn hàng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Order Detail Modal -->
+<div class="modal-overlay" id="orderDetailModal">
+  <div class="modal modal--lg">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title">Chi Tiết Đơn Hàng <span id="order-detail-id" style="color:var(--accent)"></span></h2>
+        <div id="order-detail-status" style="margin-top:var(--sp-1)"></div>
+      </div>
+      <button class="modal-close" data-close-modal="orderDetailModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="order-detail-grid">
+        <div class="order-detail-box"><div class="order-detail-box__title">👤 Thông tin khách hàng</div><div id="order-detail-customer"></div></div>
+        <div class="order-detail-box"><div class="order-detail-box__title">📦 Cập nhật trạng thái</div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Trạng thái mới</label>
+            <select class="form-control" id="order-detail-status-select">
+              <option value="pending">Chờ xác nhận</option>
+              <option value="confirmed">Đã xác nhận</option>
+              <option value="shipping">Đang giao hàng</option>
+              <option value="completed">Hoàn thành</option>
+              <option value="cancelled">Đã huỷ</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="order-detail-box"><div class="order-detail-box__title">🛒 Sản phẩm đặt mua</div><div id="order-detail-items"></div></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--secondary" data-close-modal="orderDetailModal">Đóng</button>
+      <button class="btn btn--primary" id="btn-confirm-status">✅ Cập nhật trạng thái</button>
+    </div>
+  </div>
+</div>
+
+<div id="admin-toast-container"></div>
+<script src="js/admin-data.js"></script><script src="js/admin-core.js"></script><script src="js/orders-admin.js"></script>
+</body></html>

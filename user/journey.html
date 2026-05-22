@@ -233,7 +233,7 @@
     <!-- PAGE HERO -->
     <section class="page-hero" aria-label="Hành trình Phúc Gia Tiên">
       <div class="page-hero__bg">
-        <img src="assets/images/journey-hero.jpg" alt="" role="presentation" loading="eager">
+        <img class="js-config-page-banner-img" src="assets/images/journey-hero.jpg" alt="" role="presentation" loading="eager">
       </div>
       <div class="container">
         <div class="page-hero__content">
@@ -246,194 +246,19 @@
       </div>
     </section>
 
-    <!-- STORY TABS SECTION -->
+    <!-- STORY TABS SECTION – rendered dynamically by journey.js -->
     <section class="section section--dark" aria-labelledby="story-tabs-heading">
       <div class="container">
         <h2 id="story-tabs-heading" class="sr-only">Nội dung hành trình</h2>
-        <nav class="story-tabs" role="tablist" aria-label="Các tab hành trình">
-          <button class="story-tab-btn active" role="tab" data-tab="tat-ca" aria-selected="true" id="tab-tat-ca">Tất
-            cả</button>
-          <button class="story-tab-btn" role="tab" data-tab="qua-trinh" aria-selected="false" id="tab-qua-trinh">Quá
-            Trình Xây Dựng</button>
-          <button class="story-tab-btn" role="tab" data-tab="hau-truong" aria-selected="false" id="tab-hau-truong">Hậu
-            Trường Xưởng</button>
-          <button class="story-tab-btn" role="tab" data-tab="cau-chuyen" aria-selected="false" id="tab-cau-chuyen">Câu
-            Chuyện</button>
+
+        <!-- Tab buttons: rendered by journey.js -->
+        <nav class="story-tabs" role="tablist" aria-label="Các tab hành trình" id="journey-tabs-container">
+          <!-- JS will inject: "Tất cả" tab + one tab per topic -->
         </nav>
 
-        <!-- Tab: Tóc Ký (Timeline replaced by Video Grid) -->
-        <div class="story-panel active" id="panel-tat-ca" role="tabpanel" aria-labelledby="tab-tat-ca">
-          <div class="video-grid" id="video-grid-tat-ca">
-            <div class="video-card reveal">
-              <img class="video-card__thumb" src="assets/images/video-thumb-1.jpg" alt="Video" loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play" aria-label="Phát video">▶</div>
-                <span class="video-card__duration">05:43</span>
-              </div>
-              <p class="video-card__title">Khởi đầu từ tình yêu</p>
-            </div>
-            <div class="video-card reveal" data-delay="100">
-              <img class="video-card__thumb" src="assets/images/video-thumb-2.jpg" alt="Video" loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play" aria-label="Phát video">▶</div>
-                <span class="video-card__duration">03:15</span>
-              </div>
-              <p class="video-card__title">Mở xưởng riêng</p>
-            </div>
-            <div class="video-card reveal" data-delay="200">
-              <img class="video-card__thumb" src="assets/images/video-thumb-3.jpg" alt="Video" loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play" aria-label="Phát video">▶</div>
-                <span class="video-card__duration">04:20</span>
-              </div>
-              <p class="video-card__title">Vượt qua đại dịch</p>
-            </div>
-            <div class="video-card reveal" data-delay="300">
-              <img class="video-card__thumb" src="assets/images/video-thumb-4.jpg" alt="Video" loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play" aria-label="Phát video">▶</div>
-                <span class="video-card__duration">06:12</span>
-              </div>
-              <p class="video-card__title">Phát triển và lan rộng</p>
-            </div>
-            <div class="video-card reveal" data-delay="400">
-              <img class="video-card__thumb" src="assets/images/video-thumb-5.jpg" alt="Video" loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play" aria-label="Phát video">▶</div>
-                <span class="video-card__duration">02:50</span>
-              </div>
-              <p class="video-card__title">Giao lưu nghệ nhân</p>
-            </div>
-            <div class="video-card reveal" data-delay="500">
-              <img class="video-card__thumb" src="assets/images/video-thumb-6.jpg" alt="Video" loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play" aria-label="Phát video">▶</div>
-                <span class="video-card__duration">08:05</span>
-              </div>
-              <p class="video-card__title">Thành quả năm nay</p>
-            </div>
-          </div>
-          <a class="btn btn--outline btn-load-more" href="#" id="load-more-tat-ca-btn">Xem Thêm Video</a>
-        </div>
-
-        <!-- Tab: Video gallery -->
-        <div class="story-panel" id="panel-qua-trinh" role="tabpanel" aria-labelledby="tab-qua-trinh">
-          <div class="video-grid" id="video-grid-qua-trinh">
-            <!-- Video cards -->
-            <div class="video-card reveal">
-              <img class="video-card__thumb" src="assets/images/video-thumb-1.jpg" alt="Quá trình tạo hình"
-                loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play" aria-label="Phát video">▶</div>
-                <span class="video-card__duration">05:43</span>
-              </div>
-              <p class="video-card__title">Quá trình tạo hình</p>
-            </div>
-            <div class="video-card reveal" data-delay="100">
-              <img class="video-card__thumb" src="assets/images/video-thumb-2.jpg" alt="Vẽ thủ công" loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play" aria-label="Phát video">▶</div>
-                <span class="video-card__duration">03:15</span>
-              </div>
-              <p class="video-card__title">Vẽ thủ công</p>
-            </div>
-            <div class="video-card reveal" data-delay="200">
-              <img class="video-card__thumb" src="assets/images/video-thumb-3.jpg" alt="Nung 1.200°C" loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play" aria-label="Phát video">▶</div>
-                <span class="video-card__duration">03:20</span>
-              </div>
-              <p class="video-card__title">Nung 1.200°C</p>
-            </div>
-          </div>
-          <a class="btn btn--outline btn-load-more" href="#" id="load-more-videos-btn">Xem Thêm Video</a>
-        </div>
-
-        <!-- Tab: Hậu trường -->
-        <div class="story-panel" id="panel-hau-truong" role="tabpanel" aria-labelledby="tab-hau-truong">
-          <div class="video-grid">
-            <div class="video-card reveal">
-              <img class="video-card__thumb" src="assets/images/video-thumb-4.jpg" alt="Hậu trường xưởng"
-                loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play">▶</div>
-                <span class="video-card__duration">08:18</span>
-              </div>
-              <p class="video-card__title">Hậu trường xưởng</p>
-            </div>
-            <div class="video-card reveal" data-delay="100">
-              <img class="video-card__thumb" src="assets/images/video-thumb-5.jpg" alt="Lần đầu thất bại"
-                loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play">▶</div>
-                <span class="video-card__duration">06:25</span>
-              </div>
-              <p class="video-card__title">Lần đầu thất bại</p>
-            </div>
-            <div class="video-card reveal" data-delay="200">
-              <img class="video-card__thumb" src="assets/images/video-thumb-6.jpg" alt="Thành quả nghề" loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play">▶</div>
-                <span class="video-card__duration">04:10</span>
-              </div>
-              <p class="video-card__title">Thành quả nghề</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tab: Câu chuyện -->
-        <div class="story-panel" id="panel-cau-chuyen" role="tabpanel" aria-labelledby="tab-cau-chuyen">
-          <div class="video-grid" id="video-grid-cau-chuyen">
-            <div class="video-card reveal">
-              <img class="video-card__thumb" src="assets/images/video-thumb-4.jpg" alt="Video" loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play" aria-label="Phát video">▶</div>
-                <span class="video-card__duration">07:20</span>
-              </div>
-              <p class="video-card__title">Câu chuyện làm gốm</p>
-            </div>
-            <div class="video-card reveal" data-delay="100">
-              <img class="video-card__thumb" src="assets/images/video-thumb-5.jpg" alt="Video" loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play" aria-label="Phát video">▶</div>
-                <span class="video-card__duration">04:15</span>
-              </div>
-              <p class="video-card__title">Tâm huyết người thợ</p>
-            </div>
-            <div class="video-card reveal" data-delay="200">
-              <img class="video-card__thumb" src="assets/images/video-thumb-6.jpg" alt="Video" loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play" aria-label="Phát video">▶</div>
-                <span class="video-card__duration">05:10</span>
-              </div>
-              <p class="video-card__title">Những mẻ lò đầu tiên</p>
-            </div>
-            <div class="video-card reveal" data-delay="300">
-              <img class="video-card__thumb" src="assets/images/video-thumb-1.jpg" alt="Video" loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play" aria-label="Phát video">▶</div>
-                <span class="video-card__duration">06:45</span>
-              </div>
-              <p class="video-card__title">Giữ lửa truyền thống</p>
-            </div>
-            <div class="video-card reveal" data-delay="400">
-              <img class="video-card__thumb" src="assets/images/video-thumb-2.jpg" alt="Video" loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play" aria-label="Phát video">▶</div>
-                <span class="video-card__duration">03:30</span>
-              </div>
-              <p class="video-card__title">Kỷ niệm Bát Tràng</p>
-            </div>
-            <div class="video-card reveal" data-delay="500">
-              <img class="video-card__thumb" src="assets/images/video-thumb-3.jpg" alt="Video" loading="lazy">
-              <div class="video-card__overlay">
-                <div class="video-card__play" aria-label="Phát video">▶</div>
-                <span class="video-card__duration">08:20</span>
-              </div>
-              <p class="video-card__title">Hành trình vạn dặm</p>
-            </div>
-          </div>
-          <a class="btn btn--outline btn-load-more" href="#" id="load-more-cau-chuyen-btn">Xem Thêm Video</a>
+        <!-- Video grid: rendered by journey.js -->
+        <div id="journey-videos-container">
+          <!-- JS will inject video cards here -->
         </div>
 
       </div>
@@ -447,25 +272,7 @@
   <script src="js/api.js"></script>
   <script src="js/cart.js"></script>
   <script src="js/common.js"></script>
-  <script>
-    // Story tabs logic
-    document.addEventListener('DOMContentLoaded', function () {
-      var tabBtns = document.querySelectorAll('.story-tab-btn');
-      var panels = document.querySelectorAll('.story-panel');
-
-      tabBtns.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          var target = btn.dataset.tab;
-          tabBtns.forEach(function (b) { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
-          panels.forEach(function (p) { p.classList.remove('active'); });
-          btn.classList.add('active');
-          btn.setAttribute('aria-selected', 'true');
-          var panel = document.getElementById('panel-' + target);
-          if (panel) panel.classList.add('active');
-        });
-      });
-    });
-  </script>
+  <script src="js/journey.js"></script>
 </body>
 
 </html>

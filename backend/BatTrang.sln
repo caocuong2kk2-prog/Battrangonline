@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatTrang.Core", "BatTrang.Core\BatTrang.Core.csproj", "{416CC103-9DFB-4FA0-BF5F-8A558DA77C59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatTrang.Infrastructure", "BatTrang.Infrastructure\BatTrang.Infrastructure.csproj", "{D046C19D-25AE-44DB-8DDF-9656839E3999}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatTrang.API", "BatTrang.API\BatTrang.API.csproj", "{A11D106B-7233-4246-98FE-A9D35817A122}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{416CC103-9DFB-4FA0-BF5F-8A558DA77C59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{416CC103-9DFB-4FA0-BF5F-8A558DA77C59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{416CC103-9DFB-4FA0-BF5F-8A558DA77C59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{416CC103-9DFB-4FA0-BF5F-8A558DA77C59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D046C19D-25AE-44DB-8DDF-9656839E3999}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D046C19D-25AE-44DB-8DDF-9656839E3999}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D046C19D-25AE-44DB-8DDF-9656839E3999}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D046C19D-25AE-44DB-8DDF-9656839E3999}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A11D106B-7233-4246-98FE-A9D35817A122}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A11D106B-7233-4246-98FE-A9D35817A122}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A11D106B-7233-4246-98FE-A9D35817A122}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A11D106B-7233-4246-98FE-A9D35817A122}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

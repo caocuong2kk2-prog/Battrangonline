@@ -499,10 +499,220 @@
   window.initScrollReveal = initScrollReveal;
 
   // ======================================================
+  // GLOBAL CONFIGURATION SYSTEM
+  // ======================================================
+  var CONFIG_KEY = 'pgt_site_config';
+  var DEFAULT_CONFIG = {
+    storeName: "Phúc Gia Tiên – Gốm Sứ Thủ Công Bát Tràng",
+    slogan: "Tinh hoa gốm sứ Bát Tràng truyền đời",
+    phone: "0986 123 456",
+    email: "phucgatien@gmail.com",
+    address: "Thôn Bát Tràng, Xã Bát Tràng, Huyện Gia Lâm, Hà Nội",
+    facebook: "https://facebook.com/phucgatien",
+    youtube: "https://youtube.com/@phucgatien",
+    tiktok: "https://tiktok.com/@phucgatien",
+    zalo: "https://zalo.me/0986123456",
+    messenger: "https://m.me/phucgatien",
+    shipFee: 0,
+    shipMin: 5000000,
+    shipDays: "3-7 ngày",
+    shipArea: "Toàn quốc",
+    logoUrl: "assets/images/logo.png",
+    homeBanner: "assets/images/home_bg.jpeg",
+    pageBanner: "assets/images/journey-hero.jpg",
+    homeStoryImg: "assets/images/story-couple.jpg",
+    aboutStoryImg: "assets/images/about-workshop.jpg",
+    teamAvatar1: "assets/images/team-husband.jpg",
+    teamAvatar2: "assets/images/team-wife.jpg",
+    workingHours: "08:00 - 18:00 (Từ Thứ 2 - Chủ Nhật)",
+    mapIframe: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3725.564539824403!2d105.93206497607736!3d20.969992790299602!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135aef2f534125b%3A0xe54e3d3b76ca40c3!2zUGjDumMgR2lhIFRpw6puIC0gR-G7kW0gU-G7qyBCw6F0IFRyw6BuZw!5e0!3m2!1svi!2s!4v1716260000000!5m2!1svi!2s" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
+    aboutStoryTitle: "Từ Đam Mê<br>Đến <em>Thương Hiệu</em>",
+    aboutStoryText1: "Phúc Gia Tiên ra đời từ tình yêu thuần khiết với nghề gốm thủ công Bát Tràng. Từ năm 2018, hai vợ chồng chúng tôi bắt đầu học nghề, và đến nay đã xây dựng được một xưởng gốm uy tín với hàng trăm mẫu sản phẩm độc đáo.",
+    aboutStoryText2: "Mỗi sản phẩm từ Phúc Gia Tiên đều được tạo ra hoàn toàn thủ công – từ khâu nhào đất, tạo hình, vẽ hoa văn đến tráng men và nung trong lò ở nhiệt độ 1.200°C. Chúng tôi cam kết mang đến những tác phẩm gốm sứ chất lượng cao, giữ trọn giá trị nghề truyền thống.",
+    homeStoryQuote: "2 vợ chồng – 1 xưởng –<br>1 hành trình",
+    homeStoryText: "Chúng tôi bắt đầu từ con số 0. Tự tay học nghề, tự làm, tự thất bại và đứng dậy. Phúc Gia Tiên không chỉ làm gốm, chúng tôi tạo ra giá trị để truyền lại cho thế hệ sau.",
+    statYears: "4+",
+    statProducts: "1000+",
+    statCustomers: "500+",
+    teamName1: "Nguyễn Văn Phúc",
+    teamRole1: "Nghệ Nhân Chính",
+    teamBio1: "Phụ trách tạo hình và nung gốm. Hơn 6 năm kinh nghiệm với bàn xoay và lò nung truyền thống Bát Tràng.",
+    teamName2: "Lê Thị Tiên",
+    teamRole2: "Nghệ Nhân Vẽ & Sáng Tạo",
+    teamBio2: "Phụ trách vẽ hoa văn và sáng tạo mẫu mới. Mỗi nét vẽ là một câu chuyện được kể trên đất sét.",
+    coreValue1Title: "Chất Lượng",
+    coreValue1Desc: "Đặt chất lượng lên hàng đầu. Mỗi sản phẩm qua kiểm tra kỹ càng, cam kết 100% gốm sứ thủ công chính hiệu.",
+    coreValue2Title: "Tận Tâm",
+    coreValue2Desc: "Làm việc bằng cả trái tim. Từng nét vẽ, từng công đoạn đều được chú tâm và cẩn thận nhất.",
+    coreValue3Title: "Sáng Tạo",
+    coreValue3Desc: "Không ngừng đổi mới. Kết hợp họa tiết truyền thống với thiết kế hiện đại, mỗi sản phẩm là một tác phẩm độc đáo.",
+    coreValue4Title: "Uy Tín",
+    coreValue4Desc: "Giữ chữ tín với khách hàng. Hỗ trợ tận tình và chính sách đổi trả minh bạch, rõ ràng.",
+    process1Title: "1. Chuẩn bị đất",
+    process1Desc: "Chọn lựa và nhào đất sét Bát Tràng đúng độ dẻo",
+    process2Title: "2. Tạo hình",
+    process2Desc: "Vuốt đất trên bàn xoay bằng đôi bàn tay điêu luyện",
+    process3Title: "3. Vẽ tay",
+    process3Desc: "Trang trí hoa văn truyền thống bằng bút lông thủ công",
+    process4Title: "4. Nung lò",
+    process4Desc: "Nung ở nhiệt độ 1.280°C trong lò truyền thống",
+    process5Title: "5. Hoàn thiện",
+    process5Desc: "Kiểm tra, đánh bóng và đóng gói tác phẩm hoàn hảo"
+  };
+
+  // Load config & expose globally
+  var currentConfig = {};
+  try {
+    currentConfig = JSON.parse(localStorage.getItem(CONFIG_KEY)) || {};
+  } catch (e) {}
+  window.PGT_CONFIG = Object.assign({}, DEFAULT_CONFIG, currentConfig);
+
+  // Apply configuration values dynamically to annotated DOM elements
+  function applyDynamicConfig() {
+    var config = window.PGT_CONFIG;
+    var rawPhone = config.phone.replace(/\s+/g, '');
+
+    // 1. Phone number link updates
+    document.querySelectorAll('.js-config-phone-link').forEach(function (el) {
+      el.href = 'tel:' + rawPhone;
+      // If it's a contact widget title button, update title
+      if (el.classList.contains('quick-contact-btn--phone')) {
+        el.title = 'Gọi ngay: ' + config.phone;
+      }
+    });
+
+    // 2. Phone display text updates
+    document.querySelectorAll('.js-config-phone-text').forEach(function (el) {
+      el.textContent = config.phone;
+    });
+
+    // 3. Email link updates
+    document.querySelectorAll('.js-config-email-link').forEach(function (el) {
+      el.href = 'mailto:' + config.email;
+    });
+
+    // 4. Email display text updates
+    document.querySelectorAll('.js-config-email-text').forEach(function (el) {
+      el.textContent = config.email;
+    });
+
+    // 5. Address display text updates
+    document.querySelectorAll('.js-config-address-text').forEach(function (el) {
+      el.innerHTML = config.address.replace(/\n/g, '<br>');
+    });
+
+    // 6. Social link updates
+    document.querySelectorAll('.js-config-fb-link').forEach(function (el) {
+      el.href = config.facebook || '#';
+    });
+    document.querySelectorAll('.js-config-yt-link').forEach(function (el) {
+      el.href = config.youtube || '#';
+    });
+    document.querySelectorAll('.js-config-tt-link').forEach(function (el) {
+      el.href = config.tiktok || '#';
+    });
+    document.querySelectorAll('.js-config-zalo-link').forEach(function (el) {
+      var zaloHref = config.zalo || '';
+      if (zaloHref && !zaloHref.startsWith('http') && zaloHref.match(/^[0-9]+$/)) {
+        zaloHref = 'https://zalo.me/' + zaloHref;
+      }
+      el.href = zaloHref || '#';
+    });
+    document.querySelectorAll('.js-config-messenger-link').forEach(function (el) {
+      el.href = config.messenger || '#';
+    });
+
+    // 7. Store title/slogan updates
+    document.querySelectorAll('.js-config-store-name').forEach(function (el) {
+      el.textContent = config.storeName;
+    });
+    document.querySelectorAll('.js-config-slogan').forEach(function (el) {
+      el.textContent = config.slogan;
+    });
+    document.querySelectorAll('.js-config-slogan-text').forEach(function (el) {
+      el.textContent = config.slogan;
+    });
+
+    // 8. Working hours updates
+    document.querySelectorAll('.js-config-working-hours').forEach(function (el) {
+      el.textContent = config.workingHours;
+    });
+
+    // 9. Map iframe updates
+    document.querySelectorAll('.js-config-map-iframe').forEach(function (el) {
+      el.innerHTML = config.mapIframe;
+    });
+
+    // 10. Image/Banner updates
+    document.querySelectorAll('.js-config-logo').forEach(function (el) {
+      el.src = config.logoUrl;
+    });
+    document.querySelectorAll('.js-config-home-banner-img').forEach(function (el) {
+      el.src = config.homeBanner;
+    });
+    document.querySelectorAll('.js-config-page-banner-img').forEach(function (el) {
+      el.src = config.pageBanner;
+    });
+    document.querySelectorAll('.js-config-home-story-img').forEach(function (el) {
+      el.src = config.homeStoryImg || 'assets/images/story-couple.jpg';
+    });
+    document.querySelectorAll('.js-config-about-story-img').forEach(function (el) {
+      el.src = config.aboutStoryImg || 'assets/images/about-workshop.jpg';
+    });
+    document.querySelectorAll('.js-config-team-1-img').forEach(function (el) {
+      el.src = config.teamAvatar1 || 'assets/images/team-husband.jpg';
+    });
+    document.querySelectorAll('.js-config-team-2-img').forEach(function (el) {
+      el.src = config.teamAvatar2 || 'assets/images/team-wife.jpg';
+    });
+
+    // 11. New Dynamic Contents
+    document.querySelectorAll('.js-config-home-story-quote').forEach(function(el) { el.innerHTML = config.homeStoryQuote; });
+    document.querySelectorAll('.js-config-home-story-text').forEach(function(el) { el.innerHTML = config.homeStoryText; });
+    
+    document.querySelectorAll('.js-config-about-story-title').forEach(function(el) { el.innerHTML = config.aboutStoryTitle; });
+    document.querySelectorAll('.js-config-about-story-text-1').forEach(function(el) { el.innerHTML = config.aboutStoryText1; });
+    document.querySelectorAll('.js-config-about-story-text-2').forEach(function(el) { el.innerHTML = config.aboutStoryText2; });
+    
+    document.querySelectorAll('.js-config-stat-years').forEach(function(el) { el.textContent = config.statYears; });
+    document.querySelectorAll('.js-config-stat-products').forEach(function(el) { el.textContent = config.statProducts; });
+    document.querySelectorAll('.js-config-stat-customers').forEach(function(el) { el.textContent = config.statCustomers; });
+    
+    document.querySelectorAll('.js-config-team-1-name').forEach(function(el) { el.textContent = config.teamName1; });
+    document.querySelectorAll('.js-config-team-1-role').forEach(function(el) { el.textContent = config.teamRole1; });
+    document.querySelectorAll('.js-config-team-1-bio').forEach(function(el) { el.innerHTML = config.teamBio1; });
+    
+    document.querySelectorAll('.js-config-team-2-name').forEach(function(el) { el.textContent = config.teamName2; });
+    document.querySelectorAll('.js-config-team-2-role').forEach(function(el) { el.textContent = config.teamRole2; });
+    document.querySelectorAll('.js-config-team-2-bio').forEach(function(el) { el.innerHTML = config.teamBio2; });
+
+    document.querySelectorAll('.js-config-cv-1-title').forEach(function(el) { el.textContent = config.coreValue1Title; });
+    document.querySelectorAll('.js-config-cv-1-desc').forEach(function(el) { el.innerHTML = config.coreValue1Desc; });
+    document.querySelectorAll('.js-config-cv-2-title').forEach(function(el) { el.textContent = config.coreValue2Title; });
+    document.querySelectorAll('.js-config-cv-2-desc').forEach(function(el) { el.innerHTML = config.coreValue2Desc; });
+    document.querySelectorAll('.js-config-cv-3-title').forEach(function(el) { el.textContent = config.coreValue3Title; });
+    document.querySelectorAll('.js-config-cv-3-desc').forEach(function(el) { el.innerHTML = config.coreValue3Desc; });
+    document.querySelectorAll('.js-config-cv-4-title').forEach(function(el) { el.textContent = config.coreValue4Title; });
+    document.querySelectorAll('.js-config-cv-4-desc').forEach(function(el) { el.innerHTML = config.coreValue4Desc; });
+
+    document.querySelectorAll('.js-config-proc-1-title').forEach(function(el) { el.textContent = config.process1Title; });
+    document.querySelectorAll('.js-config-proc-1-desc').forEach(function(el) { el.textContent = config.process1Desc; });
+    document.querySelectorAll('.js-config-proc-2-title').forEach(function(el) { el.textContent = config.process2Title; });
+    document.querySelectorAll('.js-config-proc-2-desc').forEach(function(el) { el.textContent = config.process2Desc; });
+    document.querySelectorAll('.js-config-proc-3-title').forEach(function(el) { el.textContent = config.process3Title; });
+    document.querySelectorAll('.js-config-proc-3-desc').forEach(function(el) { el.textContent = config.process3Desc; });
+    document.querySelectorAll('.js-config-proc-4-title').forEach(function(el) { el.textContent = config.process4Title; });
+    document.querySelectorAll('.js-config-proc-4-desc').forEach(function(el) { el.textContent = config.process4Desc; });
+    document.querySelectorAll('.js-config-proc-5-title').forEach(function(el) { el.textContent = config.process5Title; });
+    document.querySelectorAll('.js-config-proc-5-desc').forEach(function(el) { el.textContent = config.process5Desc; });
+  }
+
+  // ======================================================
   // INIT SCRIPT ON LOAD
   // ======================================================
   async function initAll() {
     await loadComponents();
+    applyDynamicConfig();
     initHeader();
     initFooter();
     initScrollReveal();

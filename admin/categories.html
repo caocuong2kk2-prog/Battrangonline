@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Danh Mục – Phúc Gia Tiên Admin</title>
+<link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/components.css">
+</head>
+<body class="admin-layout">
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="sidebar-header"><div class="sidebar-brand"><div class="sidebar-brand__icon">⚱️</div><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
+  <nav class="sidebar-nav">
+    <span class="sidebar-section-label">Tổng quan</span>
+    <ul class="sidebar-nav__list"><li><a href="index.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li></ul>
+    <span class="sidebar-section-label">Kinh doanh</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="products.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
+      <li><a href="orders.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
+      <li><a href="customers.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
+    </ul>
+    <span class="sidebar-section-label">Danh mục</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="sidebar-nav__text">Danh mục</span></a></li>
+      <li><a href="journey.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
+      <li><a href="analytics.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
+    </ul>
+    <span class="sidebar-section-label">Hệ thống</span>
+    <ul class="sidebar-nav__list"><li><a href="settings.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-nav__text">Cài đặt</span></a></li></ul>
+  </nav>
+  <div class="sidebar-footer"><div class="sidebar-user js-logout"><div class="sidebar-user__avatar js-admin-initial">A</div><div class="sidebar-user__info"><div class="sidebar-user__name js-admin-name">Admin</div><div class="sidebar-user__role">Quản trị viên</div></div><button class="sidebar-user__logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="admin-main-wrapper">
+  <header class="admin-topbar">
+    <button class="topbar-toggle" id="sidebarToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="topbar-breadcrumb"><span class="topbar-breadcrumb__item">Danh mục</span><span class="topbar-breadcrumb__separator">›</span><span class="topbar-breadcrumb__current">Quản lý danh mục</span></div>
+    <div class="topbar-actions"><div class="topbar-user" id="topbarUser"><div class="topbar-user__avatar js-admin-initial">A</div><span class="topbar-user__name js-admin-name">Admin</span></div></div>
+  </header>
+
+  <main class="admin-content">
+    <div class="page-header">
+      <div><h1 class="page-title">Danh Mục Sản Phẩm</h1><p class="page-subtitle">Quản lý phân loại sản phẩm gốm sứ</p></div>
+      <div class="page-header__actions"><button class="btn btn--primary" id="btn-add-cat">➕ Thêm danh mục</button></div>
+    </div>
+    <div class="cat-grid" id="cat-grid"></div>
+  </main>
+</div>
+
+<!-- Category Modal -->
+<div class="modal-overlay" id="catModal">
+  <div class="modal">
+    <div class="modal-header"><h2 class="modal-title" id="cat-modal-title">Thêm Danh Mục</h2><button class="modal-close" data-close-modal="catModal">✕</button></div>
+    <div class="modal-body">
+      <form id="cat-form">
+        <div class="form-group"><label class="form-label">ID danh mục <span>*</span></label><input class="form-control" name="id" type="text" placeholder="VD: binh-gom" required><div class="form-hint">Chỉ dùng chữ thường, số, dấu gạch ngang</div></div>
+        <div class="form-group"><label class="form-label">Tên danh mục <span>*</span></label><input class="form-control" name="name" type="text" placeholder="VD: Bình Gốm" required></div>
+        <div class="form-group"><label class="form-label">Biểu tượng (Emoji)</label><input class="form-control" name="icon" type="text" placeholder="VD: 🏺" maxlength="4"></div>
+        <div class="form-group"><label class="form-label">Mô tả</label><textarea class="form-control" name="desc" placeholder="Mô tả ngắn về danh mục..."></textarea></div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--secondary" data-close-modal="catModal">Huỷ</button>
+      <button class="btn btn--primary" id="btn-save-cat">💾 Lưu danh mục</button>
+    </div>
+  </div>
+</div>
+
+<div id="admin-toast-container"></div>
+<script src="js/admin-data.js"></script><script src="js/admin-core.js"></script>
+<script>
+(function(){
+  var cats = [], products = [], editId=null;
+  
+  document.addEventListener('DOMContentLoaded',function(){
+    Promise.all([
+      AdminData.categories.load(),
+      AdminData.products.load()
+    ]).then(function(res) {
+      cats = res[0];
+      products = res[1];
+      renderCats();
+      
+      document.getElementById('btn-add-cat').addEventListener('click',function(){
+        editId=null;
+        document.getElementById('cat-modal-title').textContent='Thêm Danh Mục';
+        document.getElementById('cat-form').reset();
+        document.querySelector('[name="id"]').disabled=false;
+        openModal('catModal');
+      });
+      document.getElementById('btn-save-cat').addEventListener('click',saveCat);
+      document.getElementById('cat-grid').addEventListener('click',function(e){
+        var edit=e.target.closest('.btn-edit-cat');
+        var del=e.target.closest('.btn-del-cat');
+        if(edit)openEdit(edit.dataset.id);
+        if(del)deleteCat(del.dataset.id);
+      });
+    }).catch(function(e){
+      console.error(e);
+      adminToast('Lỗi khi tải dữ liệu', 'error');
+    });
+  });
+
+  function getProductCount(catId){
+    return products.filter(function(p){return p.category===catId;}).length;
+  }
+
+  function renderCats(){
+    var grid=document.getElementById('cat-grid');
+    grid.innerHTML=cats.map(function(c){
+      var cnt=getProductCount(c.id);
+      return '<div class="cat-card">'+
+        '<div style="display:flex;align-items:flex-start;justify-content:space-between">'+
+          '<div class="cat-card__icon">'+(c.icon||'🏺')+'</div>'+
+          '<span class="badge badge--gold">'+cnt+' SP</span>'+
+        '</div>'+
+        '<div><div class="cat-card__name">'+c.name+'</div><div class="cat-card__count">'+(c.desc||'')+'</div></div>'+
+        '<div class="cat-card__actions">'+
+          '<button class="btn btn--sm btn--secondary btn-edit-cat" data-id="'+c.id+'">✏️ Sửa</button>'+
+          '<button class="btn btn--sm btn--danger btn-del-cat" data-id="'+c.id+'"'+(cnt>0?' disabled title="Xóa sản phẩm trước"':'')+'">🗑️</button>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  function openEdit(id){
+    var c=cats.find(function(x){return x.id===id;});
+    if(!c)return;
+    editId=id;
+    document.getElementById('cat-modal-title').textContent='Chỉnh Sửa Danh Mục';
+    var f=document.getElementById('cat-form');
+    f.querySelector('[name="id"]').value=c.id;
+    f.querySelector('[name="id"]').disabled=true;
+    f.querySelector('[name="name"]').value=c.name;
+    f.querySelector('[name="icon"]').value=c.icon||'';
+    f.querySelector('[name="desc"]').value=c.desc||'';
+    openModal('catModal');
+  }
+
+  function saveCat(){
+    var f=document.getElementById('cat-form');
+    var id=f.querySelector('[name="id"]').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'');
+    var name=f.querySelector('[name="name"]').value.trim();
+    if(!id||!name){adminToast('Vui lòng điền ID và tên danh mục!','error');return;}
+    
+    var data={id:id,name:name,icon:f.querySelector('[name="icon"]').value||'🏺',desc:f.querySelector('[name="desc"]').value.trim()};
+    
+    if(!editId){
+      data.isNew = true;
+      if(cats.find(function(x){return x.id===id;})){adminToast('ID đã tồn tại!','error');return;}
+    }
+
+    AdminData.categories.save(data).then(function() {
+      adminToast(editId ? 'Cập nhật danh mục thành công!' : 'Thêm danh mục thành công!','success');
+      return AdminData.categories.load();
+    }).then(function(newData) {
+      cats = newData;
+      closeModal('catModal');
+      renderCats();
+    }).catch(function(e) {
+      console.error(e);
+      adminToast('Có lỗi xảy ra', 'error');
+    });
+  }
+
+  function deleteCat(id){
+    adminConfirm('Xoá danh mục "'+id+'"?',function(){
+      AdminData.categories.delete(id).then(function() {
+        cats=cats.filter(function(c){return c.id!==id;});
+        adminToast('Đã xoá danh mục','warning');
+        renderCats();
+      }).catch(function(e) {
+        console.error(e);
+        adminToast('Lỗi khi xóa danh mục', 'error');
+      });
+    });
+  }
+}());
+</script>
+</body></html>

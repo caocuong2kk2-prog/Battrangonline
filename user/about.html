@@ -363,7 +363,7 @@
     <!-- PAGE HERO -->
     <section class="page-hero" aria-label="Giới thiệu Phúc Gia Tiên">
       <div class="page-hero__bg">
-        <img src="assets/images/about-hero.jpg" alt="" role="presentation" loading="eager">
+        <img class="js-config-page-banner-img" src="assets/images/about-hero.jpg" alt="" role="presentation" loading="eager">
       </div>
       <div class="container">
         <div class="page-hero__content">
@@ -384,15 +384,15 @@
           <!-- Text col: LEFT -->
           <div class="about-text-col reveal-left">
             <span class="about-label">Về Phúc Gia Tiên</span>
-            <h2 id="about-story-heading" class="about-heading">
+            <h2 id="about-story-heading" class="about-heading js-config-about-story-title">
               Từ Đam Mê<br>Đến <em>Thương Hiệu</em>
             </h2>
-            <p class="about-body-text">
+            <p class="about-body-text js-config-about-story-text-1">
               Phúc Gia Tiên ra đời từ tình yêu thuần khiết với nghề gốm thủ công Bát Tràng. Từ năm 2018, hai vợ chồng
               chúng tôi bắt đầu học nghề, và đến nay đã xây dựng được một xưởng gốm uy tín với hàng trăm mẫu sản phẩm
               độc đáo.
             </p>
-            <p class="about-body-text">
+            <p class="about-body-text js-config-about-story-text-2">
               Mỗi sản phẩm từ Phúc Gia Tiên đều được tạo ra hoàn toàn thủ công – từ khâu nhào đất, tạo hình, vẽ hoa văn
               đến tráng men và nung trong lò ở nhiệt độ 1.200°C. Chúng tôi cam kết mang đến những tác phẩm gốm sứ chất
               lượng cao, giữ trọn giá trị nghề truyền thống.
@@ -401,15 +401,15 @@
             <!-- Stats -->
             <div class="about-stats-bar">
               <div class="stat-item">
-                <span class="stat-item__number">4+</span>
+                <span class="stat-item__number js-config-stat-years">4+</span>
                 <span class="stat-item__label">Năm kinh nghiệm</span>
               </div>
               <div class="stat-item">
-                <span class="stat-item__number">1000+</span>
+                <span class="stat-item__number js-config-stat-products">1000+</span>
                 <span class="stat-item__label">Sản phẩm đã bán</span>
               </div>
               <div class="stat-item">
-                <span class="stat-item__number">500+</span>
+                <span class="stat-item__number js-config-stat-customers">500+</span>
                 <span class="stat-item__label">Khách hàng tin tưởng</span>
               </div>
             </div>
@@ -422,7 +422,7 @@
 
           <!-- Image col: RIGHT -->
           <div class="about-img-wrap reveal-right">
-            <img src="assets/images/about-workshop.jpg" alt="Đôi vợ chồng nghệ nhân Phúc Gia Tiên" loading="lazy">
+            <img class="js-config-about-story-img" src="assets/images/about-workshop.jpg" alt="Đôi vợ chồng nghệ nhân Phúc Gia Tiên" loading="lazy">
           </div>
 
         </div>
@@ -441,23 +441,23 @@
         <div class="values-grid">
           <div class="value-card reveal" data-delay="0">
             <div class="value-card__icon-wrap">🛡️</div>
-            <h3 class="value-card__title">Chất Lượng</h3>
-            <p class="value-card__desc">Đặt chất lượng lên hàng đầu. Mỗi sản phẩm qua kiểm tra kỹ càng, cam kết 100% gốm sứ thủ công chính hiệu.</p>
+            <h3 class="value-card__title js-config-cv-1-title">Chất Lượng</h3>
+            <p class="value-card__desc js-config-cv-1-desc">Đặt chất lượng lên hàng đầu. Mỗi sản phẩm qua kiểm tra kỹ càng, cam kết 100% gốm sứ thủ công chính hiệu.</p>
           </div>
           <div class="value-card reveal" data-delay="100">
             <div class="value-card__icon-wrap">❤️</div>
-            <h3 class="value-card__title">Tận Tâm</h3>
-            <p class="value-card__desc">Làm việc bằng cả trái tim. Từng nét vẽ, từng công đoạn đều được chú tâm và cẩn thận nhất.</p>
+            <h3 class="value-card__title js-config-cv-2-title">Tận Tâm</h3>
+            <p class="value-card__desc js-config-cv-2-desc">Làm việc bằng cả trái tim. Từng nét vẽ, từng công đoạn đều được chú tâm và cẩn thận nhất.</p>
           </div>
           <div class="value-card reveal" data-delay="200">
             <div class="value-card__icon-wrap">💡</div>
-            <h3 class="value-card__title">Sáng Tạo</h3>
-            <p class="value-card__desc">Không ngừng đổi mới. Kết hợp họa tiết truyền thống với thiết kế hiện đại, mỗi sản phẩm là một tác phẩm độc đáo.</p>
+            <h3 class="value-card__title js-config-cv-3-title">Sáng Tạo</h3>
+            <p class="value-card__desc js-config-cv-3-desc">Không ngừng đổi mới. Kết hợp họa tiết truyền thống với thiết kế hiện đại, mỗi sản phẩm là một tác phẩm độc đáo.</p>
           </div>
           <div class="value-card reveal" data-delay="300">
             <div class="value-card__icon-wrap">⭐</div>
-            <h3 class="value-card__title">Uy Tín</h3>
-            <p class="value-card__desc">Giữ chữ tín với khách hàng. Hỗ trợ tận tình và chính sách đổi trả minh bạch, rõ ràng.</p>
+            <h3 class="value-card__title js-config-cv-4-title">Uy Tín</h3>
+            <p class="value-card__desc js-config-cv-4-desc">Giữ chữ tín với khách hàng. Hỗ trợ tận tình và chính sách đổi trả minh bạch, rõ ràng.</p>
           </div>
         </div>
       </div>
@@ -483,20 +483,20 @@
         </div>
         <div class="team-grid">
           <div class="team-card reveal" data-delay="0">
-            <img class="team-card__avatar"
+            <img class="team-card__avatar js-config-team-1-img"
               src="assets/images/team-husband.jpg"
               alt="Anh - Nghệ nhân chính" loading="lazy">
-            <h3 class="team-card__name">Nguyễn Văn Phúc</h3>
-            <p class="team-card__role">Nghệ Nhân Chính</p>
-            <p class="team-card__bio">Phụ trách tạo hình và nung gốm. Hơn 6 năm kinh nghiệm với bàn xoay và lò nung truyền thống Bát Tràng.</p>
+            <h3 class="team-card__name js-config-team-1-name">Nguyễn Văn Phúc</h3>
+            <p class="team-card__role js-config-team-1-role">Nghệ Nhân Chính</p>
+            <p class="team-card__bio js-config-team-1-bio">Phụ trách tạo hình và nung gốm. Hơn 6 năm kinh nghiệm với bàn xoay và lò nung truyền thống Bát Tràng.</p>
           </div>
           <div class="team-card reveal" data-delay="150">
-            <img class="team-card__avatar"
+            <img class="team-card__avatar js-config-team-2-img"
               src="assets/images/team-wife.jpg"
               alt="Chị - Nghệ nhân vẽ" loading="lazy">
-            <h3 class="team-card__name">Lê Thị Tiên</h3>
-            <p class="team-card__role">Nghệ Nhân Vẽ & Sáng Tạo</p>
-            <p class="team-card__bio">Phụ trách vẽ hoa văn và sáng tạo mẫu mới. Mỗi nét vẽ là một câu chuyện được kể trên đất sét.</p>
+            <h3 class="team-card__name js-config-team-2-name">Lê Thị Tiên</h3>
+            <p class="team-card__role js-config-team-2-role">Nghệ Nhân Vẽ & Sáng Tạo</p>
+            <p class="team-card__bio js-config-team-2-bio">Phụ trách vẽ hoa văn và sáng tạo mẫu mới. Mỗi nét vẽ là một câu chuyện được kể trên đất sét.</p>
           </div>
         </div>
       </div>

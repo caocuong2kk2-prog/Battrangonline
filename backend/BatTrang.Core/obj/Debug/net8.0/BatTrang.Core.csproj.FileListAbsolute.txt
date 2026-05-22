@@ -1,0 +1,12 @@
+H:\WORK\Battrangonline\backend\BatTrang.Core\bin\Debug\net8.0\BatTrang.Core.deps.json
+H:\WORK\Battrangonline\backend\BatTrang.Core\bin\Debug\net8.0\BatTrang.Core.dll
+H:\WORK\Battrangonline\backend\BatTrang.Core\bin\Debug\net8.0\BatTrang.Core.pdb
+H:\WORK\Battrangonline\backend\BatTrang.Core\obj\Debug\net8.0\BatTrang.Core.GeneratedMSBuildEditorConfig.editorconfig
+H:\WORK\Battrangonline\backend\BatTrang.Core\obj\Debug\net8.0\BatTrang.Core.AssemblyInfoInputs.cache
+H:\WORK\Battrangonline\backend\BatTrang.Core\obj\Debug\net8.0\BatTrang.Core.AssemblyInfo.cs
+H:\WORK\Battrangonline\backend\BatTrang.Core\obj\Debug\net8.0\BatTrang.Core.csproj.CoreCompileInputs.cache
+H:\WORK\Battrangonline\backend\BatTrang.Core\obj\Debug\net8.0\BatTrang.Core.sourcelink.json
+H:\WORK\Battrangonline\backend\BatTrang.Core\obj\Debug\net8.0\BatTrang.Core.dll
+H:\WORK\Battrangonline\backend\BatTrang.Core\obj\Debug\net8.0\refint\BatTrang.Core.dll
+H:\WORK\Battrangonline\backend\BatTrang.Core\obj\Debug\net8.0\BatTrang.Core.pdb
+H:\WORK\Battrangonline\backend\BatTrang.Core\obj\Debug\net8.0\ref\BatTrang.Core.dll

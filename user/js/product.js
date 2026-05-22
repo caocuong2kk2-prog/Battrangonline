@@ -23,36 +23,134 @@
   // -- Populate filter selects from API --
   function populateFilters() {
     var catSel = document.getElementById('filter-category');
-    var qualSel = document.getElementById('filter-quality');
     var sizeSel = document.getElementById('filter-size');
 
-    if (catSel) {
-      PhucGiaTienAPI.getCategories().then(function (cats) {
-        cats.forEach(function (c) {
+    PhucGiaTienAPI.getFilters().then(function (filters) {
+      if (catSel) {
+        // filter out the 'all' from API if it already has one, or just clear and render
+        catSel.innerHTML = '';
+        filters.categories.forEach(function (c) {
           var opt = new Option(c.name, c.id);
           catSel.appendChild(opt);
         });
-      });
-    }
-
-    if (qualSel) {
-      PhucGiaTienAPI.getQualities().then(function (quals) {
-        quals.forEach(function (q) {
-          var opt = new Option(q.name, q.id);
-          qualSel.appendChild(opt);
-        });
-      });
-    }
-
-    if (sizeSel) {
-      PhucGiaTienAPI.getSizes().then(function (sizes) {
-        sizes.forEach(function (s) {
+      }
+      
+      if (sizeSel) {
+        sizeSel.innerHTML = '';
+        filters.sizes.forEach(function (s) {
           var opt = new Option(s.name, s.id);
           sizeSel.appendChild(opt);
         });
-      });
-    }
+      }
+
+      initCustomSelects();
+    }).catch(function(e) {
+      console.error('Error loading filters', e);
+      initCustomSelects(); // init anyway so UI doesn't break
+    });
   }
+
+  // ── Custom Select (Premium UI) ──
+  function initCustomSelects(root) {
+    var container = root || document;
+    var selects = container.querySelectorAll('select.filter-select:not(.custom-select-hidden)');
+    selects.forEach(function (select) {
+      select.classList.add('custom-select-hidden');
+      select.style.display = 'none';
+
+      var wrapper = document.createElement('div');
+      wrapper.className = 'custom-select-wrapper is-filter';
+      select.parentNode.insertBefore(wrapper, select);
+      wrapper.appendChild(select);
+
+      var trigger = document.createElement('div');
+      trigger.className = 'custom-select__trigger';
+
+      var textSpan = document.createElement('span');
+      textSpan.className = 'custom-select__text';
+      var selectedOpt = select.options[select.selectedIndex];
+      textSpan.textContent = selectedOpt ? selectedOpt.text : '';
+
+      var icon = document.createElement('div');
+      icon.className = 'custom-select__icon';
+      icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+
+      trigger.appendChild(textSpan);
+      trigger.appendChild(icon);
+
+      var optionsContainer = document.createElement('div');
+      optionsContainer.className = 'custom-select__options';
+
+      Array.from(select.options).forEach(function (option, index) {
+        var optEl = document.createElement('div');
+        optEl.className = 'custom-select__option' + (option.selected ? ' selected' : '');
+        optEl.textContent = option.text;
+        optEl.dataset.value = option.value;
+
+        optEl.addEventListener('click', function (e) {
+          e.stopPropagation();
+          select.selectedIndex = index;
+          textSpan.textContent = option.text;
+
+          var prev = optionsContainer.querySelector('.selected');
+          if (prev) prev.classList.remove('selected');
+          optEl.classList.add('selected');
+
+          wrapper.classList.remove('open');
+          optionsContainer.classList.remove('show');
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+        optionsContainer.appendChild(optEl);
+      });
+
+      wrapper.appendChild(trigger);
+      document.body.appendChild(optionsContainer);
+
+      trigger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var isOpen = wrapper.classList.contains('open');
+
+        // Close all others
+        document.querySelectorAll('.custom-select-wrapper').forEach(function (w) { w.classList.remove('open'); });
+        document.querySelectorAll('.custom-select__options').forEach(function (o) { o.classList.remove('show'); });
+
+        if (!isOpen) {
+          wrapper.classList.add('open');
+          var rect = trigger.getBoundingClientRect();
+          optionsContainer.style.top = (rect.bottom + window.scrollY + 4) + 'px';
+          optionsContainer.style.left = rect.left + 'px';
+          optionsContainer.style.width = rect.width + 'px';
+          optionsContainer.classList.add('show');
+        }
+      });
+
+      select.addEventListener('change', function () {
+        var opt = select.options[select.selectedIndex];
+        if (opt) {
+          textSpan.textContent = opt.text;
+          var prev = optionsContainer.querySelector('.selected');
+          if (prev) prev.classList.remove('selected');
+          var curr = optionsContainer.querySelector('[data-value="' + opt.value + '"]');
+          if (curr) curr.classList.add('selected');
+        }
+      });
+    });
+  }
+
+  // Close custom selects on click outside
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.custom-select-wrapper') && !e.target.closest('.custom-select__options')) {
+      document.querySelectorAll('.custom-select-wrapper').forEach(function (w) { w.classList.remove('open'); });
+      document.querySelectorAll('.custom-select__options').forEach(function (o) { o.classList.remove('show'); });
+    }
+  });
+
+  // Close custom selects on scroll (except scrolling inside the options list)
+  window.addEventListener('scroll', function (e) {
+    if (e.target.nodeType === 1 && e.target.closest('.custom-select__options')) return;
+    document.querySelectorAll('.custom-select-wrapper').forEach(function (w) { w.classList.remove('open'); });
+    document.querySelectorAll('.custom-select__options').forEach(function (o) { o.classList.remove('show'); });
+  }, true);
 
   // -- Load & render product list --
   function loadProducts() {
@@ -234,7 +332,6 @@
   function bindFilters() {
     var filterMap = {
       'filter-category': 'category',
-      'filter-quality': 'quality',
       'filter-size': 'size',
       'sort-select': 'sort',
     };
@@ -269,7 +366,7 @@
 
     container.innerHTML = '<div class="spinner" style="margin:4rem auto;"></div>';
 
-    PhucGiaTienAPI.getProduct(slug).then(function (product) {
+    PhucGiaTienAPI.getProductBySlug(slug).then(function (product) {
       renderProductDetail(container, product);
       document.title = product.name + ' – Phúc Gia Tiên';
       initGallery();
@@ -352,20 +449,71 @@
   function initGallery() {
     var mainImg = document.getElementById('gallery-main-img');
     var thumbs = document.querySelectorAll('.product-thumbnail');
-    if (!mainImg || !thumbs.length) return;
+    if (!mainImg) return;
+    
+    var images = Array.from(thumbs).map(function(t) { return t.dataset.src; });
+    if(images.length === 0) images = [mainImg.getAttribute('src')];
 
-    thumbs.forEach(function (thumb) {
-      thumb.addEventListener('click', function () {
-        thumbs.forEach(function (t) { t.classList.remove('active'); });
-        thumb.classList.add('active');
-        mainImg.style.opacity = '0';
-        setTimeout(function () {
-          mainImg.src = thumb.dataset.src;
-          mainImg.style.opacity = '1';
-          mainImg.style.transition = 'opacity 0.3s ease';
-        }, 150);
-      });
-    });
+    if (thumbs.length > 0) {
+        thumbs.forEach(function (thumb) {
+          thumb.addEventListener('click', function () {
+            thumbs.forEach(function (t) { t.classList.remove('active'); });
+            thumb.classList.add('active');
+            mainImg.style.opacity = '0';
+            setTimeout(function () {
+              mainImg.src = thumb.dataset.src;
+              mainImg.style.opacity = '1';
+              mainImg.style.transition = 'opacity 0.3s ease';
+            }, 150);
+          });
+        });
+    }
+
+    // Lightbox logic
+    var lb = document.getElementById('lightboxModal');
+    if (lb) {
+        var lbImg = document.getElementById('lightboxImage');
+        var lbPrev = document.getElementById('lbPrev');
+        var lbNext = document.getElementById('lbNext');
+        var lbCounter = document.getElementById('lbCounter');
+        var lbIndex = 0;
+
+        function updateLb() {
+            lbImg.style.opacity = '0';
+            setTimeout(function() {
+                lbImg.src = images[lbIndex];
+                lbImg.style.opacity = '1';
+                if(lbCounter) lbCounter.textContent = (lbIndex + 1) + ' / ' + images.length;
+            }, 200);
+            if(lbPrev) lbPrev.style.display = images.length > 1 ? 'flex' : 'none';
+            if(lbNext) lbNext.style.display = images.length > 1 ? 'flex' : 'none';
+        }
+
+        mainImg.style.cursor = 'zoom-in';
+        mainImg.addEventListener('click', function() {
+            var activeThumb = document.querySelector('.product-thumbnail.active');
+            if(activeThumb) lbIndex = images.indexOf(activeThumb.dataset.src);
+            else lbIndex = 0;
+            if(lbIndex < 0) lbIndex = 0;
+            
+            updateLb();
+            lb.style.display = 'flex';
+        });
+
+        lb.addEventListener('click', function(e) {
+            if(e.target.id === 'lbClose' || e.target.id === 'lightboxModal') {
+                lb.style.display = 'none';
+            }
+            if(e.target.id === 'lbPrev') {
+                lbIndex = (lbIndex - 1 + images.length) % images.length;
+                updateLb();
+            }
+            if(e.target.id === 'lbNext') {
+                lbIndex = (lbIndex + 1) % images.length;
+                updateLb();
+            }
+        });
+    }
   }
 
   // -- Tabs --
@@ -450,7 +598,12 @@
   document.addEventListener('DOMContentLoaded', function () {
     // Product LIST page
     if (document.getElementById('product-list-grid')) {
-      populateFilters();
+      // Init sort-select custom dropdown immediately (has static options)
+      var sortWrap = document.getElementById('sort-select');
+      if (sortWrap) {
+        initCustomSelects(sortWrap.parentNode);
+      }
+      populateFilters(); // filter selects init after API data loads
       bindFilters();
       loadProducts();
     }

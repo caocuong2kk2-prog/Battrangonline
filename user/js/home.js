@@ -220,12 +220,22 @@
       id: p.id, slug: p.slug, name: p.name, price: p.price, images: p.images
     }).replace(/'/g, '&#39;');
 
+    var subImagesHtml = '';
+    if (p.images && p.images.length > 1) {
+      subImagesHtml = '<div class="home-product-card__sub-images" style="position:absolute; bottom:10px; left:0; width:100%; display:flex; justify-content:center; gap:6px; opacity:0; transition: opacity 0.3s ease; z-index:2;">' +
+        p.images.slice(0, 4).map(function(img, i) { 
+            return '<img src="' + img + '" style="width:36px; height:36px; object-fit:cover; border-radius:4px; border:2px solid ' + (i===0 ? '#C8922A' : 'rgba(255,255,255,0.8)') + '; background:#fff; cursor:pointer;" onmouseover="this.closest(\'.home-product-card__media\').querySelector(\'.home-product-card__img\').src=\'' + img + '\'" />'; 
+        }).join('') +
+      '</div>';
+    }
+
     // Dùng div cho media (tránh nested <a> không hợp lệ)
     article.innerHTML =
-      '<div class="home-product-card__media">' +
+      '<div class="home-product-card__media" onmouseenter="var sub=this.querySelector(\'.home-product-card__sub-images\'); if(sub) sub.style.opacity=\'1\';" onmouseleave="var sub=this.querySelector(\'.home-product-card__sub-images\'); if(sub) { sub.style.opacity=\'0\'; this.querySelector(\'.home-product-card__img\').src=\'' + imgSrc + '\'; }">' +
         badgeHTML +
         '<img class="home-product-card__img" src="' + imgSrc + '" alt="' + p.name + '" loading="lazy">' +
-        '<div class="home-product-card__action">' +
+        subImagesHtml +
+        '<div class="home-product-card__action" style="bottom: 55px;">' +
           '<div class="home-product-card__action-row">' +
             '<button class="home-product-card__btn-cart" data-product=\'' + pSafe + '\'>' +
               '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +

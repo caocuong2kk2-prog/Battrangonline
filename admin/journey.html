@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Hành Trình – Phúc Gia Tiên Admin</title>
+<link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/components.css">
+<style>
+  /* Extra Styles for Journey Admin */
+  .journey-tab-bar {
+    display: flex;
+    gap: var(--sp-2);
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: var(--sp-6);
+  }
+  .journey-tab-btn {
+    padding: var(--sp-3) var(--sp-5);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    font-family: inherit;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .journey-tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+  .panel-section {
+    display: none;
+  }
+  .panel-section.active {
+    display: block;
+  }
+  .video-thumbnail-preview {
+    width: 80px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    background-color: var(--border-color);
+  }
+  .topic-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    background-color: rgba(200, 146, 42, 0.12);
+    color: var(--primary);
+  }
+</style>
+</head>
+<body class="admin-layout">
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="sidebar-header"><div class="sidebar-brand"><div class="sidebar-brand__icon">⚱️</div><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
+  <nav class="sidebar-nav">
+    <span class="sidebar-section-label">Tổng quan</span>
+    <ul class="sidebar-nav__list"><li><a href="index.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li></ul>
+    <span class="sidebar-section-label">Kinh doanh</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="products.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
+      <li><a href="orders.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
+      <li><a href="customers.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
+    </ul>
+    <span class="sidebar-section-label">Danh mục</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="sidebar-nav__text">Danh mục</span></a></li>
+      <li><a href="journey.html" class="sidebar-nav__link active"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
+      <li><a href="analytics.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
+    </ul>
+    <span class="sidebar-section-label">Hệ thống</span>
+    <ul class="sidebar-nav__list"><li><a href="settings.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-nav__text">Cài đặt</span></a></li></ul>
+  </nav>
+  <div class="sidebar-footer"><div class="sidebar-user js-logout"><div class="sidebar-user__avatar js-admin-initial">A</div><div class="sidebar-user__info"><div class="sidebar-user__name js-admin-name">Admin</div><div class="sidebar-user__role">Quản trị viên</div></div><button class="sidebar-user__logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="admin-main-wrapper">
+  <header class="admin-topbar">
+    <button class="topbar-toggle" id="sidebarToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="topbar-breadcrumb"><span class="topbar-breadcrumb__item">Hành Trình</span><span class="topbar-breadcrumb__separator">›</span><span class="topbar-breadcrumb__current">Quản lý nội dung</span></div>
+    <div class="topbar-actions"><div class="topbar-user" id="topbarUser"><div class="topbar-user__avatar js-admin-initial">A</div><span class="topbar-user__name js-admin-name">Admin</span></div></div>
+  </header>
+
+  <main class="admin-content">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Quản Lý Hành Trình</h1>
+        <p class="page-subtitle">Quản lý danh sách video và chủ đề nội dung trên trang Hành Trình</p>
+      </div>
+      <div class="page-header__actions" style="display:flex;gap:var(--sp-2)">
+        <button class="btn btn--secondary" id="btn-add-topic">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Thêm chủ đề
+        </button>
+        <button class="btn btn--primary" id="btn-add-video">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Thêm video
+        </button>
+      </div>
+    </div>
+
+    <div class="journey-tab-bar">
+      <button class="journey-tab-btn active" data-tab="videos">Danh Sách Video</button>
+      <button class="journey-tab-btn" data-tab="topics">Chủ Đề Video</button>
+    </div>
+
+    <!-- TAB 1: VIDEOS PANEL -->
+    <div class="panel-section active" id="panel-videos">
+      <div class="toolbar" style="margin-bottom:var(--sp-4);">
+        <div class="search-box">
+          <svg class="search-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-box__input" id="video-search" type="search" placeholder="Tìm theo tên video...">
+        </div>
+        <select class="filter-select" id="video-topic-filter">
+          <option value="all">Tất cả chủ đề</option>
+          <!-- Dynamic options here -->
+        </select>
+        <div class="toolbar__spacer"></div>
+        <span style="font-size:var(--fs-xs);color:var(--text-muted)" id="video-count"></span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 100px">Ảnh thu nhỏ</th>
+              <th>Tiêu đề video</th>
+              <th>Chủ đề</th>
+              <th>Thời lượng</th>
+              <th>Đường dẫn liên kết (URL)</th>
+              <th style="width: 150px; text-align: right;">Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="video-table-body">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 2: TOPICS PANEL -->
+    <div class="panel-section" id="panel-topics">
+      <div class="toolbar" style="margin-bottom:var(--sp-4);">
+        <div class="search-box">
+          <svg class="search-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-box__input" id="topic-search" type="search" placeholder="Tìm theo tên hoặc ID chủ đề...">
+        </div>
+        <div class="toolbar__spacer"></div>
+        <span style="font-size:var(--fs-xs);color:var(--text-muted)" id="topic-count"></span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID Chủ đề</th>
+              <th>Tên chủ đề</th>
+              <th>Số lượng video</th>
+              <th style="width: 150px; text-align: right;">Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="topic-table-body">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal 1: Video Form Modal -->
+<div class="modal-overlay" id="videoModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="video-modal-title">Thêm Video Mới</h2>
+      <button class="modal-close" data-close-modal="videoModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="video-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Tiêu đề video <span>*</span></label>
+            <input class="form-control" name="title" type="text" placeholder="VD: Khởi công xây dựng xưởng sản xuất" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Chủ đề <span>*</span></label>
+            <select class="form-control" name="topicId" id="video-topic-select" required>
+              <!-- Filled dynamically -->
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Đường dẫn Video (YouTube/TikTok URL) <span>*</span></label>
+          <input class="form-control" name="url" type="url" placeholder="VD: https://www.youtube.com/watch?v=zR7-eH01WFM" required>
+          <div class="form-hint">Chấp nhận đường dẫn đầy đủ hoặc đường dẫn nhúng (iframe)</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Đường dẫn Ảnh thu nhỏ (URL Thumbnail)</label>
+            <input class="form-control" name="thumbnail" type="text" placeholder="VD: assets/images/journey-hero.jpg">
+            <div class="form-hint">Để trống sẽ dùng ảnh mặc định của YouTube nếu có</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Thời lượng video (Phút:Giây)</label>
+            <input class="form-control" name="duration" type="text" placeholder="VD: 03:45">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--secondary" data-close-modal="videoModal">Huỷ</button>
+      <button class="btn btn--primary" id="btn-save-video">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+        Lưu Video
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: Topic Form Modal -->
+<div class="modal-overlay" id="topicModal">
+  <div class="modal" style="max-width: 480px;">
+    <div class="modal-header">
+      <h2 class="modal-title" id="topic-modal-title">Thêm Chủ Đề Mới</h2>
+      <button class="modal-close" data-close-modal="topicModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="topic-form">
+        <div class="form-group">
+          <label class="form-label">ID Chủ đề (Không dấu, viết liền) <span>*</span></label>
+          <input class="form-control" name="id" type="text" placeholder="VD: hau-truong-xuong" required>
+          <div class="form-hint">Chỉ dùng chữ thường không dấu, số, dấu gạch ngang</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tên chủ đề hiển thị <span>*</span></label>
+          <input class="form-control" name="name" type="text" placeholder="VD: Hậu Trường Xưởng Gốm" required>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--secondary" data-close-modal="topicModal">Huỷ</button>
+      <button class="btn btn--primary" id="btn-save-topic">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+        Lưu Chủ Đề
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="admin-toast-container"></div>
+<script src="js/admin-data.js"></script>
+<script src="js/admin-core.js"></script>
+<script src="js/journey-admin.js"></script>
+</body>
+</html>

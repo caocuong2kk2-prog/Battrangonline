@@ -37,19 +37,19 @@
     <!-- ========== HERO ========== -->
     <section class="hero" aria-label="Giới thiệu Phúc Gia Tiên">
       <div class="hero__bg">
-        <img class="hero__bg-img" src="assets/images/home_bg.jpeg" alt="" role="presentation" fetchpriority="high">
+        <img class="hero__bg-img js-config-home-banner-img" src="assets/images/home_bg.jpeg" alt="" role="presentation" fetchpriority="high">
         <div class="hero__overlay"></div>
       </div>
       <div class="container">
         <div class="hero__content">
           <span class="hero__label">Nghệ Nhân Bát Tràng</span>
           <h1 class="hero__title">
-            PHÚC GIA TIÊN
-            <span>Tinh Hoa Gốm Sứ Thủ Công</span>
+            <span class="js-config-store-name">PHÚC GIA TIÊN</span>
+            <span class="js-config-slogan">Tinh Hoa Gốm Sứ Thủ Công</span>
           </h1>
           <p class="hero__subtitle">Giá Trị Truyền Đời</p>
-          <p class="hero__desc">
-            Mỗi sản phẩm là một tâm huyết – từ đôi bàn tay khéo léo của nghệ nhân làm gốm sứ Bát Tràng.
+          <p class="hero__desc js-config-slogan-text">
+            Tinh hoa gốm sứ thủ công Bát Tràng — nơi lưu giữ giá trị truyền thống và nghệ thuật chế tác qua nhiều thế hệ.
           </p>
           <div class="hero__cta-group">
             <a class="btn btn--primary btn--lg" href="products.html" id="hero-btn-products"
@@ -79,15 +79,15 @@
       <div class="container">
         <div class="story-teaser" style="flex-direction: row-reverse;">
           <div class="story-teaser__media reveal-right">
-            <img class="story-teaser__img" src="assets/images/story-couple.jpg"
+            <img class="story-teaser__img js-config-home-story-img" src="assets/images/story-couple.jpg"
               alt="Đôi vợ chồng nghệ nhân Phúc Gia Tiên" loading="lazy">
           </div>
           <div class="story-teaser__content reveal-left">
             <span class="section-header__label">Câu Chuyện Của Chúng Tôi</span>
-            <h2 id="story-heading" class="story-teaser__quote">
+            <h2 id="story-heading" class="story-teaser__quote js-config-home-story-quote">
               2 vợ chồng – 1 xưởng –<br>1 hành trình
             </h2>
-            <p class="story-teaser__text">
+            <p class="story-teaser__text js-config-home-story-text">
               Chúng tôi bắt đầu từ con số 0. Tự tay học nghề, tự làm,
               tự thất bại và đứng dậy. Phúc Gia Tiên không chỉ làm gốm,
               chúng tôi tạo ra giá trị để truyền lại cho thế hệ sau.
@@ -179,8 +179,8 @@
                 <path d="M18 24 Q19 26 24 27 Q29 26 31 24"/>
               </svg>
             </div>
-            <p class="process-step__label">1. Chuẩn bị đất</p>
-            <p class="process-step__desc">Chọn lựa và nhào đất sét Bát Tràng đúng độ dẻo</p>
+            <p class="process-step__label js-config-proc-1-title">1. Chuẩn bị đất</p>
+            <p class="process-step__desc js-config-proc-1-desc">Chọn lựa và nhào đất sét Bát Tràng đúng độ dẻo</p>
           </div>
 
           <div class="process-connector" aria-hidden="true"></div>
@@ -205,8 +205,8 @@
                 <path d="M34 22 Q37 22 38 25 Q37 28 34 27"/>
               </svg>
             </div>
-            <p class="process-step__label">2. Tạo hình</p>
-            <p class="process-step__desc">Vuốt đất trên bàn xoay bằng đôi bàn tay điêu luyện</p>
+            <p class="process-step__label js-config-proc-2-title">2. Tạo hình</p>
+            <p class="process-step__desc js-config-proc-2-desc">Vuốt đất trên bàn xoay bằng đôi bàn tay điêu luyện</p>
           </div>
 
           <div class="process-connector" aria-hidden="true"></div>
@@ -232,8 +232,8 @@
                 <path d="M28 26 L27 29" stroke-width="1"/>
               </svg>
             </div>
-            <p class="process-step__label">3. Vẽ tay</p>
-            <p class="process-step__desc">Trang trí hoa văn truyền thống bằng bút lông thủ công</p>
+            <p class="process-step__label js-config-proc-3-title">3. Vẽ tay</p>
+            <p class="process-step__desc js-config-proc-3-desc">Trang trí hoa văn truyền thống bằng bút lông thủ công</p>
           </div>
 
           <div class="process-connector" aria-hidden="true"></div>
@@ -259,8 +259,8 @@
                 <path d="M32 10 C31 7 33 5 32 3" stroke-width="1" stroke-dasharray="2 2"/>
               </svg>
             </div>
-            <p class="process-step__label">4. Nung lò</p>
-            <p class="process-step__desc">Nung ở nhiệt độ 1.280°C trong lò truyền thống</p>
+            <p class="process-step__label js-config-proc-4-title">4. Nung lò</p>
+            <p class="process-step__desc js-config-proc-4-desc">Nung ở nhiệt độ 1.280°C trong lò truyền thống</p>
           </div>
 
           <div class="process-connector" aria-hidden="true"></div>
@@ -291,8 +291,8 @@
                 <line x1="40" y1="8" x2="37" y2="11" stroke-width="1"/>
               </svg>
             </div>
-            <p class="process-step__label">5. Hoàn thiện</p>
-            <p class="process-step__desc">Kiểm tra, đánh bóng và đóng gói tác phẩm hoàn hảo</p>
+            <p class="process-step__label js-config-proc-5-title">5. Hoàn thiện</p>
+            <p class="process-step__desc js-config-proc-5-desc">Kiểm tra, đánh bóng và đóng gói tác phẩm hoàn hảo</p>
           </div>
 
         </div>
@@ -311,9 +311,8 @@
           </p>
           <div class="cta-banner__actions" style="display: flex; gap: var(--space-4); justify-content: center;">
             <a class="btn btn--primary btn--lg" href="contact.html" id="cta-contact-btn">LIÊN HỆ NGAY</a>
-            <a class="btn btn--outline btn--lg" href="tel:0989123456" id="cta-call-btn"
-              style="color: var(--color-text-primary); border-color: var(--color-text-primary);">GỌI NGAY: 0989 123
-              456</a>
+            <a class="btn btn--outline btn--lg js-config-phone-link" href="tel:0989123456" id="cta-call-btn"
+              style="color: var(--color-text-primary); border-color: var(--color-text-primary);">GỌI NGAY: <span class="js-config-phone-text">0989 123 456</span></a>
           </div>
         </div>
       </div>
