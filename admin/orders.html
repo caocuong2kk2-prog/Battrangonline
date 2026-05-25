@@ -15,8 +15,18 @@
 .order-create-total{display:flex;justify-content:space-between;align-items:center;padding:var(--sp-4) 0;border-top:2px solid var(--border);margin-top:var(--sp-2)}
 @media(max-width:640px){
   .order-lines__head{display:none}
-  .order-line{grid-template-columns:1fr;gap:var(--sp-2)}
-  .order-line__subtotal{text-align:left}
+  .order-line{
+    grid-template-columns: 80px 1fr 36px;
+    gap: var(--sp-3);
+    padding-bottom: var(--sp-4);
+    border-bottom: 1px dashed var(--border);
+  }
+  .order-line:last-child{border-bottom:none;padding-bottom:0}
+  .order-line .custom-select-wrapper{grid-column: 1 / -1;}
+  .order-line-product{grid-column: 1 / -1;}
+  .order-line-qty{grid-column: 1 / 2;}
+  .order-line__subtotal{grid-column: 2 / 3; text-align: right;}
+  .btn-remove-line{grid-column: 3 / 4; width: 100%;}
 }
 </style>
 </head>
@@ -35,6 +45,12 @@
     <span class="sidebar-section-label">Danh mục</span>
     <ul class="sidebar-nav__list">
       <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="sidebar-nav__text">Danh mục</span></a></li>
+      <li><a href="glazelines.html" class="sidebar-nav__link">
+        <svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        <span class="sidebar-nav__text">Dòng men</span></a></li>
       <li><a href="journey.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
       <li><a href="analytics.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
     </ul>
@@ -69,7 +85,7 @@
 
     <div class="table-wrap">
       <table class="data-table">
-        <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th class="hide-mobile">Sản phẩm</th><th>Tổng tiền</th><th class="hide-mobile">Ngày đặt</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
+        <thead><tr><th>STT</th><th>Mã đơn</th><th>Khách hàng</th><th class="hide-mobile">Sản phẩm</th><th>Tổng tiền</th><th class="hide-mobile">Ngày đặt</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
         <tbody id="orders-table-body"></tbody>
       </table>
       <div class="pagination" id="orders-pagination"></div>

@@ -61,6 +61,24 @@ select.form-control{cursor:pointer}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-5)}
 .form-hint{font-size:var(--fs-xs);color:var(--text-muted);margin-top:var(--sp-1)}
 .form-error{font-size:var(--fs-xs);color:var(--danger);margin-top:var(--sp-1)}
+.form-section-heading{
+  font-size:var(--fs-base);
+  font-weight:var(--fw-semibold);
+  letter-spacing:.04em;
+  padding:var(--sp-4) 0 var(--sp-2);
+  margin-top:var(--sp-2);
+  margin-bottom:var(--sp-1);
+  border-bottom:2px solid var(--accent-bg-strong);
+  position:relative;
+}
+.form-section-heading::before{
+  content:'';
+  position:absolute;
+  left:0;bottom:-2px;
+  width:36px;height:2px;
+  background:var(--accent);
+  border-radius:var(--r-full);
+}
 
 /* ── SEARCH / FILTER BAR ── */
 .toolbar{display:flex;align-items:center;gap:var(--sp-3);margin-bottom:var(--sp-5);flex-wrap:wrap}
@@ -88,6 +106,9 @@ select.form-control{cursor:pointer}
 .custom-select__option:hover{background:rgba(200,146,42,.06);color:var(--accent-dark)}
 .custom-select__option.selected{background:var(--accent-bg);color:var(--accent);font-weight:var(--fw-semibold)}
 .custom-select__option.selected::after{content:'✓';font-weight:bold}
+.custom-select__search{padding:8px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;z-index:10}
+.custom-select__search-input{width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:var(--fs-sm);outline:none;transition:border-color var(--t-fast)}
+.custom-select__search-input:focus{border-color:var(--accent)}
 
 
 /* ── TABLE ── */
@@ -99,9 +120,11 @@ select.form-control{cursor:pointer}
 .data-table tbody tr:last-child td{border-bottom:none}
 .data-table tbody tr{transition:background var(--t-fast)}
 .data-table tbody tr:hover{background:rgba(200,146,42,.03)}
-.data-table .actions-cell{display:flex;align-items:center;gap:var(--sp-1)}
+.data-table .actions-cell{white-space:nowrap;vertical-align:middle}
+.data-table .actions-cell > *{margin-right:var(--sp-1);vertical-align:middle}
+.data-table .actions-cell > *:last-child{margin-right:0}
 .data-table .product-thumb{width:44px;height:44px;border-radius:var(--r-md);object-fit:cover;border:1px solid var(--border);background:var(--accent-bg)}
-.data-table .product-info{display:flex;align-items:center;gap:var(--sp-3)}
+.data-table .product-info{display:flex;align-items:center;gap:var(--sp-3);min-width:240px}
 .data-table .product-name{font-weight:var(--fw-semibold);margin-bottom:2px}
 .data-table .product-cat{font-size:var(--fs-xs);color:var(--text-muted)}
 .data-table .avatar-cell{width:36px;height:36px;border-radius:var(--r-full);background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;font-size:var(--fs-xs);font-weight:var(--fw-bold);color:#fff}
@@ -126,7 +149,7 @@ select.form-control{cursor:pointer}
 .modal-overlay.is-open{opacity:1;visibility:visible}
 .modal{background:#fff;border-radius:var(--r-xl);width:100%;max-width:560px;box-shadow:var(--shadow-modal);transform:scale(.95) translateY(16px);transition:transform var(--t-normal);max-height:95vh;overflow-y:auto}
 .modal-overlay.is-open .modal{transform:scale(1) translateY(0)}
-.modal--lg{max-width:720px}
+.modal--lg{max-width:900px}
 .modal-header{padding:var(--sp-6);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1;border-radius:var(--r-xl) var(--r-xl) 0 0}
 .modal-title{font-family:var(--font-heading);font-size:var(--fs-xl);font-weight:var(--fw-semibold);color:var(--text-primary)}
 .modal-close{width:34px;height:34px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:all var(--t-fast)}
@@ -304,4 +327,178 @@ select.form-control{cursor:pointer}
   .kpi-card{gap:var(--sp-3)}
   .kpi-card__icon{width:42px;height:42px}
   .btn--sm{padding:5px var(--sp-3)}
+}
+
+/* Floating Bulk Actions Bar */
+.bulk-actions-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  z-index: 1500;
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, visibility 0.3s ease;
+  pointer-events: none;
+}
+
+.bulk-actions-bar.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.bulk-actions-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  background: rgba(26, 15, 5, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(200, 146, 42, 0.4);
+  border-radius: var(--r-full);
+  box-shadow: var(--shadow-lg), var(--shadow-gold);
+  color: #fff;
+  white-space: nowrap;
+}
+
+.bulk-selected-count {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--accent-hover);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  padding-right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bulk-selected-count::before {
+  content: '⚙️';
+  font-size: 1rem;
+}
+
+.bulk-actions-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Custom styles for checkbox alignment */
+.data-table td input[type="checkbox"],
+.data-table th input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.data-table th.checkbox-cell,
+.data-table td.checkbox-cell {
+  text-align: center !important;
+  width: 40px;
+  padding-left: var(--sp-4) !important;
+  padding-right: var(--sp-2) !important;
+}
+
+.data-table th.stt-cell,
+.data-table td.stt-cell {
+  text-align: center !important;
+  width: 60px;
+  padding-left: var(--sp-2) !important;
+  padding-right: var(--sp-2) !important;
+  color: var(--text-muted);
+}
+
+/* Responsive overrides for products mobile UI */
+@media (max-width: 768px) {
+  .bulk-actions-content {
+    padding: 12px 16px;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+  .bulk-actions-bar {
+    width: 95%;
+    bottom: 16px;
+  }
+  .bulk-actions-btns {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .bulk-selected-count {
+    border-right: none;
+    padding-right: 0;
+    width: 100%;
+    justify-content: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+  }
+  
+  .data-table th.checkbox-cell,
+  .data-table td.checkbox-cell {
+    padding-left: var(--sp-2) !important;
+  }
+}
+
+/* ── Premium UI CRM Components ── */
+.avatar-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.order-id-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  background: #f1f5f9;
+  color: #334155;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #e2e8f0;
+}
+
+.avatar-stack {
+  display: flex;
+  align-items: center;
+}
+.avatar-stack img, .avatar-stack .avatar-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  margin-left: -10px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.avatar-stack > :first-child {
+  margin-left: 0;
+}
+.avatar-stack-text {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: 8px;
+  font-weight: 500;
 }

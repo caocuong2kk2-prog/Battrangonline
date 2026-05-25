@@ -3,9 +3,16 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Sản Phẩm – Phúc Gia Tiên Admin</title>
 <link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/components.css">
-<script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/classic/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/super-build/ckeditor.js"></script>
 <style>
-.ck-editor__editable { min-height: 200px; color: #333; }
+.ck-editor__editable { min-height: 350px; max-height: 700px; overflow-y: auto; color: #333; resize: vertical; }
+.ck-editor__editable figure.image { max-width: 60%; margin: 1em auto; }
+.ck-editor__editable figure.image.image-style-side { max-width: 50%; float: right; margin-left: 1.5em; }
+.ck-editor__editable figure.image.image-style-align-left { float: left; margin-right: 1.5em; max-width: 50%; }
+.ck-editor__editable figure.image.image-style-align-right { float: right; margin-left: 1.5em; max-width: 50%; }
+.ck-editor__editable figure.image.image-style-align-center { margin-left: auto; margin-right: auto; display: block; }
+.ck-editor__editable figure.image img { width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.ck-balloon-panel { z-index: 99999 !important; }
 </style>
 </head>
 <body class="admin-layout">
@@ -24,7 +31,8 @@
     </ul>
     <span class="sidebar-section-label">Danh mục</span>
     <ul class="sidebar-nav__list">
-      <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="sidebar-nav__text">Danh mục</span></a></li>
+        <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="sidebar-nav__text">Danh mục</span></a></li>
+        <li><a href="glazelines.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span class="sidebar-nav__text">Dòng men</span></a></li>
       <li><a href="journey.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
       <li><a href="analytics.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
     </ul>
@@ -64,13 +72,26 @@
         <option value="chum-vat">Chum – Vạt</option>
         <option value="dia-gom">Đĩa Gốm</option>
       </select>
+      <select class="filter-select" id="product-status-filter" style="margin-left: 10px;">
+        <option value="all">Tất cả trạng thái</option>
+        <option value="active">Đang bán</option>
+        <option value="inactive">Ngừng bán</option>
+      </select>
       <div class="toolbar__spacer"></div>
-      <span style="font-size:var(--fs-xs);color:var(--text-muted)" id="product-count"></span>
+      <div style="display:flex;align-items:center;gap:var(--sp-3)">
+        <select class="filter-select" id="page-size-select" style="padding:6px 10px;font-size:var(--fs-xs);height:auto;min-width:auto">
+          <option value="10">10 / trang</option>
+          <option value="20">20 / trang</option>
+          <option value="50">50 / trang</option>
+          <option value="1000">Tất cả</option>
+        </select>
+        <span style="font-size:var(--fs-xs);color:var(--text-muted);white-space:nowrap" id="product-count"></span>
+      </div>
     </div>
 
     <div class="table-wrap">
       <table class="data-table">
-        <thead><tr><th>Sản phẩm</th><th>Giá</th><th class="hide-mobile">Chất liệu</th><th class="hide-mobile">Kích thước</th><th>Tồn kho</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
+        <thead><tr><th class="checkbox-cell"><input type="checkbox" id="check-all-products"></th><th class="stt-cell">STT</th><th>Sản phẩm</th><th>Giá</th><th class="hide-mobile">Danh mục</th><th class="hide-mobile">Kích thước</th><th class="hide-mobile">Chất liệu</th><th class="hide-mobile">Dòng men</th><th class="hide-mobile">Hoa văn</th><th>Tồn kho</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
         <tbody id="products-table-body"></tbody>
       </table>
       <div class="pagination" id="products-pagination"></div>
@@ -80,18 +101,18 @@
 
 <!-- Product Modal -->
 <div class="modal-overlay" id="productModal">
-  <div class="modal">
+  <div class="modal modal--lg">
     <div class="modal-header">
       <h2 class="modal-title" id="product-modal-title">Thêm Sản Phẩm</h2>
-      <button class="modal-close" data-close-modal="productModal">✕</button>
+      <button type="button" class="modal-close" data-close-modal="productModal">✕</button>
     </div>
     <div class="modal-body">
       <form id="product-form">
+
+        <!-- === Thông tin cơ bản === -->
+        <div class="form-section-heading">Thông tin cơ bản</div>
         <div class="form-row">
           <div class="form-group"><label class="form-label">Tên sản phẩm <span>*</span></label><input class="form-control" name="name" type="text" placeholder="VD: Lộc Bình Vẽ Tay 1M6" required></div>
-          <div class="form-group"><label class="form-label">Giá bán (VNĐ) <span>*</span></label><input class="form-control" name="price" type="text" placeholder="VD: 40.000.000" required></div>
-        </div>
-        <div class="form-row">
           <div class="form-group"><label class="form-label">Danh mục</label>
             <select class="form-control" name="category">
               <option value="loc-binh">Lộc Bình</option><option value="do-tho">Đồ Thờ</option>
@@ -99,36 +120,64 @@
               <option value="chum-vat">Chum – Vạt</option><option value="dia-gom">Đĩa Gốm</option>
             </select>
           </div>
-          <div class="form-group"><label class="form-label">Chất liệu</label>
-            <select class="form-control" name="material">
-              <option value="Gốm sứ">Gốm sứ</option>
-              <option value="Đất nung">Đất nung</option>
-              <option value="Sành">Sành</option>
-              <option value="Men rạn">Men rạn</option>
-            </select>
-          </div>
         </div>
         <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Ảnh sản phẩm</label>
-            <div style="display:flex;flex-direction:column;gap:10px;">
-              <input class="form-control" id="product-image-upload" type="file" accept="image/*" multiple>
-              <input type="hidden" name="imageUrl" id="product-image-url"> <!-- Store JSON array of URLs or comma-separated -->
-              <div id="product-image-gallery" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
-            </div>
-          </div>
-          <div class="form-group"><label class="form-label">Kích thước</label><input class="form-control" name="size" type="text" placeholder="VD: 1.6m"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Tồn kho</label><input class="form-control" name="stock" type="number" min="0" value="0"></div>
           <div class="form-group"><label class="form-label">Trạng thái</label>
             <select class="form-control" name="status"><option value="active">Đang bán</option><option value="inactive">Ngừng bán</option></select>
           </div>
+          <div class="form-group"><label class="form-label">Badge (tuỳ chọn)</label>
+            <input class="form-control" name="badge" type="text" placeholder="VD: Mới, Bán chạy, Tặng đế gỗ">
+          </div>
         </div>
-        <div class="form-group"><label class="form-label">Badge (tuỳ chọn)</label>
-          <select class="form-control" name="badge"><option value="">Không có</option><option value="Nổi bật">Nổi bật</option><option value="Mới">Mới</option><option value="Bán chạy">Bán chạy</option></select>
+
+        <!-- === Phiên bản (Kích thước / Giá) === -->
+        <div class="form-section-heading">Phiên bản (Kích thước / Giá) <span>*</span></div>
+        <div class="variants-container" style="margin-bottom: 15px;">
+            <table class="variants-table" id="variantsTable" style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+                <thead>
+                    <tr style="background: #f4f4f4; text-align: left;">
+                        <th style="padding: 8px; border: 1px solid #ddd;">Kích thước</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Giá bán (VNĐ)</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Giá gốc (VNĐ)</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Tồn kho</th>
+                        <th style="padding: 8px; border: 1px solid #ddd; text-align: center;"><button type="button" class="btn btn--sm btn--primary" onclick="addVariantRow()">+ Thêm</button></th>
+                    </tr>
+                </thead>
+                <tbody id="variantsTableBody">
+                    <!-- Dynamic rows -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- === Đặc tả kỹ thuật === -->
+        <div class="form-section-heading">Đặc tả kỹ thuật</div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Chất liệu</label><input class="form-control" name="material" type="text" placeholder="VD: Gốm đất nung, Men rạn"></div>
+          <div class="form-group"><label class="form-label">Màu sắc</label><input class="form-control" name="color" type="text" placeholder="VD: Xanh lục bảo, Men hỏa biến"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Dòng men</label>
+            <select class="form-control" name="glazeLineId">
+              <option value="">-- Chọn dòng men --</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Hoa văn</label><input class="form-control" name="pattern" type="text" placeholder="VD: Đắp nổi Rồng chầu mặt nguyệt"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Công dụng</label><input class="form-control" name="usage" type="text" placeholder="VD: Trưng bày phòng khách, Đựng nước"></div>
+
+        <!-- === Mô tả & Media === -->
+        <div class="form-section-heading">Mô tả & Hình ảnh</div>
+        <div class="form-group"><label class="form-label">Mô tả ngắn</label><textarea class="form-control" name="shortDescription" rows="2" placeholder="Đoạn tóm tắt ngắn gọn hiển thị trên đầu trang sản phẩm..."></textarea></div>
+        <div class="form-group">
+          <label class="form-label">Ảnh / Video sản phẩm</label>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <input class="form-control" id="product-image-upload" type="file" accept="image/*,video/*" multiple>
+            <input type="hidden" name="imageUrl" id="product-image-url">
+            <div id="product-image-gallery" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+          </div>
         </div>
         <div class="form-group"><label class="form-label">Mô tả sản phẩm</label><textarea class="form-control" name="description" id="product-description" rows="3" placeholder="Mô tả chi tiết về sản phẩm..."></textarea></div>
+
       </form>
     </div>
     <div class="modal-footer">
@@ -139,6 +188,18 @@
 </div>
 
 
+
+<!-- Floating Bulk Actions Bar -->
+<div class="bulk-actions-bar" id="bulk-actions-bar">
+  <div class="bulk-actions-content">
+    <div class="bulk-selected-count" id="bulk-selected-count">Đã chọn 0 sản phẩm</div>
+    <div class="bulk-actions-btns">
+      <button class="btn btn--sm btn--primary" id="btn-bulk-active">🔓 Đang bán</button>
+      <button class="btn btn--sm btn--secondary" id="btn-bulk-inactive">🔒 Ngừng bán</button>
+      <button class="btn btn--sm btn--danger" id="btn-bulk-delete">🗑️ Xóa hàng loạt</button>
+    </div>
+  </div>
+</div>
 
 <div id="admin-toast-container"></div>
 <script src="js/admin-data.js"></script><script src="js/admin-core.js"></script><script src="js/products-admin.js"></script>

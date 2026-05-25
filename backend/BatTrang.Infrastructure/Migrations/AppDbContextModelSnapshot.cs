@@ -138,7 +138,7 @@ namespace BatTrang.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -149,7 +149,29 @@ namespace BatTrang.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
+                    b.HasIndex("Phone");
+
                     b.ToTable("Customers");
+                });
+
+            modelBuilder.Entity("BatTrang.Core.Entities.GlazeLine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GlazeLines");
                 });
 
             modelBuilder.Entity("BatTrang.Core.Entities.JourneyTopic", b =>
@@ -260,6 +282,8 @@ namespace BatTrang.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedAt");
+
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("OrderCode")
@@ -288,6 +312,9 @@ namespace BatTrang.Infrastructure.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<string>("Size")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("decimal(18,2)");
@@ -322,6 +349,9 @@ namespace BatTrang.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("GlazeLineId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Material")
                         .HasColumnType("nvarchar(max)");
 
@@ -329,13 +359,10 @@ namespace BatTrang.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal?>("OriginalPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("Pattern")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Size")
+                    b.Property<string>("ShortDescription")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Slug")
@@ -346,18 +373,20 @@ namespace BatTrang.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Stock")
-                        .HasColumnType("int");
-
                     b.Property<string>("Style")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Usage")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("GlazeLineId");
 
                     b.HasIndex("Slug")
                         .IsUnique();
@@ -388,6 +417,37 @@ namespace BatTrang.Infrastructure.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductImages");
+                });
+
+            modelBuilder.Entity("BatTrang.Core.Entities.ProductVariant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal?>("OriginalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Size")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Stock")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductVariants");
                 });
 
             modelBuilder.Entity("BatTrang.Core.Entities.SiteConfig", b =>
@@ -453,13 +513,31 @@ namespace BatTrang.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BatTrang.Core.Entities.GlazeLine", "GlazeLine")
+                        .WithMany("Products")
+                        .HasForeignKey("GlazeLineId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Category");
+
+                    b.Navigation("GlazeLine");
                 });
 
             modelBuilder.Entity("BatTrang.Core.Entities.ProductImage", b =>
                 {
                     b.HasOne("BatTrang.Core.Entities.Product", "Product")
                         .WithMany("Images")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("BatTrang.Core.Entities.ProductVariant", b =>
+                {
+                    b.HasOne("BatTrang.Core.Entities.Product", "Product")
+                        .WithMany("Variants")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -477,6 +555,11 @@ namespace BatTrang.Infrastructure.Migrations
                     b.Navigation("Orders");
                 });
 
+            modelBuilder.Entity("BatTrang.Core.Entities.GlazeLine", b =>
+                {
+                    b.Navigation("Products");
+                });
+
             modelBuilder.Entity("BatTrang.Core.Entities.JourneyTopic", b =>
                 {
                     b.Navigation("Videos");
@@ -490,6 +573,8 @@ namespace BatTrang.Infrastructure.Migrations
             modelBuilder.Entity("BatTrang.Core.Entities.Product", b =>
                 {
                     b.Navigation("Images");
+
+                    b.Navigation("Variants");
                 });
 #pragma warning restore 612, 618
         }

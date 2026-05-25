@@ -1,512 +1,1101 @@
 <!DOCTYPE html>
-<html lang="vi"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Cài Đặt – Phúc Gia Tiên Admin</title>
-<link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/components.css">
-<style>
-/* ── Image Upload Widget ── */
-.img-upload-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
-.img-upload-card{display:flex;flex-direction:column}
-.img-upload-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
-.img-upload-label{font-weight:600;color:var(--text-primary);font-size:var(--fs-sm)}
-.img-upload-dropzone{position:relative;border:2px dashed rgba(200,146,42,.3);border-radius:var(--radius-lg);padding:1.5rem 1rem;cursor:pointer;transition:all .25s ease;min-height:160px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:rgba(200,146,42,.03)}
-.img-upload-dropzone:hover,.img-upload-dropzone.drag-over{border-color:var(--gold);background:rgba(200,146,42,.08);transform:translateY(-2px)}
-.img-upload-preview{max-width:100%;max-height:140px;object-fit:contain;display:none;border-radius:var(--radius-md)}
-.img-upload-preview.has-img{display:block}
-.img-upload-placeholder{display:flex;flex-direction:column;align-items:center;gap:.4rem;color:var(--text-muted);font-size:var(--fs-xs);pointer-events:none}
-.img-upload-placeholder.hidden{display:none}
-.img-upload-placeholder svg{opacity:.35;width:36px;height:36px}
-.img-upload-hint-text{font-size:.68rem;opacity:.5}
-.img-upload-input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.img-upload-actions{display:flex;gap:.5rem;margin-top:.5rem}
-.img-upload-actions .btn{font-size:.7rem;padding:.3rem .7rem}
-@media(max-width:900px){.img-upload-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:600px){.img-upload-grid{grid-template-columns:1fr}}
+<html lang="vi">
 
-/* ── Page Badge ── */
-.settings-page-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:600;padding:.2rem .65rem;border-radius:99px;letter-spacing:.02em;white-space:nowrap;margin-left:auto;flex-shrink:0}
-.settings-page-badge--home{background:rgba(59,130,246,.12);color:#3b82f6}
-.settings-page-badge--about{background:rgba(16,185,129,.12);color:#10b981}
-.settings-page-badge--all{background:rgba(200,146,42,.12);color:var(--gold)}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Cài Đặt – Phúc Gia Tiên Admin</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    /* ── Image Upload Widget ── */
+    .img-upload-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem
+    }
 
-/* ── Subsection Card ── */
-.settings-subsection{border:1px solid rgba(200,146,42,.1);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1.25rem;background:rgba(200,146,42,.018);transition:border-color .2s}
-.settings-subsection:hover{border-color:rgba(200,146,42,.25)}
-.settings-subsection:last-child{margin-bottom:0}
-.settings-subsection__head{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;padding-bottom:.65rem;border-bottom:1px solid rgba(200,146,42,.08)}
-.settings-subsection__num{width:24px;height:24px;border-radius:50%;background:var(--gold);color:#fff;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.settings-subsection__title{font-weight:600;font-size:var(--fs-sm);color:var(--text-primary)}
-.settings-subsection__hint{font-size:.68rem;color:var(--text-muted);opacity:.7;margin-left:auto}
+    .img-upload-card {
+      display: flex;
+      flex-direction: column
+    }
 
-/* ── Char Counter & TinyMCE ── */
-.textarea-wrap{position:relative}
-.textarea-wrap textarea{width:100%;resize:vertical}
+    .img-upload-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: .5rem
+    }
 
-/* ── CKEditor 5 Custom Styling ── */
-.ck-editor { margin-top: 0.25rem; }
-.ck-editor__editable_inline {
-  min-height: 200px !important;
-  border-color: rgba(200, 146, 42, 0.2) !important;
-  border-bottom-left-radius: var(--r-md) !important;
-  border-bottom-right-radius: var(--r-md) !important;
-  font-family: var(--font-body) !important;
-  font-size: var(--fs-sm) !important;
-  color: var(--text-primary) !important;
-  line-height: 1.6 !important;
-}
-.ck-editor__editable_inline:focus {
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 0 3px rgba(200, 146, 42, 0.12) !important;
-}
-.ck-toolbar {
-  border-color: rgba(200, 146, 42, 0.2) !important;
-  border-top-left-radius: var(--r-md) !important;
-  border-top-right-radius: var(--r-md) !important;
-  background: rgba(200, 146, 42, 0.02) !important;
-}
-.ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
-  border-color: rgba(200, 146, 42, 0.2) !important;
-}
+    .img-upload-label {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: var(--fs-sm)
+    }
 
-/* ── Settings Tabs ── */
-.settings-tabs {
-  display: flex;
-  gap: var(--sp-2);
-  margin-bottom: var(--sp-6);
-  border-bottom: 2px solid var(--border);
-  padding-bottom: var(--sp-2);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.settings-tabs::-webkit-scrollbar { display: none; }
-.settings-tab {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
-  padding: 10px 18px;
-  font-family: var(--font-heading);
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-semibold);
-  color: var(--text-muted);
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -10px;
-  cursor: pointer;
-  transition: all var(--t-fast);
-  white-space: nowrap;
-}
-.settings-tab:hover { color: var(--accent); }
-.settings-tab.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-}
-.settings-tab-panel { display: none; }
-.settings-tab-panel.active {
-  display: block;
-  animation: settingsFadeIn 0.3s ease;
-}
-@keyframes settingsFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-</style>
-<script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+    .img-upload-dropzone {
+      position: relative;
+      border: 2px dashed rgba(200, 146, 42, .3);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem 1rem;
+      cursor: pointer;
+      transition: all .25s ease;
+      min-height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: rgba(200, 146, 42, .03)
+    }
+
+    .img-upload-dropzone:hover,
+    .img-upload-dropzone.drag-over {
+      border-color: var(--gold);
+      background: rgba(200, 146, 42, .08);
+      transform: translateY(-2px)
+    }
+
+    .img-upload-preview {
+      max-width: 100%;
+      max-height: 140px;
+      object-fit: contain;
+      display: none;
+      border-radius: var(--radius-md)
+    }
+
+    .img-upload-preview.has-img {
+      display: block
+    }
+
+    .img-upload-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .4rem;
+      color: var(--text-muted);
+      font-size: var(--fs-xs);
+      pointer-events: none
+    }
+
+    .img-upload-placeholder.hidden {
+      display: none
+    }
+
+    .img-upload-placeholder svg {
+      opacity: .35;
+      width: 36px;
+      height: 36px
+    }
+
+    .img-upload-hint-text {
+      font-size: .68rem;
+      opacity: .5
+    }
+
+    .img-upload-input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer
+    }
+
+    .img-upload-actions {
+      display: flex;
+      gap: .5rem;
+      margin-top: .5rem
+    }
+
+    .img-upload-actions .btn {
+      font-size: .7rem;
+      padding: .3rem .7rem
+    }
+
+    @media(max-width:900px) {
+      .img-upload-grid {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    @media(max-width:600px) {
+      .img-upload-grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    /* ── Page Badge ── */
+    .settings-page-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .3rem;
+      font-size: .68rem;
+      font-weight: 600;
+      padding: .2rem .65rem;
+      border-radius: 99px;
+      letter-spacing: .02em;
+      white-space: nowrap;
+      margin-left: auto;
+      flex-shrink: 0
+    }
+
+    .settings-page-badge--home {
+      background: rgba(59, 130, 246, .12);
+      color: #3b82f6
+    }
+
+    .settings-page-badge--about {
+      background: rgba(16, 185, 129, .12);
+      color: #10b981
+    }
+
+    .settings-page-badge--all {
+      background: rgba(200, 146, 42, .12);
+      color: var(--gold)
+    }
+
+    /* ── Subsection Card ── */
+    .settings-subsection {
+      border: 1px solid rgba(200, 146, 42, .1);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.25rem;
+      background: rgba(200, 146, 42, .018);
+      transition: border-color .2s
+    }
+
+    .settings-subsection:hover {
+      border-color: rgba(200, 146, 42, .25)
+    }
+
+    .settings-subsection:last-child {
+      margin-bottom: 0
+    }
+
+    .settings-subsection__head {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      margin-bottom: 1rem;
+      padding-bottom: .65rem;
+      border-bottom: 1px solid rgba(200, 146, 42, .08)
+    }
+
+    .settings-subsection__num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--gold);
+      color: #fff;
+      font-size: .7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .settings-subsection__title {
+      font-weight: 600;
+      font-size: var(--fs-sm);
+      color: var(--text-primary)
+    }
+
+    .settings-subsection__hint {
+      font-size: .68rem;
+      color: var(--text-muted);
+      opacity: .7;
+      margin-left: auto
+    }
+
+    /* ── Char Counter & TinyMCE ── */
+    .textarea-wrap {
+      position: relative
+    }
+
+    .textarea-wrap textarea {
+      width: 100%;
+      resize: vertical
+    }
+
+    /* ── CKEditor 5 Custom Styling ── */
+    .ck-editor {
+      margin-top: 0.25rem;
+    }
+
+    .ck-editor__editable_inline {
+      min-height: 200px !important;
+      border-color: rgba(200, 146, 42, 0.2) !important;
+      border-bottom-left-radius: var(--r-md) !important;
+      border-bottom-right-radius: var(--r-md) !important;
+      font-family: var(--font-body) !important;
+      font-size: var(--fs-sm) !important;
+      color: var(--text-primary) !important;
+      line-height: 1.6 !important;
+    }
+
+    .ck-editor__editable_inline:focus {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 3px rgba(200, 146, 42, 0.12) !important;
+    }
+
+    .ck-toolbar {
+      border-color: rgba(200, 146, 42, 0.2) !important;
+      border-top-left-radius: var(--r-md) !important;
+      border-top-right-radius: var(--r-md) !important;
+      background: rgba(200, 146, 42, 0.02) !important;
+    }
+
+    .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+      border-color: rgba(200, 146, 42, 0.2) !important;
+    }
+
+    /* ── Settings Tabs ── */
+    .settings-tabs {
+      display: flex;
+      gap: var(--sp-2);
+      margin-bottom: var(--sp-6);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: var(--sp-2);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .settings-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .settings-tab {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: 10px 18px;
+      font-family: var(--font-heading);
+      font-size: var(--fs-sm);
+      font-weight: var(--fw-semibold);
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -10px;
+      cursor: pointer;
+      transition: all var(--t-fast);
+      white-space: nowrap;
+    }
+
+    .settings-tab:hover {
+      color: var(--accent);
+    }
+
+    .settings-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .settings-tab-panel {
+      display: none;
+    }
+
+    .settings-tab-panel.active {
+      display: block;
+      animation: settingsFadeIn 0.3s ease;
+    }
+
+    @keyframes settingsFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── PROMAX MOBILE UI FIXES ── */
+    @media (max-width: 768px) {
+      .settings-tabs {
+        margin-left: calc(var(--sp-4) * -1);
+        margin-right: calc(var(--sp-4) * -1);
+        padding-left: var(--sp-4);
+        padding-right: var(--sp-4);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .settings-subsection {
+        padding: 1rem 0.75rem;
+      }
+
+      .settings-subsection__head {
+        flex-wrap: wrap;
+        align-items: flex-start;
+      }
+
+      .settings-subsection__hint {
+        margin-left: 0;
+        margin-top: 0.5rem;
+        width: 100%;
+        padding-left: 30px;
+        /* Align with title (24px num + 6px gap) */
+      }
+
+      .ck.ck-toolbar,
+      .ck.ck-toolbar__items {
+        flex-wrap: wrap !important;
+      }
+
+      .ck.ck-editor__main>.ck-editor__editable {
+        min-width: 0 !important;
+        width: 100% !important;
+        overflow-x: hidden;
+      }
+
+      .settings-grid {
+        grid-template-columns: 1fr !important;
+        max-width: 100%;
+      }
+
+      .settings-grid>* {
+        min-width: 0;
+        /* Fix CSS Grid Blowout */
+      }
+
+      .form-control {
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      /* Bổ sung để fix tràn flex */
+      .form-group {
+        max-width: 100%;
+      }
+    }
+  </style>
+  <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
 </head>
+
 <body class="admin-layout">
-<aside class="admin-sidebar" id="adminSidebar">
-  <div class="sidebar-header"><div class="sidebar-brand"><div class="sidebar-brand__icon">⚱️</div><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
-  <nav class="sidebar-nav">
-    <span class="sidebar-section-label">Tổng quan</span>
-    <ul class="sidebar-nav__list"><li><a href="index.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li></ul>
-    <span class="sidebar-section-label">Kinh doanh</span>
-    <ul class="sidebar-nav__list">
-      <li><a href="products.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
-      <li><a href="orders.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
-      <li><a href="customers.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
-    </ul>
-    <span class="sidebar-section-label">Danh mục</span>
-    <ul class="sidebar-nav__list">
-      <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="sidebar-nav__text">Danh mục</span></a></li>
-      <li><a href="journey.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
-      <li><a href="analytics.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
-    </ul>
-    <span class="sidebar-section-label">Hệ thống</span>
-    <ul class="sidebar-nav__list"><li><a href="settings.html" class="sidebar-nav__link active"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-nav__text">Cài đặt</span></a></li></ul>
-  </nav>
-  <div class="sidebar-footer"><div class="sidebar-user js-logout"><div class="sidebar-user__avatar js-admin-initial">A</div><div class="sidebar-user__info"><div class="sidebar-user__name js-admin-name">Admin</div><div class="sidebar-user__role">Quản trị viên</div></div><button class="sidebar-user__logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div></div>
-</aside>
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-<div class="admin-main-wrapper">
-  <header class="admin-topbar">
-    <button class="topbar-toggle" id="sidebarToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-    <div class="topbar-breadcrumb"><span class="topbar-breadcrumb__item">Hệ thống</span><span class="topbar-breadcrumb__separator">›</span><span class="topbar-breadcrumb__current">Cài đặt</span></div>
-    <div class="topbar-actions"><div class="topbar-user" id="topbarUser"><div class="topbar-user__avatar js-admin-initial">A</div><span class="topbar-user__name js-admin-name">Admin</span></div></div>
-  </header>
-
-  <main class="admin-content">
-    <div class="page-header">
-      <div><h1 class="page-title">Cài Đặt Hệ Thống</h1><p class="page-subtitle">Quản lý thông tin cửa hàng và cấu hình hệ thống</p></div>
-      <div class="page-header__actions"><button class="btn btn--primary" id="btn-save-all">💾 Lưu tất cả</button></div>
-    </div>
-
-    <!-- Tab Navigation -->
-    <div class="settings-tabs">
-      <button class="settings-tab active" data-tab="tab-store">🏢 Cửa hàng & Liên hệ</button>
-      <button class="settings-tab" data-tab="tab-media">🖼️ Giao diện & Banner</button>
-      <button class="settings-tab" data-tab="tab-home">🏠 Nội dung Trang chủ</button>
-      <button class="settings-tab" data-tab="tab-about">📄 Nội dung Giới thiệu</button>
-      <button class="settings-tab" data-tab="tab-system">⚙️ Cấu hình hệ thống</button>
-    </div>
-
-    <!-- Tab 1: Store Info & Socials & Maps -->
-    <div class="settings-tab-panel active" id="tab-store">
-      <!-- Store Info -->
-      <div class="settings-section">
-        <div class="settings-section__header">
-          <div class="settings-section__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-          <div class="settings-section__title">Thông Tin Cửa Hàng</div>
-        </div>
-        <div class="settings-section__body">
-          <div class="settings-grid">
-            <div class="form-group"><label class="form-label">Tên cửa hàng</label><input class="form-control" id="store-name" value=""></div>
-            <div class="form-group"><label class="form-label">Slogan</label><input class="form-control" id="store-slogan" value=""></div>
-            <div class="form-group"><label class="form-label">Email liên hệ</label><input class="form-control" id="store-email" type="email" value=""></div>
-            <div class="form-group"><label class="form-label">Số điện thoại</label><input class="form-control" id="store-phone" value=""></div>
-            <div class="form-group" style="grid-column:1/-1"><label class="form-label">Địa chỉ</label><input class="form-control" id="store-address" value=""></div>
-            <div class="form-group" style="grid-column:1/-1"><label class="form-label">Giờ làm việc</label><input class="form-control" id="store-working-hours" value="" placeholder="Ví dụ: 08:00 - 18:00 (Từ Thứ 2 - Chủ Nhật)"></div>
-            <div class="form-group" style="grid-column:1/-1"><label class="form-label">Mã nhúng Bản đồ (Google Maps Iframe HTML)</label><textarea class="form-control" id="store-map-iframe" rows="3" placeholder="Nhập thẻ <iframe> từ Google Maps"></textarea></div>
-            <div class="form-group"><label class="form-label">Facebook</label><input class="form-control" id="store-fb" value=""></div>
-            <div class="form-group"><label class="form-label">Zalo (Link hoặc Số ĐT)</label><input class="form-control" id="store-zalo" value=""></div>
-            <div class="form-group"><label class="form-label">YouTube</label><input class="form-control" id="store-yt" value=""></div>
-            <div class="form-group"><label class="form-label">TikTok</label><input class="form-control" id="store-tiktok" value=""></div>
-            <div class="form-group"><label class="form-label">Messenger Link</label><input class="form-control" id="store-messenger" value=""></div>
-          </div>
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand__icon">⚱️</div>
+        <div>
+          <div class="sidebar-brand__name">Phúc Gia Tiên</div>
+          <div class="sidebar-brand__sub">Quản trị hệ thống</div>
         </div>
       </div>
     </div>
-
-    <!-- Tab 2: Media & Banners -->
-    <div class="settings-tab-panel" id="tab-media">
-      <!-- Media & Banners -->
-      <div class="settings-section">
-        <div class="settings-section__header">
-          <div class="settings-section__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-          <div class="settings-section__title">Hình Ảnh & Banners</div>
-          <span class="settings-page-badge settings-page-badge--all">🖼 Tất cả trang</span>
-        </div>
-        <div class="settings-section__body">
-          <div class="img-upload-grid">
-            <!-- Logo -->
-            <div class="img-upload-card">
-              <div class="img-upload-head"><span class="img-upload-label">Logo Cửa Hàng</span></div>
-              <div class="img-upload-dropzone" id="drop-logo">
-                <img class="img-upload-preview" id="preview-logo" alt="Logo preview">
-                <div class="img-upload-placeholder" id="ph-logo">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                  <span>Kéo thả hoặc nhấn chọn</span>
-                  <span class="img-upload-hint-text">PNG, JPG — Tối đa 2MB</span>
-                </div>
-                <input type="file" accept="image/*" class="img-upload-input" id="file-logo" data-target="logo">
-              </div>
-              <div class="img-upload-actions"><button class="btn btn--outline" onclick="removeImage('logo')">Xóa ảnh</button></div>
-            </div>
-            <!-- Home Banner -->
-            <div class="img-upload-card">
-              <div class="img-upload-head"><span class="img-upload-label">Banner Trang Chủ</span><span class="settings-page-badge settings-page-badge--home" style="margin-left:0">📄 Trang Chủ</span></div>
-              <div class="img-upload-dropzone" id="drop-homeBanner">
-                <img class="img-upload-preview" id="preview-homeBanner" alt="Home banner preview">
-                <div class="img-upload-placeholder" id="ph-homeBanner">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                  <span>Kéo thả hoặc nhấn chọn</span>
-                  <span class="img-upload-hint-text">JPG, PNG — Khuyến nghị 1920×800px</span>
-                </div>
-                <input type="file" accept="image/*" class="img-upload-input" id="file-homeBanner" data-target="homeBanner">
-              </div>
-              <div class="img-upload-actions"><button class="btn btn--outline" onclick="removeImage('homeBanner')">Xóa ảnh</button></div>
-            </div>
-            <!-- Page Banner -->
-            <div class="img-upload-card">
-              <div class="img-upload-head"><span class="img-upload-label">Banner Trang Con</span><span class="settings-page-badge settings-page-badge--about" style="margin-left:0">📄 Giới thiệu, Liên hệ…</span></div>
-              <div class="img-upload-dropzone" id="drop-pageBanner">
-                <img class="img-upload-preview" id="preview-pageBanner" alt="Page banner preview">
-                <div class="img-upload-placeholder" id="ph-pageBanner">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                  <span>Kéo thả hoặc nhấn chọn</span>
-                  <span class="img-upload-hint-text">JPG, PNG — Khuyến nghị 1920×600px</span>
-                </div>
-                <input type="file" accept="image/*" class="img-upload-input" id="file-pageBanner" data-target="pageBanner">
-              </div>
-              <div class="img-upload-actions"><button class="btn btn--outline" onclick="removeImage('pageBanner')">Xóa ảnh</button></div>
-            </div>
-          </div>
-          <p style="font-size:var(--fs-xs);color:var(--text-muted);margin-top:var(--sp-3);opacity:.7">💡 Ảnh tải lên sẽ được nén tự động và lưu vào hệ thống. Ảnh gốc từ thư mục <code>assets/images/</code> vẫn được dùng làm mặc định.</p>
-        </div>
+    <nav class="sidebar-nav">
+      <span class="sidebar-section-label">Tổng quan</span>
+      <ul class="sidebar-nav__list">
+        <li><a href="index.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg><span class="sidebar-nav__text">Dashboard</span></a></li>
+      </ul>
+      <span class="sidebar-section-label">Kinh doanh</span>
+      <ul class="sidebar-nav__list">
+        <li><a href="products.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 01-8 0" />
+            </svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
+        <li><a href="orders.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11l3 3L22 4" />
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+            </svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending"
+              style="display:none"></span></a></li>
+        <li><a href="customers.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87" />
+              <path d="M16 3.13a4 4 0 010 7.75" />
+            </svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
+      </ul>
+      <span class="sidebar-section-label">Danh mục</span>
+      <ul class="sidebar-nav__list">
+        <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
+              <line x1="7" y1="7" x2="7.01" y2="7" />
+            </svg><span class="sidebar-nav__text">Danh mục</span></a></li>
+        <li><a href="journey.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
+        <li><a href="analytics.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg><span class="sidebar-nav__text">Thống kê</span></a></li>
+      </ul>
+      <span class="sidebar-section-label">Hệ thống</span>
+      <ul class="sidebar-nav__list">
+        <li><a href="settings.html" class="sidebar-nav__link active"><svg class="sidebar-nav__icon" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+            </svg><span class="sidebar-nav__text">Cài đặt</span></a></li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user js-logout">
+        <div class="sidebar-user__avatar js-admin-initial">A</div>
+        <div class="sidebar-user__info">
+          <div class="sidebar-user__name js-admin-name">Admin</div>
+          <div class="sidebar-user__role">Quản trị viên</div>
+        </div><button class="sidebar-user__logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg></button>
       </div>
     </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <!-- Tab 3: Home Content -->
-    <div class="settings-tab-panel" id="tab-home">
-      <!-- Home Content -->
-      <div class="settings-section">
-        <div class="settings-section__header">
-          <div class="settings-section__icon" style="background:rgba(59,130,246,.12);color:#3b82f6"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-          <div class="settings-section__title">Nội Dung Trang Chủ</div>
-          <span class="settings-page-badge settings-page-badge--home">📄 index.html</span>
+  <div class="admin-main-wrapper">
+    <header class="admin-topbar">
+      <button class="topbar-toggle" id="sidebarToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg></button>
+      <div class="topbar-breadcrumb"><span class="topbar-breadcrumb__item">Hệ thống</span><span
+          class="topbar-breadcrumb__separator">›</span><span class="topbar-breadcrumb__current">Cài đặt</span></div>
+      <div class="topbar-actions">
+        <div class="topbar-user" id="topbarUser">
+          <div class="topbar-user__avatar js-admin-initial">A</div><span
+            class="topbar-user__name js-admin-name">Admin</span>
         </div>
-        <div class="settings-section__body">
+      </div>
+    </header>
 
-          <!-- Subsection: Câu chuyện -->
-          <div class="settings-subsection">
-            <div class="settings-subsection__head">
-              <span class="settings-subsection__num">1</span>
-              <span class="settings-subsection__title">Câu Chuyện Thương Hiệu</span>
-              <span class="settings-subsection__hint">Hiển thị ở mục "Câu chuyện" trang chủ</span>
-            </div>
+    <main class="admin-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Cài Đặt Hệ Thống</h1>
+          <p class="page-subtitle">Quản lý thông tin cửa hàng và cấu hình hệ thống</p>
+        </div>
+        <div class="page-header__actions"><button class="btn btn--primary" id="btn-save-all">💾 Lưu tất cả</button>
+        </div>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="settings-tabs">
+        <button class="settings-tab active" data-tab="tab-store">🏢 Cửa hàng & Liên hệ</button>
+        <button class="settings-tab" data-tab="tab-media">🖼️ Giao diện & Banner</button>
+        <button class="settings-tab" data-tab="tab-home">🏠 Nội dung Trang chủ</button>
+        <button class="settings-tab" data-tab="tab-about">📄 Nội dung Giới thiệu</button>
+        <button class="settings-tab" data-tab="tab-system">⚙️ Cấu hình hệ thống</button>
+      </div>
+
+      <!-- Tab 1: Store Info & Socials & Maps -->
+      <div class="settings-tab-panel active" id="tab-store">
+        <!-- Store Info -->
+        <div class="settings-section">
+          <div class="settings-section__header">
+            <div class="settings-section__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg></div>
+            <div class="settings-section__title">Thông Tin Cửa Hàng</div>
+          </div>
+          <div class="settings-section__body">
             <div class="settings-grid">
-              <div class="form-group" style="grid-column:1/-1">
-                <label class="form-label">Slogan chính</label>
-                <input class="form-control" id="home-story-quote" placeholder="Ví dụ: 2 vợ chồng – 1 xưởng – 1 hành trình">
-                <div class="form-hint">Hỗ trợ thẻ &lt;br&gt; để xuống dòng. Ví dụ: Dòng 1&lt;br&gt;Dòng 2</div>
-              </div>
-              <div class="form-group" style="grid-column:1/-1">
-                <label class="form-label">Nội dung tóm tắt</label>
-                <div class="textarea-wrap">
-                  <textarea class="form-control rich-editor" id="home-story-text" rows="3" placeholder="Viết 2-3 câu tóm gọn về câu chuyện thương hiệu của bạn…"></textarea>
+              <div class="form-group"><label class="form-label">Tên cửa hàng</label><input class="form-control"
+                  id="store-name" value=""></div>
+              <div class="form-group"><label class="form-label">Slogan</label><input class="form-control"
+                  id="store-slogan" value=""></div>
+              <div class="form-group"><label class="form-label">Email liên hệ</label><input class="form-control"
+                  id="store-email" type="email" value=""></div>
+              <div class="form-group"><label class="form-label">Số điện thoại</label><input class="form-control"
+                  id="store-phone" value=""></div>
+              <div class="form-group" style="grid-column:1/-1"><label class="form-label">Địa chỉ</label><input
+                  class="form-control" id="store-address" value=""></div>
+              <div class="form-group" style="grid-column:1/-1"><label class="form-label">Giờ làm việc</label><input
+                  class="form-control" id="store-working-hours" value=""
+                  placeholder="Ví dụ: 08:00 - 18:00 (Từ Thứ 2 - Chủ Nhật)"></div>
+              <div class="form-group" style="grid-column:1/-1"><label class="form-label">Mã nhúng Bản đồ (Google Maps
+                  Iframe HTML)</label><textarea class="form-control" id="store-map-iframe" rows="3"
+                  placeholder="Nhập thẻ <iframe> từ Google Maps"></textarea></div>
+              <div class="form-group"><label class="form-label">Facebook</label><input class="form-control"
+                  id="store-fb" value=""></div>
+              <div class="form-group"><label class="form-label">Zalo (Link hoặc Số ĐT)</label><input
+                  class="form-control" id="store-zalo" value=""></div>
+              <div class="form-group"><label class="form-label">YouTube</label><input class="form-control" id="store-yt"
+                  value=""></div>
+              <div class="form-group"><label class="form-label">TikTok</label><input class="form-control"
+                  id="store-tiktok" value=""></div>
+              <div class="form-group"><label class="form-label">Messenger Link</label><input class="form-control"
+                  id="store-messenger" value=""></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Media & Banners -->
+      <div class="settings-tab-panel" id="tab-media">
+        <!-- Media & Banners -->
+        <div class="settings-section">
+          <div class="settings-section__header">
+            <div class="settings-section__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <polyline points="21 15 16 10 5 21" />
+              </svg></div>
+            <div class="settings-section__title">Hình Ảnh & Banners</div>
+            <span class="settings-page-badge settings-page-badge--all">🖼 Tất cả trang</span>
+          </div>
+          <div class="settings-section__body">
+            <div class="img-upload-grid">
+              <!-- Logo -->
+              <div class="img-upload-card">
+                <div class="img-upload-head"><span class="img-upload-label">Logo Cửa Hàng</span></div>
+                <div class="img-upload-dropzone" id="drop-logo">
+                  <img class="img-upload-preview" id="preview-logo" alt="Logo preview">
+                  <div class="img-upload-placeholder" id="ph-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    <span>Kéo thả hoặc nhấn chọn</span>
+                    <span class="img-upload-hint-text">PNG, JPG — Tối đa 2MB</span>
+                  </div>
+                  <input type="file" accept="image/*" class="img-upload-input" id="file-logo" data-target="logo">
                 </div>
+                <div class="img-upload-actions"><button class="btn btn--outline" onclick="removeImage('logo')">Xóa
+                    ảnh</button></div>
               </div>
-              <div class="form-group" style="grid-column:1/-1; margin-top: 1rem;">
-                <label class="form-label">Hình ảnh câu chuyện</label>
-                <div style="max-width: 320px;">
-                  <div class="img-upload-card">
-                    <div class="img-upload-dropzone" id="drop-homeStoryImg">
-                      <img class="img-upload-preview" id="preview-homeStoryImg" alt="Story image preview">
-                      <div class="img-upload-placeholder" id="ph-homeStoryImg">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                        <span>Kéo thả hoặc nhấn chọn</span>
-                        <span class="img-upload-hint-text">JPG, PNG — Khuyến nghị 800×600px</span>
+              <!-- Home Banner -->
+              <div class="img-upload-card">
+                <div class="img-upload-head"><span class="img-upload-label">Banner Trang Chủ</span><span
+                    class="settings-page-badge settings-page-badge--home" style="margin-left:0">📄 Trang Chủ</span>
+                </div>
+                <div class="img-upload-dropzone" id="drop-homeBanner">
+                  <img class="img-upload-preview" id="preview-homeBanner" alt="Home banner preview">
+                  <div class="img-upload-placeholder" id="ph-homeBanner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    <span>Kéo thả hoặc nhấn chọn</span>
+                    <span class="img-upload-hint-text">JPG, PNG — Khuyến nghị 1920×800px</span>
+                  </div>
+                  <input type="file" accept="image/*" class="img-upload-input" id="file-homeBanner"
+                    data-target="homeBanner">
+                </div>
+                <div class="img-upload-actions"><button class="btn btn--outline" onclick="removeImage('homeBanner')">Xóa
+                    ảnh</button></div>
+              </div>
+
+              <!-- CTA Banner -->
+              <div class="img-upload-card">
+                <div class="img-upload-head"><span class="img-upload-label">Banner CTA (Kêu gọi hành động)</span><span
+                    class="settings-page-badge settings-page-badge--home" style="margin-left:0">📄 Trang Chủ</span>
+                </div>
+                <div class="img-upload-dropzone" id="drop-ctaBanner">
+                  <img class="img-upload-preview" id="preview-ctaBanner" alt="CTA banner preview">
+                  <div class="img-upload-placeholder" id="ph-ctaBanner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    <span>Kéo thả hoặc nhấn chọn</span>
+                    <span class="img-upload-hint-text">JPG, PNG — Khuyến nghị 1920×600px</span>
+                  </div>
+                  <input type="file" accept="image/*" class="img-upload-input" id="file-ctaBanner"
+                    data-target="ctaBanner">
+                </div>
+                <div class="img-upload-actions"><button class="btn btn--outline" onclick="removeImage('ctaBanner')">Xóa
+                    ảnh</button></div>
+              </div>
+
+              <!-- Products Banner -->
+              <div class="img-upload-card">
+                <div class="img-upload-head"><span class="img-upload-label">Banner Trang Sản Phẩm</span><span
+                    class="settings-page-badge settings-page-badge--all" style="margin-left:0">📄 Sản phẩm</span>
+                </div>
+                <div class="img-upload-dropzone" id="drop-productsBanner">
+                  <img class="img-upload-preview" id="preview-productsBanner" alt="Products banner preview">
+                  <div class="img-upload-placeholder" id="ph-productsBanner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    <span>Kéo thả hoặc nhấn chọn</span>
+                    <span class="img-upload-hint-text">JPG, PNG — Khuyến nghị 1920×600px</span>
+                  </div>
+                  <input type="file" accept="image/*" class="img-upload-input" id="file-productsBanner"
+                    data-target="productsBanner">
+                </div>
+                <div class="img-upload-actions"><button class="btn btn--outline" onclick="removeImage('productsBanner')">Xóa
+                    ảnh</button></div>
+              </div>
+
+              <!-- Journey Banner -->
+              <div class="img-upload-card">
+                <div class="img-upload-head"><span class="img-upload-label">Banner Trang Hành Trình</span><span
+                    class="settings-page-badge settings-page-badge--all" style="margin-left:0">📄 Hành Trình</span>
+                </div>
+                <div class="img-upload-dropzone" id="drop-journeyBanner">
+                  <img class="img-upload-preview" id="preview-journeyBanner" alt="Journey banner preview">
+                  <div class="img-upload-placeholder" id="ph-journeyBanner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    <span>Kéo thả hoặc nhấn chọn</span>
+                    <span class="img-upload-hint-text">JPG, PNG — Khuyến nghị 1920×600px</span>
+                  </div>
+                  <input type="file" accept="image/*" class="img-upload-input" id="file-journeyBanner"
+                    data-target="journeyBanner">
+                </div>
+                <div class="img-upload-actions"><button class="btn btn--outline" onclick="removeImage('journeyBanner')">Xóa
+                    ảnh</button></div>
+              </div>
+
+              <!-- About Banner -->
+              <div class="img-upload-card">
+                <div class="img-upload-head"><span class="img-upload-label">Banner Trang Giới Thiệu</span><span
+                    class="settings-page-badge settings-page-badge--about" style="margin-left:0">📄 Giới thiệu</span>
+                </div>
+                <div class="img-upload-dropzone" id="drop-aboutBanner">
+                  <img class="img-upload-preview" id="preview-aboutBanner" alt="About banner preview">
+                  <div class="img-upload-placeholder" id="ph-aboutBanner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    <span>Kéo thả hoặc nhấn chọn</span>
+                    <span class="img-upload-hint-text">JPG, PNG — Khuyến nghị 1920×600px</span>
+                  </div>
+                  <input type="file" accept="image/*" class="img-upload-input" id="file-aboutBanner"
+                    data-target="aboutBanner">
+                </div>
+                <div class="img-upload-actions"><button class="btn btn--outline" onclick="removeImage('aboutBanner')">Xóa
+                    ảnh</button></div>
+              </div>
+
+              <!-- Contact Banner -->
+              <div class="img-upload-card">
+                <div class="img-upload-head"><span class="img-upload-label">Banner Trang Liên Hệ</span><span
+                    class="settings-page-badge settings-page-badge--all" style="margin-left:0">📄 Liên hệ</span>
+                </div>
+                <div class="img-upload-dropzone" id="drop-contactBanner">
+                  <img class="img-upload-preview" id="preview-contactBanner" alt="Contact banner preview">
+                  <div class="img-upload-placeholder" id="ph-contactBanner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    <span>Kéo thả hoặc nhấn chọn</span>
+                    <span class="img-upload-hint-text">JPG, PNG — Khuyến nghị 1920×600px</span>
+                  </div>
+                  <input type="file" accept="image/*" class="img-upload-input" id="file-contactBanner"
+                    data-target="contactBanner">
+                </div>
+                <div class="img-upload-actions"><button class="btn btn--outline" onclick="removeImage('contactBanner')">Xóa
+                    ảnh</button></div>
+              </div>
+
+              <!-- Page Banner (Fallback) -->
+              <div class="img-upload-card">
+                <div class="img-upload-head"><span class="img-upload-label">Banner Trang Phụ (Mặc định)</span><span
+                    class="settings-page-badge settings-page-badge--all" style="margin-left:0">📄 Các trang khác</span></div>
+                <div class="img-upload-dropzone" id="drop-pageBanner">
+                  <img class="img-upload-preview" id="preview-pageBanner" alt="Page banner preview">
+                  <div class="img-upload-placeholder" id="ph-pageBanner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    <span>Kéo thả hoặc nhấn chọn</span>
+                    <span class="img-upload-hint-text">JPG, PNG — Khuyến nghị 1920×600px</span>
+                  </div>
+                  <input type="file" accept="image/*" class="img-upload-input" id="file-pageBanner"
+                    data-target="pageBanner">
+                </div>
+                <div class="img-upload-actions"><button class="btn btn--outline" onclick="removeImage('pageBanner')">Xóa
+                    ảnh</button></div>
+              </div>
+            </div>
+            <p style="font-size:var(--fs-xs);color:var(--text-muted);margin-top:var(--sp-3);opacity:.7">💡 Ảnh tải lên
+              sẽ được nén tự động và lưu vào hệ thống. Ảnh gốc từ thư mục <code>assets/images/</code> vẫn được dùng làm
+              mặc định.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Home Content -->
+      <div class="settings-tab-panel" id="tab-home">
+        <!-- Home Content -->
+        <div class="settings-section">
+          <div class="settings-section__header">
+            <div class="settings-section__icon" style="background:rgba(59,130,246,.12);color:#3b82f6"><svg width="18"
+                height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+              </svg></div>
+            <div class="settings-section__title">Nội Dung Trang Chủ</div>
+            <span class="settings-page-badge settings-page-badge--home">📄 index.html</span>
+          </div>
+          <div class="settings-section__body">
+
+            <!-- Subsection: Câu chuyện -->
+            <div class="settings-subsection">
+              <div class="settings-subsection__head">
+                <span class="settings-subsection__num">1</span>
+                <span class="settings-subsection__title">Câu Chuyện Thương Hiệu</span>
+                <span class="settings-subsection__hint">Hiển thị ở mục "Câu chuyện" trang chủ</span>
+              </div>
+              <div class="settings-grid">
+                <div class="form-group" style="grid-column:1/-1">
+                  <label class="form-label">Slogan chính</label>
+                  <input class="form-control" id="home-story-quote"
+                    placeholder="Ví dụ: 2 vợ chồng – 1 xưởng – 1 hành trình">
+                  <div class="form-hint">Hỗ trợ thẻ &lt;br&gt; để xuống dòng. Ví dụ: Dòng 1&lt;br&gt;Dòng 2</div>
+                </div>
+                <div class="form-group" style="grid-column:1/-1">
+                  <label class="form-label">Nội dung tóm tắt</label>
+                  <div class="textarea-wrap">
+                    <textarea class="form-control rich-editor" id="home-story-text" rows="3"
+                      placeholder="Viết 2-3 câu tóm gọn về câu chuyện thương hiệu của bạn…"></textarea>
+                  </div>
+                </div>
+                <div class="form-group" style="grid-column:1/-1; margin-top: 1rem;">
+                  <label class="form-label">Hình ảnh câu chuyện</label>
+                  <div style="max-width: 320px;">
+                    <div class="img-upload-card">
+                      <div class="img-upload-dropzone" id="drop-homeStoryImg">
+                        <img class="img-upload-preview" id="preview-homeStoryImg" alt="Story image preview">
+                        <div class="img-upload-placeholder" id="ph-homeStoryImg">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                          </svg>
+                          <span>Kéo thả hoặc nhấn chọn</span>
+                          <span class="img-upload-hint-text">JPG, PNG — Khuyến nghị 800×600px</span>
+                        </div>
+                        <input type="file" accept="image/*" class="img-upload-input" id="file-homeStoryImg"
+                          data-target="homeStoryImg">
                       </div>
-                      <input type="file" accept="image/*" class="img-upload-input" id="file-homeStoryImg" data-target="homeStoryImg">
+                      <div class="img-upload-actions"><button type="button" class="btn btn--outline"
+                          onclick="removeImage('homeStoryImg')">Xóa ảnh</button></div>
                     </div>
-                    <div class="img-upload-actions"><button type="button" class="btn btn--outline" onclick="removeImage('homeStoryImg')">Xóa ảnh</button></div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Subsection: Quy trình -->
-          <div class="settings-subsection">
-            <div class="settings-subsection__head">
-              <span class="settings-subsection__num">2</span>
-              <span class="settings-subsection__title">Quy Trình Chế Tác (5 Bước)</span>
-              <span class="settings-subsection__hint">Hiển thị ở mục "Quy trình" trang chủ</span>
+            <!-- Subsection: Quy trình -->
+            <div class="settings-subsection">
+              <div class="settings-subsection__head">
+                <span class="settings-subsection__num">2</span>
+                <span class="settings-subsection__title">Quy Trình Chế Tác (5 Bước)</span>
+                <span class="settings-subsection__hint">Hiển thị ở mục "Quy trình" trang chủ</span>
+              </div>
+              <div class="settings-grid">
+                <div class="form-group"><label class="form-label">Bước 1 — Tiêu đề</label><input class="form-control"
+                    id="proc-1-title" placeholder="Ví dụ: 1. Chuẩn bị đất"></div>
+                <div class="form-group"><label class="form-label">Bước 1 — Mô tả</label><input class="form-control"
+                    id="proc-1-desc" placeholder="Mô tả ngắn gọn công đoạn…"></div>
+                <div class="form-group"><label class="form-label">Bước 2 — Tiêu đề</label><input class="form-control"
+                    id="proc-2-title" placeholder="Ví dụ: 2. Tạo hình"></div>
+                <div class="form-group"><label class="form-label">Bước 2 — Mô tả</label><input class="form-control"
+                    id="proc-2-desc" placeholder="Mô tả ngắn gọn công đoạn…"></div>
+                <div class="form-group"><label class="form-label">Bước 3 — Tiêu đề</label><input class="form-control"
+                    id="proc-3-title" placeholder="Ví dụ: 3. Vẽ tay"></div>
+                <div class="form-group"><label class="form-label">Bước 3 — Mô tả</label><input class="form-control"
+                    id="proc-3-desc" placeholder="Mô tả ngắn gọn công đoạn…"></div>
+                <div class="form-group"><label class="form-label">Bước 4 — Tiêu đề</label><input class="form-control"
+                    id="proc-4-title" placeholder="Ví dụ: 4. Nung lò"></div>
+                <div class="form-group"><label class="form-label">Bước 4 — Mô tả</label><input class="form-control"
+                    id="proc-4-desc" placeholder="Mô tả ngắn gọn công đoạn…"></div>
+                <div class="form-group"><label class="form-label">Bước 5 — Tiêu đề</label><input class="form-control"
+                    id="proc-5-title" placeholder="Ví dụ: 5. Hoàn thiện"></div>
+                <div class="form-group"><label class="form-label">Bước 5 — Mô tả</label><input class="form-control"
+                    id="proc-5-desc" placeholder="Mô tả ngắn gọn công đoạn…"></div>
+              </div>
             </div>
-            <div class="settings-grid">
-              <div class="form-group"><label class="form-label">Bước 1 — Tiêu đề</label><input class="form-control" id="proc-1-title" placeholder="Ví dụ: 1. Chuẩn bị đất"></div>
-              <div class="form-group"><label class="form-label">Bước 1 — Mô tả</label><input class="form-control" id="proc-1-desc" placeholder="Mô tả ngắn gọn công đoạn…"></div>
-              <div class="form-group"><label class="form-label">Bước 2 — Tiêu đề</label><input class="form-control" id="proc-2-title" placeholder="Ví dụ: 2. Tạo hình"></div>
-              <div class="form-group"><label class="form-label">Bước 2 — Mô tả</label><input class="form-control" id="proc-2-desc" placeholder="Mô tả ngắn gọn công đoạn…"></div>
-              <div class="form-group"><label class="form-label">Bước 3 — Tiêu đề</label><input class="form-control" id="proc-3-title" placeholder="Ví dụ: 3. Vẽ tay"></div>
-              <div class="form-group"><label class="form-label">Bước 3 — Mô tả</label><input class="form-control" id="proc-3-desc" placeholder="Mô tả ngắn gọn công đoạn…"></div>
-              <div class="form-group"><label class="form-label">Bước 4 — Tiêu đề</label><input class="form-control" id="proc-4-title" placeholder="Ví dụ: 4. Nung lò"></div>
-              <div class="form-group"><label class="form-label">Bước 4 — Mô tả</label><input class="form-control" id="proc-4-desc" placeholder="Mô tả ngắn gọn công đoạn…"></div>
-              <div class="form-group"><label class="form-label">Bước 5 — Tiêu đề</label><input class="form-control" id="proc-5-title" placeholder="Ví dụ: 5. Hoàn thiện"></div>
-              <div class="form-group"><label class="form-label">Bước 5 — Mô tả</label><input class="form-control" id="proc-5-desc" placeholder="Mô tả ngắn gọn công đoạn…"></div>
-            </div>
-          </div>
 
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Tab 4: About Content -->
-    <div class="settings-tab-panel" id="tab-about">
-      <!-- About Content -->
-      <div class="settings-section">
-        <div class="settings-section__header">
-          <div class="settings-section__icon" style="background:rgba(16,185,129,.12);color:#10b981"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
-          <div class="settings-section__title">Nội Dung Trang Giới Thiệu</div>
-          <span class="settings-page-badge settings-page-badge--about">📄 about.html</span>
-        </div>
-        <div class="settings-section__body">
+      <!-- Tab 4: About Content -->
+      <div class="settings-tab-panel" id="tab-about">
+        <!-- About Content -->
+        <div class="settings-section">
+          <div class="settings-section__header">
+            <div class="settings-section__icon" style="background:rgba(16,185,129,.12);color:#10b981"><svg width="18"
+                height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                <path d="M16 3.13a4 4 0 010 7.75" />
+              </svg></div>
+            <div class="settings-section__title">Nội Dung Trang Giới Thiệu</div>
+            <span class="settings-page-badge settings-page-badge--about">📄 about.html</span>
+          </div>
+          <div class="settings-section__body">
 
-          <!-- Subsection: About Story -->
-          <div class="settings-subsection">
-            <div class="settings-subsection__head">
-              <span class="settings-subsection__num">1</span>
-              <span class="settings-subsection__title">Câu Chuyện Thương Hiệu</span>
-              <span class="settings-subsection__hint">Khu vực "Về Phúc Gia Tiên" phía trên</span>
-            </div>
-            <div class="settings-grid">
-              <div class="form-group" style="grid-column:1/-1">
-                <label class="form-label">Tiêu đề lớn</label>
-                <input class="form-control" id="about-story-title" placeholder="Ví dụ: Từ Đam Mê Đến Thương Hiệu">
-                <div class="form-hint">Dùng &lt;br&gt; để xuống dòng, &lt;em&gt;text&lt;/em&gt; để in nghiêng màu vàng</div>
+            <!-- Subsection: About Story -->
+            <div class="settings-subsection">
+              <div class="settings-subsection__head">
+                <span class="settings-subsection__num">1</span>
+                <span class="settings-subsection__title">Câu Chuyện Thương Hiệu</span>
+                <span class="settings-subsection__hint">Khu vực "Về Phúc Gia Tiên" phía trên</span>
               </div>
-              <div class="form-group" style="grid-column:1/-1">
-                <label class="form-label">Đoạn giới thiệu 1</label>
-                <div class="textarea-wrap">
-                  <textarea class="form-control rich-editor" id="about-story-text-1" rows="3" placeholder="Kể về lịch sử hình thành, bắt đầu từ năm nào, ai sáng lập…"></textarea>
+              <div class="settings-grid">
+                <div class="form-group" style="grid-column:1/-1">
+                  <label class="form-label">Tiêu đề lớn</label>
+                  <input class="form-control" id="about-story-title" placeholder="Ví dụ: Từ Đam Mê Đến Thương Hiệu">
+                  <div class="form-hint">Dùng &lt;br&gt; để xuống dòng, &lt;em&gt;text&lt;/em&gt; để in nghiêng màu vàng
+                  </div>
                 </div>
-              </div>
-              <div class="form-group" style="grid-column:1/-1">
-                <label class="form-label">Đoạn giới thiệu 2</label>
-                <div class="textarea-wrap">
-                  <textarea class="form-control rich-editor" id="about-story-text-2" rows="3" placeholder="Kể về quy trình sản xuất, cam kết chất lượng, nhiệt độ nung…"></textarea>
+                <div class="form-group" style="grid-column:1/-1">
+                  <label class="form-label">Đoạn giới thiệu 1</label>
+                  <div class="textarea-wrap">
+                    <textarea class="form-control rich-editor" id="about-story-text-1" rows="3"
+                      placeholder="Kể về lịch sử hình thành, bắt đầu từ năm nào, ai sáng lập…"></textarea>
+                  </div>
                 </div>
-              </div>
-              <div class="form-group" style="grid-column:1/-1; margin-top: 1rem;">
-                <label class="form-label">Hình ảnh giới thiệu</label>
-                <div style="max-width: 320px;">
-                  <div class="img-upload-card">
-                    <div class="img-upload-dropzone" id="drop-aboutStoryImg">
-                      <img class="img-upload-preview" id="preview-aboutStoryImg" alt="About story image preview">
-                      <div class="img-upload-placeholder" id="ph-aboutStoryImg">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                        <span>Kéo thả hoặc nhấn chọn</span>
-                        <span class="img-upload-hint-text">JPG, PNG — Khuyến nghị 800×600px</span>
+                <div class="form-group" style="grid-column:1/-1">
+                  <label class="form-label">Đoạn giới thiệu 2</label>
+                  <div class="textarea-wrap">
+                    <textarea class="form-control rich-editor" id="about-story-text-2" rows="3"
+                      placeholder="Kể về quy trình sản xuất, cam kết chất lượng, nhiệt độ nung…"></textarea>
+                  </div>
+                </div>
+                <div class="form-group" style="grid-column:1/-1; margin-top: 1rem;">
+                  <label class="form-label">Hình ảnh giới thiệu</label>
+                  <div style="max-width: 320px;">
+                    <div class="img-upload-card">
+                      <div class="img-upload-dropzone" id="drop-aboutStoryImg">
+                        <img class="img-upload-preview" id="preview-aboutStoryImg" alt="About story image preview">
+                        <div class="img-upload-placeholder" id="ph-aboutStoryImg">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                          </svg>
+                          <span>Kéo thả hoặc nhấn chọn</span>
+                          <span class="img-upload-hint-text">JPG, PNG — Khuyến nghị 800×600px</span>
+                        </div>
+                        <input type="file" accept="image/*" class="img-upload-input" id="file-aboutStoryImg"
+                          data-target="aboutStoryImg">
                       </div>
-                      <input type="file" accept="image/*" class="img-upload-input" id="file-aboutStoryImg" data-target="aboutStoryImg">
+                      <div class="img-upload-actions"><button type="button" class="btn btn--outline"
+                          onclick="removeImage('aboutStoryImg')">Xóa ảnh</button></div>
                     </div>
-                    <div class="img-upload-actions"><button type="button" class="btn btn--outline" onclick="removeImage('aboutStoryImg')">Xóa ảnh</button></div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Subsection: Stats -->
-          <div class="settings-subsection">
-            <div class="settings-subsection__head">
-              <span class="settings-subsection__num">2</span>
-              <span class="settings-subsection__title">Con Số Thống Kê</span>
-              <span class="settings-subsection__hint">3 ô con số ở dưới đoạn giới thiệu</span>
-            </div>
-            <div class="settings-grid">
-              <div class="form-group"><label class="form-label">Năm kinh nghiệm</label><input class="form-control" id="stat-years" placeholder="Ví dụ: 4+"><div class="form-hint">Ghi số + ký tự. VD: 4+, 10+</div></div>
-              <div class="form-group"><label class="form-label">Sản phẩm đã bán</label><input class="form-control" id="stat-products" placeholder="Ví dụ: 1000+"></div>
-              <div class="form-group"><label class="form-label">Khách hàng tin tưởng</label><input class="form-control" id="stat-customers" placeholder="Ví dụ: 500+"></div>
-            </div>
-          </div>
-
-          <!-- Subsection: Core Values -->
-          <div class="settings-subsection">
-            <div class="settings-subsection__head">
-              <span class="settings-subsection__num">3</span>
-              <span class="settings-subsection__title">Giá Trị Cốt Lõi (4 Thẻ)</span>
-              <span class="settings-subsection__hint">4 card nổi bật ở giữa trang</span>
-            </div>
-            <div class="settings-grid">
-              <div class="form-group"><label class="form-label">🛡️ Giá trị 1</label><input class="form-control" id="cv-1-title" placeholder="Ví dụ: Chất Lượng"></div>
-              <div class="form-group"><label class="form-label">Mô tả giá trị 1</label><input class="form-control" id="cv-1-desc" placeholder="Cam kết 100% gốm sứ thủ công chính hiệu…"></div>
-              <div class="form-group"><label class="form-label">❤️ Giá trị 2</label><input class="form-control" id="cv-2-title" placeholder="Ví dụ: Tận Tâm"></div>
-              <div class="form-group"><label class="form-label">Mô tả giá trị 2</label><input class="form-control" id="cv-2-desc" placeholder="Từng nét vẽ đều được chú tâm nhất…"></div>
-              <div class="form-group"><label class="form-label">💡 Giá trị 3</label><input class="form-control" id="cv-3-title" placeholder="Ví dụ: Sáng Tạo"></div>
-              <div class="form-group"><label class="form-label">Mô tả giá trị 3</label><input class="form-control" id="cv-3-desc" placeholder="Kết hợp truyền thống với hiện đại…"></div>
-              <div class="form-group"><label class="form-label">⭐ Giá trị 4</label><input class="form-control" id="cv-4-title" placeholder="Ví dụ: Uy Tín"></div>
-              <div class="form-group"><label class="form-label">Mô tả giá trị 4</label><input class="form-control" id="cv-4-desc" placeholder="Chính sách đổi trả minh bạch…"></div>
-            </div>
-          </div>
-
-          <!-- Subsection: Team -->
-          <div class="settings-subsection">
-            <div class="settings-subsection__head">
-              <span class="settings-subsection__num">4</span>
-              <span class="settings-subsection__title">Đội Ngũ Nghệ Nhân</span>
-              <span class="settings-subsection__hint">2 thẻ nghệ nhân cuối trang</span>
-            </div>
-            <div class="settings-grid">
-              <div class="form-group"><label class="form-label">👤 Tên nghệ nhân 1</label><input class="form-control" id="team-1-name" placeholder="Ví dụ: Nguyễn Văn Phúc"></div>
-              <div class="form-group"><label class="form-label">Chức danh</label><input class="form-control" id="team-1-role" placeholder="Ví dụ: Nghệ Nhân Chính"></div>
-              <div class="form-group" style="grid-column:1/-1">
-                <label class="form-label">Giới thiệu ngắn</label>
-                <div class="textarea-wrap">
-                  <textarea class="form-control rich-editor" id="team-1-bio" rows="2" placeholder="Phụ trách tạo hình và nung gốm. Hơn 6 năm kinh nghiệm…"></textarea>
-                </div>
+            <!-- Subsection: Stats -->
+            <div class="settings-subsection">
+              <div class="settings-subsection__head">
+                <span class="settings-subsection__num">2</span>
+                <span class="settings-subsection__title">Con Số Thống Kê</span>
+                <span class="settings-subsection__hint">3 ô con số ở dưới đoạn giới thiệu</span>
               </div>
-              <div class="form-group" style="grid-column:1/-1; margin-bottom: 1.5rem;">
-                <label class="form-label">Ảnh đại diện Nghệ nhân 1</label>
-                <div style="max-width: 240px;">
-                  <div class="img-upload-card">
-                    <div class="img-upload-dropzone" id="drop-teamAvatar1" style="min-height: 120px;">
-                      <img class="img-upload-preview" id="preview-teamAvatar1" alt="Team 1 avatar preview" style="max-height: 100px;">
-                      <div class="img-upload-placeholder" id="ph-teamAvatar1">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                        <span>Kéo thả hoặc chọn ảnh</span>
-                        <span class="img-upload-hint-text">Khuyến nghị 400×400px (Vuông)</span>
+              <div class="settings-grid">
+                <div class="form-group"><label class="form-label">Năm kinh nghiệm</label><input class="form-control"
+                    id="stat-years" placeholder="Ví dụ: 4+">
+                  <div class="form-hint">Ghi số + ký tự. VD: 4+, 10+</div>
+                </div>
+                <div class="form-group"><label class="form-label">Sản phẩm đã bán</label><input class="form-control"
+                    id="stat-products" placeholder="Ví dụ: 1000+"></div>
+                <div class="form-group"><label class="form-label">Khách hàng tin tưởng</label><input
+                    class="form-control" id="stat-customers" placeholder="Ví dụ: 500+"></div>
+              </div>
+            </div>
+
+            <!-- Subsection: Core Values -->
+            <div class="settings-subsection">
+              <div class="settings-subsection__head">
+                <span class="settings-subsection__num">3</span>
+                <span class="settings-subsection__title">Giá Trị Cốt Lõi (4 Thẻ)</span>
+                <span class="settings-subsection__hint">4 card nổi bật ở giữa trang</span>
+              </div>
+              <div class="settings-grid">
+                <div class="form-group"><label class="form-label">🛡️ Giá trị 1</label><input class="form-control"
+                    id="cv-1-title" placeholder="Ví dụ: Chất Lượng"></div>
+                <div class="form-group"><label class="form-label">Mô tả giá trị 1</label><input class="form-control"
+                    id="cv-1-desc" placeholder="Cam kết 100% gốm sứ thủ công chính hiệu…"></div>
+                <div class="form-group"><label class="form-label">❤️ Giá trị 2</label><input class="form-control"
+                    id="cv-2-title" placeholder="Ví dụ: Tận Tâm"></div>
+                <div class="form-group"><label class="form-label">Mô tả giá trị 2</label><input class="form-control"
+                    id="cv-2-desc" placeholder="Từng nét vẽ đều được chú tâm nhất…"></div>
+                <div class="form-group"><label class="form-label">💡 Giá trị 3</label><input class="form-control"
+                    id="cv-3-title" placeholder="Ví dụ: Sáng Tạo"></div>
+                <div class="form-group"><label class="form-label">Mô tả giá trị 3</label><input class="form-control"
+                    id="cv-3-desc" placeholder="Kết hợp truyền thống với hiện đại…"></div>
+                <div class="form-group"><label class="form-label">⭐ Giá trị 4</label><input class="form-control"
+                    id="cv-4-title" placeholder="Ví dụ: Uy Tín"></div>
+                <div class="form-group"><label class="form-label">Mô tả giá trị 4</label><input class="form-control"
+                    id="cv-4-desc" placeholder="Chính sách đổi trả minh bạch…"></div>
+              </div>
+            </div>
+
+            <!-- Subsection: Team -->
+            <div class="settings-subsection">
+              <div class="settings-subsection__head">
+                <span class="settings-subsection__num">4</span>
+                <span class="settings-subsection__title">Đội Ngũ Nghệ Nhân</span>
+                <span class="settings-subsection__hint">2 thẻ nghệ nhân cuối trang</span>
+              </div>
+              <div class="settings-grid">
+                <div class="form-group"><label class="form-label">👤 Tên nghệ nhân 1</label><input class="form-control"
+                    id="team-1-name" placeholder="Ví dụ: Nguyễn Văn Phúc"></div>
+                <div class="form-group"><label class="form-label">Chức danh</label><input class="form-control"
+                    id="team-1-role" placeholder="Ví dụ: Nghệ Nhân Chính"></div>
+                <div class="form-group" style="grid-column:1/-1">
+                  <label class="form-label">Giới thiệu ngắn</label>
+                  <div class="textarea-wrap">
+                    <textarea class="form-control rich-editor" id="team-1-bio" rows="2"
+                      placeholder="Phụ trách tạo hình và nung gốm. Hơn 6 năm kinh nghiệm…"></textarea>
+                  </div>
+                </div>
+                <div class="form-group" style="grid-column:1/-1; margin-bottom: 1.5rem;">
+                  <label class="form-label">Ảnh đại diện Nghệ nhân 1</label>
+                  <div style="max-width: 240px;">
+                    <div class="img-upload-card">
+                      <div class="img-upload-dropzone" id="drop-teamAvatar1" style="min-height: 120px;">
+                        <img class="img-upload-preview" id="preview-teamAvatar1" alt="Team 1 avatar preview"
+                          style="max-height: 100px;">
+                        <div class="img-upload-placeholder" id="ph-teamAvatar1">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                          </svg>
+                          <span>Kéo thả hoặc chọn ảnh</span>
+                          <span class="img-upload-hint-text">Khuyến nghị 400×400px (Vuông)</span>
+                        </div>
+                        <input type="file" accept="image/*" class="img-upload-input" id="file-teamAvatar1"
+                          data-target="teamAvatar1">
                       </div>
-                      <input type="file" accept="image/*" class="img-upload-input" id="file-teamAvatar1" data-target="teamAvatar1">
+                      <div class="img-upload-actions"><button type="button" class="btn btn--outline"
+                          onclick="removeImage('teamAvatar1')">Xóa ảnh</button></div>
                     </div>
-                    <div class="img-upload-actions"><button type="button" class="btn btn--outline" onclick="removeImage('teamAvatar1')">Xóa ảnh</button></div>
+                  </div>
+                </div>
+                <div class="form-group"><label class="form-label">👤 Tên nghệ nhân 2</label><input class="form-control"
+                    id="team-2-name" placeholder="Ví dụ: Lê Thị Tiên"></div>
+                <div class="form-group"><label class="form-label">Chức danh</label><input class="form-control"
+                    id="team-2-role" placeholder="Ví dụ: Nghệ Nhân Vẽ & Sáng Tạo"></div>
+                <div class="form-group" style="grid-column:1/-1">
+                  <label class="form-label">Giới thiệu ngắn</label>
+                  <div class="textarea-wrap">
+                    <textarea class="form-control rich-editor" id="team-2-bio" rows="2"
+                      placeholder="Phụ trách vẽ hoa văn và sáng tạo mẫu mới…"></textarea>
+                  </div>
+                </div>
+                <div class="form-group" style="grid-column:1/-1;">
+                  <label class="form-label">Ảnh đại diện Nghệ nhân 2</label>
+                  <div style="max-width: 240px;">
+                    <div class="img-upload-card">
+                      <div class="img-upload-dropzone" id="drop-teamAvatar2" style="min-height: 120px;">
+                        <img class="img-upload-preview" id="preview-teamAvatar2" alt="Team 2 avatar preview"
+                          style="max-height: 100px;">
+                        <div class="img-upload-placeholder" id="ph-teamAvatar2">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                          </svg>
+                          <span>Kéo thả hoặc chọn ảnh</span>
+                          <span class="img-upload-hint-text">Khuyến nghị 400×400px (Vuông)</span>
+                        </div>
+                        <input type="file" accept="image/*" class="img-upload-input" id="file-teamAvatar2"
+                          data-target="teamAvatar2">
+                      </div>
+                      <div class="img-upload-actions"><button type="button" class="btn btn--outline"
+                          onclick="removeImage('teamAvatar2')">Xóa ảnh</button></div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="form-group"><label class="form-label">👤 Tên nghệ nhân 2</label><input class="form-control" id="team-2-name" placeholder="Ví dụ: Lê Thị Tiên"></div>
-              <div class="form-group"><label class="form-label">Chức danh</label><input class="form-control" id="team-2-role" placeholder="Ví dụ: Nghệ Nhân Vẽ & Sáng Tạo"></div>
-              <div class="form-group" style="grid-column:1/-1">
-                <label class="form-label">Giới thiệu ngắn</label>
-                <div class="textarea-wrap">
-                  <textarea class="form-control rich-editor" id="team-2-bio" rows="2" placeholder="Phụ trách vẽ hoa văn và sáng tạo mẫu mới…"></textarea>
-                </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 5: System Config -->
+      <div class="settings-tab-panel" id="tab-system">
+        <!-- Shipping -->
+        <div class="settings-section">
+          <div class="settings-section__header">
+            <div class="settings-section__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
+                <rect x="1" y="3" width="15" height="13" />
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                <circle cx="5.5" cy="18.5" r="2.5" />
+                <circle cx="18.5" cy="18.5" r="2.5" />
+              </svg></div>
+            <div class="settings-section__title">Cài Đặt Vận Chuyển</div>
+          </div>
+          <div class="settings-section__body">
+            <div class="settings-grid">
+              <div class="form-group"><label class="form-label">Phí giao hàng mặc định (VNĐ)</label><input
+                  class="form-control" id="ship-fee" type="number" value="">
+                <div class="form-hint">0 = miễn phí giao hàng</div>
               </div>
-              <div class="form-group" style="grid-column:1/-1;">
-                <label class="form-label">Ảnh đại diện Nghệ nhân 2</label>
-                <div style="max-width: 240px;">
-                  <div class="img-upload-card">
-                    <div class="img-upload-dropzone" id="drop-teamAvatar2" style="min-height: 120px;">
-                      <img class="img-upload-preview" id="preview-teamAvatar2" alt="Team 2 avatar preview" style="max-height: 100px;">
-                      <div class="img-upload-placeholder" id="ph-teamAvatar2">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                        <span>Kéo thả hoặc chọn ảnh</span>
-                        <span class="img-upload-hint-text">Khuyến nghị 400×400px (Vuông)</span>
-                      </div>
-                      <input type="file" accept="image/*" class="img-upload-input" id="file-teamAvatar2" data-target="teamAvatar2">
-                    </div>
-                    <div class="img-upload-actions"><button type="button" class="btn btn--outline" onclick="removeImage('teamAvatar2')">Xóa ảnh</button></div>
-                  </div>
-                </div>
-              </div>
+              <div class="form-group"><label class="form-label">Đơn tối thiểu miễn phí ship (VNĐ)</label><input
+                  class="form-control" id="ship-min" type="number" value=""></div>
+              <div class="form-group"><label class="form-label">Thời gian giao hàng (ngày)</label><input
+                  class="form-control" id="ship-days" value=""></div>
+              <div class="form-group"><label class="form-label">Khu vực giao hàng</label><input class="form-control"
+                  id="ship-area" value=""></div>
             </div>
           </div>
-
         </div>
-      </div>
-    </div>
-
-    <!-- Tab 5: System Config -->
-    <div class="settings-tab-panel" id="tab-system">
-      <!-- Shipping -->
-      <div class="settings-section">
-        <div class="settings-section__header">
-          <div class="settings-section__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
-          <div class="settings-section__title">Cài Đặt Vận Chuyển</div>
-        </div>
-        <div class="settings-section__body">
-          <div class="settings-grid">
-            <div class="form-group"><label class="form-label">Phí giao hàng mặc định (VNĐ)</label><input class="form-control" id="ship-fee" type="number" value=""><div class="form-hint">0 = miễn phí giao hàng</div></div>
-            <div class="form-group"><label class="form-label">Đơn tối thiểu miễn phí ship (VNĐ)</label><input class="form-control" id="ship-min" type="number" value=""></div>
-            <div class="form-group"><label class="form-label">Thời gian giao hàng (ngày)</label><input class="form-control" id="ship-days" value=""></div>
-            <div class="form-group"><label class="form-label">Khu vực giao hàng</label><input class="form-control" id="ship-area" value=""></div>
-          </div>
-        </div>
-      </div>
-
-      </div>
 
       <!-- Product Configuration -->
       <div class="settings-section">
         <div class="settings-section__header">
-          <div class="settings-section__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
+          <div class="settings-section__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 01-8 0" />
+            </svg></div>
           <div class="settings-section__title">Cấu Hình Sản Phẩm</div>
         </div>
         <div class="settings-section__body">
           <div class="settings-grid">
             <div class="form-group" style="grid-column:1/-1">
               <label class="form-label">Danh sách chất liệu (cách nhau bằng dấu phẩy)</label>
-              <input class="form-control" id="product-materials" value="" placeholder="Ví dụ: Gốm sứ, Đất nung, Sành, Men rạn">
-              <span style="font-size:var(--fs-xs);color:var(--text-muted);display:block;margin-top:4px;">Chất liệu sẽ tự động hiển thị trong dropdown khi Thêm/Sửa sản phẩm.</span>
+              <input class="form-control" id="product-materials" value=""
+                placeholder="Ví dụ: Gốm sứ, Đất nung, Sành, Men rạn">
+              <span style="font-size:var(--fs-xs);color:var(--text-muted);display:block;margin-top:4px;">Chất liệu sẽ tự
+                động hiển thị trong dropdown khi Thêm/Sửa sản phẩm.</span>
             </div>
           </div>
         </div>
@@ -515,15 +1104,43 @@
       <!-- Notifications -->
       <div class="settings-section">
         <div class="settings-section__header">
-          <div class="settings-section__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
+          <div class="settings-section__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 01-3.46 0" />
+            </svg></div>
           <div class="settings-section__title">Thông Báo Hệ Thống</div>
         </div>
         <div class="settings-section__body">
           <div style="display:flex;flex-direction:column;gap:var(--sp-3)">
-            <div class="toggle-switch"><div><div class="toggle-switch__label">Thông báo đơn hàng mới</div><div class="toggle-switch__desc">Gửi email khi có đơn hàng mới</div></div><label class="toggle"><input type="checkbox" id="notify-new-order" checked><span class="toggle__slider"></span></label></div>
-            <div class="toggle-switch"><div><div class="toggle-switch__label">Cảnh báo tồn kho thấp</div><div class="toggle-switch__desc">Thông báo khi sản phẩm sắp hết hàng (dưới 5)</div></div><label class="toggle"><input type="checkbox" id="notify-low-stock" checked><span class="toggle__slider"></span></label></div>
-            <div class="toggle-switch"><div><div class="toggle-switch__label">Báo cáo doanh thu hàng tuần</div><div class="toggle-switch__desc">Gửi báo cáo tự động mỗi thứ Hai</div></div><label class="toggle"><input type="checkbox" id="notify-weekly-report"><span class="toggle__slider"></span></label></div>
-            <div class="toggle-switch"><div><div class="toggle-switch__label">Thông báo khách mới đăng ký</div><div class="toggle-switch__desc">Email khi có khách hàng đăng ký tài khoản</div></div><label class="toggle"><input type="checkbox" id="notify-new-customer" checked><span class="toggle__slider"></span></label></div>
+            <div class="toggle-switch">
+              <div>
+                <div class="toggle-switch__label">Thông báo đơn hàng mới</div>
+                <div class="toggle-switch__desc">Gửi email khi có đơn hàng mới</div>
+              </div><label class="toggle"><input type="checkbox" id="notify-new-order" checked><span
+                  class="toggle__slider"></span></label>
+            </div>
+            <div class="toggle-switch">
+              <div>
+                <div class="toggle-switch__label">Cảnh báo tồn kho thấp</div>
+                <div class="toggle-switch__desc">Thông báo khi sản phẩm sắp hết hàng (dưới 5)</div>
+              </div><label class="toggle"><input type="checkbox" id="notify-low-stock" checked><span
+                  class="toggle__slider"></span></label>
+            </div>
+            <div class="toggle-switch">
+              <div>
+                <div class="toggle-switch__label">Báo cáo doanh thu hàng tuần</div>
+                <div class="toggle-switch__desc">Gửi báo cáo tự động mỗi thứ Hai</div>
+              </div><label class="toggle"><input type="checkbox" id="notify-weekly-report"><span
+                  class="toggle__slider"></span></label>
+            </div>
+            <div class="toggle-switch">
+              <div>
+                <div class="toggle-switch__label">Thông báo khách mới đăng ký</div>
+                <div class="toggle-switch__desc">Email khi có khách hàng đăng ký tài khoản</div>
+              </div><label class="toggle"><input type="checkbox" id="notify-new-customer" checked><span
+                  class="toggle__slider"></span></label>
+            </div>
           </div>
         </div>
       </div>
@@ -531,15 +1148,23 @@
       <!-- Admin Account -->
       <div class="settings-section">
         <div class="settings-section__header">
-          <div class="settings-section__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div class="settings-section__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg></div>
           <div class="settings-section__title">Tài Khoản Quản Trị</div>
         </div>
         <div class="settings-section__body">
           <div class="settings-grid">
-            <div class="form-group"><label class="form-label">Họ tên</label><input class="form-control" id="admin-name-input" value="Quản Trị Viên"></div>
-            <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="admin-email-input" value="admin@phucgatien.vn" type="email"></div>
-            <div class="form-group"><label class="form-label">Mật khẩu mới</label><input class="form-control" id="admin-pass-new" type="password" placeholder="Để trống nếu không đổi"></div>
-            <div class="form-group"><label class="form-label">Xác nhận mật khẩu</label><input class="form-control" id="admin-pass-confirm" type="password" placeholder="Nhập lại mật khẩu mới"></div>
+            <div class="form-group"><label class="form-label">Họ tên</label><input class="form-control"
+                id="admin-name-input" value="Quản Trị Viên"></div>
+            <div class="form-group"><label class="form-label">Email</label><input class="form-control"
+                id="admin-email-input" value="admin@phucgatien.vn" type="email"></div>
+            <div class="form-group"><label class="form-label">Mật khẩu mới</label><input class="form-control"
+                id="admin-pass-new" type="password" placeholder="Để trống nếu không đổi"></div>
+            <div class="form-group"><label class="form-label">Xác nhận mật khẩu</label><input class="form-control"
+                id="admin-pass-confirm" type="password" placeholder="Nhập lại mật khẩu mới"></div>
           </div>
         </div>
       </div>
@@ -547,421 +1172,459 @@
       <!-- Danger Zone -->
       <div class="settings-section" style="border-color:rgba(220,38,38,.2)">
         <div class="settings-section__header">
-          <div class="settings-section__icon" style="background:var(--danger-bg);color:var(--danger)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          <div class="settings-section__icon" style="background:var(--danger-bg);color:var(--danger)"><svg width="18"
+              height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg></div>
           <div class="settings-section__title" style="color:var(--danger)">Vùng Nguy Hiểm</div>
         </div>
         <div class="settings-section__body">
           <div style="display:flex;gap:var(--sp-4);flex-wrap:wrap">
             <button class="btn btn--danger" id="btn-reset-data">🗑️ Xóa tất cả dữ liệu demo</button>
-            <button class="btn btn--danger" style="background:transparent;color:var(--danger)" id="btn-export-data">📥 Xuất dữ liệu (JSON)</button>
+            <button class="btn btn--danger" style="background:transparent;color:var(--danger)" id="btn-export-data">📥
+              Xuất dữ liệu (JSON)</button>
           </div>
-          <p style="font-size:var(--fs-xs);color:var(--text-muted);margin-top:var(--sp-3)">⚠️ Hành động xóa dữ liệu không thể hoàn tác. Vui lòng xuất backup trước.</p>
+          <p style="font-size:var(--fs-xs);color:var(--text-muted);margin-top:var(--sp-3)">⚠️ Hành động xóa dữ liệu
+            không thể hoàn tác. Vui lòng xuất backup trước.</p>
         </div>
       </div>
-    </div>
+  </div>
   </main>
-</div>
+  </div>
 
-<div id="admin-toast-container"></div>
-<script src="js/admin-data.js"></script><script src="js/admin-core.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded',function(){
-  var CONFIG_KEY = 'pgt_site_config';
-  var DEFAULT_CONFIG = {
-    storeName: "Phúc Gia Tiên – Gốm Sứ Thủ Công Bát Tràng",
-    slogan: "Tinh hoa gốm sứ Bát Tràng truyền đời",
-    phone: "0986 123 456",
-    email: "phucgatien@gmail.com",
-    address: "Thôn Bát Tràng, Xã Bát Tràng, Huyện Gia Lâm, Hà Nội",
-    facebook: "https://facebook.com/phucgatien",
-    youtube: "https://youtube.com/@phucgatien",
-    tiktok: "https://tiktok.com/@phucgatien",
-    zalo: "https://zalo.me/0986123456",
-    messenger: "https://m.me/phucgatien",
-    shipFee: 0,
-    shipMin: 5000000,
-    shipDays: "3-7 ngày",
-    shipArea: "Toàn quốc",
-    logoUrl: "assets/images/logo.png",
-    homeBanner: "assets/images/home_bg.jpeg",
-    pageBanner: "assets/images/journey-hero.jpg",
-    homeStoryImg: "assets/images/story-couple.jpg",
-    aboutStoryImg: "assets/images/about-workshop.jpg",
-    teamAvatar1: "assets/images/team-husband.jpg",
-    teamAvatar2: "assets/images/team-wife.jpg",
-    workingHours: "08:00 - 18:00 (Từ Thứ 2 - Chủ Nhật)",
-    mapIframe: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3725.564539824403!2d105.93206497607736!3d20.969992790299602!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135aef2f534125b%3A0xe54e3d3b76ca40c3!2zUGjDumMgR2lhIFRpw6puIC0gR-G7kW0gU-G7qyBCw6F0IFRyw6BuZw!5e0!3m2!1svi!2s!4v1716260000000!5m2!1svi!2s" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
-    // ── Trang chủ (index.html) ──
-    homeStoryQuote: "2 vợ chồng – 1 xưởng –<br>1 hành trình",
-    homeStoryText: "Chúng tôi bắt đầu từ con số 0. Tự tay học nghề, tự làm, tự thất bại và đứng dậy. Phúc Gia Tiên không chỉ làm gốm, chúng tôi tạo ra giá trị để truyền lại cho thế hệ sau.",
-    process1Title: "1. Chuẩn bị đất",
-    process1Desc: "Chọn lựa và nhào đất sét Bát Tràng đúng độ dẻo",
-    process2Title: "2. Tạo hình",
-    process2Desc: "Vuốt đất trên bàn xoay bằng đôi bàn tay điêu luyện",
-    process3Title: "3. Vẽ tay",
-    process3Desc: "Trang trí hoa văn truyền thống bằng bút lông thủ công",
-    process4Title: "4. Nung lò",
-    process4Desc: "Nung ở nhiệt độ 1.280°C trong lò truyền thống",
-    process5Title: "5. Hoàn thiện",
-    process5Desc: "Kiểm tra, đánh bóng và đóng gói tác phẩm hoàn hảo",
-    // ── Trang giới thiệu (about.html) ──
-    aboutStoryTitle: "Từ Đam Mê<br>Đến <em>Thương Hiệu</em>",
-    aboutStoryText1: "Phúc Gia Tiên ra đời từ tình yêu thuần khiết với nghề gốm thủ công Bát Tràng. Từ năm 2018, hai vợ chồng chúng tôi bắt đầu học nghề, và đến nay đã xây dựng được một xưởng gốm uy tín với hàng trăm mẫu sản phẩm độc đáo.",
-    aboutStoryText2: "Mỗi sản phẩm từ Phúc Gia Tiên đều được tạo ra hoàn toàn thủ công – từ khâu nhào đất, tạo hình, vẽ hoa văn đến tráng men và nung trong lò ở nhiệt độ 1.200°C. Chúng tôi cam kết mang đến những tác phẩm gốm sứ chất lượng cao, giữ trọn giá trị nghề truyền thống.",
-    statYears: "4+",
-    statProducts: "1000+",
-    statCustomers: "500+",
-    coreValue1Title: "Chất Lượng",
-    coreValue1Desc: "Đặt chất lượng lên hàng đầu. Mỗi sản phẩm qua kiểm tra kỹ càng, cam kết 100% gốm sứ thủ công chính hiệu.",
-    coreValue2Title: "Tận Tâm",
-    coreValue2Desc: "Làm việc bằng cả trái tim. Từng nét vẽ, từng công đoạn đều được chú tâm và cẩn thận nhất.",
-    coreValue3Title: "Sáng Tạo",
-    coreValue3Desc: "Không ngừng đổi mới. Kết hợp họa tiết truyền thống với thiết kế hiện đại, mỗi sản phẩm là một tác phẩm độc đáo.",
-    coreValue4Title: "Uy Tín",
-    coreValue4Desc: "Giữ chữ tín với khách hàng. Hỗ trợ tận tình và chính sách đổi trả minh bạch, rõ ràng.",
-    teamName1: "Nguyễn Văn Phúc",
-    teamRole1: "Nghệ Nhân Chính",
-    teamBio1: "Phụ trách tạo hình và nung gốm. Hơn 6 năm kinh nghiệm với bàn xoay và lò nung truyền thống Bát Tràng.",
-    teamName2: "Lê Thị Tiên",
-    teamRole2: "Nghệ Nhân Vẽ & Sáng Tạo",
-    teamBio2: "Phụ trách vẽ hoa văn và sáng tạo mẫu mới. Mỗi nét vẽ là một câu chuyện được kể trên đất sét."
-  };
+  <div id="admin-toast-container"></div>
+  <script src="js/admin-data.js"></script>
+  <script src="js/admin-core.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var CONFIG_KEY = 'pgt_site_config';
+      var DEFAULT_CONFIG = {
+        storeName: "Phúc Gia Tiên – Gốm Sứ Thủ Công Bát Tràng",
+        slogan: "Tinh hoa gốm sứ Bát Tràng truyền đời",
+        phone: "0986 123 456",
+        email: "phucgatien@gmail.com",
+        address: "Thôn Bát Tràng, Xã Bát Tràng, Huyện Gia Lâm, Hà Nội",
+        facebook: "https://facebook.com/phucgatien",
+        youtube: "https://youtube.com/@phucgatien",
+        tiktok: "https://tiktok.com/@phucgatien",
+        zalo: "https://zalo.me/0986123456",
+        messenger: "https://m.me/phucgatien",
+        shipFee: 0,
+        shipMin: 5000000,
+        shipDays: "3-7 ngày",
+        shipArea: "Toàn quốc",
+        logoUrl: "assets/images/logo.png",
+        homeBanner: "assets/images/home_bg.jpeg",
+        ctaBanner: "assets/images/bg.jpeg",
+        pageBanner: "assets/images/journey-hero.jpg",
+        productsBanner: "assets/images/products-banner.jpg",
+        journeyBanner: "assets/images/journey-hero.jpg",
+        aboutBanner: "assets/images/about-hero.jpg",
+        contactBanner: "assets/images/contact-hero.jpg",
+        homeStoryImg: "assets/images/story-couple.jpg",
+        aboutStoryImg: "assets/images/about-workshop.jpg",
+        teamAvatar1: "assets/images/team-husband.jpg",
+        teamAvatar2: "assets/images/team-wife.jpg",
+        workingHours: "08:00 - 18:00 (Từ Thứ 2 - Chủ Nhật)",
+        mapIframe: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3725.564539824403!2d105.93206497607736!3d20.969992790299602!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135aef2f534125b%3A0xe54e3d3b76ca40c3!2zUGjDumMgR2lhIFRpw6puIC0gR-G7kW0gU-G7qyBCw6F0IFRyw6BuZw!5e0!3m2!1svi!2s!4v1716260000000!5m2!1svi!2s" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
+        // ── Trang chủ (index.html) ──
+        homeStoryQuote: "2 vợ chồng – 1 xưởng –<br>1 hành trình",
+        homeStoryText: "Chúng tôi bắt đầu từ con số 0. Tự tay học nghề, tự làm, tự thất bại và đứng dậy. Phúc Gia Tiên không chỉ làm gốm, chúng tôi tạo ra giá trị để truyền lại cho thế hệ sau.",
+        process1Title: "1. Chuẩn bị đất",
+        process1Desc: "Chọn lựa và nhào đất sét Bát Tràng đúng độ dẻo",
+        process2Title: "2. Tạo hình",
+        process2Desc: "Vuốt đất trên bàn xoay bằng đôi bàn tay điêu luyện",
+        process3Title: "3. Vẽ tay",
+        process3Desc: "Trang trí hoa văn truyền thống bằng bút lông thủ công",
+        process4Title: "4. Nung lò",
+        process4Desc: "Nung ở nhiệt độ 1.280°C trong lò truyền thống",
+        process5Title: "5. Hoàn thiện",
+        process5Desc: "Kiểm tra, đánh bóng và đóng gói tác phẩm hoàn hảo",
+        // ── Trang giới thiệu (about.html) ──
+        aboutStoryTitle: "Từ Đam Mê<br>Đến <em>Thương Hiệu</em>",
+        aboutStoryText1: "Phúc Gia Tiên ra đời từ tình yêu thuần khiết với nghề gốm thủ công Bát Tràng. Từ năm 2018, hai vợ chồng chúng tôi bắt đầu học nghề, và đến nay đã xây dựng được một xưởng gốm uy tín với hàng trăm mẫu sản phẩm độc đáo.",
+        aboutStoryText2: "Mỗi sản phẩm từ Phúc Gia Tiên đều được tạo ra hoàn toàn thủ công – từ khâu nhào đất, tạo hình, vẽ hoa văn đến tráng men và nung trong lò ở nhiệt độ 1.200°C. Chúng tôi cam kết mang đến những tác phẩm gốm sứ chất lượng cao, giữ trọn giá trị nghề truyền thống.",
+        statYears: "4+",
+        statProducts: "1000+",
+        statCustomers: "500+",
+        coreValue1Title: "Chất Lượng",
+        coreValue1Desc: "Đặt chất lượng lên hàng đầu. Mỗi sản phẩm qua kiểm tra kỹ càng, cam kết 100% gốm sứ thủ công chính hiệu.",
+        coreValue2Title: "Tận Tâm",
+        coreValue2Desc: "Làm việc bằng cả trái tim. Từng nét vẽ, từng công đoạn đều được chú tâm và cẩn thận nhất.",
+        coreValue3Title: "Sáng Tạo",
+        coreValue3Desc: "Không ngừng đổi mới. Kết hợp họa tiết truyền thống với thiết kế hiện đại, mỗi sản phẩm là một tác phẩm độc đáo.",
+        coreValue4Title: "Uy Tín",
+        coreValue4Desc: "Giữ chữ tín với khách hàng. Hỗ trợ tận tình và chính sách đổi trả minh bạch, rõ ràng.",
+        teamName1: "Nguyễn Văn Phúc",
+        teamRole1: "Nghệ Nhân Chính",
+        teamBio1: "Phụ trách tạo hình và nung gốm. Hơn 6 năm kinh nghiệm với bàn xoay và lò nung truyền thống Bát Tràng.",
+        teamName2: "Lê Thị Tiên",
+        teamRole2: "Nghệ Nhân Vẽ & Sáng Tạo",
+        teamBio2: "Phụ trách vẽ hoa văn và sáng tạo mẫu mới. Mỗi nét vẽ là một câu chuyện được kể trên đất sét."
+      };
 
-  // ── Current config (module-level so upload handlers can update it) ──
-  var currentConfig = {};
+      // ── Current config (module-level so upload handlers can update it) ──
+      var currentConfig = {};
 
-  // ── Load config ───────────────────────────
-  function loadConfig() {
-    fetch('http://localhost:5080/api/site-config')
-    .then(function(r) { return r.json(); })
-    .then(function(apiConfig) {
-      currentConfig = Object.assign({}, DEFAULT_CONFIG, apiConfig);
-      var config = currentConfig;
-      if(document.getElementById('product-materials')) document.getElementById('product-materials').value = config.product_materials || 'Gốm sứ, Đất nung, Sành, Men rạn';
+      // ── Load config ───────────────────────────
+      function loadConfig() {
+        fetch('http://localhost:5080/api/site-config')
+          .then(function (r) { return r.json(); })
+          .then(function (apiConfig) {
+            currentConfig = Object.assign({}, DEFAULT_CONFIG, apiConfig);
+            var config = currentConfig;
+            if (document.getElementById('product-materials')) document.getElementById('product-materials').value = config.product_materials || 'Gốm sứ, Đất nung, Sành, Men rạn';
 
-    document.getElementById('store-name').value = config.storeName || '';
-    document.getElementById('store-slogan').value = config.slogan || '';
-    document.getElementById('store-email').value = config.email || '';
-    document.getElementById('store-phone').value = config.phone || '';
-    document.getElementById('store-address').value = config.address || '';
-    document.getElementById('store-working-hours').value = config.workingHours || '';
-    document.getElementById('store-map-iframe').value = config.mapIframe || '';
-    document.getElementById('store-fb').value = config.facebook || '';
-    document.getElementById('store-zalo').value = config.zalo || '';
-    document.getElementById('store-yt').value = config.youtube || '';
-    document.getElementById('store-tiktok').value = config.tiktok || '';
-    document.getElementById('store-messenger').value = config.messenger || '';
+            document.getElementById('store-name').value = config.storeName || '';
+            document.getElementById('store-slogan').value = config.slogan || '';
+            document.getElementById('store-email').value = config.email || '';
+            document.getElementById('store-phone').value = config.phone || '';
+            document.getElementById('store-address').value = config.address || '';
+            document.getElementById('store-working-hours').value = config.workingHours || '';
+            document.getElementById('store-map-iframe').value = config.mapIframe || '';
+            document.getElementById('store-fb').value = config.facebook || '';
+            document.getElementById('store-zalo').value = config.zalo || '';
+            document.getElementById('store-yt').value = config.youtube || '';
+            document.getElementById('store-tiktok').value = config.tiktok || '';
+            document.getElementById('store-messenger').value = config.messenger || '';
 
-    // Load Image Uploads
-    function setupImagePreview(id, url) {
-      if(url) {
-        document.getElementById('preview-' + id).src = url;
-        document.getElementById('preview-' + id).classList.add('has-img');
-        document.getElementById('ph-' + id).classList.add('hidden');
+            // Load Image Uploads
+            function setupImagePreview(id, url) {
+              if (url) {
+                var previewUrl = url;
+                if(url.startsWith('assets/')) previewUrl = '../user/' + url;
+                document.getElementById('preview-' + id).src = previewUrl;
+                document.getElementById('preview-' + id).classList.add('has-img');
+                document.getElementById('ph-' + id).classList.add('hidden');
+              }
+            }
+            setupImagePreview('logo', config.logoUrl);
+            setupImagePreview('homeBanner', config.homeBanner);
+            setupImagePreview('ctaBanner', config.ctaBanner);
+            setupImagePreview('productsBanner', config.productsBanner);
+            setupImagePreview('journeyBanner', config.journeyBanner);
+            setupImagePreview('aboutBanner', config.aboutBanner);
+            setupImagePreview('contactBanner', config.contactBanner);
+            setupImagePreview('pageBanner', config.pageBanner);
+            setupImagePreview('homeStoryImg', config.homeStoryImg);
+            setupImagePreview('aboutStoryImg', config.aboutStoryImg);
+            setupImagePreview('teamAvatar1', config.teamAvatar1);
+            setupImagePreview('teamAvatar2', config.teamAvatar2);
+            document.getElementById('ship-fee').value = config.shipFee !== undefined ? config.shipFee : 0;
+            document.getElementById('ship-min').value = config.shipMin !== undefined ? config.shipMin : 5000000;
+            document.getElementById('ship-days').value = config.shipDays || '3-7 ngày';
+            document.getElementById('ship-area').value = config.shipArea || 'Toàn quốc';
+
+            // Content
+            document.getElementById('home-story-quote').value = config.homeStoryQuote || '';
+            
+            if (window.editors && editors['home-story-text']) editors['home-story-text'].setData(config.homeStoryText || '');
+            else document.getElementById('home-story-text').value = config.homeStoryText || '';
+
+            document.getElementById('about-story-title').value = config.aboutStoryTitle || '';
+            
+            if (window.editors && editors['about-story-text-1']) editors['about-story-text-1'].setData(config.aboutStoryText1 || '');
+            else document.getElementById('about-story-text-1').value = config.aboutStoryText1 || '';
+            
+            if (window.editors && editors['about-story-text-2']) editors['about-story-text-2'].setData(config.aboutStoryText2 || '');
+            else document.getElementById('about-story-text-2').value = config.aboutStoryText2 || '';
+
+            document.getElementById('stat-years').value = config.statYears || '';
+            document.getElementById('stat-products').value = config.statProducts || '';
+            document.getElementById('stat-customers').value = config.statCustomers || '';
+
+            document.getElementById('team-1-name').value = config.teamName1 || '';
+            document.getElementById('team-1-role').value = config.teamRole1 || '';
+            if (window.editors && editors['team-1-bio']) editors['team-1-bio'].setData(config.teamBio1 || '');
+            else document.getElementById('team-1-bio').value = config.teamBio1 || '';
+            
+            document.getElementById('team-2-name').value = config.teamName2 || '';
+            document.getElementById('team-2-role').value = config.teamRole2 || '';
+            if (window.editors && editors['team-2-bio']) editors['team-2-bio'].setData(config.teamBio2 || '');
+            else document.getElementById('team-2-bio').value = config.teamBio2 || '';
+
+            document.getElementById('cv-1-title').value = config.coreValue1Title || '';
+            document.getElementById('cv-1-desc').value = config.coreValue1Desc || '';
+            document.getElementById('cv-2-title').value = config.coreValue2Title || '';
+            document.getElementById('cv-2-desc').value = config.coreValue2Desc || '';
+            document.getElementById('cv-3-title').value = config.coreValue3Title || '';
+            document.getElementById('cv-3-desc').value = config.coreValue3Desc || '';
+            document.getElementById('cv-4-title').value = config.coreValue4Title || '';
+            document.getElementById('cv-4-desc').value = config.coreValue4Desc || '';
+
+            document.getElementById('proc-1-title').value = config.process1Title || '';
+            document.getElementById('proc-1-desc').value = config.process1Desc || '';
+            document.getElementById('proc-2-title').value = config.process2Title || '';
+            document.getElementById('proc-2-desc').value = config.process2Desc || '';
+            document.getElementById('proc-3-title').value = config.process3Title || '';
+            document.getElementById('proc-3-desc').value = config.process3Desc || '';
+            document.getElementById('proc-4-title').value = config.process4Title || '';
+            document.getElementById('proc-4-desc').value = config.process4Desc || '';
+            document.getElementById('proc-5-title').value = config.process5Title || '';
+            document.getElementById('proc-5-desc').value = config.process5Desc || '';
+          }).catch(function (e) { console.error(e); });
       }
-    }
-    setupImagePreview('logo', config.logoUrl);
-    setupImagePreview('homeBanner', config.homeBanner);
-    setupImagePreview('pageBanner', config.pageBanner);
-    setupImagePreview('homeStoryImg', config.homeStoryImg);
-    setupImagePreview('aboutStoryImg', config.aboutStoryImg);
-    setupImagePreview('teamAvatar1', config.teamAvatar1);
-    setupImagePreview('teamAvatar2', config.teamAvatar2);
-    document.getElementById('ship-fee').value = config.shipFee !== undefined ? config.shipFee : 0;
-    document.getElementById('ship-min').value = config.shipMin !== undefined ? config.shipMin : 5000000;
-    document.getElementById('ship-days').value = config.shipDays || '3-7 ngày';
-    document.getElementById('ship-area').value = config.shipArea || 'Toàn quốc';
 
-    // Content
-    document.getElementById('home-story-quote').value = config.homeStoryQuote || '';
-    document.getElementById('home-story-text').value = config.homeStoryText || '';
-    
-    document.getElementById('about-story-title').value = config.aboutStoryTitle || '';
-    document.getElementById('about-story-text-1').value = config.aboutStoryText1 || '';
-    document.getElementById('about-story-text-2').value = config.aboutStoryText2 || '';
-    
-    document.getElementById('stat-years').value = config.statYears || '';
-    document.getElementById('stat-products').value = config.statProducts || '';
-    document.getElementById('stat-customers').value = config.statCustomers || '';
-    
-    document.getElementById('team-1-name').value = config.teamName1 || '';
-    document.getElementById('team-1-role').value = config.teamRole1 || '';
-    document.getElementById('team-1-bio').value = config.teamBio1 || '';
-    document.getElementById('team-2-name').value = config.teamName2 || '';
-    document.getElementById('team-2-role').value = config.teamRole2 || '';
-    document.getElementById('team-2-bio').value = config.teamBio2 || '';
+      loadConfig();
 
-    document.getElementById('cv-1-title').value = config.coreValue1Title || '';
-    document.getElementById('cv-1-desc').value = config.coreValue1Desc || '';
-    document.getElementById('cv-2-title').value = config.coreValue2Title || '';
-    document.getElementById('cv-2-desc').value = config.coreValue2Desc || '';
-    document.getElementById('cv-3-title').value = config.coreValue3Title || '';
-    document.getElementById('cv-3-desc').value = config.coreValue3Desc || '';
-    document.getElementById('cv-4-title').value = config.coreValue4Title || '';
-    document.getElementById('cv-4-desc').value = config.coreValue4Desc || '';
+      // ── Save config ───────────────────────────
+      document.getElementById('btn-save-all').addEventListener('click', function () {
+        var config = {
+          storeName: document.getElementById('store-name').value.trim(),
+          slogan: document.getElementById('store-slogan').value.trim(),
+          email: document.getElementById('store-email').value.trim(),
+          phone: document.getElementById('store-phone').value.trim(),
+          address: document.getElementById('store-address').value.trim(),
+          workingHours: document.getElementById('store-working-hours').value.trim(),
+          mapIframe: document.getElementById('store-map-iframe').value.trim(),
+          facebook: document.getElementById('store-fb').value.trim(),
+          zalo: document.getElementById('store-zalo').value.trim(),
+          youtube: document.getElementById('store-yt').value.trim(),
+          tiktok: document.getElementById('store-tiktok').value.trim(),
+          messenger: document.getElementById('store-messenger').value.trim(),
 
-    document.getElementById('proc-1-title').value = config.process1Title || '';
-    document.getElementById('proc-1-desc').value = config.process1Desc || '';
-    document.getElementById('proc-2-title').value = config.process2Title || '';
-    document.getElementById('proc-2-desc').value = config.process2Desc || '';
-    document.getElementById('proc-3-title').value = config.process3Title || '';
-    document.getElementById('proc-3-desc').value = config.process3Desc || '';
-    document.getElementById('proc-4-title').value = config.process4Title || '';
-    document.getElementById('proc-4-desc').value = config.process4Desc || '';
-    document.getElementById('proc-5-title').value = config.process5Title || '';
-    document.getElementById('proc-5-desc').value = config.process5Desc || '';
-    }).catch(function(e){ console.error(e); });
-  }
+          // Images: read from preview src (can be base64 or relative path)
+          logoUrl: (function () { var s = document.getElementById('preview-logo').getAttribute('src'); return s && s !== '' ? s.replace(window.location.origin, '').replace('../user/', '').replace('/user/', '') : currentConfig.logoUrl || DEFAULT_CONFIG.logoUrl; })(),
+          homeBanner: (function () { var s = document.getElementById('preview-homeBanner').getAttribute('src'); return s && s !== '' ? s.replace(window.location.origin, '').replace('../user/', '').replace('/user/', '') : currentConfig.homeBanner || DEFAULT_CONFIG.homeBanner; })(),
+          ctaBanner: (function () { var s = document.getElementById('preview-ctaBanner').getAttribute('src'); return s && s !== '' ? s.replace(window.location.origin, '').replace('../user/', '').replace('/user/', '') : currentConfig.ctaBanner || DEFAULT_CONFIG.ctaBanner; })(),
+          productsBanner: (function () { var s = document.getElementById('preview-productsBanner').getAttribute('src'); return s && s !== '' ? s.replace(window.location.origin, '').replace('../user/', '').replace('/user/', '') : currentConfig.productsBanner || DEFAULT_CONFIG.productsBanner; })(),
+          journeyBanner: (function () { var s = document.getElementById('preview-journeyBanner').getAttribute('src'); return s && s !== '' ? s.replace(window.location.origin, '').replace('../user/', '').replace('/user/', '') : currentConfig.journeyBanner || DEFAULT_CONFIG.journeyBanner; })(),
+          aboutBanner: (function () { var s = document.getElementById('preview-aboutBanner').getAttribute('src'); return s && s !== '' ? s.replace(window.location.origin, '').replace('../user/', '').replace('/user/', '') : currentConfig.aboutBanner || DEFAULT_CONFIG.aboutBanner; })(),
+          contactBanner: (function () { var s = document.getElementById('preview-contactBanner').getAttribute('src'); return s && s !== '' ? s.replace(window.location.origin, '').replace('../user/', '').replace('/user/', '') : currentConfig.contactBanner || DEFAULT_CONFIG.contactBanner; })(),
+          pageBanner: (function () { var s = document.getElementById('preview-pageBanner').getAttribute('src'); return s && s !== '' ? s.replace(window.location.origin, '').replace('../user/', '').replace('/user/', '') : currentConfig.pageBanner || DEFAULT_CONFIG.pageBanner; })(),
+          homeStoryImg: (function () { var s = document.getElementById('preview-homeStoryImg').getAttribute('src'); return s && s !== '' ? s.replace(window.location.origin, '').replace('../user/', '').replace('/user/', '') : currentConfig.homeStoryImg || DEFAULT_CONFIG.homeStoryImg; })(),
+          aboutStoryImg: (function () { var s = document.getElementById('preview-aboutStoryImg').getAttribute('src'); return s && s !== '' ? s.replace(window.location.origin, '').replace('../user/', '').replace('/user/', '') : currentConfig.aboutStoryImg || DEFAULT_CONFIG.aboutStoryImg; })(),
+          teamAvatar1: (function () { var s = document.getElementById('preview-teamAvatar1').getAttribute('src'); return s && s !== '' ? s.replace(window.location.origin, '').replace('../user/', '').replace('/user/', '') : currentConfig.teamAvatar1 || DEFAULT_CONFIG.teamAvatar1; })(),
+          teamAvatar2: (function () { var s = document.getElementById('preview-teamAvatar2').getAttribute('src'); return s && s !== '' ? s.replace(window.location.origin, '').replace('../user/', '').replace('/user/', '') : currentConfig.teamAvatar2 || DEFAULT_CONFIG.teamAvatar2; })(),
 
-  loadConfig();
+          shipFee: String(document.getElementById('ship-fee').value || '0'),
+          shipMin: String(document.getElementById('ship-min').value || '0'),
+          shipDays: document.getElementById('ship-days').value.trim(),
+          shipArea: document.getElementById('ship-area').value.trim(),
 
-  // ── Save config ───────────────────────────
-  document.getElementById('btn-save-all').addEventListener('click',function(){
-    var config = {
-      storeName: document.getElementById('store-name').value.trim(),
-      slogan: document.getElementById('store-slogan').value.trim(),
-      email: document.getElementById('store-email').value.trim(),
-      phone: document.getElementById('store-phone').value.trim(),
-      address: document.getElementById('store-address').value.trim(),
-      workingHours: document.getElementById('store-working-hours').value.trim(),
-      mapIframe: document.getElementById('store-map-iframe').value.trim(),
-      facebook: document.getElementById('store-fb').value.trim(),
-      zalo: document.getElementById('store-zalo').value.trim(),
-      youtube: document.getElementById('store-yt').value.trim(),
-      tiktok: document.getElementById('store-tiktok').value.trim(),
-      messenger: document.getElementById('store-messenger').value.trim(),
+          homeStoryQuote: document.getElementById('home-story-quote').value,
+          homeStoryText: window.editors && editors['home-story-text'] ? editors['home-story-text'].getData() : document.getElementById('home-story-text').value,
+          aboutStoryTitle: document.getElementById('about-story-title').value,
+          aboutStoryText1: window.editors && editors['about-story-text-1'] ? editors['about-story-text-1'].getData() : document.getElementById('about-story-text-1').value,
+          aboutStoryText2: window.editors && editors['about-story-text-2'] ? editors['about-story-text-2'].getData() : document.getElementById('about-story-text-2').value,
+          statYears: document.getElementById('stat-years').value,
+          statProducts: document.getElementById('stat-products').value,
+          statCustomers: document.getElementById('stat-customers').value,
+          teamName1: document.getElementById('team-1-name').value,
+          teamRole1: document.getElementById('team-1-role').value,
+          teamBio1: window.editors && editors['team-1-bio'] ? editors['team-1-bio'].getData() : document.getElementById('team-1-bio').value,
+          teamName2: document.getElementById('team-2-name').value,
+          teamRole2: document.getElementById('team-2-role').value,
+          teamBio2: window.editors && editors['team-2-bio'] ? editors['team-2-bio'].getData() : document.getElementById('team-2-bio').value,
 
-      // Images: read from preview src (can be base64 or relative path)
-      logoUrl: (function(){ var s=document.getElementById('preview-logo').getAttribute('src'); return s&&s!==''?s:currentConfig.logoUrl||DEFAULT_CONFIG.logoUrl; })(),
-      homeBanner: (function(){ var s=document.getElementById('preview-homeBanner').getAttribute('src'); return s&&s!==''?s:currentConfig.homeBanner||DEFAULT_CONFIG.homeBanner; })(),
-      pageBanner: (function(){ var s=document.getElementById('preview-pageBanner').getAttribute('src'); return s&&s!==''?s:currentConfig.pageBanner||DEFAULT_CONFIG.pageBanner; })(),
-      homeStoryImg: (function(){ var s=document.getElementById('preview-homeStoryImg').getAttribute('src'); return s&&s!==''?s:currentConfig.homeStoryImg||DEFAULT_CONFIG.homeStoryImg; })(),
-      aboutStoryImg: (function(){ var s=document.getElementById('preview-aboutStoryImg').getAttribute('src'); return s&&s!==''?s:currentConfig.aboutStoryImg||DEFAULT_CONFIG.aboutStoryImg; })(),
-      teamAvatar1: (function(){ var s=document.getElementById('preview-teamAvatar1').getAttribute('src'); return s&&s!==''?s:currentConfig.teamAvatar1||DEFAULT_CONFIG.teamAvatar1; })(),
-      teamAvatar2: (function(){ var s=document.getElementById('preview-teamAvatar2').getAttribute('src'); return s&&s!==''?s:currentConfig.teamAvatar2||DEFAULT_CONFIG.teamAvatar2; })(),
+          coreValue1Title: document.getElementById('cv-1-title').value,
+          coreValue1Desc: document.getElementById('cv-1-desc').value,
+          coreValue2Title: document.getElementById('cv-2-title').value,
+          coreValue2Desc: document.getElementById('cv-2-desc').value,
+          coreValue3Title: document.getElementById('cv-3-title').value,
+          coreValue3Desc: document.getElementById('cv-3-desc').value,
+          coreValue4Title: document.getElementById('cv-4-title').value,
+          coreValue4Desc: document.getElementById('cv-4-desc').value,
 
-      shipFee: parseInt(document.getElementById('ship-fee').value, 10) || 0,
-      shipMin: parseInt(document.getElementById('ship-min').value, 10) || 0,
-      shipDays: document.getElementById('ship-days').value.trim(),
-      shipArea: document.getElementById('ship-area').value.trim(),
+          process1Title: document.getElementById('proc-1-title').value,
+          process1Desc: document.getElementById('proc-1-desc').value,
+          process2Title: document.getElementById('proc-2-title').value,
+          process2Desc: document.getElementById('proc-2-desc').value,
+          process3Title: document.getElementById('proc-3-title').value,
+          process3Desc: document.getElementById('proc-3-desc').value,
+          process4Title: document.getElementById('proc-4-title').value,
+          process4Desc: document.getElementById('proc-4-desc').value,
+          process5Title: document.getElementById('proc-5-title').value,
+          process5Desc: document.getElementById('proc-5-desc').value,
+          product_materials: document.getElementById('product-materials') ? document.getElementById('product-materials').value.trim() : ''
+        };
 
-      homeStoryQuote: document.getElementById('home-story-quote').value,
-      homeStoryText: window.editors && editors['home-story-text'] ? editors['home-story-text'].getData() : document.getElementById('home-story-text').value,
-      aboutStoryTitle: document.getElementById('about-story-title').value,
-      aboutStoryText1: window.editors && editors['about-story-text-1'] ? editors['about-story-text-1'].getData() : document.getElementById('about-story-text-1').value,
-      aboutStoryText2: window.editors && editors['about-story-text-2'] ? editors['about-story-text-2'].getData() : document.getElementById('about-story-text-2').value,
-      statYears: document.getElementById('stat-years').value,
-      statProducts: document.getElementById('stat-products').value,
-      statCustomers: document.getElementById('stat-customers').value,
-      teamName1: document.getElementById('team-1-name').value,
-      teamRole1: document.getElementById('team-1-role').value,
-      teamBio1: window.editors && editors['team-1-bio'] ? editors['team-1-bio'].getData() : document.getElementById('team-1-bio').value,
-      teamName2: document.getElementById('team-2-name').value,
-      teamRole2: document.getElementById('team-2-role').value,
-      teamBio2: window.editors && editors['team-2-bio'] ? editors['team-2-bio'].getData() : document.getElementById('team-2-bio').value,
-      
-      coreValue1Title: document.getElementById('cv-1-title').value,
-      coreValue1Desc: document.getElementById('cv-1-desc').value,
-      coreValue2Title: document.getElementById('cv-2-title').value,
-      coreValue2Desc: document.getElementById('cv-2-desc').value,
-      coreValue3Title: document.getElementById('cv-3-title').value,
-      coreValue3Desc: document.getElementById('cv-3-desc').value,
-      coreValue4Title: document.getElementById('cv-4-title').value,
-      coreValue4Desc: document.getElementById('cv-4-desc').value,
-
-      process1Title: document.getElementById('proc-1-title').value,
-      process1Desc: document.getElementById('proc-1-desc').value,
-      process2Title: document.getElementById('proc-2-title').value,
-      process2Desc: document.getElementById('proc-2-desc').value,
-      process3Title: document.getElementById('proc-3-title').value,
-      process3Desc: document.getElementById('proc-3-desc').value,
-      process4Title: document.getElementById('proc-4-title').value,
-      process4Desc: document.getElementById('proc-4-desc').value,
-      process5Title: document.getElementById('proc-5-title').value,
-      process5Desc: document.getElementById('proc-5-desc').value,
-      product_materials: document.getElementById('product-materials') ? document.getElementById('product-materials').value.trim() : ''
-    };
-
-    fetch('http://localhost:5080/api/site-config', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(config)
-    }).then(function(){
-        localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
-        adminToast('Đã lưu tất cả cài đặt thành công!','success');
-    }).catch(function(){
-        adminToast('Lỗi lưu cài đặt', 'error');
-    });
-  });
-
-  document.getElementById('btn-reset-data').addEventListener('click',function(){
-    adminConfirm('⚠️ Xóa toàn bộ dữ liệu demo? Hành động này không thể hoàn tác!',function(){
-      ['admin_products','admin_orders','admin_customers','admin_categories',CONFIG_KEY].forEach(function(k){localStorage.removeItem(k);});
-      adminToast('Đã xóa dữ liệu demo. Dữ liệu gốc sẽ được tải lại.','warning');
-      setTimeout(function() { window.location.reload(); }, 1000);
-    });
-  });
-
-  document.getElementById('btn-export-data').addEventListener('click',function(){
-    var data={
-      products:AdminData.products.load(),
-      orders:AdminData.orders.load(),
-      customers:AdminData.customers.load(),
-      categories:AdminData.categories.load(),
-      config: JSON.parse(localStorage.getItem(CONFIG_KEY)) || DEFAULT_CONFIG,
-      exportedAt:new Date().toISOString()
-    };
-    var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-    var a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
-    a.download='phucgatien-backup-'+new Date().toISOString().split('T')[0]+'.json';
-    a.click();
-    adminToast('Đã xuất file backup thành công!','success');
-  });
-
-  // ── Setup Image Uploads ────────────────────────
-  function handleImageUpload(file, targetId) {
-    if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-      adminToast('Ảnh quá lớn. Vui lòng chọn ảnh < 2MB', 'error');
-      return;
-    }
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var dataUrl = e.target.result;
-      document.getElementById('preview-' + targetId).src = dataUrl;
-      document.getElementById('preview-' + targetId).classList.add('has-img');
-      document.getElementById('ph-' + targetId).classList.add('hidden');
-      adminToast('Đã tải ảnh lên (tạm lưu ở trình duyệt). Nhấn Lưu để áp dụng.', 'success');
-    };
-    reader.readAsDataURL(file);
-  }
-
-  window.removeImage = function(targetId) {
-    document.getElementById('preview-' + targetId).src = '';
-    document.getElementById('preview-' + targetId).removeAttribute('src');
-    document.getElementById('preview-' + targetId).classList.remove('has-img');
-    document.getElementById('ph-' + targetId).classList.remove('hidden');
-    document.getElementById('file-' + targetId).value = '';
-  };
-
-  ['logo', 'homeBanner', 'pageBanner', 'homeStoryImg', 'aboutStoryImg', 'teamAvatar1', 'teamAvatar2'].forEach(function(id) {
-    var dropZone = document.getElementById('drop-' + id);
-    var fileInput = document.getElementById('file-' + id);
-    
-    if(!dropZone || !fileInput) return;
-
-    dropZone.addEventListener('click', function(e) {
-      if(e.target.tagName !== 'BUTTON') fileInput.click();
-    });
-
-    fileInput.addEventListener('change', function() {
-      if (this.files && this.files[0]) handleImageUpload(this.files[0], id);
-    });
-
-    dropZone.addEventListener('dragover', function(e) {
-      e.preventDefault();
-      dropZone.classList.add('drag-over');
-    });
-
-    dropZone.addEventListener('dragleave', function(e) {
-      e.preventDefault();
-      dropZone.classList.remove('drag-over');
-    });
-
-    dropZone.addEventListener('drop', function(e) {
-      e.preventDefault();
-      dropZone.classList.remove('drag-over');
-      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        handleImageUpload(e.dataTransfer.files[0], id);
-      }
-    });
-  });
-
-  // ── Tab Switching Logic ──────────────────
-  var tabs = document.querySelectorAll('.settings-tab');
-  var panels = document.querySelectorAll('.settings-tab-panel');
-
-  tabs.forEach(function(tab) {
-    tab.addEventListener('click', function() {
-      var target = this.getAttribute('data-tab');
-
-      tabs.forEach(function(t) { t.classList.remove('active'); });
-      panels.forEach(function(p) { p.classList.remove('active'); });
-
-      this.classList.add('active');
-      var targetPanel = document.getElementById(target);
-      if (targetPanel) {
-        targetPanel.classList.add('active');
-      }
-    });
-  });
-
-  // ── Setup CKEditor 5 Custom Base64 Upload Adapter ────────────────────────
-  class MyUploadAdapter {
-    constructor(loader) {
-      this.loader = loader;
-    }
-    upload() {
-      return this.loader.file
-        .then(file => new Promise((resolve, reject) => {
-          var reader = new FileReader();
-          reader.onload = function() {
-            resolve({ default: reader.result });
-          };
-          reader.onerror = function(err) {
-            reject(err);
-          };
-          reader.readAsDataURL(file);
-        }));
-    }
-    abort() {}
-  }
-
-  function MyCustomUploadAdapterPlugin(editor) {
-    editor.plugins.get('FileRepository').createUploadAdapter = function(loader) {
-      return new MyUploadAdapter(loader);
-    };
-  }
-
-  // ── Init CKEditor 5 ────────────────────────
-  // Map editor ID -> config field để tự động load nội dung sau khi editor khởi tạo xong
-  var editorConfigMap = {
-    'home-story-text':    'homeStoryText',
-    'about-story-text-1': 'aboutStoryText1',
-    'about-story-text-2': 'aboutStoryText2',
-    'team-1-bio':         'teamBio1',
-    'team-2-bio':         'teamBio2'
-  };
-
-  window.editors = {};
-  if (window.ClassicEditor) {
-    document.querySelectorAll('.rich-editor').forEach(function(textarea) {
-      var id = textarea.getAttribute('id');
-      ClassicEditor
-        .create(textarea, {
-          extraPlugins: [MyCustomUploadAdapterPlugin],
-          toolbar: [
-            'heading', '|',
-            'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|',
-            'imageUpload', 'insertTable', 'mediaEmbed', '|',
-            'undo', 'redo'
-          ]
-        })
-        .then(function(editor) {
-          editors[id] = editor;
-          // Sau khi editor sẵn sàng, load đúng nội dung từ config vào editor
-          var configField = editorConfigMap[id];
-          if (configField && currentConfig[configField] !== undefined) {
-            editor.setData(currentConfig[configField]);
-          }
-        })
-        .catch(function(err) {
-          console.error('Lỗi khởi tạo CKEditor 5 cho ' + id, err);
+        fetch('http://localhost:5080/api/site-config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(config)
+        }).then(function (res) {
+          if (!res.ok) throw new Error('Yêu cầu lưu cấu hình thất bại với mã trạng thái ' + res.status);
+          localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+          adminToast('Đã lưu tất cả cài đặt thành công!', 'success');
+        }).catch(function (err) {
+          console.error(err);
+          adminToast('Lỗi lưu cài đặt: ' + (err.message || err), 'error');
         });
-    });
-  }
+      });
 
-});
-</script>
-</body></html>
+      document.getElementById('btn-reset-data').addEventListener('click', function () {
+        adminConfirm('⚠️ Xóa toàn bộ dữ liệu demo? Hành động này không thể hoàn tác!', function () {
+          ['admin_products', 'admin_orders', 'admin_customers', 'admin_categories', CONFIG_KEY].forEach(function (k) { localStorage.removeItem(k); });
+          adminToast('Đã xóa dữ liệu demo. Dữ liệu gốc sẽ được tải lại.', 'warning');
+          setTimeout(function () { window.location.reload(); }, 1000);
+        });
+      });
+
+      document.getElementById('btn-export-data').addEventListener('click', function () {
+        var data = {
+          products: AdminData.products.load(),
+          orders: AdminData.orders.load(),
+          customers: AdminData.customers.load(),
+          categories: AdminData.categories.load(),
+          config: JSON.parse(localStorage.getItem(CONFIG_KEY)) || DEFAULT_CONFIG,
+          exportedAt: new Date().toISOString()
+        };
+        var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'phucgatien-backup-' + new Date().toISOString().split('T')[0] + '.json';
+        a.click();
+        adminToast('Đã xuất file backup thành công!', 'success');
+      });
+
+      // ── Setup Image Uploads ────────────────────────
+      function handleImageUpload(file, targetId) {
+        if (!file) return;
+        if (file.size > 2 * 1024 * 1024) {
+          adminToast('Ảnh quá lớn. Vui lòng chọn ảnh < 2MB', 'error');
+          return;
+        }
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          var dataUrl = e.target.result;
+          document.getElementById('preview-' + targetId).src = dataUrl;
+          document.getElementById('preview-' + targetId).classList.add('has-img');
+          document.getElementById('ph-' + targetId).classList.add('hidden');
+          adminToast('Đã tải ảnh lên (tạm lưu ở trình duyệt). Nhấn Lưu để áp dụng.', 'success');
+        };
+        reader.readAsDataURL(file);
+      }
+
+      window.removeImage = function (targetId) {
+        document.getElementById('preview-' + targetId).src = '';
+        document.getElementById('preview-' + targetId).removeAttribute('src');
+        document.getElementById('preview-' + targetId).classList.remove('has-img');
+        document.getElementById('ph-' + targetId).classList.remove('hidden');
+        document.getElementById('file-' + targetId).value = '';
+      };
+
+      ['logo', 'homeBanner', 'ctaBanner', 'productsBanner', 'journeyBanner', 'aboutBanner', 'contactBanner', 'pageBanner', 'homeStoryImg', 'aboutStoryImg', 'teamAvatar1', 'teamAvatar2'].forEach(function (id) {
+        var dropZone = document.getElementById('drop-' + id);
+        var fileInput = document.getElementById('file-' + id);
+
+        if (!dropZone || !fileInput) return;
+
+        dropZone.addEventListener('click', function (e) {
+          if (e.target.tagName !== 'BUTTON') fileInput.click();
+        });
+
+        fileInput.addEventListener('change', function () {
+          if (this.files && this.files[0]) handleImageUpload(this.files[0], id);
+        });
+
+        dropZone.addEventListener('dragover', function (e) {
+          e.preventDefault();
+          dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', function (e) {
+          e.preventDefault();
+          dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', function (e) {
+          e.preventDefault();
+          dropZone.classList.remove('drag-over');
+          if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleImageUpload(e.dataTransfer.files[0], id);
+          }
+        });
+      });
+
+      // ── Tab Switching Logic ──────────────────
+      var tabs = document.querySelectorAll('.settings-tab');
+      var panels = document.querySelectorAll('.settings-tab-panel');
+
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          var target = this.getAttribute('data-tab');
+
+          tabs.forEach(function (t) { t.classList.remove('active'); });
+          panels.forEach(function (p) { p.classList.remove('active'); });
+
+          this.classList.add('active');
+          var targetPanel = document.getElementById(target);
+          if (targetPanel) {
+            targetPanel.classList.add('active');
+          }
+        });
+      });
+
+      // ── Setup CKEditor 5 Custom Base64 Upload Adapter ────────────────────────
+      class MyUploadAdapter {
+        constructor(loader) {
+          this.loader = loader;
+        }
+        upload() {
+          return this.loader.file
+            .then(file => new Promise((resolve, reject) => {
+              var reader = new FileReader();
+              reader.onload = function () {
+                resolve({ default: reader.result });
+              };
+              reader.onerror = function (err) {
+                reject(err);
+              };
+              reader.readAsDataURL(file);
+            }));
+        }
+        abort() { }
+      }
+
+      function MyCustomUploadAdapterPlugin(editor) {
+        editor.plugins.get('FileRepository').createUploadAdapter = function (loader) {
+          return new MyUploadAdapter(loader);
+        };
+      }
+
+      // ── Init CKEditor 5 ────────────────────────
+      // Map editor ID -> config field để tự động load nội dung sau khi editor khởi tạo xong
+      var editorConfigMap = {
+        'home-story-text': 'homeStoryText',
+        'about-story-text-1': 'aboutStoryText1',
+        'about-story-text-2': 'aboutStoryText2',
+        'team-1-bio': 'teamBio1',
+        'team-2-bio': 'teamBio2'
+      };
+
+      window.editors = {};
+      if (window.ClassicEditor) {
+        document.querySelectorAll('.rich-editor').forEach(function (textarea) {
+          var id = textarea.getAttribute('id');
+          ClassicEditor
+            .create(textarea, {
+              extraPlugins: [MyCustomUploadAdapterPlugin],
+              toolbar: [
+                'heading', '|',
+                'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|',
+                'imageUpload', 'insertTable', 'mediaEmbed', '|',
+                'undo', 'redo'
+              ]
+            })
+            .then(function (editor) {
+              editors[id] = editor;
+              // Wait for fetch to complete before setting data
+              var configField = editorConfigMap[id];
+              if (configField && typeof currentConfig !== 'undefined' && currentConfig[configField] !== undefined) {
+                editor.setData(currentConfig[configField]);
+              }
+            })
+            .catch(function (err) {
+              console.error('Lỗi khởi tạo CKEditor 5 cho ' + id, err);
+            });
+        });
+      }
+
+    });
+  </script>
+</body>
+
+</html>

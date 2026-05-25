@@ -43,9 +43,10 @@
       } else {
         cart.push({
           id: product.id,
-          slug: product.slug,
           name: product.name,
+          slug: product.slug,
           price: product.price,
+          size: product.size || null,
           image: (product.images && product.images[0]) ? product.images[0] : 'assets/images/placeholder.jpg',
           qty: qty,
           selected: true
@@ -310,10 +311,13 @@
       '<input type="checkbox" class="item-select-cb" data-id="' + item.id + '" ' + (item.selected ? 'checked' : '') + ' aria-label="Chọn sản phẩm">',
       '</div>',
       '<a class="cart-item__img-link" href="product-detail.html?slug=' + item.slug + '">',
-      '<img class="cart-item__img" src="' + item.image + '" alt="' + item.name + '" loading="lazy">',
+      (item.image.match(/\.(mp4|mov|avi|webm|ogg)$/i)
+        ? '<video class="cart-item__img" src="' + item.image + '" autoplay loop muted playsinline style="object-fit:cover;"></video>'
+        : '<img class="cart-item__img" src="' + item.image + '" alt="' + item.name + '" loading="lazy">'),
       '</a>',
       '<div class="cart-item__details">',
-      '<a class="cart-item__name" href="product-detail.html?slug=' + item.slug + '">' + item.name + '</a>',
+      '<h3 class="cart-item__title"><a href="product-detail.html?slug=' + item.slug + '" style="color:var(--color-bg-mid);text-decoration:none">' + item.name + '</a></h3>' +
+      (item.size ? '<p style="font-size: 0.85rem; color: #666; margin: 4px 0;">Kích thước: ' + item.size + '</p>' : ''),
       '<div class="cart-item__meta">',
       '<span>Đơn giá: <span class="cart-item__price-unit">' + window.formatVND(item.price) + '</span></span>',
       '</div>',

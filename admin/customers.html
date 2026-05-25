@@ -19,6 +19,12 @@
     <span class="sidebar-section-label">Danh mục</span>
     <ul class="sidebar-nav__list">
       <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="sidebar-nav__text">Danh mục</span></a></li>
+      <li><a href="glazelines.html" class="sidebar-nav__link">
+        <svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        <span class="sidebar-nav__text">Dòng men</span></a></li>
       <li><a href="journey.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
       <li><a href="analytics.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
     </ul>
@@ -106,13 +112,15 @@
     tbody.innerHTML=slice.map(function(c){
       var init=c.name.charAt(0).toUpperCase();
       var statusBadge=c.status==='active'?'<span class="badge badge--success">Hoạt động</span>':'<span class="badge badge--muted">Không HĐ</span>';
+      var joinedDate = c.joined || c.joinedAt ? new Date(c.joined || c.joinedAt).toLocaleDateString("vi-VN") : "";
+      var ordersNum = c.ordersCount !== undefined ? c.ordersCount : (c.orders || 0);
       return '<tr>'+
         '<td><div style="display:flex;align-items:center;gap:var(--sp-3)"><div class="avatar-cell">'+init+'</div><div><div style="font-weight:600">'+c.name+'</div></div></div></td>'+
-        '<td class="hide-mobile"><div style="font-size:var(--fs-sm)">'+c.email+'</div><div style="font-size:var(--fs-xs);color:var(--text-muted)">'+c.phone+'</div></td>'+
-        '<td class="hide-mobile" style="font-size:var(--fs-xs);max-width:150px">'+c.address+'</td>'+
-        '<td style="text-align:center"><strong>'+c.orders+'</strong></td>'+
+        '<td class="hide-mobile"><div style="font-size:var(--fs-sm)">'+c.email+'</div><div style="font-size:var(--fs-xs);color:var(--text-muted)">'+(c.phone||'')+'</div></td>'+
+        '<td class="hide-mobile" style="font-size:var(--fs-xs);max-width:150px">'+(c.address||'')+'</td>'+
+        '<td style="text-align:center"><strong>'+ordersNum+'</strong></td>'+
         '<td><strong style="color:var(--accent)">'+AdminData.fmtShort(c.totalSpent)+'</strong></td>'+
-        '<td class="hide-mobile" style="font-size:var(--fs-xs)">'+c.joined+'</td>'+
+        '<td class="hide-mobile" style="font-size:var(--fs-xs)">'+joinedDate+'</td>'+
         '<td>'+statusBadge+'</td>'+
         '<td><button class="btn btn--sm btn--secondary btn-view-cust" data-id="'+c.id+'">Xem</button></td>'+
       '</tr>';
@@ -134,21 +142,38 @@
     var c=customers.find(function(x){return x.id===id;});
     if(!c)return;
     var orders=allOrders.filter(function(o){return o.customer===c.name;});
+    var joinedDate = c.joined || c.joinedAt ? new Date(c.joined || c.joinedAt).toLocaleDateString("vi-VN") : "";
+    var ordersNum = c.ordersCount !== undefined ? c.ordersCount : (c.orders || 0);
     var html='<div class="customer-profile">'+
       '<div class="customer-profile__avatar">'+c.name.charAt(0)+'</div>'+
       '<div><div class="customer-profile__name">'+c.name+'</div>'+
-      '<div class="customer-profile__meta">'+c.email+' · '+c.phone+'</div>'+
+      '<div class="customer-profile__meta">'+c.email+' · '+(c.phone||'')+'</div>'+
       '<div class="customer-stats">'+
-        '<div class="customer-stat"><div class="customer-stat__value">'+c.orders+'</div><div class="customer-stat__label">Đơn hàng</div></div>'+
+        '<div class="customer-stat"><div class="customer-stat__value">'+ordersNum+'</div><div class="customer-stat__label">Đơn hàng</div></div>'+
         '<div class="customer-stat"><div class="customer-stat__value">'+AdminData.fmtShort(c.totalSpent)+'</div><div class="customer-stat__label">Chi tiêu</div></div>'+
         '<div class="customer-stat"><div class="customer-stat__value">'+(c.status==='active'?'✓':'✗')+'</div><div class="customer-stat__label">Trạng thái</div></div>'+
       '</div></div></div>';
     html+='<div class="order-detail-box" style="margin-bottom:var(--sp-4)"><div class="order-detail-box__title">📍 Thông tin liên hệ</div>'+
-      '<div class="order-detail-line"><span>Địa chỉ</span><strong>'+c.address+'</strong></div>'+
-      '<div class="order-detail-line"><span>Ngày tham gia</span><strong>'+c.joined+'</strong></div></div>';
+      '<div class="order-detail-line"><span>Địa chỉ</span><strong>'+(c.address||'')+'</strong></div>'+
+      '<div class="order-detail-line"><span>Ngày tham gia</span><strong>'+joinedDate+'</strong></div></div>';
     if(orders.length){
       html+='<div class="order-detail-box"><div class="order-detail-box__title">🛒 Lịch sử đơn hàng ('+orders.length+' đơn)</div>'+
-        orders.map(function(o){return '<div class="order-detail-line"><span>'+o.id+' – '+o.date+'</span><div><span class="badge '+AdminData.getStatusBadge(o.status)+'">'+AdminData.getStatusLabel(o.status)+'</span> <strong>'+AdminData.fmt(o.total)+'</strong></div></div>';}).join('')+
+        orders.map(function(o){
+          var itemHtml = (o.items || []).map(function(i){
+             var codeStr = i.productId ? ' <span style="color:var(--text-muted);font-size:var(--fs-xs)">[SP'+String(i.productId).padStart(3,"0")+']</span>' : '';
+             var imgStr = i.imageUrl ? '<img src="'+i.imageUrl+'" style="width:32px;height:32px;object-fit:cover;border-radius:4px;flex-shrink:0;">' : '<div style="width:32px;height:32px;background:var(--surface-100);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px">IMG</div>';
+             return '<div style="display:flex;align-items:center;gap:var(--sp-2);padding:4px 0;border-bottom:1px solid var(--border-color);"><div style="display:flex;align-items:center;justify-content:center;overflow:hidden">'+imgStr+'</div><div style="flex:1;font-size:var(--fs-sm);"><div style="line-height:1.3;font-weight:500">'+i.name+codeStr+'</div><div style="font-size:var(--fs-xs);color:var(--text-muted)">Số lượng: '+i.qty+' &times; '+AdminData.fmt(i.price)+'</div></div></div>';
+          }).join('');
+          // Remove last border bottom
+          if(itemHtml) itemHtml = '<div style="display:flex;flex-direction:column;">' + itemHtml + '</div>';
+          return '<div class="order-detail-line" style="flex-direction:column; align-items:flex-start; gap:var(--sp-1);">'+
+                   '<div style="width:100%; display:flex; justify-content:space-between; align-items:center;">'+
+                     '<span><strong>'+o.id+'</strong> – '+o.date+'</span>'+
+                     '<div><span class="badge '+AdminData.getStatusBadge(o.status)+'">'+AdminData.getStatusLabel(o.status)+'</span> <strong style="color:var(--accent)">'+AdminData.fmt(o.total)+'</strong></div>'+
+                   '</div>'+
+                   (itemHtml ? '<div style="width:100%; margin-top:var(--sp-2); background:var(--surface-50); padding:var(--sp-2); border-radius:var(--radius-md);">'+itemHtml+'</div>' : '')+
+                 '</div>';
+        }).join('')+
       '</div>';
     }
     document.getElementById('customer-detail-content').innerHTML=html;

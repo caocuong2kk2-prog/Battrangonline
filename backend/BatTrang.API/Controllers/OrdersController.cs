@@ -41,18 +41,22 @@ namespace BatTrang.API.Controllers
             decimal total = 0;
             foreach (var item in dto.Items)
             {
-                var product = await _productRepo.GetByIdAsync(item.Id);
+                var product = await _productRepo.GetProductWithImagesAsync(item.Id);
                 if (product != null)
                 {
+                    var variant = product.Variants.FirstOrDefault(v => v.Size == item.Size) ?? product.Variants.FirstOrDefault();
+                    var price = variant?.Price ?? 0;
+
                     var orderItem = new OrderItem
                     {
                         ProductId = product.Id,
                         ProductName = product.Name,
-                        UnitPrice = product.Price,
+                        Size = variant?.Size ?? item.Size,
+                        UnitPrice = price,
                         Quantity = item.Qty
                     };
                     order.Items.Add(orderItem);
-                    total += (product.Price * item.Qty);
+                    total += (price * item.Qty);
                 }
             }
 

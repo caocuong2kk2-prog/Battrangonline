@@ -29,6 +29,10 @@
       "PackagePath": "staticwebassets\\uploads\\21e24f72-9504-4087-a670-fa116b7ff7ab_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg"
     },
     {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\24fea341-b0a9-4ae7-a604-d7ea5850290c_troi song.mp4",
+      "PackagePath": "staticwebassets\\uploads\\24fea341-b0a9-4ae7-a604-d7ea5850290c_troi song.mp4"
+    },
+    {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\2af3d669-84cb-4dc3-886b-bf103045122f_z7825074224941_edb1fc7b313079484acf00630df7613d.jpg",
       "PackagePath": "staticwebassets\\uploads\\2af3d669-84cb-4dc3-886b-bf103045122f_z7825074224941_edb1fc7b313079484acf00630df7613d.jpg"
     },
@@ -49,12 +53,24 @@
       "PackagePath": "staticwebassets\\uploads\\3cd63268-8008-4a01-b314-88a59d4a677a_z7812881801303_55d30512b5115c438412550a5ec9cbb2.jpg"
     },
     {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\48f7f455-1817-44f7-936d-d3d92e9c53c7_troi song.mp4",
+      "PackagePath": "staticwebassets\\uploads\\48f7f455-1817-44f7-936d-d3d92e9c53c7_troi song.mp4"
+    },
+    {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\4a1ecdef-4e5c-4454-9ac1-6fb51f998385_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg",
       "PackagePath": "staticwebassets\\uploads\\4a1ecdef-4e5c-4454-9ac1-6fb51f998385_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg"
     },
     {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\4d94def1-0ce9-4abe-97bc-2c533c673f19_z7812881801168_ca378777e6d1126512257d8156059d66.jpg",
       "PackagePath": "staticwebassets\\uploads\\4d94def1-0ce9-4abe-97bc-2c533c673f19_z7812881801168_ca378777e6d1126512257d8156059d66.jpg"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\589eda53-7e8f-4cf4-ad03-5e39a57bdb9f_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png",
+      "PackagePath": "staticwebassets\\uploads\\589eda53-7e8f-4cf4-ad03-5e39a57bdb9f_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\5de8942d-e7b2-41e3-a82c-6b47e48d5bfd_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg",
+      "PackagePath": "staticwebassets\\uploads\\5de8942d-e7b2-41e3-a82c-6b47e48d5bfd_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg"
     },
     {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\65c0a5c6-4e13-460b-9404-f2b4b7df25f7_z7823387215888_878f444bb74f06ec4f44dda9c31a172e.jpg",
@@ -65,20 +81,84 @@
       "PackagePath": "staticwebassets\\uploads\\670a1d5b-f438-4c1d-91cb-514ec78a5062_z7812881785614_1d7fb8ec52811bdf63adac4646b84834.jpg"
     },
     {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\6cc56804-c970-41c4-ab3b-d6cc612adc92_chim canh cut.mp4",
+      "PackagePath": "staticwebassets\\uploads\\6cc56804-c970-41c4-ab3b-d6cc612adc92_chim canh cut.mp4"
+    },
+    {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\6ee06ae4-a5bf-4f30-bc71-6b21403d151c_z7823387215989_b86b723ab64db9c8880fa4fd70e64267.jpg",
       "PackagePath": "staticwebassets\\uploads\\6ee06ae4-a5bf-4f30-bc71-6b21403d151c_z7823387215989_b86b723ab64db9c8880fa4fd70e64267.jpg"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\72ec61a2-a8da-4408-95ba-bac31456a474_meme-meo-5.jpg",
+      "PackagePath": "staticwebassets\\uploads\\72ec61a2-a8da-4408-95ba-bac31456a474_meme-meo-5.jpg"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\74792dee-4992-4d49-8d14-5177193b66c0_meme-meo-5.jpg",
+      "PackagePath": "staticwebassets\\uploads\\74792dee-4992-4d49-8d14-5177193b66c0_meme-meo-5.jpg"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\7791e100-fe9a-4c57-a235-56f8f5829e95_images.jpg",
+      "PackagePath": "staticwebassets\\uploads\\7791e100-fe9a-4c57-a235-56f8f5829e95_images.jpg"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\aed53392-f522-4f0e-8a4d-396ee05efbdd_meme-meo-5.jpg",
+      "PackagePath": "staticwebassets\\uploads\\aed53392-f522-4f0e-8a4d-396ee05efbdd_meme-meo-5.jpg"
     },
     {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\af0e4c9a-4fbe-4e9a-b207-e09c60fa8975_z7812881785614_1d7fb8ec52811bdf63adac4646b84834.jpg",
       "PackagePath": "staticwebassets\\uploads\\af0e4c9a-4fbe-4e9a-b207-e09c60fa8975_z7812881785614_1d7fb8ec52811bdf63adac4646b84834.jpg"
     },
     {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\b41810ed-f271-4b2a-b309-d925b3de21ac_meme-meo-5.jpg",
+      "PackagePath": "staticwebassets\\uploads\\b41810ed-f271-4b2a-b309-d925b3de21ac_meme-meo-5.jpg"
+    },
+    {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\b5f0664e-a044-4977-a40d-80068bac2b77_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg",
       "PackagePath": "staticwebassets\\uploads\\b5f0664e-a044-4977-a40d-80068bac2b77_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg"
     },
     {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\b634e792-f099-4431-9185-4017a79d0f40_troi song.mp4",
+      "PackagePath": "staticwebassets\\uploads\\b634e792-f099-4431-9185-4017a79d0f40_troi song.mp4"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\c3035108-fcac-4871-80c7-5282a65814fd_images.jpg",
+      "PackagePath": "staticwebassets\\uploads\\c3035108-fcac-4871-80c7-5282a65814fd_images.jpg"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\ce8799b3-42fe-4382-be49-82cce0802892_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg",
+      "PackagePath": "staticwebassets\\uploads\\ce8799b3-42fe-4382-be49-82cce0802892_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\d0fd1108-91ae-4563-95fb-14d910022a06_ChatGPT Image 09_04_19 23 thg 5, 2026.png",
+      "PackagePath": "staticwebassets\\uploads\\d0fd1108-91ae-4563-95fb-14d910022a06_ChatGPT Image 09_04_19 23 thg 5, 2026.png"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\d62bd7d3-b034-43ec-afb2-81fa9fcc301f_ChatGPT Image 09_13_49 23 thg 5, 2026.png",
+      "PackagePath": "staticwebassets\\uploads\\d62bd7d3-b034-43ec-afb2-81fa9fcc301f_ChatGPT Image 09_13_49 23 thg 5, 2026.png"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\daee8a28-faee-461c-b1fd-c9eb06cb9513_meme-meo-5.jpg",
+      "PackagePath": "staticwebassets\\uploads\\daee8a28-faee-461c-b1fd-c9eb06cb9513_meme-meo-5.jpg"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\edb48de6-4290-4f72-9f58-97a0f2a6f358_view nui.mp4",
+      "PackagePath": "staticwebassets\\uploads\\edb48de6-4290-4f72-9f58-97a0f2a6f358_view nui.mp4"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\fc5b0610-c292-4f66-9956-baf1c58258e6_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg",
+      "PackagePath": "staticwebassets\\uploads\\fc5b0610-c292-4f66-9956-baf1c58258e6_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg"
+    },
+    {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\fd39c274-666b-4570-969c-2505d0f9e2ff_z7812881837776_f7fd078b9db5ada738007cc6cfecd15b.jpg",
       "PackagePath": "staticwebassets\\uploads\\fd39c274-666b-4570-969c-2505d0f9e2ff_z7812881837776_f7fd078b9db5ada738007cc6cfecd15b.jpg"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\fe188dc6-5f88-4e22-bd0f-4e0bc3fef6b4_meme-meo-5.jpg",
+      "PackagePath": "staticwebassets\\uploads\\fe188dc6-5f88-4e22-bd0f-4e0bc3fef6b4_meme-meo-5.jpg"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\fec4b8b7-609a-4842-81a6-54bff6470295_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg",
+      "PackagePath": "staticwebassets\\uploads\\fec4b8b7-609a-4842-81a6-54bff6470295_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.BatTrang.API.Microsoft.AspNetCore.StaticWebAssets.props",

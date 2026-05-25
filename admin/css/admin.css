@@ -57,6 +57,25 @@
 
 /* Reset */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+/* Global Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 12px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(200, 146, 42, 0.4);
+  border-radius: 10px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(200, 146, 42, 0.8);
+}
+
 html{font-size:16px;scroll-behavior:smooth}
 body{font-family:var(--font-body);font-size:var(--fs-base);font-weight:var(--fw-normal);color:var(--text-primary);background:var(--main-bg);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 img,video{max-width:100%;height:auto;display:block}

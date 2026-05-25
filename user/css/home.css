@@ -372,25 +372,21 @@
 /* ── Action bar: slide lên khi hover (nằm trong .media) ── */
 .home-product-card__action {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: var(--space-5) var(--space-4) var(--space-4);
-  background: linear-gradient(to top,
-    rgba(26, 15, 5, 0.9) 0%,
-    rgba(26, 15, 5, 0.55) 55%,
-    transparent 100%
-  );
-  transform: translateY(101%);
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  bottom: var(--space-4);
+  left: var(--space-4);
+  right: var(--space-4);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  transform: translateY(120%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+  opacity: 0;
   z-index: 3;
 }
 
 .home-product-card:hover .home-product-card__action {
   transform: translateY(0);
+  opacity: 1;
 }
 
 /* Hàng chứa nút */
@@ -402,13 +398,13 @@
 
 .home-product-card__btn-cart {
   flex: 1;
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-accent);
+  padding: 0 var(--space-4);
+  background: rgba(255, 255, 255, 0.98);
   color: var(--color-text-dark);
   font-size: var(--fs-xs);
   font-weight: var(--fw-bold);
-  border: none;
-  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-full);
   cursor: pointer;
   font-family: inherit;
   letter-spacing: 0.03em;
@@ -416,34 +412,43 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: background 0.2s ease, transform 0.15s ease;
+  transition: all 0.25s ease;
   white-space: nowrap;
-  height: 36px;
+  height: 40px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .home-product-card__btn-cart:hover {
-  background: var(--color-accent-hover);
-  transform: scale(1.04);
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(200, 146, 42, 0.25);
 }
 
 .home-product-card__btn-detail {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: var(--radius-sm);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 50%;
+  color: var(--color-text-dark);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.25s ease;
   font-family: inherit;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .home-product-card__btn-detail:hover {
-  background: rgba(255, 255, 255, 0.32);
+  background: var(--color-text-dark);
+  color: #fff;
+  border-color: var(--color-text-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
 .home-product-card__body {
@@ -643,11 +648,9 @@
 
 .cta-banner {
   position: relative;
-  background-image: url('../assets/images/bg.jpeg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   padding: 100px 0;
+  overflow: hidden;
+  background: var(--color-bg-mid);
   text-align: center;
   color: white;
 }

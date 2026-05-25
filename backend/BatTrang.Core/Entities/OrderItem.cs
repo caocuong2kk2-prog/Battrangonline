@@ -8,6 +8,7 @@ namespace BatTrang.Core.Entities
         
         public int ProductId { get; set; }
         public string ProductName { get; set; } = null!; // snapshot
+        public string? Size { get; set; } // snapshot
         public decimal UnitPrice { get; set; }
         public int Quantity { get; set; }
     }

@@ -47,6 +47,16 @@
         return _fetch('/categories');
       },
   
+      // --- Journey ---
+      getJourneyTopics: function() {
+        return _fetch('/journey/topics');
+      },
+  
+      getJourneyVideos: function(topicId) {
+        var qs = topicId ? '?topicId=' + topicId : '';
+        return _fetch('/journey/videos' + qs);
+      },
+  
       // --- Filters Data ---
       getFilters: function() {
         // Categories are dynamic, size/quality are static (or could be dynamic)

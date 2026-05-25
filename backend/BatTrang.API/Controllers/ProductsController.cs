@@ -31,18 +31,30 @@ namespace BatTrang.API.Controllers
                 Id = p.Id,
                 Name = p.Name,
                 Slug = p.Slug,
-                Price = p.Price,
-                OriginalPrice = p.OriginalPrice,
+                BasePrice = p.Variants.Any() ? p.Variants.Min(v => v.Price) : 0,
+                BaseOriginalPrice = p.Variants.Any() ? p.Variants.Max(v => v.OriginalPrice) : null,
                 Category = p.Category?.Slug ?? "",
                 Material = p.Material,
                 Style = p.Style,
                 Color = p.Color,
-                Size = p.Size,
-                Stock = p.Stock,
+                GlazeLineId = p.GlazeLineId,
+                GlazeLineName = p.GlazeLine?.Name,
+                Pattern = p.Pattern,
+                Usage = p.Usage,
+                TotalStock = p.Variants.Sum(v => v.Stock),
                 Status = p.Status,
                 Badge = p.Badge,
+                ShortDescription = p.ShortDescription,
                 Description = p.Description,
-                Images = p.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new List<string>()
+                Images = p.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new List<string>(),
+                Variants = p.Variants.Select(v => new ProductVariantDto
+                {
+                    Id = v.Id,
+                    Size = v.Size,
+                    Price = v.Price,
+                    OriginalPrice = v.OriginalPrice,
+                    Stock = v.Stock
+                }).ToList()
             });
 
             return Ok(new PaginatedResult<ProductDto>
@@ -63,18 +75,30 @@ namespace BatTrang.API.Controllers
                 Id = p.Id,
                 Name = p.Name,
                 Slug = p.Slug,
-                Price = p.Price,
-                OriginalPrice = p.OriginalPrice,
+                BasePrice = p.Variants.Any() ? p.Variants.Min(v => v.Price) : 0,
+                BaseOriginalPrice = p.Variants.Any() ? p.Variants.Max(v => v.OriginalPrice) : null,
                 Category = p.Category?.Slug ?? "",
                 Material = p.Material,
                 Style = p.Style,
                 Color = p.Color,
-                Size = p.Size,
-                Stock = p.Stock,
+                GlazeLineId = p.GlazeLineId,
+                GlazeLineName = p.GlazeLine?.Name,
+                Pattern = p.Pattern,
+                Usage = p.Usage,
+                TotalStock = p.Variants.Sum(v => v.Stock),
                 Status = p.Status,
                 Badge = p.Badge,
+                ShortDescription = p.ShortDescription,
                 Description = p.Description,
-                Images = p.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new List<string>()
+                Images = p.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new List<string>(),
+                Variants = p.Variants.Select(v => new ProductVariantDto
+                {
+                    Id = v.Id,
+                    Size = v.Size,
+                    Price = v.Price,
+                    OriginalPrice = v.OriginalPrice,
+                    Stock = v.Stock
+                }).ToList()
             });
             return Ok(dtos);
         }
@@ -91,18 +115,30 @@ namespace BatTrang.API.Controllers
                 Id = p.Id,
                 Name = p.Name,
                 Slug = p.Slug,
-                Price = p.Price,
-                OriginalPrice = p.OriginalPrice,
+                BasePrice = p.Variants.Any() ? p.Variants.Min(v => v.Price) : 0,
+                BaseOriginalPrice = p.Variants.Any() ? p.Variants.Max(v => v.OriginalPrice) : null,
                 Category = p.Category?.Slug ?? "",
                 Material = p.Material,
                 Style = p.Style,
                 Color = p.Color,
-                Size = p.Size,
-                Stock = p.Stock,
+                GlazeLineId = p.GlazeLineId,
+                GlazeLineName = p.GlazeLine?.Name,
+                Pattern = p.Pattern,
+                Usage = p.Usage,
+                TotalStock = p.Variants.Sum(v => v.Stock),
                 Status = p.Status,
                 Badge = p.Badge,
+                ShortDescription = p.ShortDescription,
                 Description = p.Description,
-                Images = p.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new List<string>()
+                Images = p.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new List<string>(),
+                Variants = p.Variants.Select(v => new ProductVariantDto
+                {
+                    Id = v.Id,
+                    Size = v.Size,
+                    Price = v.Price,
+                    OriginalPrice = v.OriginalPrice,
+                    Stock = v.Stock
+                }).ToList()
             };
 
             return Ok(dto);

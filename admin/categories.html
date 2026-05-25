@@ -19,6 +19,12 @@
     <span class="sidebar-section-label">Danh mục</span>
     <ul class="sidebar-nav__list">
       <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="sidebar-nav__text">Danh mục</span></a></li>
+      <li><a href="glazelines.html" class="sidebar-nav__link">
+        <svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        <span class="sidebar-nav__text">Dòng men</span></a></li>
       <li><a href="journey.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
       <li><a href="analytics.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
     </ul>
@@ -51,9 +57,8 @@
     <div class="modal-header"><h2 class="modal-title" id="cat-modal-title">Thêm Danh Mục</h2><button class="modal-close" data-close-modal="catModal">✕</button></div>
     <div class="modal-body">
       <form id="cat-form">
-        <div class="form-group"><label class="form-label">ID danh mục <span>*</span></label><input class="form-control" name="id" type="text" placeholder="VD: binh-gom" required><div class="form-hint">Chỉ dùng chữ thường, số, dấu gạch ngang</div></div>
+        <div class="form-group" style="display:none;"><label class="form-label">ID danh mục <span>*</span></label><input class="form-control" name="id" type="text" placeholder="VD: binh-gom"><div class="form-hint">Chỉ dùng chữ thường, số, dấu gạch ngang</div></div>
         <div class="form-group"><label class="form-label">Tên danh mục <span>*</span></label><input class="form-control" name="name" type="text" placeholder="VD: Bình Gốm" required></div>
-        <div class="form-group"><label class="form-label">Biểu tượng (Emoji)</label><input class="form-control" name="icon" type="text" placeholder="VD: 🏺" maxlength="4"></div>
         <div class="form-group"><label class="form-label">Mô tả</label><textarea class="form-control" name="desc" placeholder="Mô tả ngắn về danh mục..."></textarea></div>
       </form>
     </div>
@@ -108,8 +113,7 @@
     grid.innerHTML=cats.map(function(c){
       var cnt=getProductCount(c.id);
       return '<div class="cat-card">'+
-        '<div style="display:flex;align-items:flex-start;justify-content:space-between">'+
-          '<div class="cat-card__icon">'+(c.icon||'🏺')+'</div>'+
+        '<div style="display:flex;align-items:flex-start;justify-content:flex-end">'+
           '<span class="badge badge--gold">'+cnt+' SP</span>'+
         '</div>'+
         '<div><div class="cat-card__name">'+c.name+'</div><div class="cat-card__count">'+(c.desc||'')+'</div></div>'+
@@ -130,22 +134,25 @@
     f.querySelector('[name="id"]').value=c.id;
     f.querySelector('[name="id"]').disabled=true;
     f.querySelector('[name="name"]').value=c.name;
-    f.querySelector('[name="icon"]').value=c.icon||'';
     f.querySelector('[name="desc"]').value=c.desc||'';
     openModal('catModal');
   }
 
+  function toSlug(str) {
+    return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  }
+
   function saveCat(){
     var f=document.getElementById('cat-form');
-    var id=f.querySelector('[name="id"]').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'');
     var name=f.querySelector('[name="name"]').value.trim();
-    if(!id||!name){adminToast('Vui lòng điền ID và tên danh mục!','error');return;}
+    if(!name){adminToast('Vui lòng điền tên danh mục!','error');return;}
     
-    var data={id:id,name:name,icon:f.querySelector('[name="icon"]').value||'🏺',desc:f.querySelector('[name="desc"]').value.trim()};
+    var id = editId ? editId : toSlug(name);
+    var data={id:id,name:name,desc:f.querySelector('[name="desc"]').value.trim()};
     
     if(!editId){
       data.isNew = true;
-      if(cats.find(function(x){return x.id===id;})){adminToast('ID đã tồn tại!','error');return;}
+      if(cats.find(function(x){return x.id===id;})){adminToast('Tên danh mục này đã tồn tại!','error');return;}
     }
 
     AdminData.categories.save(data).then(function() {

@@ -16,11 +16,11 @@ namespace BatTrang.API.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded.");
 
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".mp4", ".mov", ".avi", ".webm" };
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
             if (Array.IndexOf(allowedExtensions, extension) < 0)
-                return BadRequest("Invalid file type.");
+                return BadRequest($"Invalid file type: {extension}");
 
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
             if (!Directory.Exists(uploadsFolder))

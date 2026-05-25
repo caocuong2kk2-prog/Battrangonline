@@ -11,5 +11,6 @@ namespace BatTrang.Core.Interfaces
         Task<Product?> GetProductBySlugAsync(string slug);
         Task<IReadOnlyList<Product>> GetFeaturedProductsAsync(int limit);
         Task<Product?> GetProductWithImagesAsync(int id);
+        Task<Dictionary<int, string>> GetProductImagesAsync(IEnumerable<int> productIds);
     }
 }

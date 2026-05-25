@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Dòng Men – Phúc Gia Tiên Admin</title>
+<link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/components.css">
+</head>
+<body class="admin-layout">
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="sidebar-header"><div class="sidebar-brand"><div class="sidebar-brand__icon">⚱️</div><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
+  <nav class="sidebar-nav">
+    <span class="sidebar-section-label">Tổng quan</span>
+    <ul class="sidebar-nav__list"><li><a href="index.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li></ul>
+    <span class="sidebar-section-label">Kinh doanh</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="products.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
+      <li><a href="orders.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
+      <li><a href="customers.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
+    </ul>
+    <span class="sidebar-section-label">Danh mục</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="sidebar-nav__text">Danh mục</span></a></li>
+      <li><a href="glazelines.html" class="sidebar-nav__link">
+        <svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        <span class="sidebar-nav__text">Dòng men</span></a></li>
+      <li><a href="journey.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
+      <li><a href="analytics.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
+    </ul>
+    <span class="sidebar-section-label">Hệ thống</span>
+    <ul class="sidebar-nav__list"><li><a href="settings.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-nav__text">Cài đặt</span></a></li></ul>
+  </nav>
+  <div class="sidebar-footer"><div class="sidebar-user js-logout"><div class="sidebar-user__avatar js-admin-initial">A</div><div class="sidebar-user__info"><div class="sidebar-user__name js-admin-name">Admin</div><div class="sidebar-user__role">Quản trị viên</div></div><button class="sidebar-user__logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="admin-main-wrapper">
+  <header class="admin-topbar">
+    <button class="topbar-toggle" id="sidebarToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="topbar-breadcrumb"><span class="topbar-breadcrumb__item">Dòng men</span><span class="topbar-breadcrumb__separator">›</span><span class="topbar-breadcrumb__current">Quản lý dòng men</span></div>
+    <div class="topbar-actions"><div class="topbar-user" id="topbarUser"><div class="topbar-user__avatar js-admin-initial">A</div><span class="topbar-user__name js-admin-name">Admin</span></div></div>
+  </header>
+
+  <main class="admin-content">
+    <div class="page-header">
+      <div><h1 class="page-title">Dòng Men Sản Phẩm</h1><p class="page-subtitle">Quản lý phân loại dòng men gốm sứ</p></div>
+      <div class="page-header__actions"><button class="btn btn--primary" id="btn-add-gl">➕ Thêm dòng men</button></div>
+    </div>
+    <div class="cat-grid" id="gl-grid"></div>
+  </main>
+</div>
+
+<!-- Glaze Line Modal -->
+<div class="modal-overlay" id="glModal">
+  <div class="modal">
+    <div class="modal-header"><h2 class="modal-title" id="gl-modal-title">Thêm Dòng Men</h2><button class="modal-close" data-close-modal="glModal">✕</button></div>
+    <div class="modal-body">
+      <form id="gl-form">
+        <div class="form-group">
+          <label class="form-label">Tên dòng men <span style="color:var(--danger)">*</span></label>
+          <input class="form-control" name="name" type="text" placeholder="VD: Men rạn, Men ngọc..." required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mô tả</label>
+          <textarea class="form-control" name="description" rows="3" placeholder="Mô tả ngắn về dòng men..."></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn--secondary" data-close-modal="glModal">Huỷ</button>
+      <button type="button" class="btn btn--primary" id="btn-save-gl">💾 Lưu dòng men</button>
+    </div>
+  </div>
+</div>
+
+<div id="admin-toast-container"></div>
+<script src="js/admin-data.js"></script><script src="js/admin-core.js"></script>
+<script>
+(function(){
+  var gls = [], products = [], editId=null;
+  
+  document.addEventListener('DOMContentLoaded',function(){
+    Promise.all([
+      AdminData.glazeLines.load(),
+      AdminData.products.load()
+    ]).then(function(res) {
+      gls = res[0];
+      products = res[1];
+      renderGls();
+      
+      document.getElementById('btn-add-gl').addEventListener('click',function(){
+        editId=null;
+        document.getElementById('gl-modal-title').textContent='Thêm Dòng Men';
+        document.getElementById('gl-form').reset();
+        openModal('glModal');
+      });
+      document.getElementById('btn-save-gl').addEventListener('click',saveGl);
+      document.getElementById('gl-grid').addEventListener('click',function(e){
+        var edit=e.target.closest('.btn-edit-gl');
+        var del=e.target.closest('.btn-del-gl');
+        if(edit)openEdit(parseInt(edit.dataset.id));
+        if(del)deleteGl(parseInt(del.dataset.id));
+      });
+    }).catch(function(e){
+      console.error(e);
+      adminToast('Lỗi khi tải dữ liệu', 'error');
+    });
+  });
+
+  function getProductCount(glId){
+    return products.filter(function(p){return p.glazeLineId===glId;}).length;
+  }
+
+  function renderGls(){
+    var grid=document.getElementById('gl-grid');
+    grid.innerHTML=gls.map(function(g){
+      var cnt=getProductCount(g.id);
+      return '<div class="cat-card">'+
+        '<div style="display:flex;align-items:flex-start;justify-content:space-between">'+
+          '<div class="cat-card__icon">🧪</div>'+
+          '<span class="badge badge--gold">'+cnt+' SP</span>'+
+        '</div>'+
+        '<div><div class="cat-card__name">'+g.name+'</div><div class="cat-card__count">'+(g.description||'')+'</div></div>'+
+        '<div class="cat-card__actions">'+
+          '<button class="btn btn--sm btn--secondary btn-edit-gl" data-id="'+g.id+'">✏️ Sửa</button>'+
+          '<button class="btn btn--sm btn--danger btn-del-gl" data-id="'+g.id+'"'+(cnt>0?' disabled title="Xóa sản phẩm trước"':'')+'">🗑️</button>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  function openEdit(id){
+    var g=gls.find(function(x){return x.id===id;});
+    if(!g)return;
+    editId=id;
+    document.getElementById('gl-modal-title').textContent='Chỉnh Sửa Dòng Men';
+    var f=document.getElementById('gl-form');
+    f.querySelector('[name="name"]').value=g.name;
+    f.querySelector('[name="description"]').value=g.description||'';
+    openModal('glModal');
+  }
+
+  function saveGl(){
+    var f=document.getElementById('gl-form');
+    var name=f.querySelector('[name="name"]').value.trim();
+    if(!name){adminToast('Vui lòng điền tên dòng men!','error');return;}
+    
+    var data={name:name,description:f.querySelector('[name="description"]').value.trim()};
+    if(editId){
+      data.id=editId;
+    }
+
+    AdminData.glazeLines.save(data).then(function() {
+      adminToast(editId ? 'Cập nhật dòng men thành công!' : 'Thêm dòng men thành công!','success');
+      return AdminData.glazeLines.load();
+    }).then(function(newData) {
+      gls = newData;
+      closeModal('glModal');
+      renderGls();
+    }).catch(function(e) {
+      console.error(e);
+      adminToast('Có lỗi xảy ra', 'error');
+    });
+  }
+
+  function deleteGl(id){
+    var g=gls.find(function(x){return x.id===id;});
+    var name=g?g.name:id;
+    adminConfirm('Xoá dòng men "'+name+'"?',function(){
+      AdminData.glazeLines.delete(id).then(function() {
+        gls=gls.filter(function(x){return x.id!==id;});
+        adminToast('Đã xoá dòng men','warning');
+        renderGls();
+      }).catch(function(e) {
+        console.error(e);
+        adminToast('Lỗi khi xóa dòng men', 'error');
+      });
+    });
+  }
+}());
+</script>
+</body></html>

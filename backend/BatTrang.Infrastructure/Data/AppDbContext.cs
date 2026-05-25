@@ -10,8 +10,10 @@ namespace BatTrang.Infrastructure.Data
         }
 
         public DbSet<Product> Products { get; set; }
+        public DbSet<ProductVariant> ProductVariants { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<GlazeLine> GlazeLines { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Customer> Customers { get; set; }
@@ -25,17 +27,29 @@ namespace BatTrang.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Product>()
-                .Property(p => p.Price)
+            modelBuilder.Entity<ProductVariant>()
+                .Property(pv => pv.Price)
                 .HasColumnType("decimal(18,2)");
                 
-            modelBuilder.Entity<Product>()
-                .Property(p => p.OriginalPrice)
+            modelBuilder.Entity<ProductVariant>()
+                .Property(pv => pv.OriginalPrice)
                 .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<ProductVariant>()
+                .HasOne(pv => pv.Product)
+                .WithMany(p => p.Variants)
+                .HasForeignKey(pv => pv.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Product>()
                 .HasIndex(p => p.Slug)
                 .IsUnique();
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.GlazeLine)
+                .WithMany(g => g.Products)
+                .HasForeignKey(p => p.GlazeLineId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Order>()
                 .Property(o => o.Total)
@@ -56,6 +70,15 @@ namespace BatTrang.Infrastructure.Data
             modelBuilder.Entity<Customer>()
                 .HasIndex(c => c.Email)
                 .IsUnique();
+
+            modelBuilder.Entity<Customer>()
+                .HasIndex(c => c.Phone);
+
+            modelBuilder.Entity<Order>()
+                .HasIndex(o => o.CustomerId);
+
+            modelBuilder.Entity<Order>()
+                .HasIndex(o => o.CreatedAt);
 
             modelBuilder.Entity<JourneyTopic>()
                 .HasIndex(t => t.Slug)

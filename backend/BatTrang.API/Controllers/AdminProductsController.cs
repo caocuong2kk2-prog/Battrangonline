@@ -35,18 +35,30 @@ namespace BatTrang.API.Controllers
                 Id = p.Id,
                 Name = p.Name,
                 Slug = p.Slug,
-                Price = p.Price,
-                OriginalPrice = p.OriginalPrice,
+                BasePrice = p.Variants.Any() ? p.Variants.Min(v => v.Price) : 0,
+                BaseOriginalPrice = p.Variants.Any() ? p.Variants.Max(v => v.OriginalPrice) : null,
                 Category = p.Category?.Slug ?? p.CategoryId.ToString(),
                 Material = p.Material,
                 Style = p.Style,
                 Color = p.Color,
-                Size = p.Size,
-                Stock = p.Stock,
+                GlazeLineId = p.GlazeLineId,
+                GlazeLineName = p.GlazeLine?.Name,
+                Pattern = p.Pattern,
+                Usage = p.Usage,
+                TotalStock = p.Variants.Sum(v => v.Stock),
                 Status = p.Status,
                 Badge = p.Badge,
+                ShortDescription = p.ShortDescription,
                 Description = p.Description,
-                Images = p.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new List<string>()
+                Images = p.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new List<string>(),
+                Variants = p.Variants.Select(v => new ProductVariantDto
+                {
+                    Id = v.Id,
+                    Size = v.Size,
+                    Price = v.Price,
+                    OriginalPrice = v.OriginalPrice,
+                    Stock = v.Stock
+                }).ToList()
             });
 
             return Ok(dtos);
@@ -65,18 +77,25 @@ namespace BatTrang.API.Controllers
             {
                 Name = dto.Name,
                 Slug = GenerateSlug(dto.Name),
-                Price = dto.Price,
-                OriginalPrice = dto.OriginalPrice,
                 CategoryId = categoryId, // Need proper mapping in real app
                 Material = dto.Material,
                 Style = dto.Style,
                 Color = dto.Color,
-                Size = dto.Size,
-                Stock = dto.Stock,
+                GlazeLineId = dto.GlazeLineId,
+                Pattern = dto.Pattern,
+                Usage = dto.Usage,
                 Status = dto.Status,
                 Badge = dto.Badge,
+                ShortDescription = dto.ShortDescription,
                 Description = dto.Description,
-                Images = dto.Images?.Select((url, index) => new ProductImage { ImageUrl = url, SortOrder = index }).ToList() ?? new List<ProductImage>()
+                Images = dto.Images?.Select((url, index) => new ProductImage { ImageUrl = url, SortOrder = index }).ToList() ?? new List<ProductImage>(),
+                Variants = dto.Variants?.Select(v => new ProductVariant
+                {
+                    Size = v.Size,
+                    Price = v.Price,
+                    OriginalPrice = v.OriginalPrice,
+                    Stock = v.Stock
+                }).ToList() ?? new List<ProductVariant>()
             };
 
             await _productRepo.AddAsync(product);
@@ -91,20 +110,54 @@ namespace BatTrang.API.Controllers
             if (product == null) return NotFound();
 
             product.Name = dto.Name;
-            product.Price = dto.Price;
-            product.OriginalPrice = dto.OriginalPrice;
-            if (int.TryParse(dto.Category, out int categoryId))
+            if (int.TryParse(dto.Category, out int categoryIdUpdate))
             {
-                product.CategoryId = categoryId;
+                product.CategoryId = categoryIdUpdate;
             }
             product.Material = dto.Material;
             product.Style = dto.Style;
             product.Color = dto.Color;
-            product.Size = dto.Size;
-            product.Stock = dto.Stock;
+            product.GlazeLineId = dto.GlazeLineId;
+            product.Pattern = dto.Pattern;
+            product.Usage = dto.Usage;
             product.Status = dto.Status;
             product.Badge = dto.Badge;
+            product.ShortDescription = dto.ShortDescription;
             product.Description = dto.Description;
+
+            // Sync variants
+            product.Variants ??= new List<ProductVariant>();
+            var incomingIds = dto.Variants?.Select(v => v.Id).Where(id => id > 0).ToList() ?? new List<int>();
+            var toRemove = product.Variants.Where(v => !incomingIds.Contains(v.Id)).ToList();
+            foreach (var r in toRemove) { product.Variants.Remove(r); }
+
+            if (dto.Variants != null)
+            {
+                foreach (var vDto in dto.Variants)
+                {
+                    if (vDto.Id > 0)
+                    {
+                        var existing = product.Variants.FirstOrDefault(v => v.Id == vDto.Id);
+                        if (existing != null)
+                        {
+                            existing.Size = vDto.Size;
+                            existing.Price = vDto.Price;
+                            existing.OriginalPrice = vDto.OriginalPrice;
+                            existing.Stock = vDto.Stock;
+                        }
+                    }
+                    else
+                    {
+                        product.Variants.Add(new ProductVariant
+                        {
+                            Size = vDto.Size,
+                            Price = vDto.Price,
+                            OriginalPrice = vDto.OriginalPrice,
+                            Stock = vDto.Stock
+                        });
+                    }
+                }
+            }
 
             if (dto.Images != null)
             {
@@ -127,6 +180,37 @@ namespace BatTrang.API.Controllers
             if (product == null) return NotFound();
 
             await _productRepo.DeleteAsync(product);
+            return NoContent();
+        }
+
+        [HttpPost("bulk-delete")]
+        public async Task<IActionResult> BulkDelete([FromBody] BulkDeleteDto dto)
+        {
+            if (dto.Ids == null || !dto.Ids.Any()) return BadRequest("Danh sách ID trống.");
+            foreach (var id in dto.Ids)
+            {
+                var product = await _productRepo.GetByIdAsync(id);
+                if (product != null)
+                {
+                    await _productRepo.DeleteAsync(product);
+                }
+            }
+            return NoContent();
+        }
+
+        [HttpPost("bulk-status")]
+        public async Task<IActionResult> BulkStatus([FromBody] BulkStatusDto dto)
+        {
+            if (dto.Ids == null || !dto.Ids.Any()) return BadRequest("Danh sách ID trống.");
+            foreach (var id in dto.Ids)
+            {
+                var product = await _productRepo.GetByIdAsync(id);
+                if (product != null)
+                {
+                    product.Status = dto.Status;
+                    await _productRepo.UpdateAsync(product);
+                }
+            }
             return NoContent();
         }
 

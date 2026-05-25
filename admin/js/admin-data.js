@@ -93,6 +93,18 @@
             },
             delete: function (id) {
                 return _fetch('/products/' + id, { method: 'DELETE' });
+            },
+            bulkStatus: function (ids, status) {
+                return _fetch('/products/bulk-status', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids, status: status })
+                });
+            },
+            bulkDelete: function (ids) {
+                return _fetch('/products/bulk-delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids })
+                });
             }
         },
         orders: {
@@ -133,6 +145,15 @@
         customers: {
             load: function () {
                 return _fetch('/customers');
+            },
+            create: function (customer) {
+                return _fetch('/customers', {
+                    method: 'POST',
+                    body: JSON.stringify(customer)
+                });
+            },
+            delete: function (id) {
+                return _fetch('/customers/' + id, { method: 'DELETE' });
             }
         },
         categories: {
@@ -142,43 +163,81 @@
             },
             save: function (cat) {
                 if (cat.isNew) {
-                    return _fetch('/admin/categories', {
+                    return _fetch('/categories', {
                         method: 'POST',
                         body: JSON.stringify(cat)
                     });
                 } else {
-                    return _fetch('/admin/categories/' + cat.id, {
+                    return _fetch('/categories/' + cat.id, {
                         method: 'PUT',
                         body: JSON.stringify(cat)
                     });
                 }
             },
             delete: function (id) {
-                return _fetch('/admin/categories/' + id, { method: 'DELETE' });
+                return _fetch('/categories/' + id, { method: 'DELETE' });
+            }
+        },
+        glazeLines: {
+            load: function () {
+                return _fetch('/glazelines', {}, true);
+            },
+            save: function (gl) {
+                if (!gl.id) {
+                    return _fetch('/glazelines', {
+                        method: 'POST',
+                        body: JSON.stringify(gl)
+                    });
+                } else {
+                    return _fetch('/glazelines/' + gl.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(gl)
+                    });
+                }
+            },
+            delete: function (id) {
+                return _fetch('/glazelines/' + id, { method: 'DELETE' });
             }
         },
         journey: {
             loadTopics: function () {
                 return _fetch('/journey/topics', {}, true);
             },
-            saveTopic: function (topic) {
-                // If it exists, we would PUT, else POST. For now backend doesn't have this fully mapped in mock AdminProductsController.
-                // Oh wait, backend JourneyController currently only has public GET endpoints. 
-                // We should add AdminJourneyController! For now, let's just make it return a resolved promise to not break the UI.
-                return Promise.resolve();
+            saveTopic: function (topic, isNew) {
+                if (isNew) {
+                    return _fetch('/journey/topics', {
+                        method: 'POST',
+                        body: JSON.stringify(topic)
+                    });
+                } else {
+                    return _fetch('/journey/topics/' + topic.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(topic)
+                    });
+                }
             },
             deleteTopic: function (id) {
-                return Promise.resolve();
+                return _fetch('/journey/topics/' + id, { method: 'DELETE' });
             },
             loadVideos: function (topicId) {
                 var qs = topicId ? '?topicId=' + topicId : '';
                 return _fetch('/journey/videos' + qs, {}, true);
             },
             saveVideo: function (video) {
-                return Promise.resolve();
+                if (video.id) {
+                    return _fetch('/journey/videos/' + video.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(video)
+                    });
+                } else {
+                    return _fetch('/journey/videos', {
+                        method: 'POST',
+                        body: JSON.stringify(video)
+                    });
+                }
             },
             deleteVideo: function (id) {
-                return Promise.resolve();
+                return _fetch('/journey/videos/' + id, { method: 'DELETE' });
             }
         },
         analytics: {

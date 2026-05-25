@@ -20,6 +20,8 @@ namespace BatTrang.Infrastructure.Repositories
             var query = _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Images)
+                .Include(p => p.GlazeLine)
+                .Include(p => p.Variants)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(filter.Category) && filter.Category != "all")
@@ -57,10 +59,10 @@ namespace BatTrang.Infrastructure.Repositories
             switch (filter.Sort)
             {
                 case "price-asc":
-                    query = query.OrderBy(p => p.Price);
+                    query = query.OrderBy(p => p.Variants.Min(v => (decimal?)v.Price) ?? 0);
                     break;
                 case "price-desc":
-                    query = query.OrderByDescending(p => p.Price);
+                    query = query.OrderByDescending(p => p.Variants.Min(v => (decimal?)v.Price) ?? 0);
                     break;
                 case "newest":
                 default:
@@ -84,6 +86,8 @@ namespace BatTrang.Infrastructure.Repositories
             return await _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Images)
+                .Include(p => p.GlazeLine)
+                .Include(p => p.Variants)
                 .FirstOrDefaultAsync(p => p.Slug == slug);
         }
 
@@ -92,6 +96,8 @@ namespace BatTrang.Infrastructure.Repositories
             return await _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.Images)
+                .Include(p => p.GlazeLine)
+                .Include(p => p.Variants)
                 .OrderByDescending(p => p.Id) // Or another logic for featured
                 .Take(limit)
                 .ToListAsync();
@@ -101,7 +107,29 @@ namespace BatTrang.Infrastructure.Repositories
         {
             return await _context.Products
                 .Include(p => p.Images)
+                .Include(p => p.Variants)
                 .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task<Dictionary<int, string>> GetProductImagesAsync(IEnumerable<int> productIds)
+        {
+            var images = await _context.ProductImages
+                .Where(img => productIds.Contains(img.ProductId))
+                .ToListAsync();
+
+            var dict = new Dictionary<int, string>();
+            foreach (var pid in productIds.Distinct())
+            {
+                var img = images
+                    .Where(x => x.ProductId == pid)
+                    .OrderBy(x => x.SortOrder)
+                    .FirstOrDefault();
+                if (img != null)
+                {
+                    dict[pid] = img.ImageUrl;
+                }
+            }
+            return dict;
         }
     }
 }

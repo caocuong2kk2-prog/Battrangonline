@@ -22,19 +22,22 @@ namespace BatTrang.API.Controllers
 
         private readonly IOrderRepository _orderRepo;
         private readonly IProductRepository _productRepo;
+        private readonly ICustomerRepository _customerRepo;
 
-        public AdminOrdersController(IOrderRepository orderRepo, IProductRepository productRepo)
+        public AdminOrdersController(IOrderRepository orderRepo, IProductRepository productRepo, ICustomerRepository customerRepo)
         {
             _orderRepo = orderRepo;
             _productRepo = productRepo;
+            _customerRepo = customerRepo;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var orders = await _orderRepo.GetOrdersWithItemsAsync();
-            var products = await LoadProductsAsync();
-            var dtos = orders.Select(o => MapToDto(o, products)).ToList();
+            var productIds = orders.SelectMany(o => o.Items).Select(i => i.ProductId).Distinct().ToList();
+            var productImages = await _productRepo.GetProductImagesAsync(productIds);
+            var dtos = orders.Select(o => MapToDto(o, productImages)).ToList();
             return Ok(dtos);
         }
 
@@ -54,9 +57,68 @@ namespace BatTrang.API.Controllers
             if (!ValidStatuses.Contains(status))
                 return BadRequest(new { message = "Trạng thái đơn hàng không hợp lệ" });
 
+            // ── CRM Integration: Link or Create Customer ──
+            int? customerId = null;
+            try
+            {
+                var customers = await _customerRepo.ListAllAsync();
+                var phoneTrimmed = dto.Phone.Trim();
+                var emailInput = (dto.Email ?? "").Trim();
+                
+                var customer = customers.FirstOrDefault(c => 
+                    (!string.IsNullOrWhiteSpace(c.Phone) && c.Phone == phoneTrimmed) ||
+                    (!string.IsNullOrWhiteSpace(c.Email) && !string.IsNullOrWhiteSpace(emailInput) && c.Email.Equals(emailInput, StringComparison.OrdinalIgnoreCase)));
+
+                if (customer != null)
+                {
+                    customerId = customer.Id;
+                    bool updated = false;
+                    if (string.IsNullOrWhiteSpace(customer.Address) || customer.Address != dto.Address.Trim())
+                    {
+                        customer.Address = dto.Address.Trim();
+                        updated = true;
+                    }
+                    if (string.IsNullOrWhiteSpace(customer.Phone) && !string.IsNullOrWhiteSpace(phoneTrimmed))
+                    {
+                        customer.Phone = phoneTrimmed;
+                        updated = true;
+                    }
+                    if (updated)
+                    {
+                        await _customerRepo.UpdateAsync(customer);
+                    }
+                }
+                else
+                {
+                    var emailToSave = emailInput;
+                    if (string.IsNullOrWhiteSpace(emailToSave))
+                    {
+                        emailToSave = $"{phoneTrimmed}_{Guid.NewGuid().ToString("N").Substring(0, 6)}@phucgiatien.temp";
+                    }
+                    
+                    var newCustomer = new Customer
+                    {
+                        Name = dto.Customer.Trim(),
+                        Phone = phoneTrimmed,
+                        Email = emailToSave,
+                        Address = dto.Address.Trim(),
+                        Status = "active",
+                        JoinedAt = DateTime.UtcNow
+                    };
+                    var saved = await _customerRepo.AddAsync(newCustomer);
+                    customerId = saved.Id;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Gracefully log & fallback so order creation doesn't fail if CRM integration fails
+                Console.WriteLine($"[CRM Link Error] {ex.Message}");
+            }
+
             var order = new Order
             {
                 OrderCode = await GenerateOrderCodeAsync(),
+                CustomerId = customerId,
                 CustomerName = dto.Customer.Trim(),
                 CustomerPhone = dto.Phone.Trim(),
                 CustomerEmail = (dto.Email ?? "").Trim(),
@@ -71,18 +133,22 @@ namespace BatTrang.API.Controllers
             {
                 if (item.Qty < 1) continue;
 
-                var product = await _productRepo.GetByIdAsync(item.Id);
+                var product = await _productRepo.GetProductWithImagesAsync(item.Id);
                 if (product == null)
                     return BadRequest(new { message = $"Sản phẩm #{item.Id} không tồn tại" });
+
+                var variant = product.Variants.FirstOrDefault(v => v.Size == item.Size) ?? product.Variants.FirstOrDefault();
+                var price = variant?.Price ?? 0;
 
                 order.Items.Add(new OrderItem
                 {
                     ProductId = product.Id,
                     ProductName = product.Name,
-                    UnitPrice = product.Price,
+                    Size = variant?.Size ?? item.Size,
+                    UnitPrice = price,
                     Quantity = item.Qty
                 });
-                total += product.Price * item.Qty;
+                total += price * item.Qty;
             }
 
             if (order.Items.Count == 0)
@@ -94,8 +160,9 @@ namespace BatTrang.API.Controllers
             var created = await _orderRepo.GetByOrderCodeAsync(order.OrderCode);
             if (created == null) return StatusCode(500, new { message = "Không thể tải đơn hàng vừa tạo" });
 
-            var products = await LoadProductsAsync();
-            return Ok(MapToDto(created, products));
+            var productIds = created.Items.Select(i => i.ProductId).Distinct().ToList();
+            var productImages = await _productRepo.GetProductImagesAsync(productIds);
+            return Ok(MapToDto(created, productImages));
         }
 
         [HttpPatch("{id}/status")]
@@ -107,12 +174,6 @@ namespace BatTrang.API.Controllers
             order.Status = dto.Status;
             await _orderRepo.UpdateAsync(order);
             return NoContent();
-        }
-
-        private async Task<List<Product>> LoadProductsAsync()
-        {
-            var productsResult = await _productRepo.GetProductsAsync(new ProductFilterDto { Limit = 1000 });
-            return productsResult.Data.ToList();
         }
 
         private async Task<string> GenerateOrderCodeAsync()
@@ -127,7 +188,7 @@ namespace BatTrang.API.Controllers
             return "DH" + DateTime.UtcNow.Ticks;
         }
 
-        private static OrderDto MapToDto(Order o, List<Product> products)
+        private static OrderDto MapToDto(Order o, Dictionary<int, string> productImages)
         {
             return new OrderDto
             {
@@ -142,14 +203,15 @@ namespace BatTrang.API.Controllers
                 Note = o.Note,
                 Items = o.Items.Select(i =>
                 {
-                    var p = products.FirstOrDefault(x => x.Id == i.ProductId);
-                    var img = p?.Images?.OrderBy(img => img.SortOrder).FirstOrDefault()?.ImageUrl;
+                    productImages.TryGetValue(i.ProductId, out var imgUrl);
                     return new OrderItemDto
                     {
+                        ProductId = i.ProductId,
                         Name = i.ProductName,
+                        Size = i.Size,
                         Qty = i.Quantity,
                         Price = i.UnitPrice,
-                        ImageUrl = img
+                        ImageUrl = imgUrl
                     };
                 }).ToList()
             };

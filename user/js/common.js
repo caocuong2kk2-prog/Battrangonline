@@ -519,8 +519,13 @@
     shipArea: "Toàn quốc",
     logoUrl: "assets/images/logo.png",
     homeBanner: "assets/images/home_bg.jpeg",
+    ctaBanner: "assets/images/bg.jpeg",
     pageBanner: "assets/images/journey-hero.jpg",
-    homeStoryImg: "assets/images/story-couple.jpg",
+    productsBanner: "assets/images/products-banner.jpg",
+    journeyBanner: "assets/images/journey-hero.jpg",
+    aboutBanner: "assets/images/about-hero.jpg",
+    contactBanner: "assets/images/contact-hero.jpg",
+    homeStoryImg: "",
     aboutStoryImg: "assets/images/about-workshop.jpg",
     teamAvatar1: "assets/images/team-husband.jpg",
     teamAvatar2: "assets/images/team-wife.jpg",
@@ -560,12 +565,20 @@
     process5Desc: "Kiểm tra, đánh bóng và đóng gói tác phẩm hoàn hảo"
   };
 
-  // Load config & expose globally
-  var currentConfig = {};
-  try {
-    currentConfig = JSON.parse(localStorage.getItem(CONFIG_KEY)) || {};
-  } catch (e) {}
-  window.PGT_CONFIG = Object.assign({}, DEFAULT_CONFIG, currentConfig);
+  // Khởi tạo PGT_CONFIG mặc định trong trường hợp API lỗi
+  window.PGT_CONFIG = Object.assign({}, DEFAULT_CONFIG);
+
+  // Fetch config mới nhất từ API, cập nhật lại PGT_CONFIG
+  async function fetchSiteConfig() {
+    try {
+      var res = await fetch('http://localhost:5080/api/site-config');
+      if (!res.ok) throw new Error('API ' + res.status);
+      var apiConfig = await res.json();
+      window.PGT_CONFIG = Object.assign({}, DEFAULT_CONFIG, apiConfig);
+    } catch (e) {
+      console.warn('[PGT] Không lấy được config từ API, dùng default:', e.message);
+    }
+  }
 
   // Apply configuration values dynamically to annotated DOM elements
   function applyDynamicConfig() {
@@ -650,8 +663,29 @@
     document.querySelectorAll('.js-config-home-banner-img').forEach(function (el) {
       el.src = config.homeBanner;
     });
+    document.querySelectorAll('.js-config-cta-banner-img').forEach(function (el) {
+      if (config.ctaBanner === '') {
+        el.style.opacity = '0';
+        el.removeAttribute('src');
+      } else {
+        el.src = config.ctaBanner || 'assets/images/bg.jpeg';
+        el.style.opacity = '1';
+      }
+    });
     document.querySelectorAll('.js-config-page-banner-img').forEach(function (el) {
       el.src = config.pageBanner;
+    });
+    document.querySelectorAll('.js-config-products-banner-img').forEach(function (el) {
+      el.src = config.productsBanner || config.pageBanner;
+    });
+    document.querySelectorAll('.js-config-journey-banner-img').forEach(function (el) {
+      el.src = config.journeyBanner || config.pageBanner;
+    });
+    document.querySelectorAll('.js-config-about-banner-img').forEach(function (el) {
+      el.src = config.aboutBanner || config.pageBanner;
+    });
+    document.querySelectorAll('.js-config-contact-banner-img').forEach(function (el) {
+      el.src = config.contactBanner || config.pageBanner;
     });
     document.querySelectorAll('.js-config-home-story-img').forEach(function (el) {
       el.src = config.homeStoryImg || 'assets/images/story-couple.jpg';
@@ -705,12 +739,16 @@
     document.querySelectorAll('.js-config-proc-4-desc').forEach(function(el) { el.textContent = config.process4Desc; });
     document.querySelectorAll('.js-config-proc-5-title').forEach(function(el) { el.textContent = config.process5Title; });
     document.querySelectorAll('.js-config-proc-5-desc').forEach(function(el) { el.textContent = config.process5Desc; });
+
+    // Hiển thị nội dung sau khi load xong config từ API
+    document.body.classList.add('config-loaded');
   }
 
   // ======================================================
   // INIT SCRIPT ON LOAD
   // ======================================================
   async function initAll() {
+    await fetchSiteConfig();   // Lấy config mới nhất từ API trước
     await loadComponents();
     applyDynamicConfig();
     initHeader();
@@ -845,7 +883,7 @@
             '<img class="search-result-card__img" src="' + img + '" alt="' + p.name + '" loading="lazy">' +
             '<div class="search-result-card__body">' +
               '<p class="search-result-card__name">' + p.name + '</p>' +
-              '<p class="search-result-card__price">' + fmt(p.price) + '</p>' +
+              '<p class="search-result-card__price">' + fmt(p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0)) + '</p>' +
             '</div>' +
           '</a>';
       });

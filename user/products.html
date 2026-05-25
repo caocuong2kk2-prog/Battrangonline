@@ -28,7 +28,7 @@
     <!-- PAGE HERO -->
     <section class="page-hero" aria-label="Banner trang sản phẩm">
       <div class="page-hero__bg">
-        <img class="js-config-page-banner-img" src="assets/images/products-banner.jpg" alt="" role="presentation" loading="eager">
+        <img class="js-config-products-banner-img" src="assets/images/products-banner.jpg" alt="" role="presentation" loading="eager">
       </div>
       <div class="container">
         <div class="page-hero__content">
@@ -46,21 +46,43 @@
       <div class="container">
         <div class="filter-bar">
           <div class="filter-bar__group">
-            <label class="filter-bar__label" for="filter-category">Danh mục:</label>
-            <select class="filter-select" id="filter-category" aria-label="Lọc theo danh mục">
-              <!-- populated by product.js -->
-            </select>
-            <select class="filter-select" id="filter-size" aria-label="Lọc theo kích thước">
-              <!-- populated by product.js -->
-            </select>
+            <!-- Danh mục -->
+            <div class="filter-bar__item">
+              <label class="filter-bar__label" for="filter-category">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Danh mục
+              </label>
+              <select class="filter-select" id="filter-category" aria-label="Lọc theo danh mục">
+                <!-- populated by product.js -->
+              </select>
+            </div>
+
+            <!-- Mức giá -->
+            <div class="filter-bar__item">
+              <label class="filter-bar__label" for="filter-price">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Mức giá
+              </label>
+              <select class="filter-select" id="filter-price" aria-label="Lọc theo mức giá">
+                <option value="all">Tất cả mức giá</option>
+                <option value="under10">Dưới 10 triệu</option>
+                <option value="10to20">10 – 20 triệu</option>
+                <option value="20to50">20 – 50 triệu</option>
+                <option value="above50">Trên 50 triệu</option>
+              </select>
+            </div>
           </div>
+
           <div class="filter-bar__sort">
             <span class="filter-bar__count" id="product-count" aria-live="polite">Đang tải...</span>
-            <select class="filter-select" id="sort-select" aria-label="Sắp xếp theo">
-              <option value="newest">Mới Nhất</option>
-              <option value="price-asc">Giá Tăng Dần</option>
-              <option value="price-desc">Giá Giảm Dần</option>
-            </select>
+            <div class="filter-bar__item">
+              <label class="filter-bar__label" for="sort-select">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Sắp xếp
+              </label>
+              <select class="filter-select" id="sort-select" aria-label="Sắp xếp theo">
+                <option value="newest">Mới Nhất</option>
+                <option value="price-asc">Giá Tăng Dần</option>
+                <option value="price-desc">Giá Giảm Dần</option>
+              </select>
+            </div>
           </div>
         </div>
 

@@ -203,9 +203,12 @@
     article.className = 'home-product-card';
 
     var imgSrc = (p.images && p.images[0]) ? p.images[0] : 'assets/images/placeholder.jpg';
-    var badgeHTML = p.badge
-      ? '<span class="home-product-card__badge">' + p.badge + '</span>'
-      : '';
+    var badgeHTML = '';
+    if (p.status === 'inactive') {
+      badgeHTML = '<span class="home-product-card__badge" style="background:#e07070;">Hết hàng</span>';
+    } else if (p.badge) {
+      badgeHTML = '<span class="home-product-card__badge">' + p.badge + '</span>';
+    }
 
     // Stars: dùng rating từ data hoặc ngẫu nhiên 4-5 sao
     var rating = p.rating || (4 + Math.floor(Math.random() * 2));
@@ -217,33 +220,42 @@
 
     // Serialize product data để dùng trên clone
     var pSafe = JSON.stringify({
-      id: p.id, slug: p.slug, name: p.name, price: p.price, images: p.images
+      id: p.id, slug: p.slug, name: p.name, price: p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0), images: p.images
     }).replace(/'/g, '&#39;');
 
     var subImagesHtml = '';
     if (p.images && p.images.length > 1) {
       subImagesHtml = '<div class="home-product-card__sub-images" style="position:absolute; bottom:10px; left:0; width:100%; display:flex; justify-content:center; gap:6px; opacity:0; transition: opacity 0.3s ease; z-index:2;">' +
         p.images.slice(0, 4).map(function(img, i) { 
-            return '<img src="' + img + '" style="width:36px; height:36px; object-fit:cover; border-radius:4px; border:2px solid ' + (i===0 ? '#C8922A' : 'rgba(255,255,255,0.8)') + '; background:#fff; cursor:pointer;" onmouseover="this.closest(\'.home-product-card__media\').querySelector(\'.home-product-card__img\').src=\'' + img + '\'" />'; 
+            var isVid = !!img.match(/\.(mp4|mov|avi|webm|ogg)$/i);
+            var hoverScript = "var mediaEl = this.closest('.home-product-card__media').querySelector('.home-product-card__img'); if(mediaEl && !"+isVid+") { mediaEl.src='" + img + "'; }";
+            return isVid 
+              ? '<video src="' + img + '" style="width:36px; height:36px; object-fit:cover; border-radius:4px; border:2px solid ' + (i===0 ? '#C8922A' : 'rgba(255,255,255,0.8)') + '; background:#fff; cursor:pointer;" muted></video>' 
+              : '<img src="' + img + '" style="width:36px; height:36px; object-fit:cover; border-radius:4px; border:2px solid ' + (i===0 ? '#C8922A' : 'rgba(255,255,255,0.8)') + '; background:#fff; cursor:pointer;" onmouseover="' + hoverScript + '" />'; 
         }).join('') +
       '</div>';
     }
 
     // Dùng div cho media (tránh nested <a> không hợp lệ)
     article.innerHTML =
-      '<div class="home-product-card__media" onmouseenter="var sub=this.querySelector(\'.home-product-card__sub-images\'); if(sub) sub.style.opacity=\'1\';" onmouseleave="var sub=this.querySelector(\'.home-product-card__sub-images\'); if(sub) { sub.style.opacity=\'0\'; this.querySelector(\'.home-product-card__img\').src=\'' + imgSrc + '\'; }">' +
+      '<div class="home-product-card__media" onmouseenter="var sub=this.querySelector(\'.home-product-card__sub-images\'); if(sub) sub.style.opacity=\'1\';" onmouseleave="var sub=this.querySelector(\'.home-product-card__sub-images\'); if(sub) { sub.style.opacity=\'0\'; var imgEl = this.querySelector(\'.home-product-card__img\'); if(imgEl) imgEl.src=\'' + imgSrc + '\'; }">' +
         badgeHTML +
-        '<img class="home-product-card__img" src="' + imgSrc + '" alt="' + p.name + '" loading="lazy">' +
+        (imgSrc.match(/\.(mp4|mov|avi|webm|ogg)$/i) 
+          ? '<video class="home-product-card__img" src="' + imgSrc + '" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;pointer-events:none;"></video>'
+          : '<img class="home-product-card__img" src="' + imgSrc + '" alt="' + p.name + '" loading="lazy">') +
         subImagesHtml +
-        '<div class="home-product-card__action" style="bottom: 55px;">' +
+        '<div class="home-product-card__action">' +
           '<div class="home-product-card__action-row">' +
-            '<button class="home-product-card__btn-cart" data-product=\'' + pSafe + '\'>' +
-              '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
-                '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>' +
-                '<path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>' +
-              '</svg>' +
-              'Thêm giỏ hàng' +
-            '</button>' +
+            (p.status === 'inactive'
+              ? '<button class="home-product-card__btn-cart" disabled style="background:#f5f5f5;color:#999;border-color:#e0e0e0;cursor:not-allowed;">' +
+                'Tạm hết hàng</button>'
+              : '<button class="home-product-card__btn-cart" data-product=\'' + pSafe + '\'>' +
+                '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+                  '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>' +
+                  '<path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>' +
+                '</svg>' +
+                'Thêm giỏ hàng' +
+                '</button>') +
             '<button class="home-product-card__btn-detail" title="Xem chi tiết" data-slug="' + p.slug + '">' +
               '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
                 '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>' +
@@ -253,11 +265,9 @@
         '</div>' +
       '</div>' +
       '<div class="home-product-card__body">' +
-        '<div class="home-product-card__stars">' + starsHTML + '</div>' +
         '<h3 class="home-product-card__name">' + p.name + '</h3>' +
         '<div class="home-product-card__price-row">' +
-          '<span class="home-product-card__price">' + window.formatVND(p.price) + '</span>' +
-          '<span class="home-product-card__tag">Thủ công</span>' +
+          '<span class="home-product-card__price">' + window.formatVND(p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0)) + '</span>' +
         '</div>' +
       '</div>';
 

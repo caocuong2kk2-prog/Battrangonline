@@ -134,6 +134,16 @@
       grid-template-columns: repeat(3, 1fr);
       gap: var(--space-5);
     }
+    @media (max-width: 1024px) {
+      .video-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 640px) {
+      .video-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
     .video-card {
       position: relative;
@@ -233,7 +243,7 @@
     <!-- PAGE HERO -->
     <section class="page-hero" aria-label="Hành trình Phúc Gia Tiên">
       <div class="page-hero__bg">
-        <img class="js-config-page-banner-img" src="assets/images/journey-hero.jpg" alt="" role="presentation" loading="eager">
+        <img class="js-config-journey-banner-img" src="assets/images/journey-hero.jpg" alt="" role="presentation" loading="eager">
       </div>
       <div class="container">
         <div class="page-hero__content">
@@ -269,10 +279,10 @@
   <!-- FOOTER -->
   <div id="footer-placeholder"></div>
 
-  <script src="js/api.js"></script>
-  <script src="js/cart.js"></script>
-  <script src="js/common.js"></script>
-  <script src="js/journey.js"></script>
+  <script src="js/api.js?v=2"></script>
+  <script src="js/cart.js?v=2"></script>
+  <script src="js/common.js?v=2"></script>
+  <script src="js/journey.js?v=2"></script>
 </body>
 
 </html>

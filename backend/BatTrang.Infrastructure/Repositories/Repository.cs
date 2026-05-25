@@ -34,7 +34,7 @@ namespace BatTrang.Infrastructure.Repositories
 
         public async Task UpdateAsync(T entity)
         {
-            _context.Entry(entity).State = EntityState.Modified;
+            _context.Set<T>().Update(entity);
             await _context.SaveChangesAsync();
         }
 
