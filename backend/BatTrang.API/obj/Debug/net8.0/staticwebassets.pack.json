@@ -5,6 +5,10 @@
       "PackagePath": "staticwebassets\\uploads\\0497193b-5a26-4c62-9dc2-d4c64b806745_z7812881837776_f7fd078b9db5ada738007cc6cfecd15b.jpg"
     },
     {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\04ef48c9-ef43-45cb-be0e-5cba982e35c4_z7867741360578_bc5870604601891dd030febd0b69623a.jpg",
+      "PackagePath": "staticwebassets\\uploads\\04ef48c9-ef43-45cb-be0e-5cba982e35c4_z7867741360578_bc5870604601891dd030febd0b69623a.jpg"
+    },
+    {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\07c7bce9-7ca8-43f5-8c27-a0fcb0daee2a_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg",
       "PackagePath": "staticwebassets\\uploads\\07c7bce9-7ca8-43f5-8c27-a0fcb0daee2a_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg"
     },
@@ -21,6 +25,10 @@
       "PackagePath": "staticwebassets\\uploads\\13acb896-8657-41c8-9579-f66d6ae0cf66_z7825074224882_4bed32951dfdf824d5f24cd902b840f2.jpg"
     },
     {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\1455b041-8e25-4099-89fd-d28e70e25410_z7812881801168_ca378777e6d1126512257d8156059d66.jpg",
+      "PackagePath": "staticwebassets\\uploads\\1455b041-8e25-4099-89fd-d28e70e25410_z7812881801168_ca378777e6d1126512257d8156059d66.jpg"
+    },
+    {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\1dbed64d-6fb4-495a-bde1-6b202251ddb0_z7825074225038_a085f5244d3d6f905a0aa940a95080e7.jpg",
       "PackagePath": "staticwebassets\\uploads\\1dbed64d-6fb4-495a-bde1-6b202251ddb0_z7825074225038_a085f5244d3d6f905a0aa940a95080e7.jpg"
     },
@@ -29,8 +37,16 @@
       "PackagePath": "staticwebassets\\uploads\\21e24f72-9504-4087-a670-fa116b7ff7ab_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg"
     },
     {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\237e10e1-de95-4f2b-b103-f78a87836d57_z7825074224882_4bed32951dfdf824d5f24cd902b840f2.jpg",
+      "PackagePath": "staticwebassets\\uploads\\237e10e1-de95-4f2b-b103-f78a87836d57_z7825074224882_4bed32951dfdf824d5f24cd902b840f2.jpg"
+    },
+    {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\24fea341-b0a9-4ae7-a604-d7ea5850290c_troi song.mp4",
       "PackagePath": "staticwebassets\\uploads\\24fea341-b0a9-4ae7-a604-d7ea5850290c_troi song.mp4"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\27fe204f-4cd3-4bfe-b84f-e24561940c0c_z7867741451473_3715ef460025833934b3c75fc8231db2.jpg",
+      "PackagePath": "staticwebassets\\uploads\\27fe204f-4cd3-4bfe-b84f-e24561940c0c_z7867741451473_3715ef460025833934b3c75fc8231db2.jpg"
     },
     {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\2af3d669-84cb-4dc3-886b-bf103045122f_z7825074224941_edb1fc7b313079484acf00630df7613d.jpg",
@@ -73,6 +89,10 @@
       "PackagePath": "staticwebassets\\uploads\\5de8942d-e7b2-41e3-a82c-6b47e48d5bfd_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg"
     },
     {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\65609365-fdf5-41d5-91e5-c96720c4b2af_z7867741451473_3715ef460025833934b3c75fc8231db2.jpg",
+      "PackagePath": "staticwebassets\\uploads\\65609365-fdf5-41d5-91e5-c96720c4b2af_z7867741451473_3715ef460025833934b3c75fc8231db2.jpg"
+    },
+    {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\65c0a5c6-4e13-460b-9404-f2b4b7df25f7_z7823387215888_878f444bb74f06ec4f44dda9c31a172e.jpg",
       "PackagePath": "staticwebassets\\uploads\\65c0a5c6-4e13-460b-9404-f2b4b7df25f7_z7823387215888_878f444bb74f06ec4f44dda9c31a172e.jpg"
     },
@@ -99,6 +119,18 @@
     {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\7791e100-fe9a-4c57-a235-56f8f5829e95_images.jpg",
       "PackagePath": "staticwebassets\\uploads\\7791e100-fe9a-4c57-a235-56f8f5829e95_images.jpg"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\7bc36067-b14b-47eb-a3b5-590beb3708ee_z7867741414968_656cae29e92f924afe22257c9ac3aa53.jpg",
+      "PackagePath": "staticwebassets\\uploads\\7bc36067-b14b-47eb-a3b5-590beb3708ee_z7867741414968_656cae29e92f924afe22257c9ac3aa53.jpg"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\7bca7607-3f64-4694-a2c2-3443ee9e1347_de nhay.mp4",
+      "PackagePath": "staticwebassets\\uploads\\7bca7607-3f64-4694-a2c2-3443ee9e1347_de nhay.mp4"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\a09db95b-f713-4a21-8221-9ad92f374de4_z7867741360578_bc5870604601891dd030febd0b69623a.jpg",
+      "PackagePath": "staticwebassets\\uploads\\a09db95b-f713-4a21-8221-9ad92f374de4_z7867741360578_bc5870604601891dd030febd0b69623a.jpg"
     },
     {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\aed53392-f522-4f0e-8a4d-396ee05efbdd_meme-meo-5.jpg",
@@ -137,8 +169,16 @@
       "PackagePath": "staticwebassets\\uploads\\d62bd7d3-b034-43ec-afb2-81fa9fcc301f_ChatGPT Image 09_13_49 23 thg 5, 2026.png"
     },
     {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\d9b333ba-45f9-424f-b4e7-0e2779fd5eae_z7867741414968_656cae29e92f924afe22257c9ac3aa53.jpg",
+      "PackagePath": "staticwebassets\\uploads\\d9b333ba-45f9-424f-b4e7-0e2779fd5eae_z7867741414968_656cae29e92f924afe22257c9ac3aa53.jpg"
+    },
+    {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\daee8a28-faee-461c-b1fd-c9eb06cb9513_meme-meo-5.jpg",
       "PackagePath": "staticwebassets\\uploads\\daee8a28-faee-461c-b1fd-c9eb06cb9513_meme-meo-5.jpg"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\eadfaf74-bfd4-4e38-8c7c-ed287839046c_z7825074225038_a085f5244d3d6f905a0aa940a95080e7.jpg",
+      "PackagePath": "staticwebassets\\uploads\\eadfaf74-bfd4-4e38-8c7c-ed287839046c_z7825074225038_a085f5244d3d6f905a0aa940a95080e7.jpg"
     },
     {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\edb48de6-4290-4f72-9f58-97a0f2a6f358_view nui.mp4",
@@ -147,6 +187,10 @@
     {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\fc5b0610-c292-4f66-9956-baf1c58258e6_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg",
       "PackagePath": "staticwebassets\\uploads\\fc5b0610-c292-4f66-9956-baf1c58258e6_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg"
+    },
+    {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\fd056648-b7c6-4796-a2eb-062716e9a4d8_chim canh cut.mp4",
+      "PackagePath": "staticwebassets\\uploads\\fd056648-b7c6-4796-a2eb-062716e9a4d8_chim canh cut.mp4"
     },
     {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\fd39c274-666b-4570-969c-2505d0f9e2ff_z7812881837776_f7fd078b9db5ada738007cc6cfecd15b.jpg",

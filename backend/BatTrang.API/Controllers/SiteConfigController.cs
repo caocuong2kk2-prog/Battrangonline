@@ -27,6 +27,7 @@ namespace BatTrang.API.Controllers
         }
 
         [HttpPost]
+        [HttpPut]
         public async Task<IActionResult> UpdateAll([FromBody] System.Collections.Generic.Dictionary<string, string> configs)
         {
             await _configRepo.UpdateConfigsAsync(configs);

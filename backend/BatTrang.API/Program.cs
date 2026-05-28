@@ -1,5 +1,6 @@
 using BatTrang.Core.Interfaces;
 using BatTrang.Infrastructure.Data;
+using BatTrang.API.Hubs;
 using BatTrang.Infrastructure.Repositories;
 using BatTrang.Infrastructure.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 
 // DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -30,15 +32,17 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IContactRepository, ContactRepository>();
 builder.Services.AddScoped<ISiteConfigRepository, SiteConfigRepository>();
 builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
+builder.Services.AddScoped<BatTrang.Infrastructure.Services.NotificationService>();
 
 // CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLiveServer", policy =>
     {
-        policy.WithOrigins("http://127.0.0.1:5500", "http://localhost:5500", "http://127.0.0.1:5501", "http://localhost:5501")
+        policy.SetIsOriginAllowed(origin => true)
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -100,7 +104,40 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseCors("AllowLiveServer");
-app.UseStaticFiles();
+app.UseStaticFiles(); // Serves default wwwroot (like uploads)
+
+// Serve admin static files at /admin
+var adminPath = System.IO.Path.GetFullPath(System.IO.Path.Combine(builder.Environment.ContentRootPath, "..", "..", "admin"));
+if (System.IO.Directory.Exists(adminPath))
+{
+    app.UseDefaultFiles(new DefaultFilesOptions
+    {
+        FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(adminPath),
+        RequestPath = "/admin"
+    });
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(adminPath),
+        RequestPath = "/admin"
+    });
+}
+
+// Serve user static files at /
+var userPath = System.IO.Path.GetFullPath(System.IO.Path.Combine(builder.Environment.ContentRootPath, "..", "..", "user"));
+if (System.IO.Directory.Exists(userPath))
+{
+    app.UseDefaultFiles(new DefaultFilesOptions
+    {
+        FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(userPath),
+        RequestPath = ""
+    });
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(userPath),
+        RequestPath = ""
+    });
+}
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -109,6 +146,7 @@ app.UseSwaggerUI();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapHub<NotificationHub>("/hub/notifications");
 app.MapControllers();
 
 app.Run();

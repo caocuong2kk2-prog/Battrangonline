@@ -159,6 +159,12 @@ namespace BatTrang.API.Controllers
                 return BadRequest("Chủ đề không tồn tại.");
             }
 
+            // Clean up old files if they are replaced
+            if (video.Url != dto.Url?.Trim())
+                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(video.Url);
+            if (video.Thumbnail != dto.Thumbnail?.Trim())
+                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(video.Thumbnail);
+
             video.Title = dto.Title.Trim();
             video.Url = dto.Url.Trim();
             video.Thumbnail = dto.Thumbnail?.Trim();
@@ -175,7 +181,14 @@ namespace BatTrang.API.Controllers
             var video = await _journeyRepo.GetVideoByIdAsync(id);
             if (video == null) return NotFound();
 
+            var url = video.Url;
+            var thumbnail = video.Thumbnail;
+
             await _journeyRepo.DeleteVideoAsync(video);
+
+            BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(url);
+            BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(thumbnail);
+
             return NoContent();
         }
     }

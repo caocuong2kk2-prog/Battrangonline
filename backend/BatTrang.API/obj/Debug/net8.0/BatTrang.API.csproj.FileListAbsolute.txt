@@ -7,7 +7,6 @@ H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\BatTrang.API.dll
 H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\BatTrang.API.pdb
 H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\Azure.Core.dll
 H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\Azure.Identity.dll
-H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\BCrypt.Net-Next.dll
 H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
 H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\Microsoft.Data.SqlClient.dll
@@ -142,3 +141,4 @@ H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\tr\Microsoft.CodeAn
 H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
 H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
 H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\BatTrang.API.staticwebassets.runtime.json
+H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\BCrypt-Net-Next.dll

@@ -9,7 +9,7 @@ namespace BatTrang.API.Controllers
 {
     [ApiController]
     [Route("api/admin/categories")]
-    // [Authorize(Roles = "Admin")] // Uncomment for actual auth
+    [Authorize]
     public class AdminCategoriesController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepo;
@@ -47,6 +47,9 @@ namespace BatTrang.API.Controllers
             var category = await _categoryRepo.GetBySlugAsync(id);
             if (category == null) return NotFound();
 
+            if (category.Icon != dto.Icon)
+                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(category.Icon);
+
             category.Name = dto.Name;
             category.Icon = dto.Icon;
             category.Description = dto.Desc;
@@ -61,7 +64,12 @@ namespace BatTrang.API.Controllers
             var category = await _categoryRepo.GetBySlugAsync(id);
             if (category == null) return NotFound();
 
+            var icon = category.Icon;
+
             await _categoryRepo.DeleteAsync(category);
+
+            BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(icon);
+
             return NoContent();
         }
     }

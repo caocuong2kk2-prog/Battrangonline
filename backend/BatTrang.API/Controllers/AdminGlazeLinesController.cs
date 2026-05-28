@@ -11,7 +11,7 @@ namespace BatTrang.API.Controllers
 {
     [Route("api/admin/glazelines")]
     [ApiController]
-    // [Authorize]
+    [Authorize]
     public class AdminGlazeLinesController : ControllerBase
     {
         private readonly AppDbContext _context;

@@ -43,7 +43,8 @@ namespace BatTrang.API.Controllers
             {
                 Token = token,
                 Name = user.Name,
-                Username = user.Username
+                Username = user.Username,
+                Role = user.Role
             });
         }
 
@@ -57,6 +58,7 @@ namespace BatTrang.API.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim("username", user.Username),
+                new Claim(ClaimTypes.Role, user.Role),
                 new Claim(JwtRegisteredClaimNames.Name, user.Name),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
@@ -71,5 +73,57 @@ namespace BatTrang.API.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        [Authorize]
+        [HttpPost("update-profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+        {
+            var usernameClaim = User.FindFirst("username")?.Value;
+            if (string.IsNullOrEmpty(usernameClaim))
+            {
+                return Unauthorized(new { message = "Không xác định được danh tính quản trị viên." });
+            }
+
+            var user = await _adminUserRepo.GetByUsernameAsync(usernameClaim);
+            if (user == null)
+            {
+                return NotFound(new { message = "Không tìm thấy tài khoản quản trị viên." });
+            }
+
+            if (user.Username != request.Username)
+            {
+                var existingUser = await _adminUserRepo.GetByUsernameAsync(request.Username);
+                if (existingUser != null)
+                {
+                    return BadRequest(new { message = "Tên tài khoản này đã được sử dụng." });
+                }
+            }
+
+            user.Name = request.Name;
+            user.Username = request.Username;
+
+            if (!string.IsNullOrEmpty(request.NewPassword))
+            {
+                user.Password = request.NewPassword;
+            }
+
+            await _adminUserRepo.UpdateAsync(user);
+
+            var token = GenerateJwtToken(user);
+
+            return Ok(new LoginResponse
+            {
+                Token = token,
+                Name = user.Name,
+                Username = user.Username
+            });
+        }
+    }
+
+    public class UpdateProfileRequest
+    {
+        public string Name { get; set; } = null!;
+        public string Username { get; set; } = null!;
+        public string? NewPassword { get; set; }
     }
 }

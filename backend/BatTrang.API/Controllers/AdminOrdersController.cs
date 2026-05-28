@@ -3,6 +3,8 @@ using BatTrang.Core.Entities;
 using BatTrang.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using BatTrang.API.Hubs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,12 +25,14 @@ namespace BatTrang.API.Controllers
         private readonly IOrderRepository _orderRepo;
         private readonly IProductRepository _productRepo;
         private readonly ICustomerRepository _customerRepo;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public AdminOrdersController(IOrderRepository orderRepo, IProductRepository productRepo, ICustomerRepository customerRepo)
+        public AdminOrdersController(IOrderRepository orderRepo, IProductRepository productRepo, ICustomerRepository customerRepo, IHubContext<NotificationHub> hubContext)
         {
             _orderRepo = orderRepo;
             _productRepo = productRepo;
             _customerRepo = customerRepo;
+            _hubContext = hubContext;
         }
 
         [HttpGet]
@@ -123,7 +127,7 @@ namespace BatTrang.API.Controllers
                 CustomerPhone = dto.Phone.Trim(),
                 CustomerEmail = (dto.Email ?? "").Trim(),
                 Address = dto.Address.Trim(),
-                Note = dto.Note?.Trim(),
+                CustomerNote = dto.CustomerNote?.Trim(),
                 Status = status,
                 CreatedAt = DateTime.UtcNow
             };
@@ -157,6 +161,15 @@ namespace BatTrang.API.Controllers
             order.Total = total;
             await _orderRepo.AddAsync(order);
 
+            try
+            {
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "OrderPlaced", $"Đơn hàng mới {order.OrderCode} vừa được tạo bởi quản trị viên!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[SignalR Push Error] {ex.Message}");
+            }
+
             var created = await _orderRepo.GetByOrderCodeAsync(order.OrderCode);
             if (created == null) return StatusCode(500, new { message = "Không thể tải đơn hàng vừa tạo" });
 
@@ -171,8 +184,124 @@ namespace BatTrang.API.Controllers
             var order = await _orderRepo.GetByOrderCodeAsync(id);
             if (order == null) return NotFound();
 
+            var oldStatus = (order.Status ?? "").ToLowerInvariant();
+            var newStatus = (dto.Status ?? "").ToLowerInvariant();
+
+            if (!ValidStatuses.Contains(newStatus))
+                return BadRequest(new { message = "Trạng thái không hợp lệ" });
+
             order.Status = dto.Status;
             await _orderRepo.UpdateAsync(order);
+
+            // ── Stock management ──────────────────────────────────────────────
+            // CASE 1: Chuyển sang "completed" → trừ kho
+            if (newStatus == "completed" && oldStatus != "completed")
+            {
+                await AdjustStockAsync(order, delta: -1);
+            }
+            // CASE 2: Huỷ đơn đã "completed" → hoàn kho
+            else if (newStatus == "cancelled" && oldStatus == "completed")
+            {
+                await AdjustStockAsync(order, delta: +1);
+            }
+            // ─────────────────────────────────────────────────────────────────
+
+            try
+            {
+                var statusLabel = newStatus switch
+                {
+                    "pending"   => "Chờ xử lý",
+                    "confirmed" => "Đã xác nhận",
+                    "shipping"  => "Đang giao",
+                    "completed" => "Hoàn thành",
+                    "cancelled" => "Đã huỷ",
+                    _           => dto.Status
+                };
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "OrderStatusChanged",
+                    $"Đơn hàng #{order.OrderCode} đã chuyển sang trạng thái: {statusLabel}!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[SignalR Push Error] {ex.Message}");
+            }
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Điều chỉnh tồn kho cho từng sản phẩm trong đơn hàng.
+        /// delta = -1 (trừ kho khi hoàn thành), +1 (hoàn kho khi huỷ)
+        /// </summary>
+        private async Task AdjustStockAsync(Order order, int delta)
+        {
+            // Load order kèm items nếu chưa có
+            var fullOrder = order.Items.Count > 0
+                ? order
+                : await _orderRepo.GetByOrderCodeAsync(order.OrderCode);
+
+            if (fullOrder == null) return;
+
+            foreach (var item in fullOrder.Items)
+            {
+                var product = await _productRepo.GetProductWithImagesAsync(item.ProductId);
+                if (product == null) continue;
+
+                // Tìm variant khớp size đặt hàng
+                var variant = product.Variants.FirstOrDefault(v => v.Size == item.Size)
+                           ?? product.Variants.FirstOrDefault();
+
+                if (variant == null) continue;
+
+                // Trừ/cộng số lượng, không để âm
+                variant.Stock = System.Math.Max(0, variant.Stock + delta * item.Quantity);
+
+                // Nếu toàn bộ variant của sản phẩm đều hết hàng → auto ẩn
+                if (delta < 0 && product.Variants.All(v => v.Stock <= 0))
+                {
+                    product.Status = "inactive";
+                    Console.WriteLine($"[Stock] Sản phẩm #{product.Id} '{product.Name}' tự động ẩn do hết hàng.");
+                }
+                // Nếu hoàn kho và sản phẩm đang inactive → tự kích hoạt lại
+                else if (delta > 0 && product.Status == "inactive")
+                {
+                    product.Status = "active";
+                    Console.WriteLine($"[Stock] Sản phẩm #{product.Id} '{product.Name}' được kích hoạt lại do hoàn kho.");
+                }
+
+                await _productRepo.UpdateAsync(product);
+                Console.WriteLine($"[Stock] {(delta < 0 ? "Trừ" : "Hoàn")} {System.Math.Abs(delta * item.Quantity)} " +
+                                  $"sản phẩm '{item.ProductName}' size {item.Size} → còn {variant.Stock}");
+            }
+        }
+
+        [HttpPatch("{id}/note")]
+        public async Task<IActionResult> UpdateAdminNote(string id, [FromBody] UpdateOrderAdminNoteDto dto)
+        {
+            var order = await _orderRepo.GetByOrderCodeAsync(id);
+            if (order == null) return NotFound();
+
+            order.AdminNote = dto.AdminNote?.Trim();
+            await _orderRepo.UpdateAsync(order);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var order = await _orderRepo.GetByOrderCodeAsync(id);
+            if (order == null) return NotFound(new { message = "Không tìm thấy đơn hàng" });
+
+            await _orderRepo.DeleteAsync(order);
+
+            try
+            {
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "OrderDeleted", $"Đơn hàng #{id} đã bị xóa khỏi hệ thống!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[SignalR Push Error] {ex.Message}");
+            }
+
             return NoContent();
         }
 
@@ -199,8 +328,9 @@ namespace BatTrang.API.Controllers
                 Address = o.Address,
                 Total = o.Total,
                 Status = o.Status,
-                Date = o.CreatedAt.ToString("yyyy-MM-dd"),
-                Note = o.Note,
+                Date = o.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                CustomerNote = o.CustomerNote,
+                AdminNote = o.AdminNote,
                 Items = o.Items.Select(i =>
                 {
                     productImages.TryGetValue(i.ProductId, out var imgUrl);

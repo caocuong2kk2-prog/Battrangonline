@@ -18,10 +18,12 @@ namespace BatTrang.API.Controllers
     public class AdminProductsController : ControllerBase
     {
         private readonly IProductRepository _productRepo;
+        private readonly ICategoryRepository _categoryRepo;
 
-        public AdminProductsController(IProductRepository productRepo)
+        public AdminProductsController(IProductRepository productRepo, ICategoryRepository categoryRepo)
         {
             _productRepo = productRepo;
+            _categoryRepo = categoryRepo;
         }
 
         [HttpGet]
@@ -67,24 +69,45 @@ namespace BatTrang.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ProductDto dto)
         {
-            if (!int.TryParse(dto.Category, out int categoryId)) 
+            int categoryId = 1; // Default
+            if (int.TryParse(dto.Category, out int parsedId))
             {
-                 // Temporary fallback for mock category data which passes slug or ID
-                 categoryId = 1; // Default
+                categoryId = parsedId;
+            }
+            else if (!string.IsNullOrEmpty(dto.Category))
+            {
+                var category = await _categoryRepo.GetBySlugAsync(dto.Category);
+                if (category != null)
+                {
+                    categoryId = category.Id;
+                }
             }
 
+            var slug = GenerateSlug(dto.Name);
+            var isSlugExists = await _productRepo.GetProductBySlugAsync(slug) != null;
+            if (isSlugExists)
+            {
+                var count = 1;
+                while (await _productRepo.GetProductBySlugAsync($"{slug}-{count}") != null)
+                {
+                    count++;
+                }
+                slug = $"{slug}-{count}";
+            }
+
+            var totalStock = dto.Variants?.Sum(v => v.Stock) ?? 0;
             var product = new Product
             {
                 Name = dto.Name,
-                Slug = GenerateSlug(dto.Name),
-                CategoryId = categoryId, // Need proper mapping in real app
+                Slug = slug,
+                CategoryId = categoryId,
                 Material = dto.Material,
                 Style = dto.Style,
                 Color = dto.Color,
                 GlazeLineId = dto.GlazeLineId,
                 Pattern = dto.Pattern,
                 Usage = dto.Usage,
-                Status = dto.Status,
+                Status = totalStock == 0 ? "inactive" : dto.Status,
                 Badge = dto.Badge,
                 ShortDescription = dto.ShortDescription,
                 Description = dto.Description,
@@ -109,10 +132,19 @@ namespace BatTrang.API.Controllers
             var product = await _productRepo.GetProductWithImagesAsync(id);
             if (product == null) return NotFound();
 
+            var totalStockUpdate = dto.Variants?.Sum(v => v.Stock) ?? 0;
             product.Name = dto.Name;
             if (int.TryParse(dto.Category, out int categoryIdUpdate))
             {
                 product.CategoryId = categoryIdUpdate;
+            }
+            else if (!string.IsNullOrEmpty(dto.Category))
+            {
+                var category = await _categoryRepo.GetBySlugAsync(dto.Category);
+                if (category != null)
+                {
+                    product.CategoryId = category.Id;
+                }
             }
             product.Material = dto.Material;
             product.Style = dto.Style;
@@ -120,7 +152,7 @@ namespace BatTrang.API.Controllers
             product.GlazeLineId = dto.GlazeLineId;
             product.Pattern = dto.Pattern;
             product.Usage = dto.Usage;
-            product.Status = dto.Status;
+            product.Status = totalStockUpdate == 0 ? "inactive" : dto.Status;
             product.Badge = dto.Badge;
             product.ShortDescription = dto.ShortDescription;
             product.Description = dto.Description;
@@ -161,11 +193,21 @@ namespace BatTrang.API.Controllers
 
             if (dto.Images != null)
             {
+                var oldImages = product.Images?.Select(i => i.ImageUrl).ToList() ?? new List<string>();
+                
                 product.Images ??= new List<ProductImage>();
                 product.Images.Clear();
                 for (int i = 0; i < dto.Images.Count; i++)
                 {
                     product.Images.Add(new ProductImage { ImageUrl = dto.Images[i], SortOrder = i });
+                }
+
+                // Clean up orphaned images from the disk
+                var newImages = dto.Images;
+                var orphanedImages = oldImages.Where(oldImg => !newImages.Contains(oldImg));
+                foreach (var orphan in orphanedImages)
+                {
+                    BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(orphan);
                 }
             }
 
@@ -176,10 +218,18 @@ namespace BatTrang.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var product = await _productRepo.GetByIdAsync(id);
+            var product = await _productRepo.GetProductWithImagesAsync(id);
             if (product == null) return NotFound();
 
+            var imagesToDelete = product.Images?.Select(i => i.ImageUrl).ToList() ?? new List<string>();
+
             await _productRepo.DeleteAsync(product);
+
+            foreach(var img in imagesToDelete)
+            {
+                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(img);
+            }
+
             return NoContent();
         }
 
@@ -189,10 +239,16 @@ namespace BatTrang.API.Controllers
             if (dto.Ids == null || !dto.Ids.Any()) return BadRequest("Danh sách ID trống.");
             foreach (var id in dto.Ids)
             {
-                var product = await _productRepo.GetByIdAsync(id);
+                var product = await _productRepo.GetProductWithImagesAsync(id);
                 if (product != null)
                 {
+                    var imagesToDelete = product.Images?.Select(i => i.ImageUrl).ToList() ?? new List<string>();
                     await _productRepo.DeleteAsync(product);
+                    
+                    foreach(var img in imagesToDelete)
+                    {
+                        BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(img);
+                    }
                 }
             }
             return NoContent();
