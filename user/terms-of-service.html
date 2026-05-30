@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Điều Khoản Dịch Vụ – Phúc Gia Tiên</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    .policy-content-wrapper {
+      padding: var(--space-16) 0;
+      background: #ffffff;
+    }
+    .policy-content {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body class="page-body">
+  <div id="header-placeholder"></div>
+
+  <main id="main-content">
+    <section class="page-hero" aria-label="Banner điều khoản dịch vụ">
+      <div class="page-hero__bg">
+        <img class="js-config-page-banner" src="assets/images/about-hero.jpg" alt="Banner" role="presentation" loading="eager">
+      </div>
+      <div class="container">
+        <div class="page-hero__content">
+          <h1 class="page-hero__title">ĐIỀU KHOẢN DỊCH VỤ</h1>
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
+            <span class="breadcrumb__item"><span class="breadcrumb__current">Điều Khoản Dịch Vụ</span></span>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="policy-content-wrapper">
+      <div class="container">
+        <div class="policy-content" id="policy-content-container">
+          <div class="spinner" style="margin:4rem auto;"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if(window.PhucGiaTienAPI) {
+        PhucGiaTienAPI.getSiteConfigs().then(function(configs) {
+          var content = configs['policyTerms'];
+          var container = document.getElementById('policy-content-container');
+          if (content) {
+            container.innerHTML = content;
+          } else {
+            // Nội dung mặc định nếu chưa được cấu hình trong CSDL (tailored cho gốm sứ Phúc Gia Tiên)
+            container.innerHTML = `
+              <h2>ĐIỀU KHOẢN DỊCH VỤ PHÚC GIA TIÊN</h2>
+              <p>Chào mừng Quý khách đến với website chính thức của <strong>Phúc Gia Tiên — Gốm Sứ Thủ Công Bát Tràng</strong>. Khi truy cập và sử dụng dịch vụ mua sắm tại hệ thống của chúng tôi, Quý khách đồng ý tuân thủ các điều khoản và điều kiện được quy định dưới đây. Vui lòng đọc kỹ trước khi thực hiện giao dịch.</p>
+
+              <h3>1. ĐẶC THÙ SẢN PHẨM GỐM SỨ THỦ CÔNG</h3>
+              <p>Phúc Gia Tiên tự hào cung cấp các tác phẩm gốm sứ được chế tác <strong>100% thủ công</strong> bởi nghệ nhân làng cổ Bát Tràng. Quý khách vui lòng lưu ý các đặc tính tự nhiên của dòng sản phẩm này:</p>
+              <ul>
+                <li><strong>Sai khác nhỏ về hoa văn & sắc độ:</strong> Do được vẽ tay thủ công và nung bằng lò gạch truyền thống ở nhiệt độ cao (1.200°C - 1.280°C), mỗi mẻ gốm ra lò sẽ có sắc độ men, độ dày và nét vẽ có thể sai lệch nhẹ (dưới 5%) so với ảnh mẫu.</li>
+                <li><strong>Vết rạn men & chấm quặng nhỏ:</strong> Các đường rạn men tự nhiên hoặc đốm quặng sắt li ti trên bề mặt đất sét nung là đặc trưng nghệ thuật vốn có của gốm sứ nguyên bản, không được coi là lỗi kỹ thuật hay hư hại.</li>
+                <li><strong>Kích thước:</strong> Do co ngót trong lò nung, đường kính hoặc chiều cao sản phẩm có thể sai số từ vài milimet đến dưới 2cm tùy dòng sản phẩm lớn hay nhỏ.</li>
+              </ul>
+
+              <h3>2. VẬN CHUYỂN, GIAO NHẬN & ĐỒNG KIỂM AN TOÀN</h3>
+              <p>Gốm sứ là mặt hàng dễ hư hỏng khi va đập mạnh. Để bảo vệ tối đa quyền lợi của khách hàng, Phúc Gia Tiên áp dụng chính sách vận chuyển đặc biệt:</p>
+              <ul>
+                <li><strong>Đóng gói chuyên dụng:</strong> Mọi đơn hàng đều được bọc lót chống sốc 5 lớp chuyên dụng, đóng thùng gỗ kiên cố đối với các sản phẩm kích thước lớn như lộc bình, chum ngâm rượu.</li>
+                <li><strong>Quy định Đồng Kiểm (Bắt buộc):</strong> Quý khách <strong>PHẢI mở thùng kiểm tra trực tiếp</strong> tình trạng sản phẩm cùng shipper ngay khi nhận hàng trước khi thanh toán hoặc ký nhận.</li>
+                <li><strong>Xử lý bể vỡ do vận chuyển:</strong> Nếu phát hiện sản phẩm bị sứt mẻ, rạn nứt hay bể vỡ, Quý khách vui lòng <strong>từ chối nhận hàng</strong>, yêu cầu shipper ký xác nhận biên bản bể vỡ và chụp hình gửi ngay cho bộ phận CSKH của Phúc Gia Tiên. Chúng tôi sẽ gửi bù sản phẩm mới thay thế miễn phí 100% trong vòng 3-7 ngày làm việc.</li>
+              </ul>
+
+              <h3>3. GIÁ CẢ & THANH TOÁN</h3>
+              <p>Mọi mức giá niêm yết trên website đều là giá bán trực tiếp chưa bao gồm phí vận chuyển (trừ khi có chương trình khuyến mãi cụ thể). Chúng tôi hỗ trợ các phương thức thanh toán linh hoạt:</p>
+              <ul>
+                <li>Thanh toán trực tiếp bằng tiền mặt khi nhận hàng (COD - có áp dụng đồng kiểm).</li>
+                <li>Chuyển khoản ngân hàng qua cổng thanh toán bảo mật.</li>
+              </ul>
+
+              <h3>4. ĐỔI TRẢ & BẢO HÀNH</h3>
+              <p>Chính sách đổi trả sản phẩm tuân thủ các quy định được đề ra trong <a href="return-policy.html">Chính sách đổi trả</a> và <a href="warranty-policy.html">Chính sách bảo hành</a> của Phúc Gia Tiên:</p>
+              <ul>
+                <li>Hỗ trợ đổi mẫu, đổi size trong vòng 7 ngày kể từ khi nhận hàng đối với sản phẩm chưa qua sử dụng và còn nguyên vẹn.</li>
+                <li>Khách hàng chịu phí ship đổi trả nếu việc đổi hàng xuất phát từ nhu cầu chủ quan cá nhân.</li>
+              </ul>
+
+              <h3>5. TRÁCH NHIỆM CỦA KHÁCH HÀNG</h3>
+              <p>Quý khách cam kết cung cấp chính xác, đầy đủ thông tin giao hàng bao gồm: Họ tên, số điện thoại chính xác, địa chỉ cụ thể và ghi chú (nếu có). Phúc Gia Tiên không chịu trách nhiệm đối với các đơn hàng bị thất lạc hoặc chậm trễ do khách hàng cung cấp sai thông tin.</p>
+
+              <h3>6. ĐIỀU KHOẢN ÁP DỤNG</h3>
+              <p>Phúc Gia Tiên có quyền sửa đổi, bổ sung các điều khoản này bất kỳ lúc nào để phù hợp với quy định của pháp luật và tình hình kinh doanh thực tế. Quy định sửa đổi sẽ có hiệu lực ngay khi được đăng tải trên website chính thức.</p>
+              <p style="margin-top: 2rem; font-style: italic; color: var(--color-accent);">Cảm ơn Quý khách đã tin tưởng chọn lựa tác phẩm gốm sứ nghệ thuật từ Phúc Gia Tiên!</p>
+            `;
+          }
+        }).catch(function(err) {
+          document.getElementById('policy-content-container').innerHTML = '<p style="text-align:center;color:red;">Lỗi tải nội dung.</p>';
+        });
+      }
+    });
+  </script>
+</body>
+</html>

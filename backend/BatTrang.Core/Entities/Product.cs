@@ -12,12 +12,6 @@ namespace BatTrang.Core.Entities
         public int CategoryId { get; set; }
         public Category Category { get; set; } = null!;
 
-        public string? Material { get; set; }
-        public string? Style { get; set; }
-        public string? Color { get; set; }
-        public int? GlazeLineId { get; set; }
-        public GlazeLine? GlazeLine { get; set; }
-        public string? Pattern { get; set; }
         public string? Usage { get; set; }
         
         public string Status { get; set; } = "active"; // active, inactive
@@ -28,7 +22,7 @@ namespace BatTrang.Core.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();
+
         public ICollection<ProductVariant> Variants { get; set; } = new List<ProductVariant>();
     }
 }

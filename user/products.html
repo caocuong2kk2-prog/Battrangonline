@@ -12,10 +12,11 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/product.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
+  <link rel="stylesheet" href="css/layout.css?v=4">
+  <link rel="stylesheet" href="css/product.css?v=4">
   <link rel="stylesheet" href="css/responsive.css">
-  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="assets/images/logo.png" type="image/png">
 </head>
 
 <body class="page-body">
@@ -41,49 +42,58 @@
       </div>
     </section>
 
-    <!-- FILTER BAR -->
+    <!-- FILTER PILLS SECTION -->
     <section class="section--sm section--dark" aria-label="Bộ lọc sản phẩm">
       <div class="container">
-        <div class="filter-bar">
-          <div class="filter-bar__group">
-            <!-- Danh mục -->
-            <div class="filter-bar__item">
-              <label class="filter-bar__label" for="filter-category">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Danh mục
-              </label>
-              <select class="filter-select" id="filter-category" aria-label="Lọc theo danh mục">
+
+        <!-- Hidden selects kept for JS compatibility -->
+        <select id="filter-category" style="display:none" aria-hidden="true"></select>
+        <select id="filter-price" style="display:none" aria-hidden="true">
+          <option value="all">Tất cả mức giá</option>
+          <option value="under10">Dưới 10 triệu</option>
+          <option value="10to20">10 – 20 triệu</option>
+          <option value="20to50">20 – 50 triệu</option>
+          <option value="above50">Trên 50 triệu</option>
+        </select>
+
+        <div class="filter-pills-section">
+
+          <!-- Top Row: Categories and Actions -->
+          <div class="filter-top-row">
+            <div class="filter-pills" id="category-pills" role="group" aria-label="Lọc theo danh mục">
+              <!-- populated by product.js -->
+            </div>
+            
+            <div class="filter-actions">
+              <div class="custom-sort-wrapper">
+                <select class="filter-select" id="sort-select" aria-label="Sắp xếp theo">
+                  <option value="newest">Mới Nhất</option>
+                  <option value="price-asc">Giá Tăng Dần</option>
+                  <option value="price-desc">Giá Giảm Dần</option>
+                </select>
+              </div>
+              <button id="btn-open-advanced-filter" class="btn btn--outline btn--sm btn-advanced-filter">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+                Lọc nâng cao
+                <span class="filter-badge" id="advanced-filter-badge" style="display:none;">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom Row: Active Filters -->
+          <div class="filter-active-row" id="active-filters-container" style="display: none;">
+            <div class="active-filters-left">
+              <span class="active-filters-label" style="color: var(--color-primary);">Đang lọc:</span>
+              <div class="active-tags-list" id="active-tags-list">
                 <!-- populated by product.js -->
-              </select>
+              </div>
             </div>
-
-            <!-- Mức giá -->
-            <div class="filter-bar__item">
-              <label class="filter-bar__label" for="filter-price">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Mức giá
-              </label>
-              <select class="filter-select" id="filter-price" aria-label="Lọc theo mức giá">
-                <option value="all">Tất cả mức giá</option>
-                <option value="under10">Dưới 10 triệu</option>
-                <option value="10to20">10 – 20 triệu</option>
-                <option value="20to50">20 – 50 triệu</option>
-                <option value="above50">Trên 50 triệu</option>
-              </select>
+            <div class="active-filters-right">
+              <button class="btn-clear-all" id="btn-clear-all-filters">Xóa tất cả</button>
+              <span class="filter-bar__count" id="product-count" aria-live="polite">Đang tải...</span>
             </div>
           </div>
 
-          <div class="filter-bar__sort">
-            <span class="filter-bar__count" id="product-count" aria-live="polite">Đang tải...</span>
-            <div class="filter-bar__item">
-              <label class="filter-bar__label" for="sort-select">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;opacity:.7"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Sắp xếp
-              </label>
-              <select class="filter-select" id="sort-select" aria-label="Sắp xếp theo">
-                <option value="newest">Mới Nhất</option>
-                <option value="price-asc">Giá Tăng Dần</option>
-                <option value="price-desc">Giá Giảm Dần</option>
-              </select>
-            </div>
-          </div>
         </div>
 
         <!-- PRODUCT GRID -->
@@ -139,10 +149,78 @@
   <!-- FOOTER -->
   <div id="footer-placeholder"></div>
 
+  <!-- ADVANCED FILTER SIDEBAR -->
+  <div class="advanced-filter-overlay" id="advanced-filter-overlay"></div>
+  <aside class="advanced-filter-sidebar" id="advanced-filter-sidebar" aria-label="Lọc nâng cao">
+    <div class="advanced-filter__header">
+      <h3 class="advanced-filter__title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Lọc Nâng Cao
+      </h3>
+      <button class="advanced-filter__close" id="btn-close-advanced-filter" aria-label="Đóng">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="advanced-filter__body">
+      <!-- Active tags in sidebar -->
+      <div class="sidebar-active-tags" id="sidebar-active-tags-container" style="display: none; padding-bottom: 12px; margin-bottom: 16px; border-bottom: 1px solid rgba(59,38,18,0.1);">
+        <div class="active-tags-list" id="sidebar-active-tags-list">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <!-- Price Range -->
+      <div class="advanced-filter__section">
+        <h4 class="advanced-filter__section-title">Mức Giá</h4>
+        <div class="price-slider-wrapper">
+          <div id="price-slider"></div>
+          <div class="price-slider-values">
+            <span id="price-min-display">0đ</span>
+            <span> - </span>
+            <span id="price-max-display">50.000.000đ+</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Size -->
+      <div class="advanced-filter__section">
+        <h4 class="advanced-filter__section-title">Kích Thước</h4>
+        <div class="filter-pills" id="size-pills">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <!-- Quality -->
+      <div class="advanced-filter__section">
+        <h4 class="advanced-filter__section-title">Dòng Men / Chất Lượng</h4>
+        <div class="filter-checkboxes" id="quality-checkboxes">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="advanced-filter__section">
+        <h4 class="advanced-filter__section-title">Tình Trạng</h4>
+        <div class="filter-pills" id="status-pills">
+          <button class="filter-pill active" data-value="all" aria-pressed="true">Tất cả</button>
+          <button class="filter-pill" data-value="in-stock" aria-pressed="false">Còn hàng</button>
+          <button class="filter-pill" data-value="out-of-stock" aria-pressed="false">Hết hàng</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="advanced-filter__footer">
+      <button class="btn btn--outline btn-filter-reset" id="btn-reset-filters">Xóa Bộ Lọc</button>
+      <button class="btn btn--primary btn-filter-apply" id="btn-apply-filters">Áp Dụng</button>
+    </div>
+  </aside>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
   <script src="js/api.js"></script>
   <script src="js/cart.js"></script>
   <script src="js/common.js"></script>
-  <script src="js/product.js"></script>
+  <script src="js/product.js?v=3"></script>
 </body>
 
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi"><head>
+<script>if(localStorage.getItem('sidebar-collapsed')==='true')document.documentElement.classList.add('sidebar-collapsed');</script>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Đơn Hàng – Phúc Gia Tiên Admin</title>
 <link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/components.css">
@@ -8,6 +9,11 @@
 .status-tab{padding:8px 14px;border-radius:var(--r-full);font-size:var(--fs-xs);font-weight:var(--fw-semibold);color:var(--text-muted);background:#fff;border:1.5px solid var(--border);cursor:pointer;transition:all var(--t-fast);white-space:nowrap}
 .status-tab.active,.status-tab:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
 .tab-count{background:rgba(255,255,255,.25);border-radius:var(--r-full);padding:0 5px;font-size:10px;margin-left:3px}
+.order-row-pending td { background-color: #fffbeb !important; }
+.order-row-completed td { background-color: #f0fdf4 !important; }
+.order-row-cancelled td { background-color: #fef2f2 !important; }
+.order-row-shipping td { background-color: #f0f9ff !important; }
+.order-row-confirmed td { background-color: #e0f2fe !important; }
 .order-lines{margin-top:var(--sp-3)}
 .order-lines__head{display:grid;grid-template-columns:1fr 90px 110px 36px;gap:var(--sp-3);font-size:var(--fs-xs);font-weight:var(--fw-semibold);color:var(--text-muted);margin-bottom:var(--sp-2);padding:0 var(--sp-1)}
 .order-line{display:grid;grid-template-columns:1fr 90px 110px 36px;gap:var(--sp-3);align-items:center;margin-bottom:var(--sp-3)}
@@ -28,6 +34,117 @@
   .order-line__subtotal{grid-column: 2 / 3; text-align: right;}
   .btn-remove-line{grid-column: 3 / 4; width: 100%;}
 }
+.table-note-input {
+  width: 100%;
+  min-width: 140px;
+  background: transparent;
+  border: 1.5px dashed transparent;
+  padding: 6px 10px;
+  font-size: var(--fs-sm);
+  color: var(--text-primary);
+  border-radius: var(--r-sm);
+  transition: all var(--t-fast);
+}
+.table-note-input:hover {
+  border-color: var(--border);
+  background: var(--surface-100);
+}
+.table-note-input:focus {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(200, 146, 42, 0.15);
+  outline: none;
+}
+/* Promax Date Filter Styles */
+.promax-date-filter {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-full);
+  padding: 0 16px;
+  height: 40px;
+  transition: all var(--t-fast);
+}
+.promax-date-filter:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(200, 146, 42, 0.1);
+}
+.promax-date-group {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 100%;
+}
+.promax-date-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  margin-right: 8px;
+}
+.promax-date-input {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: inherit;
+  outline: none;
+  width: 110px;
+  cursor: pointer;
+  text-align: center;
+}
+.promax-date-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  padding-left: 2px;
+}
+.promax-date-input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+.promax-date-sep {
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  margin: 0 4px;
+}
+.promax-date-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-full);
+  background: var(--surface-100);
+  color: var(--text-muted);
+  border: none;
+  cursor: pointer;
+  margin-left: 8px;
+  font-size: 11px;
+  transition: all var(--t-fast);
+}
+.promax-date-clear:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+@media (max-width: 640px) {
+  .promax-date-filter {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0 12px;
+  }
+  .promax-date-group {
+    flex: 1;
+  }
+  .promax-date-input {
+    width: 100%;
+    font-size: 13px;
+  }
+  .promax-date-sep {
+    margin: 0 8px;
+  }
+}
 </style>
 </head>
 <body class="admin-layout">
@@ -35,27 +152,43 @@
   <div class="sidebar-header"><div class="sidebar-brand"><div class="sidebar-brand__icon">⚱️</div><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
   <nav class="sidebar-nav">
     <span class="sidebar-section-label">Tổng quan</span>
-    <ul class="sidebar-nav__list"><li><a href="index.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li></ul>
+    <ul class="sidebar-nav__list">
+      <li><a href="index.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li>
+    </ul>
+    
     <span class="sidebar-section-label">Kinh doanh</span>
     <ul class="sidebar-nav__list">
       <li><a href="products.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
-      <li><a href="orders.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
+      <li><a href="orders.html" class="sidebar-nav__link active"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
       <li><a href="customers.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
     </ul>
-    <span class="sidebar-section-label">Danh mục</span>
+
+    <span class="sidebar-section-label">Danh mục & Thuộc tính</span>
     <ul class="sidebar-nav__list">
       <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="sidebar-nav__text">Danh mục</span></a></li>
-      <li><a href="glazelines.html" class="sidebar-nav__link">
-        <svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-        </svg>
-        <span class="sidebar-nav__text">Dòng men</span></a></li>
+      <li><a href="product-types.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg><span class="sidebar-nav__text">Phân khúc</span></a></li>
+      <li><a href="materials.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg><span class="sidebar-nav__text">Chất liệu</span></a></li>
+      <li><a href="colors.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg><span class="sidebar-nav__text">Màu sắc</span></a></li>
+      <li><a href="sizes.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line><line x1="12" y1="8" x2="12" y2="16"></line></svg><span class="sidebar-nav__text">Kích thước</span></a></li>
+      <li><a href="patterns.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg><span class="sidebar-nav__text">Hoa văn</span></a></li>
+      <li><a href="glazelines.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg><span class="sidebar-nav__text">Dòng men</span></a></li>
+    </ul>
+
+    <span class="sidebar-section-label">Nội dung</span>
+    <ul class="sidebar-nav__list">
       <li><a href="journey.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
+    </ul>
+
+    <span class="sidebar-section-label">Báo cáo</span>
+    <ul class="sidebar-nav__list">
       <li><a href="analytics.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
     </ul>
+
     <span class="sidebar-section-label">Hệ thống</span>
-    <ul class="sidebar-nav__list"><li><a href="settings.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-nav__text">Cài đặt</span></a></li></ul>
+    <ul class="sidebar-nav__list">
+      <li><a href="settings.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-nav__text">Cài đặt</span></a></li>
+      <li class="admin-only"><a href="accounts.html" class="sidebar-nav__link" id="nav-accounts-link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><span class="sidebar-nav__text">Tài khoản</span></a></li>
+    </ul>
   </nav>
   <div class="sidebar-footer"><div class="sidebar-user js-logout"><div class="sidebar-user__avatar js-admin-initial">A</div><div class="sidebar-user__info"><div class="sidebar-user__name js-admin-name">Admin</div><div class="sidebar-user__role">Quản trị viên</div></div><button class="sidebar-user__logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div></div>
 </aside>
@@ -76,16 +209,27 @@
 
     <div class="status-tab-bar" id="order-status-tabs"></div>
 
-    <div class="toolbar">
-      <div class="search-box">
+    <div class="toolbar" style="display:flex; gap:12px; flex-wrap:wrap;">
+      <div class="search-box" style="flex:1; min-width:250px;">
         <svg class="search-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input class="search-box__input" id="order-search" type="search" placeholder="Tìm mã đơn, tên khách, SĐT...">
+      </div>
+      <div class="promax-date-filter">
+        <div class="promax-date-group" title="Từ ngày">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="promax-date-icon"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <input type="date" id="order-date-from" class="promax-date-input" placeholder="Từ ngày">
+        </div>
+        <span class="promax-date-sep">→</span>
+        <div class="promax-date-group" title="Đến ngày">
+          <input type="date" id="order-date-to" class="promax-date-input" placeholder="Đến ngày">
+        </div>
+        <button id="btn-clear-date" class="promax-date-clear" title="Xóa lọc ngày" style="display: none;">✕</button>
       </div>
     </div>
 
     <div class="table-wrap">
       <table class="data-table">
-        <thead><tr><th>STT</th><th>Mã đơn</th><th>Khách hàng</th><th class="hide-mobile">Sản phẩm</th><th>Tổng tiền</th><th class="hide-mobile">Ngày đặt</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
+        <thead><tr><th>STT</th><th>Mã đơn</th><th>Khách hàng</th><th class="sortable" data-sort="total" style="cursor:pointer;user-select:none;">Tổng tiền <span class="sort-icon" style="font-size:10px;color:#aaa">↕</span></th><th class="hide-mobile sortable" data-sort="date" style="cursor:pointer;user-select:none;">Ngày đặt <span class="sort-icon" style="font-size:10px;color:#aaa">↕</span></th><th>Trạng thái</th><th>Ghi chú</th><th>Hành động</th></tr></thead>
         <tbody id="orders-table-body"></tbody>
       </table>
       <div class="pagination" id="orders-pagination"></div>

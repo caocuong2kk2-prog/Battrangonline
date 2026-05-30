@@ -33,7 +33,7 @@
   <form id="login-form" autocomplete="off">
     <div class="login-form-group">
       <label class="login-label" for="admin-username">Tài khoản quản trị</label>
-      <input id="admin-username" class="login-input" type="text" placeholder="admin" required autocomplete="username">
+      <input id="admin-username" class="login-input" type="text" placeholder="Tài khoản" required autocomplete="username">
     </div>
     <div class="login-form-group">
       <label class="login-label" for="admin-password">Mật khẩu</label>
@@ -41,9 +41,11 @@
     </div>
     <button type="submit" class="login-btn">🔐 Đăng Nhập</button>
   </form>
-  <div class="login-hint">Demo: <code>admin</code> / <code>admin</code></div>
+  <div class="login-hint">Demo: <code>admin</code> / <code>1</code></div>
 </div>
 <div id="admin-toast-container"></div>
+<script src="js/admin-data.js"></script>
+<script src="js/admin-core.js"></script>
 <script>
 // Redirect if already logged in
 if(localStorage.getItem('pgt_admin_session')){location.href='index.html';}
@@ -70,7 +72,8 @@ document.getElementById('login-form').addEventListener('submit',function(e){
   btn.disabled = true;
   btn.textContent = 'Đang xử lý...';
 
-  fetch('http://localhost:5080/api/auth/login', {
+  var API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api';
+  fetch(API_BASE + '/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username: username, password: pass })
@@ -84,7 +87,7 @@ document.getElementById('login-form').addEventListener('submit',function(e){
         token: data.token,
         name: data.name,
         username: data.username,
-        role: 'admin'
+        role: data.role
     }));
     location.href = 'index.html';
   })

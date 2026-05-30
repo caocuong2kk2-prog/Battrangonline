@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.AspNetCore.SignalR;
 using BatTrang.API.Hubs;
+using BatTrang.Infrastructure.Data;
 
 namespace BatTrang.API.Controllers
 {
@@ -24,17 +25,20 @@ namespace BatTrang.API.Controllers
         private readonly IConfiguration _config;
         private readonly IHubContext<NotificationHub> _hubContext;
         private readonly BatTrang.Infrastructure.Services.NotificationService _notificationService;
+        private readonly AppDbContext _context;
 
         public CustomerAuthController(
             ICustomerRepository customerRepo, 
             IConfiguration config, 
             IHubContext<NotificationHub> hubContext,
-            BatTrang.Infrastructure.Services.NotificationService notificationService)
+            BatTrang.Infrastructure.Services.NotificationService notificationService,
+            AppDbContext context)
         {
             _customerRepo = customerRepo;
             _config = config;
             _hubContext = hubContext;
             _notificationService = notificationService;
+            _context = context;
         }
 
         [HttpPost("login")]
@@ -115,7 +119,12 @@ namespace BatTrang.API.Controllers
 
             try
             {
-                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "CustomerRegistered", $"Khách hàng {created.Name} vừa đăng ký tài khoản mới!");
+                var msg = $"Khách hàng mới {created.Name} ({created.Email}) vừa đăng ký tài khoản.";
+                var noti = new BatTrang.Core.Entities.Notification { Type = "CustomerRegistered", Message = msg, CreatedAt = DateTime.UtcNow };
+                _context.Notifications.Add(noti);
+                await _context.SaveChangesAsync();
+
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "CustomerRegistered", msg);
             }
             catch (Exception ex)
             {

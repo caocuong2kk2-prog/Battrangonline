@@ -1,0 +1,349 @@
+// admin-data.js
+(function (global) {
+    'use strict';
+
+    var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api';
+    var API_BASE = dynamicBase + '/admin';
+    var PUBLIC_API_BASE = dynamicBase;
+
+    function getToken() {
+        var authStr = localStorage.getItem('pgt_admin_session');
+        if (!authStr) return null;
+        try {
+            var auth = JSON.parse(authStr);
+            return auth.token;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function normalizeOrder(o) {
+        return {
+            id: o.id || o.Id,
+            customer: o.customer || o.Customer,
+            phone: o.phone || o.Phone,
+            email: o.email || o.Email,
+            address: o.address || o.Address,
+            total: o.total != null ? o.total : o.Total,
+            status: String(o.status || o.Status || '').toLowerCase(),
+            date: o.date || o.Date,
+            customerNote: o.customerNote || o.CustomerNote,
+            adminNote: o.adminNote || o.AdminNote,
+            items: (o.items || o.Items || []).map(function (i) {
+                return {
+                    productId: i.productId != null ? i.productId : i.ProductId,
+                    name: i.name || i.Name,
+                    size: i.size || i.Size,
+                    qty: i.qty != null ? i.qty : i.Qty,
+                    price: i.price != null ? i.price : i.Price,
+                    imageUrl: i.imageUrl || i.ImageUrl
+                };
+            })
+        };
+    }
+
+    function _fetch(endpoint, options, isPublic = false) {
+        options = options || {};
+        options.headers = options.headers || {};
+
+        if (options.method && options.method !== 'GET') {
+            options.headers['Content-Type'] = 'application/json';
+        }
+
+        var token = getToken();
+        if (token && !isPublic) {
+            options.headers['Authorization'] = 'Bearer ' + token;
+        }
+
+        var baseUrl = isPublic ? PUBLIC_API_BASE : API_BASE;
+
+        return fetch(baseUrl + endpoint, options)
+            .then(function (res) {
+                if (res.status === 401) {
+                    localStorage.removeItem('pgt_admin_session');
+                    window.location.href = 'login.html';
+                    throw new Error('Unauthorized');
+                }
+                if (!res.ok) {
+                    return res.json().catch(function () { return {}; }).then(function (body) {
+                        throw new Error(body.message || body.title || ('API Error: ' + res.status));
+                    });
+                }
+
+                // Return empty object for 204 No Content
+                if (res.status === 204) return {};
+
+                return res.json();
+            });
+    }
+
+    var AdminData = {
+        products: {
+            load: function () {
+                return _fetch('/products');
+            },
+            save: function (product) {
+                if (product.id) {
+                    return _fetch('/products/' + product.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(product)
+                    });
+                } else {
+                    return _fetch('/products', {
+                        method: 'POST',
+                        body: JSON.stringify(product)
+                    });
+                }
+            },
+            delete: function (id) {
+                return _fetch('/products/' + id, { method: 'DELETE' });
+            },
+            bulkStatus: function (ids, status) {
+                return _fetch('/products/bulk-status', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids, status: status })
+                });
+            },
+            bulkDelete: function (ids) {
+                return _fetch('/products/bulk-delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids })
+                });
+            }
+        },
+        orders: {
+            load: function () {
+                return _fetch('/orders').then(function (data) {
+                    if (!Array.isArray(data)) return [];
+                    return data.map(normalizeOrder);
+                });
+            },
+            create: function (order) {
+                return _fetch('/orders', {
+                    method: 'POST',
+                    body: JSON.stringify(order)
+                }).then(function (data) {
+                    return normalizeOrder(data);
+                });
+            },
+            updateStatus: function (id, status) {
+                return _fetch('/orders/' + id + '/status', {
+                    method: 'PATCH',
+                    body: JSON.stringify({ status: status })
+                });
+            },
+            updateNote: function (id, note) {
+                return _fetch('/orders/' + id + '/note', {
+                    method: 'PATCH',
+                    body: JSON.stringify({ adminNote: note })
+                });
+            },
+            delete: function (id) {
+                return _fetch('/orders/' + id, {
+                    method: 'DELETE'
+                });
+            },
+            updatePendingBadge: function (orders) {
+                var promise = orders ? Promise.resolve(orders) : AdminData.orders.load();
+                return promise.then(function (list) {
+                    if (!Array.isArray(list)) list = [];
+                    var pending = list.filter(function (o) { return o.status === 'pending'; }).length;
+                    var badge = document.getElementById('sb-pending');
+                    if (badge) {
+                        badge.textContent = pending > 0 ? String(pending) : '';
+                        badge.style.display = pending > 0 ? '' : 'none';
+                    }
+                    return pending;
+                }).catch(function () { return 0; });
+            }
+        },
+        customers: {
+            load: function () {
+                return _fetch('/customers');
+            },
+            create: function (customer) {
+                return _fetch('/customers', {
+                    method: 'POST',
+                    body: JSON.stringify(customer)
+                });
+            },
+            delete: function (id) {
+                return _fetch('/customers/' + id, { method: 'DELETE' });
+            }
+        },
+        categories: {
+            load: function () {
+                // Public endpoint
+                return _fetch('/categories', {}, true);
+            },
+            save: function (cat) {
+                if (cat.isNew) {
+                    return _fetch('/categories', {
+                        method: 'POST',
+                        body: JSON.stringify(cat)
+                    });
+                } else {
+                    return _fetch('/categories/' + cat.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(cat)
+                    });
+                }
+            },
+            delete: function (id) {
+                return _fetch('/categories/' + id, { method: 'DELETE' });
+            }
+        },
+        glazeLines: {
+            load: function () {
+                return _fetch('/glazelines', {}, true);
+            },
+            save: function (gl) {
+                if (!gl.id) {
+                    return _fetch('/glazelines', {
+                        method: 'POST',
+                        body: JSON.stringify(gl)
+                    });
+                } else {
+                    return _fetch('/glazelines/' + gl.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(gl)
+                    });
+                }
+            },
+            delete: function (id) {
+                return _fetch('/glazelines/' + id, { method: 'DELETE' });
+            }
+        },
+        journey: {
+            loadTopics: function () {
+                return _fetch('/journey/topics', {}, true);
+            },
+            saveTopic: function (topic, isNew) {
+                if (isNew) {
+                    return _fetch('/journey/topics', {
+                        method: 'POST',
+                        body: JSON.stringify(topic)
+                    });
+                } else {
+                    return _fetch('/journey/topics/' + topic.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(topic)
+                    });
+                }
+            },
+            deleteTopic: function (id) {
+                return _fetch('/journey/topics/' + id, { method: 'DELETE' });
+            },
+            loadVideos: function (topicId) {
+                var qs = topicId ? '?topicId=' + topicId : '';
+                return _fetch('/journey/videos' + qs, {}, true);
+            },
+            saveVideo: function (video) {
+                if (video.id) {
+                    return _fetch('/journey/videos/' + video.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(video)
+                    });
+                } else {
+                    return _fetch('/journey/videos', {
+                        method: 'POST',
+                        body: JSON.stringify(video)
+                    });
+                }
+            },
+            deleteVideo: function (id) {
+                return _fetch('/journey/videos/' + id, { method: 'DELETE' });
+            }
+        },
+        analytics: {
+            getDashboardData: function (startDate, endDate) {
+                var qs = '';
+                if (startDate && endDate) {
+                    qs = '?startDate=' + encodeURIComponent(startDate) + '&endDate=' + encodeURIComponent(endDate);
+                }
+                return _fetch('/analytics' + qs);
+            },
+            getRevenueByRange: function (startYear, startMonth, endYear, endMonth) {
+                var qs = '?startYear=' + startYear + '&startMonth=' + startMonth +
+                         '&endYear=' + endYear + '&endMonth=' + endMonth;
+                return _fetch('/analytics/revenue-by-range' + qs);
+            }
+        },
+        settings: {
+            load: function () {
+                return _fetch('/site-config', {}, true);
+            },
+            save: function (settings) {
+                return _fetch('/site-config', {
+                    method: 'PUT',
+                    body: JSON.stringify(settings)
+                });
+            }
+        },
+
+        // Format utilities
+        fmtDate: function (dStr) {
+            if (!dStr) return '';
+            try {
+                var d = new Date(dStr);
+                if (isNaN(d.getTime())) return dStr;
+                var pad = function(n) { return n < 10 ? '0' + n : n; };
+                return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+            } catch (e) {
+                return dStr;
+            }
+        },
+        fmt: function (n) { return new Intl.NumberFormat('vi-VN').format(n) + 'đ'; },
+        fmtShort: function (n) {
+            // Xử lý các trường hợp không hợp lệ
+            if (n == null || isNaN(n)) {
+                return '0';
+            }
+
+            n = Number(n);   // Đảm bảo là số
+
+            if (n >= 1000000) {
+                return (n / 1000000).toFixed(1).replace('.0', '') + 'tr';
+            }
+            if (n >= 1000) {
+                return (n / 1000).toFixed(1).replace('.0', '') + 'k';
+            }
+            return n.toString();
+        },
+        getStatusBadge: function (s) {
+            switch (s) {
+                case 'pending': return 'badge--warning';
+                case 'confirmed': return 'badge--info';
+                case 'shipping': return 'badge--gold';
+                case 'completed': return 'badge--success';
+                case 'cancelled': return 'badge--danger';
+                default: return 'badge--muted';
+            }
+        },
+        getStatusLabel: function (s) {
+            switch (s) {
+                case 'pending': return 'Chờ xác nhận';
+                case 'confirmed': return 'Đã xác nhận';
+                case 'shipping': return 'Đang giao';
+                case 'completed': return 'Hoàn thành';
+                case 'cancelled': return 'Đã huỷ';
+                default: return s;
+            }
+        },
+        getCatName: function (slug) {
+            // Simplified for now, in reality you'd load categories and match
+            var map = {
+                'loc-binh': 'Lộc Bình',
+                'do-tho': 'Đồ Thờ',
+                'tranh-gom': 'Tranh Gốm',
+                'binh-hoa': 'Bình Hoa',
+                'chum-vat': 'Chum - Vạt',
+                'dia-gom': 'Đĩa Gốm'
+            };
+            return map[slug] || slug;
+        }
+    };
+
+    global.AdminData = AdminData;
+
+})(window);

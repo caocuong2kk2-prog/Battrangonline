@@ -19,11 +19,13 @@ namespace BatTrang.API.Controllers
     {
         private readonly IProductRepository _productRepo;
         private readonly ICategoryRepository _categoryRepo;
+        private readonly BatTrang.Infrastructure.Data.AppDbContext _context;
 
-        public AdminProductsController(IProductRepository productRepo, ICategoryRepository categoryRepo)
+        public AdminProductsController(IProductRepository productRepo, ICategoryRepository categoryRepo, BatTrang.Infrastructure.Data.AppDbContext context)
         {
             _productRepo = productRepo;
             _categoryRepo = categoryRepo;
+            _context = context;
         }
 
         [HttpGet]
@@ -40,23 +42,28 @@ namespace BatTrang.API.Controllers
                 BasePrice = p.Variants.Any() ? p.Variants.Min(v => v.Price) : 0,
                 BaseOriginalPrice = p.Variants.Any() ? p.Variants.Max(v => v.OriginalPrice) : null,
                 Category = p.Category?.Slug ?? p.CategoryId.ToString(),
-                Material = p.Material,
-                Style = p.Style,
-                Color = p.Color,
-                GlazeLineId = p.GlazeLineId,
-                GlazeLineName = p.GlazeLine?.Name,
-                Pattern = p.Pattern,
                 Usage = p.Usage,
                 TotalStock = p.Variants.Sum(v => v.Stock),
                 Status = p.Status,
                 Badge = p.Badge,
                 ShortDescription = p.ShortDescription,
                 Description = p.Description,
-                Images = p.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new List<string>(),
                 Variants = p.Variants.Select(v => new ProductVariantDto
                 {
                     Id = v.Id,
-                    Size = v.Size,
+                    SizeId = v.SizeId,
+                    SizeName = v.Size?.Name,
+                    ProductTypeId = v.ProductTypeId,
+                    ProductTypeName = v.ProductType?.Name,
+                    MaterialId = v.MaterialId,
+                    MaterialName = v.Material?.Name,
+                    ColorId = v.ColorId,
+                    ColorName = v.Color?.Name,
+                    PatternId = v.PatternId,
+                    PatternName = v.Pattern?.Name,
+                    GlazeLineId = v.GlazeLineId,
+                    GlazeLineName = v.GlazeLine?.Name,
+                    Images = v.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new List<string>(),
                     Price = v.Price,
                     OriginalPrice = v.OriginalPrice,
                     Stock = v.Stock
@@ -101,25 +108,46 @@ namespace BatTrang.API.Controllers
                 Name = dto.Name,
                 Slug = slug,
                 CategoryId = categoryId,
-                Material = dto.Material,
-                Style = dto.Style,
-                Color = dto.Color,
-                GlazeLineId = dto.GlazeLineId,
-                Pattern = dto.Pattern,
                 Usage = dto.Usage,
                 Status = totalStock == 0 ? "inactive" : dto.Status,
                 Badge = dto.Badge,
                 ShortDescription = dto.ShortDescription,
                 Description = dto.Description,
-                Images = dto.Images?.Select((url, index) => new ProductImage { ImageUrl = url, SortOrder = index }).ToList() ?? new List<ProductImage>(),
-                Variants = dto.Variants?.Select(v => new ProductVariant
+                Variants = new List<ProductVariant>()
+            };
+
+            if (dto.Variants != null)
+            {
+                foreach (var v in dto.Variants)
                 {
-                    Size = v.Size,
+                    if (v.SizeId == null && !string.IsNullOrWhiteSpace(v.SizeName))
+                    {
+                        var sizeNameStr = v.SizeName.Trim();
+                        var existingSize = _context.Sizes.FirstOrDefault(s => s.Name == sizeNameStr);
+                        if (existingSize == null)
+                        {
+                            existingSize = new Size { Name = sizeNameStr };
+                            _context.Sizes.Add(existingSize);
+                            _context.SaveChanges();
+                        }
+                        v.SizeId = existingSize.Id;
+                    }
+
+                    product.Variants.Add(new ProductVariant
+                    {
+                    SizeId = v.SizeId,
+                    ProductTypeId = v.ProductTypeId,
+                    MaterialId = v.MaterialId,
+                    ColorId = v.ColorId,
+                    PatternId = v.PatternId,
+                    GlazeLineId = v.GlazeLineId,
+                    Images = v.Images?.Select((url, index) => new ProductImage { ImageUrl = url, SortOrder = index }).ToList() ?? new List<ProductImage>(),
                     Price = v.Price,
                     OriginalPrice = v.OriginalPrice,
-                    Stock = v.Stock
-                }).ToList() ?? new List<ProductVariant>()
-            };
+                        Stock = v.Stock
+                    });
+                }
+            }
 
             await _productRepo.AddAsync(product);
             dto.Id = product.Id;
@@ -146,11 +174,7 @@ namespace BatTrang.API.Controllers
                     product.CategoryId = category.Id;
                 }
             }
-            product.Material = dto.Material;
-            product.Style = dto.Style;
-            product.Color = dto.Color;
-            product.GlazeLineId = dto.GlazeLineId;
-            product.Pattern = dto.Pattern;
+
             product.Usage = dto.Usage;
             product.Status = totalStockUpdate == 0 ? "inactive" : dto.Status;
             product.Badge = dto.Badge;
@@ -159,20 +183,63 @@ namespace BatTrang.API.Controllers
 
             // Sync variants
             product.Variants ??= new List<ProductVariant>();
-            var incomingIds = dto.Variants?.Select(v => v.Id).Where(id => id > 0).ToList() ?? new List<int>();
+            var incomingIds = dto.Variants?.Select(v => v.Id).Where(vId => vId > 0).ToList() ?? new List<int>();
             var toRemove = product.Variants.Where(v => !incomingIds.Contains(v.Id)).ToList();
-            foreach (var r in toRemove) { product.Variants.Remove(r); }
+            foreach (var r in toRemove)
+            {
+                // Delete physical files of removed variants
+                if (r.Images != null)
+                {
+                    foreach (var img in r.Images)
+                        BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(img.ImageUrl);
+                }
+                product.Variants.Remove(r);
+            }
 
             if (dto.Variants != null)
             {
                 foreach (var vDto in dto.Variants)
                 {
+                    if (vDto.SizeId == null && !string.IsNullOrWhiteSpace(vDto.SizeName))
+                    {
+                        var sizeNameStr = vDto.SizeName.Trim();
+                        var existingSize = _context.Sizes.FirstOrDefault(s => s.Name == sizeNameStr);
+                        if (existingSize == null)
+                        {
+                            existingSize = new Size { Name = sizeNameStr };
+                            _context.Sizes.Add(existingSize);
+                            _context.SaveChanges();
+                        }
+                        vDto.SizeId = existingSize.Id;
+                    }
+
                     if (vDto.Id > 0)
                     {
                         var existing = product.Variants.FirstOrDefault(v => v.Id == vDto.Id);
                         if (existing != null)
                         {
-                            existing.Size = vDto.Size;
+                            existing.SizeId = vDto.SizeId;
+                            existing.ProductTypeId = vDto.ProductTypeId;
+                            existing.MaterialId = vDto.MaterialId;
+                            existing.ColorId = vDto.ColorId;
+                            existing.PatternId = vDto.PatternId;
+                            existing.GlazeLineId = vDto.GlazeLineId;
+                            
+                            var oldVImages = existing.Images?.Select(i => i.ImageUrl).ToList() ?? new List<string>();
+                            existing.Images ??= new List<ProductImage>();
+                            existing.Images.Clear();
+                            if (vDto.Images != null)
+                            {
+                                for (int i = 0; i < vDto.Images.Count; i++)
+                                {
+                                    existing.Images.Add(new ProductImage { ImageUrl = vDto.Images[i], SortOrder = i });
+                                }
+                            }
+                            var orphanedVImages = oldVImages.Where(oldImg => vDto.Images == null || !vDto.Images.Contains(oldImg));
+                            foreach (var orphan in orphanedVImages)
+                            {
+                                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(orphan);
+                            }
                             existing.Price = vDto.Price;
                             existing.OriginalPrice = vDto.OriginalPrice;
                             existing.Stock = vDto.Stock;
@@ -182,7 +249,13 @@ namespace BatTrang.API.Controllers
                     {
                         product.Variants.Add(new ProductVariant
                         {
-                            Size = vDto.Size,
+                            SizeId = vDto.SizeId,
+                            ProductTypeId = vDto.ProductTypeId,
+                            MaterialId = vDto.MaterialId,
+                            ColorId = vDto.ColorId,
+                            PatternId = vDto.PatternId,
+                            GlazeLineId = vDto.GlazeLineId,
+                            Images = vDto.Images?.Select((url, index) => new ProductImage { ImageUrl = url, SortOrder = index }).ToList() ?? new List<ProductImage>(),
                             Price = vDto.Price,
                             OriginalPrice = vDto.OriginalPrice,
                             Stock = vDto.Stock
@@ -191,25 +264,6 @@ namespace BatTrang.API.Controllers
                 }
             }
 
-            if (dto.Images != null)
-            {
-                var oldImages = product.Images?.Select(i => i.ImageUrl).ToList() ?? new List<string>();
-                
-                product.Images ??= new List<ProductImage>();
-                product.Images.Clear();
-                for (int i = 0; i < dto.Images.Count; i++)
-                {
-                    product.Images.Add(new ProductImage { ImageUrl = dto.Images[i], SortOrder = i });
-                }
-
-                // Clean up orphaned images from the disk
-                var newImages = dto.Images;
-                var orphanedImages = oldImages.Where(oldImg => !newImages.Contains(oldImg));
-                foreach (var orphan in orphanedImages)
-                {
-                    BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(orphan);
-                }
-            }
 
             await _productRepo.UpdateAsync(product);
             return NoContent();
@@ -221,7 +275,7 @@ namespace BatTrang.API.Controllers
             var product = await _productRepo.GetProductWithImagesAsync(id);
             if (product == null) return NotFound();
 
-            var imagesToDelete = product.Images?.Select(i => i.ImageUrl).ToList() ?? new List<string>();
+            var imagesToDelete = product.Variants?.SelectMany(v => v.Images?.Select(i => i.ImageUrl) ?? new List<string>()).ToList() ?? new List<string>();
 
             await _productRepo.DeleteAsync(product);
 
@@ -242,7 +296,7 @@ namespace BatTrang.API.Controllers
                 var product = await _productRepo.GetProductWithImagesAsync(id);
                 if (product != null)
                 {
-                    var imagesToDelete = product.Images?.Select(i => i.ImageUrl).ToList() ?? new List<string>();
+                    var imagesToDelete = product.Variants?.SelectMany(v => v.Images?.Select(i => i.ImageUrl) ?? new List<string>()).ToList() ?? new List<string>();
                     await _productRepo.DeleteAsync(product);
                     
                     foreach(var img in imagesToDelete)

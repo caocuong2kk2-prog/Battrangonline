@@ -43,5 +43,15 @@ namespace BatTrang.Infrastructure.Repositories
             _context.Set<T>().Remove(entity);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<int> CountAsync()
+        {
+            return await _context.Set<T>().CountAsync();
+        }
+
+        public async Task<int> CountAsync(System.Linq.Expressions.Expression<System.Func<T, bool>> predicate)
+        {
+            return await _context.Set<T>().CountAsync(predicate);
+        }
     }
 }

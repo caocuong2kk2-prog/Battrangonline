@@ -12,6 +12,11 @@ namespace BatTrang.Infrastructure.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<ProductType> ProductTypes { get; set; }
+        public DbSet<Size> Sizes { get; set; }
+        public DbSet<Material> Materials { get; set; }
+        public DbSet<Color> Colors { get; set; }
+        public DbSet<Pattern> Patterns { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<GlazeLine> GlazeLines { get; set; }
         public DbSet<Order> Orders { get; set; }
@@ -22,6 +27,7 @@ namespace BatTrang.Infrastructure.Data
         public DbSet<ContactMessage> ContactMessages { get; set; }
         public DbSet<SiteConfig> SiteConfigs { get; set; }
         public DbSet<AdminUser> AdminUsers { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,14 +47,54 @@ namespace BatTrang.Infrastructure.Data
                 .HasForeignKey(pv => pv.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<ProductImage>()
+                .HasOne(pi => pi.Variant)
+                .WithMany(pv => pv.Images)
+                .HasForeignKey(pi => pi.VariantId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<Product>()
                 .HasIndex(p => p.Slug)
                 .IsUnique();
 
-            modelBuilder.Entity<Product>()
-                .HasOne(p => p.GlazeLine)
-                .WithMany(g => g.Products)
-                .HasForeignKey(p => p.GlazeLineId)
+            modelBuilder.Entity<Size>()
+                .Property(s => s.ValueInCm)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<ProductVariant>()
+                .HasOne(pv => pv.Size)
+                .WithMany(s => s.ProductVariants)
+                .HasForeignKey(pv => pv.SizeId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<ProductVariant>()
+                .HasOne(pv => pv.GlazeLine)
+                .WithMany(g => g.ProductVariants)
+                .HasForeignKey(pv => pv.GlazeLineId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<ProductVariant>()
+                .HasOne(pv => pv.ProductType)
+                .WithMany(t => t.ProductVariants)
+                .HasForeignKey(pv => pv.ProductTypeId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<ProductVariant>()
+                .HasOne(pv => pv.Material)
+                .WithMany(m => m.ProductVariants)
+                .HasForeignKey(pv => pv.MaterialId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<ProductVariant>()
+                .HasOne(pv => pv.Color)
+                .WithMany(c => c.ProductVariants)
+                .HasForeignKey(pv => pv.ColorId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<ProductVariant>()
+                .HasOne(pv => pv.Pattern)
+                .WithMany(pt => pt.ProductVariants)
+                .HasForeignKey(pv => pv.PatternId)
                 .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Order>()
@@ -91,6 +137,9 @@ namespace BatTrang.Infrastructure.Data
             modelBuilder.Entity<AdminUser>()
                 .HasIndex(u => u.Username)
                 .IsUnique();
+                
+            modelBuilder.Entity<Notification>()
+                .HasIndex(n => n.CreatedAt);
         }
     }
 }

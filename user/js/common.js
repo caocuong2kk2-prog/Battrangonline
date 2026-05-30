@@ -222,13 +222,17 @@
     }
 
     // ── Auth: đổi icon sang avatar nếu đã đăng nhập ────────────────────────
-    if (window.AuthService && userBtn) {
-      const user = window.AuthService.getCurrentUser();
+    if (userBtn) {
+      let user = null;
+      try {
+        user = JSON.parse(localStorage.getItem('current_user'));
+      } catch(e) {}
+      
       if (user) {
         userBtn.removeAttribute('href');
         userBtn.classList.add('is-logged-in');
-        const initial = (user.firstName || user.name || 'U').charAt(0).toUpperCase();
-        const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.name || 'Người dùng';
+        const initial = (user.name || user.firstName || 'U').charAt(0).toUpperCase();
+        const fullName = user.name || [user.firstName, user.lastName].filter(Boolean).join(' ') || 'Người dùng';
 
         // Fix href của dropdown links khi đang ở /user/ subfolder
         const trackingHref = window.location.pathname.startsWith('/user/')
@@ -244,9 +248,8 @@
                 <span class="user-email">${user.email}</span>
               </div>
               <div class="user-dropdown-body">
-                <a href="#" class="user-dropdown-item">Tài khoản của tôi</a>
                 <a href="${trackingHref}" class="user-dropdown-item">Đơn mua</a>
-                <button type="button" class="user-dropdown-item btn-logout" onclick="AuthService.logout()">Đăng xuất</button>
+                <button type="button" class="user-dropdown-item btn-logout" onclick="window.logoutCustomer()">Đăng xuất</button>
               </div>
             </div>
           </div>
@@ -334,7 +337,7 @@
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         var emailInput = document.getElementById('newsletter-email');
-        var submitBtn  = document.getElementById('newsletter-submit-btn');
+        var submitBtn = document.getElementById('newsletter-submit-btn');
         if (!emailInput) return;
 
         var email = emailInput.value.trim();
@@ -363,41 +366,13 @@
   }
 
   // ======================================================
-  // 3. AUTH SERVICE (Mock DB using LocalStorage)
+  // 3. AUTH SERVICE (Customer session management)
   // ======================================================
-  window.AuthService = {
-    getUsers: function() {
-      return JSON.parse(localStorage.getItem('mock_users') || '[]');
-    },
-    saveUsers: function(users) {
-      localStorage.setItem('mock_users', JSON.stringify(users));
-    },
-    getCurrentUser: function() {
-      return JSON.parse(localStorage.getItem('current_user') || 'null');
-    },
-    login: function(email, password) {
-      const users = this.getUsers();
-      const user = users.find(u => u.email === email && u.password === password);
-      if (user) {
-        localStorage.setItem('current_user', JSON.stringify(user));
-        return { success: true, user: user };
-      }
-      return { success: false, message: 'Email hoặc mật khẩu không chính xác.' };
-    },
-    register: function(userData) {
-      const users = this.getUsers();
-      if (users.find(u => u.email === userData.email)) {
-        return { success: false, message: 'Email đã được sử dụng.' };
-      }
-      users.push(userData);
-      this.saveUsers(users);
-      return { success: true };
-    },
-    logout: function() {
-      localStorage.removeItem('current_user');
-      window.showToast('Đã đăng xuất thành công!', 'success');
-      setTimeout(() => window.location.reload(), 1000);
-    }
+  window.logoutCustomer = function () {
+    localStorage.removeItem('current_user');
+    localStorage.removeItem('customer_token');
+    window.showToast('Đã đăng xuất thành công!', 'success');
+    setTimeout(() => window.location.reload(), 1000);
   };
 
   // ======================================================
@@ -502,88 +477,68 @@
   // GLOBAL CONFIGURATION SYSTEM
   // ======================================================
   var CONFIG_KEY = 'pgt_site_config';
-  var DEFAULT_CONFIG = {
-    storeName: "Phúc Gia Tiên – Gốm Sứ Thủ Công Bát Tràng",
-    slogan: "Tinh hoa gốm sứ Bát Tràng truyền đời",
-    phone: "0986 123 456",
-    email: "phucgatien@gmail.com",
-    address: "Thôn Bát Tràng, Xã Bát Tràng, Huyện Gia Lâm, Hà Nội",
-    facebook: "https://facebook.com/phucgatien",
-    youtube: "https://youtube.com/@phucgatien",
-    tiktok: "https://tiktok.com/@phucgatien",
-    zalo: "https://zalo.me/0986123456",
-    messenger: "https://m.me/phucgatien",
-    shipFee: 0,
-    shipMin: 5000000,
-    shipDays: "3-7 ngày",
-    shipArea: "Toàn quốc",
-    logoUrl: "assets/images/logo.png",
-    homeBanner: "assets/images/home_bg.jpeg",
-    ctaBanner: "assets/images/bg.jpeg",
-    pageBanner: "assets/images/journey-hero.jpg",
-    productsBanner: "assets/images/products-banner.jpg",
-    journeyBanner: "assets/images/journey-hero.jpg",
-    aboutBanner: "assets/images/about-hero.jpg",
-    contactBanner: "assets/images/contact-hero.jpg",
-    homeStoryImg: "",
-    aboutStoryImg: "assets/images/about-workshop.jpg",
-    teamAvatar1: "assets/images/team-husband.jpg",
-    teamAvatar2: "assets/images/team-wife.jpg",
-    workingHours: "08:00 - 18:00 (Từ Thứ 2 - Chủ Nhật)",
-    mapIframe: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3725.564539824403!2d105.93206497607736!3d20.969992790299602!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135aef2f534125b%3A0xe54e3d3b76ca40c3!2zUGjDumMgR2lhIFRpw6puIC0gR-G7kW0gU-G7qyBCw6F0IFRyw6BuZw!5e0!3m2!1svi!2s!4v1716260000000!5m2!1svi!2s" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>',
-    aboutStoryTitle: "Từ Đam Mê<br>Đến <em>Thương Hiệu</em>",
-    aboutStoryText1: "Phúc Gia Tiên ra đời từ tình yêu thuần khiết với nghề gốm thủ công Bát Tràng. Từ năm 2018, hai vợ chồng chúng tôi bắt đầu học nghề, và đến nay đã xây dựng được một xưởng gốm uy tín với hàng trăm mẫu sản phẩm độc đáo.",
-    aboutStoryText2: "Mỗi sản phẩm từ Phúc Gia Tiên đều được tạo ra hoàn toàn thủ công – từ khâu nhào đất, tạo hình, vẽ hoa văn đến tráng men và nung trong lò ở nhiệt độ 1.200°C. Chúng tôi cam kết mang đến những tác phẩm gốm sứ chất lượng cao, giữ trọn giá trị nghề truyền thống.",
-    homeStoryQuote: "2 vợ chồng – 1 xưởng –<br>1 hành trình",
-    homeStoryText: "Chúng tôi bắt đầu từ con số 0. Tự tay học nghề, tự làm, tự thất bại và đứng dậy. Phúc Gia Tiên không chỉ làm gốm, chúng tôi tạo ra giá trị để truyền lại cho thế hệ sau.",
-    statYears: "4+",
-    statProducts: "1000+",
-    statCustomers: "500+",
-    teamName1: "Nguyễn Văn Phúc",
-    teamRole1: "Nghệ Nhân Chính",
-    teamBio1: "Phụ trách tạo hình và nung gốm. Hơn 6 năm kinh nghiệm với bàn xoay và lò nung truyền thống Bát Tràng.",
-    teamName2: "Lê Thị Tiên",
-    teamRole2: "Nghệ Nhân Vẽ & Sáng Tạo",
-    teamBio2: "Phụ trách vẽ hoa văn và sáng tạo mẫu mới. Mỗi nét vẽ là một câu chuyện được kể trên đất sét.",
-    coreValue1Title: "Chất Lượng",
-    coreValue1Desc: "Đặt chất lượng lên hàng đầu. Mỗi sản phẩm qua kiểm tra kỹ càng, cam kết 100% gốm sứ thủ công chính hiệu.",
-    coreValue2Title: "Tận Tâm",
-    coreValue2Desc: "Làm việc bằng cả trái tim. Từng nét vẽ, từng công đoạn đều được chú tâm và cẩn thận nhất.",
-    coreValue3Title: "Sáng Tạo",
-    coreValue3Desc: "Không ngừng đổi mới. Kết hợp họa tiết truyền thống với thiết kế hiện đại, mỗi sản phẩm là một tác phẩm độc đáo.",
-    coreValue4Title: "Uy Tín",
-    coreValue4Desc: "Giữ chữ tín với khách hàng. Hỗ trợ tận tình và chính sách đổi trả minh bạch, rõ ràng.",
-    process1Title: "1. Chuẩn bị đất",
-    process1Desc: "Chọn lựa và nhào đất sét Bát Tràng đúng độ dẻo",
-    process2Title: "2. Tạo hình",
-    process2Desc: "Vuốt đất trên bàn xoay bằng đôi bàn tay điêu luyện",
-    process3Title: "3. Vẽ tay",
-    process3Desc: "Trang trí hoa văn truyền thống bằng bút lông thủ công",
-    process4Title: "4. Nung lò",
-    process4Desc: "Nung ở nhiệt độ 1.280°C trong lò truyền thống",
-    process5Title: "5. Hoàn thiện",
-    process5Desc: "Kiểm tra, đánh bóng và đóng gói tác phẩm hoàn hảo"
-  };
+  var DEFAULT_CONFIG = {};
 
   // Khởi tạo PGT_CONFIG mặc định trong trường hợp API lỗi
-  window.PGT_CONFIG = Object.assign({}, DEFAULT_CONFIG);
+  window.PGT_CONFIG = {};
 
   // Fetch config mới nhất từ API, cập nhật lại PGT_CONFIG
   async function fetchSiteConfig() {
+    // 1. Thử lấy từ cache trước để load nhanh khi chuyển trang
     try {
-      var res = await fetch('http://localhost:5080/api/site-config');
+      var cached = sessionStorage.getItem(CONFIG_KEY);
+      if (cached) {
+        window.PGT_CONFIG = JSON.parse(cached);
+        // Không return ở đây để API vẫn tiếp tục gọi ngầm và cập nhật dữ liệu mới nhất
+      }
+    } catch(e) {}
+
+    // 2. Nếu chưa có, gọi API
+    try {
+      var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api';
+      var res = await fetch(dynamicBase + '/site-config');
       if (!res.ok) throw new Error('API ' + res.status);
       var apiConfig = await res.json();
-      window.PGT_CONFIG = Object.assign({}, DEFAULT_CONFIG, apiConfig);
+      window.PGT_CONFIG = apiConfig || {};
+      
+      // Lưu lại cache
+      try {
+        sessionStorage.setItem(CONFIG_KEY, JSON.stringify(window.PGT_CONFIG));
+      } catch(e) {}
     } catch (e) {
-      console.warn('[PGT] Không lấy được config từ API, dùng default:', e.message);
+      console.warn('[PGT] Không lấy được config từ API:', e.message);
+      window.PGT_CONFIG = {};
     }
+  }
+
+  /** Chuẩn hóa đường dẫn ảnh trong HTML config (admin lưu ../user/assets/ hoặc base64). */
+  function normalizeConfigAssetPaths(html) {
+    if (!html || typeof html !== 'string') return '';
+    
+    // Prefix /uploads/ with API base if needed
+    var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080' : '';
+    html = html.replace(/src=["'](\/uploads\/[^"']+)["']/gi, 'src="' + dynamicBase + '$1"');
+    
+    return html
+      .replace(/src=["'](?:\.\.\/user\/|\/user\/|user\/)?assets\/([^"']+)["']/gi, 'src="assets/$1"')
+      .replace(/src=["']asse\/([^"']+)["']/gi, 'src="assets/$1"');
+  }
+  
+  function resolveImgUrl(url, defaultUrl) {
+    if (!url) return defaultUrl;
+    if (url.startsWith('/uploads/')) {
+       var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080' : '';
+       return dynamicBase + url;
+    }
+    return url;
   }
 
   // Apply configuration values dynamically to annotated DOM elements
   function applyDynamicConfig() {
-    var config = window.PGT_CONFIG;
-    var rawPhone = config.phone.replace(/\s+/g, '');
+    var config = window.PGT_CONFIG || {};
+
+    var rawPhone = (config.phone || '').replace(/\s+/g, '');
+
 
     // 1. Phone number link updates
     document.querySelectorAll('.js-config-phone-link').forEach(function (el) {
@@ -656,103 +611,191 @@
       el.innerHTML = config.mapIframe;
     });
 
+    document.querySelectorAll('.js-config-map-link').forEach(function (el) {
+      var mapUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(config.address);
+      if (config.mapIframe) {
+        var match = config.mapIframe.match(/src=["']([^"']+)["']/);
+        if (match && match[1]) {
+          mapUrl = match[1];
+        }
+      }
+      el.href = mapUrl;
+    });
+
     // 10. Image/Banner updates
     document.querySelectorAll('.js-config-logo').forEach(function (el) {
-      el.src = config.logoUrl;
+      el.src = resolveImgUrl(config.logoUrl, '');
     });
+    // Cập nhật favicon từ logoUrl trong DB
+    if (config.logoUrl) {
+      var oldFavicon = document.querySelector('link[rel="icon"]');
+      var oldShortcut = document.querySelector('link[rel="shortcut icon"]');
+      
+      var newFavicon = document.createElement('link');
+      newFavicon.rel = 'icon';
+
+      // Xác định loại MIME phù hợp (hỗ trợ cả base64 và file đường dẫn tĩnh)
+      var mimeType = 'image/x-icon';
+      if (config.logoUrl.startsWith('data:')) {
+        var match = config.logoUrl.match(/^data:(image\/[^;]+);/);
+        if (match) {
+          mimeType = match[1];
+        }
+      } else if (config.logoUrl.toLowerCase().endsWith('.png')) {
+        mimeType = 'image/png';
+      } else if (config.logoUrl.toLowerCase().endsWith('.jpg') || config.logoUrl.toLowerCase().endsWith('.jpeg')) {
+        mimeType = 'image/jpeg';
+      } else if (config.logoUrl.toLowerCase().endsWith('.gif')) {
+        mimeType = 'image/gif';
+      } else if (config.logoUrl.toLowerCase().endsWith('.svg')) {
+        mimeType = 'image/svg+xml';
+      }
+      newFavicon.type = mimeType;
+
+      // Tránh việc nối thêm cache-buster '?v=' cho ảnh base64 vì sẽ làm hỏng định dạng base64
+      if (config.logoUrl.startsWith('data:')) {
+        newFavicon.href = config.logoUrl;
+      } else {
+        newFavicon.href = resolveImgUrl(config.logoUrl, '') + '?v=' + Date.now();
+      }
+      
+      document.head.appendChild(newFavicon);
+      if (oldFavicon) oldFavicon.remove();
+      if (oldShortcut) oldShortcut.remove();
+    }
     document.querySelectorAll('.js-config-home-banner-img').forEach(function (el) {
-      el.src = config.homeBanner;
+      el.src = resolveImgUrl(config.homeBanner, '');
     });
     document.querySelectorAll('.js-config-cta-banner-img').forEach(function (el) {
       if (config.ctaBanner === '') {
         el.style.opacity = '0';
         el.removeAttribute('src');
       } else {
-        el.src = config.ctaBanner || 'assets/images/bg.jpeg';
+        el.src = resolveImgUrl(config.ctaBanner, 'assets/images/bg.jpeg');
         el.style.opacity = '1';
       }
     });
     document.querySelectorAll('.js-config-page-banner-img').forEach(function (el) {
-      el.src = config.pageBanner;
+      el.src = resolveImgUrl(config.pageBanner, '');
     });
     document.querySelectorAll('.js-config-products-banner-img').forEach(function (el) {
-      el.src = config.productsBanner || config.pageBanner;
+      el.src = resolveImgUrl(config.productsBanner || config.pageBanner, '');
     });
     document.querySelectorAll('.js-config-journey-banner-img').forEach(function (el) {
-      el.src = config.journeyBanner || config.pageBanner;
+      el.src = resolveImgUrl(config.journeyBanner || config.pageBanner, '');
     });
     document.querySelectorAll('.js-config-about-banner-img').forEach(function (el) {
-      el.src = config.aboutBanner || config.pageBanner;
+      el.src = resolveImgUrl(config.aboutBanner || config.pageBanner, '');
     });
     document.querySelectorAll('.js-config-contact-banner-img').forEach(function (el) {
-      el.src = config.contactBanner || config.pageBanner;
+      el.src = resolveImgUrl(config.contactBanner || config.pageBanner, '');
     });
     document.querySelectorAll('.js-config-home-story-img').forEach(function (el) {
-      el.src = config.homeStoryImg || 'assets/images/story-couple.jpg';
+      var imgPath = config.homeStoryImg;
+      if (imgPath === 'assets/images/story-couple.jpg') {
+        imgPath = 'assets/images/about-workshop.jpg';
+      }
+      el.src = resolveImgUrl(imgPath, 'assets/images/about-workshop.jpg');
     });
     document.querySelectorAll('.js-config-about-story-img').forEach(function (el) {
-      el.src = config.aboutStoryImg || 'assets/images/about-workshop.jpg';
+      el.src = resolveImgUrl(config.aboutStoryImg, 'assets/images/about-workshop.jpg');
     });
     document.querySelectorAll('.js-config-team-1-img').forEach(function (el) {
-      el.src = config.teamAvatar1 || 'assets/images/team-husband.jpg';
+      el.src = resolveImgUrl(config.teamAvatar1, 'assets/images/team-husband.jpg');
     });
     document.querySelectorAll('.js-config-team-2-img').forEach(function (el) {
-      el.src = config.teamAvatar2 || 'assets/images/team-wife.jpg';
+      el.src = resolveImgUrl(config.teamAvatar2, 'assets/images/team-wife.jpg');
     });
 
     // 11. New Dynamic Contents
-    document.querySelectorAll('.js-config-home-story-quote').forEach(function(el) { el.innerHTML = config.homeStoryQuote; });
-    document.querySelectorAll('.js-config-home-story-text').forEach(function(el) { el.innerHTML = config.homeStoryText; });
-    
-    document.querySelectorAll('.js-config-about-story-title').forEach(function(el) { el.innerHTML = config.aboutStoryTitle; });
-    document.querySelectorAll('.js-config-about-story-text-1').forEach(function(el) { el.innerHTML = config.aboutStoryText1; });
-    document.querySelectorAll('.js-config-about-story-text-2').forEach(function(el) { el.innerHTML = config.aboutStoryText2; });
-    
-    document.querySelectorAll('.js-config-stat-years').forEach(function(el) { el.textContent = config.statYears; });
-    document.querySelectorAll('.js-config-stat-products').forEach(function(el) { el.textContent = config.statProducts; });
-    document.querySelectorAll('.js-config-stat-customers').forEach(function(el) { el.textContent = config.statCustomers; });
-    
-    document.querySelectorAll('.js-config-team-1-name').forEach(function(el) { el.textContent = config.teamName1; });
-    document.querySelectorAll('.js-config-team-1-role').forEach(function(el) { el.textContent = config.teamRole1; });
-    document.querySelectorAll('.js-config-team-1-bio').forEach(function(el) { el.innerHTML = config.teamBio1; });
-    
-    document.querySelectorAll('.js-config-team-2-name').forEach(function(el) { el.textContent = config.teamName2; });
-    document.querySelectorAll('.js-config-team-2-role').forEach(function(el) { el.textContent = config.teamRole2; });
-    document.querySelectorAll('.js-config-team-2-bio').forEach(function(el) { el.innerHTML = config.teamBio2; });
+    var homeText = config.homeStoryText || '';
+    if (homeText) {
+      if (!homeText.includes('<h2') && !homeText.includes('story-teaser__quote')) {
+        var slogan = config.homeStoryQuote;
+        if (slogan && slogan.trim() !== '') {
+          var sloganHtml = '<h2 id="story-heading" class="story-teaser__quote">' + slogan + '</h2>';
+          if (homeText.includes('<p>') || homeText.includes('<p ')) {
+            homeText = sloganHtml + homeText;
+          } else {
+            homeText = sloganHtml + '<p class="story-teaser__text">' + homeText + '</p>';
+          }
+        } else {
+          if (!homeText.includes('<p>') && !homeText.includes('<p ')) {
+            homeText = '<p class="story-teaser__text">' + homeText + '</p>';
+          }
+        }
+      }
+      // Tự động phục hồi thẻ tiêu đề phụ nếu dữ liệu cũ trong CSDL bị thiếu
+      if (!homeText.includes('section-header__label')) {
+        homeText = '<span class="section-header__label">Câu Chuyện Của Chúng Tôi</span>' + homeText;
+      }
+    }
+    document.querySelectorAll('.js-config-home-story-text').forEach(function (el) { el.innerHTML = homeText; });
+    document.querySelectorAll('.js-config-about-story-html').forEach(function (el) {
+      var storyHtml = normalizeConfigAssetPaths(config.aboutStoryHtml || '');
+      el.innerHTML = storyHtml;
+      // Đảm bảo tất cả nội dung hiển thị ngay (không bị ẩn bởi scroll-reveal animation)
+      el.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(function (rev) {
+        rev.classList.add('revealed');
+      });
+    });
 
-    document.querySelectorAll('.js-config-cv-1-title').forEach(function(el) { el.textContent = config.coreValue1Title; });
-    document.querySelectorAll('.js-config-cv-1-desc').forEach(function(el) { el.innerHTML = config.coreValue1Desc; });
-    document.querySelectorAll('.js-config-cv-2-title').forEach(function(el) { el.textContent = config.coreValue2Title; });
-    document.querySelectorAll('.js-config-cv-2-desc').forEach(function(el) { el.innerHTML = config.coreValue2Desc; });
-    document.querySelectorAll('.js-config-cv-3-title').forEach(function(el) { el.textContent = config.coreValue3Title; });
-    document.querySelectorAll('.js-config-cv-3-desc').forEach(function(el) { el.innerHTML = config.coreValue3Desc; });
-    document.querySelectorAll('.js-config-cv-4-title').forEach(function(el) { el.textContent = config.coreValue4Title; });
-    document.querySelectorAll('.js-config-cv-4-desc').forEach(function(el) { el.innerHTML = config.coreValue4Desc; });
 
-    document.querySelectorAll('.js-config-proc-1-title').forEach(function(el) { el.textContent = config.process1Title; });
-    document.querySelectorAll('.js-config-proc-1-desc').forEach(function(el) { el.textContent = config.process1Desc; });
-    document.querySelectorAll('.js-config-proc-2-title').forEach(function(el) { el.textContent = config.process2Title; });
-    document.querySelectorAll('.js-config-proc-2-desc').forEach(function(el) { el.textContent = config.process2Desc; });
-    document.querySelectorAll('.js-config-proc-3-title').forEach(function(el) { el.textContent = config.process3Title; });
-    document.querySelectorAll('.js-config-proc-3-desc').forEach(function(el) { el.textContent = config.process3Desc; });
-    document.querySelectorAll('.js-config-proc-4-title').forEach(function(el) { el.textContent = config.process4Title; });
-    document.querySelectorAll('.js-config-proc-4-desc').forEach(function(el) { el.textContent = config.process4Desc; });
-    document.querySelectorAll('.js-config-proc-5-title').forEach(function(el) { el.textContent = config.process5Title; });
-    document.querySelectorAll('.js-config-proc-5-desc').forEach(function(el) { el.textContent = config.process5Desc; });
+    document.querySelectorAll('.js-config-team-1-name').forEach(function (el) { el.textContent = config.teamName1; });
+    document.querySelectorAll('.js-config-team-1-role').forEach(function (el) { el.textContent = config.teamRole1; });
+    document.querySelectorAll('.js-config-team-1-bio').forEach(function (el) { el.innerHTML = config.teamBio1; });
+
+    document.querySelectorAll('.js-config-team-2-name').forEach(function (el) { el.textContent = config.teamName2; });
+    document.querySelectorAll('.js-config-team-2-role').forEach(function (el) { el.textContent = config.teamRole2; });
+    document.querySelectorAll('.js-config-team-2-bio').forEach(function (el) { el.innerHTML = config.teamBio2; });
+
+    document.querySelectorAll('.js-config-cv-1-title').forEach(function (el) { el.textContent = config.coreValue1Title; });
+    document.querySelectorAll('.js-config-cv-1-desc').forEach(function (el) { el.innerHTML = config.coreValue1Desc; });
+    document.querySelectorAll('.js-config-cv-2-title').forEach(function (el) { el.textContent = config.coreValue2Title; });
+    document.querySelectorAll('.js-config-cv-2-desc').forEach(function (el) { el.innerHTML = config.coreValue2Desc; });
+    document.querySelectorAll('.js-config-cv-3-title').forEach(function (el) { el.textContent = config.coreValue3Title; });
+    document.querySelectorAll('.js-config-cv-3-desc').forEach(function (el) { el.innerHTML = config.coreValue3Desc; });
+    document.querySelectorAll('.js-config-cv-4-title').forEach(function (el) { el.textContent = config.coreValue4Title; });
+    document.querySelectorAll('.js-config-cv-4-desc').forEach(function (el) { el.innerHTML = config.coreValue4Desc; });
+
+    document.querySelectorAll('.js-config-proc-1-title').forEach(function (el) { el.textContent = config.process1Title; });
+    document.querySelectorAll('.js-config-proc-1-desc').forEach(function (el) { el.textContent = config.process1Desc; });
+    document.querySelectorAll('.js-config-proc-2-title').forEach(function (el) { el.textContent = config.process2Title; });
+    document.querySelectorAll('.js-config-proc-2-desc').forEach(function (el) { el.textContent = config.process2Desc; });
+    document.querySelectorAll('.js-config-proc-3-title').forEach(function (el) { el.textContent = config.process3Title; });
+    document.querySelectorAll('.js-config-proc-3-desc').forEach(function (el) { el.textContent = config.process3Desc; });
+    document.querySelectorAll('.js-config-proc-4-title').forEach(function (el) { el.textContent = config.process4Title; });
+    document.querySelectorAll('.js-config-proc-4-desc').forEach(function (el) { el.textContent = config.process4Desc; });
+    document.querySelectorAll('.js-config-proc-5-title').forEach(function (el) { el.textContent = config.process5Title; });
+    document.querySelectorAll('.js-config-proc-5-desc').forEach(function (el) { el.textContent = config.process5Desc; });
 
     // Hiển thị nội dung sau khi load xong config từ API
     document.body.classList.add('config-loaded');
+
+    // CKEditor inject thêm .reveal — kích hoạt lại scroll reveal trên trang Giới thiệu
+    if (typeof window.initScrollReveal === 'function') {
+      window.initScrollReveal();
+    }
   }
 
   // ======================================================
   // INIT SCRIPT ON LOAD
   // ======================================================
   async function initAll() {
-    await fetchSiteConfig();   // Lấy config mới nhất từ API trước
-    await loadComponents();
+    // Reveal existing static content immediately so user doesn't see a blank page
+    initScrollReveal();
+    initLazyImages();
+
+    // Chạy song song cả fetch config và load components (Header/Footer) để tiết kiệm thời gian
+    await Promise.all([
+      fetchSiteConfig(),
+      loadComponents()
+    ]);
+    
     applyDynamicConfig();
     initHeader();
     initFooter();
+    // Khởi tạo lại cho các thành phần động vừa thêm (nếu có)
     initScrollReveal();
     initLazyImages();
     // Sync cart badge count after header is injected into the DOM.
@@ -777,8 +820,8 @@
         var count = 0;
         try {
           var cart = JSON.parse(localStorage.getItem('pgt_cart') || '[]');
-          count = cart.reduce(function(s, i) { return s + (parseInt(i.qty, 10) || 0); }, 0);
-        } catch(e) {}
+          count = cart.reduce(function (s, i) { return s + (parseInt(i.qty, 10) || 0); }, 0);
+        } catch (e) { }
         badge.textContent = count;
         badge.style.display = count > 0 ? 'flex' : 'none';
       }
@@ -802,33 +845,33 @@
 
     var overlayHTML =
       '<div class="search-overlay" id="search-overlay" role="dialog" aria-modal="true" aria-label="Tìm kiếm sản phẩm">' +
-        '<button class="search-overlay__close" id="search-close-btn" aria-label="Đóng tìm kiếm">✕</button>' +
-        '<div class="search-overlay__input-wrap">' +
-          '<span class="search-overlay__label">Tìm kiếm sản phẩm</span>' +
-          '<div class="search-overlay__input-row">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>' +
-            '<input class="search-overlay__input" id="search-input" type="search" placeholder="Lộc bình, đồ thờ, tranh gốm…" autocomplete="off" spellcheck="false">' +
-            '<button class="search-overlay__clear" id="search-clear-btn" aria-label="Xóa từ khóa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>' +
-          '</div>' +
-          '<div class="search-overlay__hints">' +
-            '<span class="search-overlay__hint-label">Gợi ý:</span>' +
-            '<button class="search-overlay__hint-tag" data-hint="Lộc bình">Lộc bình</button>' +
-            '<button class="search-overlay__hint-tag" data-hint="Tranh gốm">Tranh gốm</button>' +
-            '<button class="search-overlay__hint-tag" data-hint="Đồ thờ">Đồ thờ</button>' +
-            '<button class="search-overlay__hint-tag" data-hint="Bình hoa">Bình hoa</button>' +
-            '<button class="search-overlay__hint-tag" data-hint="Chum">Chum</button>' +
-          '</div>' +
-        '</div>' +
-        '<div class="search-overlay__results" id="search-results" aria-live="polite"></div>' +
+      '<button class="search-overlay__close" id="search-close-btn" aria-label="Đóng tìm kiếm">✕</button>' +
+      '<div class="search-overlay__input-wrap">' +
+      '<span class="search-overlay__label">Tìm kiếm sản phẩm</span>' +
+      '<div class="search-overlay__input-row">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>' +
+      '<input class="search-overlay__input" id="search-input" type="search" placeholder="Lộc bình, đồ thờ, tranh gốm…" autocomplete="off" spellcheck="false">' +
+      '<button class="search-overlay__clear" id="search-clear-btn" aria-label="Xóa từ khóa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>' +
+      '</div>' +
+      '<div class="search-overlay__hints">' +
+      '<span class="search-overlay__hint-label">Gợi ý:</span>' +
+      '<button class="search-overlay__hint-tag" data-hint="Lộc bình">Lộc bình</button>' +
+      '<button class="search-overlay__hint-tag" data-hint="Tranh gốm">Tranh gốm</button>' +
+      '<button class="search-overlay__hint-tag" data-hint="Đồ thờ">Đồ thờ</button>' +
+      '<button class="search-overlay__hint-tag" data-hint="Bình hoa">Bình hoa</button>' +
+      '<button class="search-overlay__hint-tag" data-hint="Chum">Chum</button>' +
+      '</div>' +
+      '</div>' +
+      '<div class="search-overlay__results" id="search-results" aria-live="polite"></div>' +
       '</div>';
 
     document.body.insertAdjacentHTML('beforeend', overlayHTML);
 
-    var overlay     = document.getElementById('search-overlay');
-    var input       = document.getElementById('search-input');
-    var clearBtn    = document.getElementById('search-clear-btn');
-    var closeBtn    = document.getElementById('search-close-btn');
-    var resultsEl   = document.getElementById('search-results');
+    var overlay = document.getElementById('search-overlay');
+    var input = document.getElementById('search-input');
+    var clearBtn = document.getElementById('search-clear-btn');
+    var closeBtn = document.getElementById('search-close-btn');
+    var resultsEl = document.getElementById('search-results');
     var debounceTimer;
 
     // Helper: format VND
@@ -840,7 +883,7 @@
     function openSearch() {
       overlay.classList.add('is-open');
       document.body.style.overflow = 'hidden';
-      setTimeout(function() { input.focus(); }, 50);
+      setTimeout(function () { input.focus(); }, 50);
       var triggerBtn = document.getElementById('search-trigger-btn');
       if (triggerBtn) triggerBtn.setAttribute('aria-expanded', 'true');
     }
@@ -861,30 +904,30 @@
       if (!products || !products.length) {
         resultsEl.innerHTML =
           '<div class="search-overlay__empty">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>' +
-            '<p>Không tìm thấy kết quả</p>' +
-            '<small>Thử tìm với từ khóa khác như "lộc bình", "tranh gốm"</small>' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>' +
+          '<p>Không tìm thấy kết quả</p>' +
+          '<small>Thử tìm với từ khóa khác như "lộc bình", "tranh gốm"</small>' +
           '</div>';
         return;
       }
 
-      var basePath = (function() {
+      var basePath = (function () {
         var pn = window.location.pathname.toLowerCase();
         return (pn === '/user' || pn.startsWith('/user/')) ? '/user/' : '';
       })();
 
       var countHTML = '<p class="search-results__count">Tìm thấy ' + products.length + ' sản phẩm cho "' + query + '"</p>';
-      var gridHTML  = '<div class="search-results__grid">';
-      products.forEach(function(p) {
-        var img  = (p.images && p.images[0]) ? basePath + p.images[0] : basePath + 'assets/images/placeholder.jpg';
+      var gridHTML = '<div class="search-results__grid">';
+      products.forEach(function (p) {
+        var img = (p.images && p.images[0]) ? basePath + p.images[0] : basePath + 'assets/images/placeholder.jpg';
         var href = basePath + 'product-detail.html?slug=' + p.slug;
         gridHTML +=
           '<a class="search-result-card" href="' + href + '">' +
-            '<img class="search-result-card__img" src="' + img + '" alt="' + p.name + '" loading="lazy">' +
-            '<div class="search-result-card__body">' +
-              '<p class="search-result-card__name">' + p.name + '</p>' +
-              '<p class="search-result-card__price">' + fmt(p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0)) + '</p>' +
-            '</div>' +
+          '<img class="search-result-card__img" src="' + img + '" alt="' + p.name + '" loading="lazy">' +
+          '<div class="search-result-card__body">' +
+          '<p class="search-result-card__name">' + p.name + '</p>' +
+          '<p class="search-result-card__price">' + fmt(p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0)) + '</p>' +
+          '</div>' +
           '</a>';
       });
       gridHTML += '</div>';
@@ -897,12 +940,12 @@
       if (!q) { resultsEl.innerHTML = ''; return; }
 
       if (window.PhucGiaTienAPI) {
-        window.PhucGiaTienAPI.getProducts({ limit: 100 }).then(function(res) {
-          var filtered = (res.data || []).filter(function(p) {
+        window.PhucGiaTienAPI.getProducts({ limit: 100 }).then(function (res) {
+          var filtered = (res.data || []).filter(function (p) {
             return p.name.toLowerCase().includes(q) ||
-                   (p.category || '').toLowerCase().includes(q) ||
-                   (p.material || '').toLowerCase().includes(q) ||
-                   (p.style || '').toLowerCase().includes(q);
+              (p.category || '').toLowerCase().includes(q) ||
+              (p.material || '').toLowerCase().includes(q) ||
+              (p.style || '').toLowerCase().includes(q);
           });
           renderResults(filtered, query.trim());
         });
@@ -910,15 +953,15 @@
     }
 
     // Debounced input
-    input.addEventListener('input', function() {
+    input.addEventListener('input', function () {
       var val = input.value;
       clearBtn.classList.toggle('visible', val.length > 0);
       clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(function() { doSearch(val); }, 280);
+      debounceTimer = setTimeout(function () { doSearch(val); }, 280);
     });
 
     // Clear button
-    clearBtn.addEventListener('click', function() {
+    clearBtn.addEventListener('click', function () {
       input.value = '';
       clearBtn.classList.remove('visible');
       resultsEl.innerHTML = '';
@@ -926,8 +969,8 @@
     });
 
     // Hint tags
-    overlay.querySelectorAll('.search-overlay__hint-tag').forEach(function(tag) {
-      tag.addEventListener('click', function() {
+    overlay.querySelectorAll('.search-overlay__hint-tag').forEach(function (tag) {
+      tag.addEventListener('click', function () {
         input.value = tag.dataset.hint;
         clearBtn.classList.add('visible');
         doSearch(tag.dataset.hint);
@@ -938,12 +981,12 @@
     closeBtn.addEventListener('click', closeSearch);
 
     // Click backdrop to close
-    overlay.addEventListener('click', function(e) {
+    overlay.addEventListener('click', function (e) {
       if (e.target === overlay) closeSearch();
     });
 
     // Keyboard: Escape to close, Ctrl/Cmd+K to open
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && overlay.classList.contains('is-open')) {
         closeSearch();
       }
@@ -954,7 +997,7 @@
     });
 
     // Wire trigger button (may not exist yet if header hasn't loaded)
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
       var btn = e.target.closest('#search-trigger-btn');
       if (btn) openSearch();
     });
@@ -965,7 +1008,7 @@
   // Patch: call initSearch after header is injected
   document.addEventListener('search-ready', initSearch);
   // Fallback: init on DOMContentLoaded + small delay for async header
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     setTimeout(initSearch, 600);
   });
 

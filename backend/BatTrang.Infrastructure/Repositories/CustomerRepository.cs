@@ -33,5 +33,14 @@ namespace BatTrang.Infrastructure.Repositories
                 .OrderByDescending(c => c.JoinedAt)
                 .ToListAsync();
         }
+
+        public async Task<Customer?> GetByPhoneOrEmailAsync(string? phone, string email)
+        {
+            if (string.IsNullOrEmpty(phone))
+            {
+                return await _context.Customers.FirstOrDefaultAsync(c => c.Email == email);
+            }
+            return await _context.Customers.FirstOrDefaultAsync(c => c.Email == email || c.Phone == phone);
+        }
     }
 }

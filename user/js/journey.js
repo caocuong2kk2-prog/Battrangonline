@@ -9,12 +9,12 @@
   // Extract embed URL: YouTube player + TikTok player/v1
   function toEmbedUrl(url) {
     if (!url) return '';
-    var ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/))([A-Za-z0-9_-]{11})/);
+    var ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/))([A-Za-z0-9_-]{11})/);
     if (ytMatch) return 'https://www.youtube.com/embed/' + ytMatch[1];
 
     if (url.includes('tiktok.com')) {
       var tkMatch = url.match(/video\/(\d+)/);
-      if (tkMatch) return 'https://www.tiktok.com/player/v1/' + tkMatch[1] + '?music_info=0&description=0&native_context_menu=0';
+      if (tkMatch) return 'https://www.tiktok.com/embed/' + tkMatch[1];
     }
     if (url.includes('facebook.com') || url.includes('fb.watch')) {
       return 'https://www.facebook.com/plugins/video.php?href=' + encodeURIComponent(url) + '&show_text=false&width=560';
@@ -78,8 +78,8 @@
       : videos.filter(function (v) { return v.topicId === activeTopicId; });
 
     if (filtered.length === 0) {
-      container.innerHTML = '<div style="text-align:center;padding:60px 0;color:rgba(255,255,255,0.4);">' +
-        '<p style="font-size:1.1rem;">Chưa có video nào trong chủ đề này.</p>' +
+      container.innerHTML = '<div style="text-align:center;padding:60px 0;color:var(--color-primary-light);">' +
+        '<p style="font-size:1.1rem;font-weight:var(--fw-medium);">Chưa có video nào trong chủ đề này.</p>' +
         '</div>';
       return;
     }

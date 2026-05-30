@@ -8,6 +8,7 @@ using BatTrang.API.Hubs;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using BatTrang.Infrastructure.Data;
 
 namespace BatTrang.API.Controllers
 {
@@ -19,13 +20,15 @@ namespace BatTrang.API.Controllers
         private readonly IProductRepository _productRepo;
         private readonly ICustomerRepository _customerRepo;
         private readonly IHubContext<NotificationHub> _hubContext;
+        private readonly AppDbContext _context;
 
-        public OrdersController(IOrderRepository orderRepo, IProductRepository productRepo, ICustomerRepository customerRepo, IHubContext<NotificationHub> hubContext)
+        public OrdersController(IOrderRepository orderRepo, IProductRepository productRepo, ICustomerRepository customerRepo, IHubContext<NotificationHub> hubContext, AppDbContext context)
         {
             _orderRepo = orderRepo;
             _productRepo = productRepo;
             _customerRepo = customerRepo;
             _hubContext = hubContext;
+            _context = context;
         }
 
         [HttpPost]
@@ -74,14 +77,14 @@ namespace BatTrang.API.Controllers
                 var product = await _productRepo.GetProductWithImagesAsync(item.Id);
                 if (product != null)
                 {
-                    var variant = product.Variants.FirstOrDefault(v => v.Size == item.Size) ?? product.Variants.FirstOrDefault();
+                    var variant = product.Variants.FirstOrDefault(v => v.Size?.Name == item.Size) ?? product.Variants.FirstOrDefault();
                     var price = variant?.Price ?? 0;
 
                     var orderItem = new OrderItem
                     {
                         ProductId = product.Id,
                         ProductName = product.Name,
-                        Size = variant?.Size ?? item.Size,
+                        Size = item.Size,
                         UnitPrice = price,
                         Quantity = item.Qty
                     };
@@ -95,7 +98,12 @@ namespace BatTrang.API.Controllers
 
             try
             {
-                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "OrderPlaced", $"Đơn hàng mới {order.OrderCode} vừa được đặt bởi {order.CustomerName}!");
+                var msg = $"Đơn hàng mới {order.OrderCode} vừa được đặt bởi {order.CustomerName}!";
+                var noti = new BatTrang.Core.Entities.Notification { Type = "OrderPlaced", Message = msg };
+                _context.Notifications.Add(noti);
+                await _context.SaveChangesAsync();
+
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "OrderPlaced", msg);
             }
             catch (Exception ex)
             {
@@ -111,6 +119,9 @@ namespace BatTrang.API.Controllers
         {
             var order = await _orderRepo.GetByOrderCodeAsync(orderCode);
             if (order == null) return NotFound(new { message = "Không tìm thấy đơn hàng" });
+
+            var productIds = order.Items.Select(i => i.ProductId).Distinct().ToList();
+            var imagesMap = await _productRepo.GetProductImagesAsync(productIds);
 
             return Ok(new
             {
@@ -128,7 +139,9 @@ namespace BatTrang.API.Controllers
                     name = i.ProductName,
                     qty = i.Quantity,
                     price = i.UnitPrice,
-                    size = i.Size
+                    size = i.Size,
+                    productId = i.ProductId,
+                    image = imagesMap.ContainsKey(i.ProductId) ? imagesMap[i.ProductId] : ""
                 }).ToList()
             });
         }
@@ -149,6 +162,9 @@ namespace BatTrang.API.Controllers
             var allOrders = await _orderRepo.GetOrdersWithItemsAsync();
             var myOrders = allOrders.Where(o => o.CustomerId == customerId).OrderByDescending(o => o.CreatedAt).ToList();
 
+            var allProductIds = myOrders.SelectMany(o => o.Items).Select(i => i.ProductId).Distinct().ToList();
+            var imagesMap = await _productRepo.GetProductImagesAsync(allProductIds);
+
             var result = myOrders.Select(order => new
             {
                 orderCode = order.OrderCode,
@@ -165,7 +181,9 @@ namespace BatTrang.API.Controllers
                     name = i.ProductName,
                     qty = i.Quantity,
                     price = i.UnitPrice,
-                    size = i.Size
+                    size = i.Size,
+                    productId = i.ProductId,
+                    image = imagesMap.ContainsKey(i.ProductId) ? imagesMap[i.ProductId] : ""
                 }).ToList()
             });
 

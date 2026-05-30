@@ -1,11 +1,11 @@
 ﻿<Project>
   <ItemGroup>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\0497193b-5a26-4c62-9dc2-d4c64b806745_z7812881837776_f7fd078b9db5ada738007cc6cfecd15b.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\052bbc10-fae2-45ea-88a0-bc3235bc8bed_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/0497193b-5a26-4c62-9dc2-d4c64b806745_z7812881837776_f7fd078b9db5ada738007cc6cfecd15b.jpg</RelativePath>
+      <RelativePath>uploads/052bbc10-fae2-45ea-88a0-bc3235bc8bed_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -14,14 +14,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\0497193b-5a26-4c62-9dc2-d4c64b806745_z7812881837776_f7fd078b9db5ada738007cc6cfecd15b.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\052bbc10-fae2-45ea-88a0-bc3235bc8bed_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\04ef48c9-ef43-45cb-be0e-5cba982e35c4_z7867741360578_bc5870604601891dd030febd0b69623a.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\06073ffb-61b0-4acf-a2c3-8ee57846f952_z7812881940142_d24ceeff6c45be8dc236124e411b2f63.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/04ef48c9-ef43-45cb-be0e-5cba982e35c4_z7867741360578_bc5870604601891dd030febd0b69623a.jpg</RelativePath>
+      <RelativePath>uploads/06073ffb-61b0-4acf-a2c3-8ee57846f952_z7812881940142_d24ceeff6c45be8dc236124e411b2f63.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -30,14 +30,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\04ef48c9-ef43-45cb-be0e-5cba982e35c4_z7867741360578_bc5870604601891dd030febd0b69623a.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\06073ffb-61b0-4acf-a2c3-8ee57846f952_z7812881940142_d24ceeff6c45be8dc236124e411b2f63.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\07c7bce9-7ca8-43f5-8c27-a0fcb0daee2a_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\08f45787-c9c4-4796-948c-64b0300c7746_z7871573994855_c52dc42da49012c17ec3e5429e79fb0a.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/07c7bce9-7ca8-43f5-8c27-a0fcb0daee2a_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg</RelativePath>
+      <RelativePath>uploads/08f45787-c9c4-4796-948c-64b0300c7746_z7871573994855_c52dc42da49012c17ec3e5429e79fb0a.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -46,14 +46,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\07c7bce9-7ca8-43f5-8c27-a0fcb0daee2a_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\08f45787-c9c4-4796-948c-64b0300c7746_z7871573994855_c52dc42da49012c17ec3e5429e79fb0a.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\0cd39071-6231-428a-884c-cf979d47458b_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\0b3ef34d-d33c-4ddf-b40a-f364a7538902_z7867741414968_656cae29e92f924afe22257c9ac3aa53.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/0cd39071-6231-428a-884c-cf979d47458b_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg</RelativePath>
+      <RelativePath>uploads/0b3ef34d-d33c-4ddf-b40a-f364a7538902_z7867741414968_656cae29e92f924afe22257c9ac3aa53.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -62,14 +62,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\0cd39071-6231-428a-884c-cf979d47458b_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\0b3ef34d-d33c-4ddf-b40a-f364a7538902_z7867741414968_656cae29e92f924afe22257c9ac3aa53.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\0d76391d-e4f3-4253-97ae-08b5bd17df59_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\0c19411e-d89a-48bf-8da9-7261527b3452_z7812881837776_f7fd078b9db5ada738007cc6cfecd15b.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/0d76391d-e4f3-4253-97ae-08b5bd17df59_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg</RelativePath>
+      <RelativePath>uploads/0c19411e-d89a-48bf-8da9-7261527b3452_z7812881837776_f7fd078b9db5ada738007cc6cfecd15b.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -78,14 +78,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\0d76391d-e4f3-4253-97ae-08b5bd17df59_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\0c19411e-d89a-48bf-8da9-7261527b3452_z7812881837776_f7fd078b9db5ada738007cc6cfecd15b.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\13acb896-8657-41c8-9579-f66d6ae0cf66_z7825074224882_4bed32951dfdf824d5f24cd902b840f2.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1d009a30-3124-420f-9b86-d8604d60bdfb_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/13acb896-8657-41c8-9579-f66d6ae0cf66_z7825074224882_4bed32951dfdf824d5f24cd902b840f2.jpg</RelativePath>
+      <RelativePath>uploads/1d009a30-3124-420f-9b86-d8604d60bdfb_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -94,14 +94,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\13acb896-8657-41c8-9579-f66d6ae0cf66_z7825074224882_4bed32951dfdf824d5f24cd902b840f2.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1d009a30-3124-420f-9b86-d8604d60bdfb_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1455b041-8e25-4099-89fd-d28e70e25410_z7812881801168_ca378777e6d1126512257d8156059d66.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1f2ced13-8470-43eb-9f4f-81e49f306710_z7812881801168_ca378777e6d1126512257d8156059d66.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/1455b041-8e25-4099-89fd-d28e70e25410_z7812881801168_ca378777e6d1126512257d8156059d66.jpg</RelativePath>
+      <RelativePath>uploads/1f2ced13-8470-43eb-9f4f-81e49f306710_z7812881801168_ca378777e6d1126512257d8156059d66.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -110,14 +110,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1455b041-8e25-4099-89fd-d28e70e25410_z7812881801168_ca378777e6d1126512257d8156059d66.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1f2ced13-8470-43eb-9f4f-81e49f306710_z7812881801168_ca378777e6d1126512257d8156059d66.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1dbed64d-6fb4-495a-bde1-6b202251ddb0_z7825074225038_a085f5244d3d6f905a0aa940a95080e7.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1f87dc15-8ee5-4c9a-8cd1-d2c4cbd2d1ea_z7812881785614_1d7fb8ec52811bdf63adac4646b84834.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/1dbed64d-6fb4-495a-bde1-6b202251ddb0_z7825074225038_a085f5244d3d6f905a0aa940a95080e7.jpg</RelativePath>
+      <RelativePath>uploads/1f87dc15-8ee5-4c9a-8cd1-d2c4cbd2d1ea_z7812881785614_1d7fb8ec52811bdf63adac4646b84834.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -126,14 +126,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1dbed64d-6fb4-495a-bde1-6b202251ddb0_z7825074225038_a085f5244d3d6f905a0aa940a95080e7.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\1f87dc15-8ee5-4c9a-8cd1-d2c4cbd2d1ea_z7812881785614_1d7fb8ec52811bdf63adac4646b84834.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\21e24f72-9504-4087-a670-fa116b7ff7ab_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\2996c89c-06dc-45bd-9203-5184f701b458_z7867741360578_bc5870604601891dd030febd0b69623a.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/21e24f72-9504-4087-a670-fa116b7ff7ab_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg</RelativePath>
+      <RelativePath>uploads/2996c89c-06dc-45bd-9203-5184f701b458_z7867741360578_bc5870604601891dd030febd0b69623a.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -142,14 +142,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\21e24f72-9504-4087-a670-fa116b7ff7ab_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\2996c89c-06dc-45bd-9203-5184f701b458_z7867741360578_bc5870604601891dd030febd0b69623a.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\237e10e1-de95-4f2b-b103-f78a87836d57_z7825074224882_4bed32951dfdf824d5f24cd902b840f2.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\2f2d2d35-c44f-4e40-936d-f0677724bef2_z7871573959966_b90d091567ecb60a27313f427af3cbf3.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/237e10e1-de95-4f2b-b103-f78a87836d57_z7825074224882_4bed32951dfdf824d5f24cd902b840f2.jpg</RelativePath>
+      <RelativePath>uploads/2f2d2d35-c44f-4e40-936d-f0677724bef2_z7871573959966_b90d091567ecb60a27313f427af3cbf3.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -158,14 +158,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\237e10e1-de95-4f2b-b103-f78a87836d57_z7825074224882_4bed32951dfdf824d5f24cd902b840f2.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\2f2d2d35-c44f-4e40-936d-f0677724bef2_z7871573959966_b90d091567ecb60a27313f427af3cbf3.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\24fea341-b0a9-4ae7-a604-d7ea5850290c_troi song.mp4))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4dd99ca6-733f-44bc-99df-3fa232d1658c_z7875233661651_5ab6450c53f7033aa2d01de21fcbc5c1.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/24fea341-b0a9-4ae7-a604-d7ea5850290c_troi song.mp4</RelativePath>
+      <RelativePath>uploads/4dd99ca6-733f-44bc-99df-3fa232d1658c_z7875233661651_5ab6450c53f7033aa2d01de21fcbc5c1.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -174,14 +174,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\24fea341-b0a9-4ae7-a604-d7ea5850290c_troi song.mp4))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4dd99ca6-733f-44bc-99df-3fa232d1658c_z7875233661651_5ab6450c53f7033aa2d01de21fcbc5c1.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\27fe204f-4cd3-4bfe-b84f-e24561940c0c_z7867741451473_3715ef460025833934b3c75fc8231db2.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\58cdd638-a3dc-41df-8c09-e2b4a1e697ae_z7823387215888_878f444bb74f06ec4f44dda9c31a172e.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/27fe204f-4cd3-4bfe-b84f-e24561940c0c_z7867741451473_3715ef460025833934b3c75fc8231db2.jpg</RelativePath>
+      <RelativePath>uploads/58cdd638-a3dc-41df-8c09-e2b4a1e697ae_z7823387215888_878f444bb74f06ec4f44dda9c31a172e.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -190,14 +190,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\27fe204f-4cd3-4bfe-b84f-e24561940c0c_z7867741451473_3715ef460025833934b3c75fc8231db2.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\58cdd638-a3dc-41df-8c09-e2b4a1e697ae_z7823387215888_878f444bb74f06ec4f44dda9c31a172e.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\2af3d669-84cb-4dc3-886b-bf103045122f_z7825074224941_edb1fc7b313079484acf00630df7613d.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5e7d1d9b-03b6-487e-93dc-c73941288af9_z7812881921904_8d6828299585118348f5d9970b1bc584.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/2af3d669-84cb-4dc3-886b-bf103045122f_z7825074224941_edb1fc7b313079484acf00630df7613d.jpg</RelativePath>
+      <RelativePath>uploads/5e7d1d9b-03b6-487e-93dc-c73941288af9_z7812881921904_8d6828299585118348f5d9970b1bc584.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -206,14 +206,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\2af3d669-84cb-4dc3-886b-bf103045122f_z7825074224941_edb1fc7b313079484acf00630df7613d.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5e7d1d9b-03b6-487e-93dc-c73941288af9_z7812881921904_8d6828299585118348f5d9970b1bc584.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\2b835bab-c4b6-4af9-82ba-1282621dcdec_z7812881801161_24ae6bd4ed42ac1bedc77ff43cc471c6.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\604b723b-1860-4e42-a8cf-d3b2e16f0729_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/2b835bab-c4b6-4af9-82ba-1282621dcdec_z7812881801161_24ae6bd4ed42ac1bedc77ff43cc471c6.jpg</RelativePath>
+      <RelativePath>uploads/604b723b-1860-4e42-a8cf-d3b2e16f0729_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -222,14 +222,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\2b835bab-c4b6-4af9-82ba-1282621dcdec_z7812881801161_24ae6bd4ed42ac1bedc77ff43cc471c6.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\604b723b-1860-4e42-a8cf-d3b2e16f0729_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\31d45d8b-7ecf-49fd-9efd-cc0911aef1c6_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6a1cb72c-ef37-4952-8acf-b102e66b7452_z7875233495553_ddf3b7c1face50c9db57383dfaca6f64.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/31d45d8b-7ecf-49fd-9efd-cc0911aef1c6_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg</RelativePath>
+      <RelativePath>uploads/6a1cb72c-ef37-4952-8acf-b102e66b7452_z7875233495553_ddf3b7c1face50c9db57383dfaca6f64.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -238,14 +238,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\31d45d8b-7ecf-49fd-9efd-cc0911aef1c6_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6a1cb72c-ef37-4952-8acf-b102e66b7452_z7875233495553_ddf3b7c1face50c9db57383dfaca6f64.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\3b29fa42-9018-4161-a224-c1ccfa5878dd_z7812881785614_1d7fb8ec52811bdf63adac4646b84834.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6a9553b7-d64e-4a83-8378-179c4eaf4867_z7871573959966_b90d091567ecb60a27313f427af3cbf3.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/3b29fa42-9018-4161-a224-c1ccfa5878dd_z7812881785614_1d7fb8ec52811bdf63adac4646b84834.jpg</RelativePath>
+      <RelativePath>uploads/6a9553b7-d64e-4a83-8378-179c4eaf4867_z7871573959966_b90d091567ecb60a27313f427af3cbf3.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -254,14 +254,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\3b29fa42-9018-4161-a224-c1ccfa5878dd_z7812881785614_1d7fb8ec52811bdf63adac4646b84834.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6a9553b7-d64e-4a83-8378-179c4eaf4867_z7871573959966_b90d091567ecb60a27313f427af3cbf3.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\3cd63268-8008-4a01-b314-88a59d4a677a_z7812881801303_55d30512b5115c438412550a5ec9cbb2.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6e0f8d47-855b-48a4-9444-28d13660eedd_z7812881801168_ca378777e6d1126512257d8156059d66.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/3cd63268-8008-4a01-b314-88a59d4a677a_z7812881801303_55d30512b5115c438412550a5ec9cbb2.jpg</RelativePath>
+      <RelativePath>uploads/6e0f8d47-855b-48a4-9444-28d13660eedd_z7812881801168_ca378777e6d1126512257d8156059d66.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -270,14 +270,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\3cd63268-8008-4a01-b314-88a59d4a677a_z7812881801303_55d30512b5115c438412550a5ec9cbb2.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6e0f8d47-855b-48a4-9444-28d13660eedd_z7812881801168_ca378777e6d1126512257d8156059d66.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\48f7f455-1817-44f7-936d-d3d92e9c53c7_troi song.mp4))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\72f05249-da97-45c7-abe5-e9f665b8fad7_z7871573994855_c52dc42da49012c17ec3e5429e79fb0a.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/48f7f455-1817-44f7-936d-d3d92e9c53c7_troi song.mp4</RelativePath>
+      <RelativePath>uploads/72f05249-da97-45c7-abe5-e9f665b8fad7_z7871573994855_c52dc42da49012c17ec3e5429e79fb0a.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -286,14 +286,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\48f7f455-1817-44f7-936d-d3d92e9c53c7_troi song.mp4))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\72f05249-da97-45c7-abe5-e9f665b8fad7_z7871573994855_c52dc42da49012c17ec3e5429e79fb0a.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4a1ecdef-4e5c-4454-9ac1-6fb51f998385_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\7b13fb0e-fcb0-44bd-9035-11bd13313db2_z7812881801303_55d30512b5115c438412550a5ec9cbb2.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/4a1ecdef-4e5c-4454-9ac1-6fb51f998385_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg</RelativePath>
+      <RelativePath>uploads/7b13fb0e-fcb0-44bd-9035-11bd13313db2_z7812881801303_55d30512b5115c438412550a5ec9cbb2.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -302,14 +302,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4a1ecdef-4e5c-4454-9ac1-6fb51f998385_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\7b13fb0e-fcb0-44bd-9035-11bd13313db2_z7812881801303_55d30512b5115c438412550a5ec9cbb2.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4d94def1-0ce9-4abe-97bc-2c533c673f19_z7812881801168_ca378777e6d1126512257d8156059d66.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\7fd50705-ef62-4229-b63a-80a7758e7b28_logo-removebg-preview.png))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/4d94def1-0ce9-4abe-97bc-2c533c673f19_z7812881801168_ca378777e6d1126512257d8156059d66.jpg</RelativePath>
+      <RelativePath>uploads/7fd50705-ef62-4229-b63a-80a7758e7b28_logo-removebg-preview.png</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -318,14 +318,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\4d94def1-0ce9-4abe-97bc-2c533c673f19_z7812881801168_ca378777e6d1126512257d8156059d66.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\7fd50705-ef62-4229-b63a-80a7758e7b28_logo-removebg-preview.png))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\589eda53-7e8f-4cf4-ad03-5e39a57bdb9f_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\82aff2d6-6384-423c-8f76-86936968b158_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/589eda53-7e8f-4cf4-ad03-5e39a57bdb9f_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png</RelativePath>
+      <RelativePath>uploads/82aff2d6-6384-423c-8f76-86936968b158_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -334,14 +334,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\589eda53-7e8f-4cf4-ad03-5e39a57bdb9f_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\82aff2d6-6384-423c-8f76-86936968b158_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5de8942d-e7b2-41e3-a82c-6b47e48d5bfd_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\87b78359-3a5d-4a59-99df-19470e6adb5d_z7875233461071_795e81c718fe93950586b1a26133e96a.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/5de8942d-e7b2-41e3-a82c-6b47e48d5bfd_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg</RelativePath>
+      <RelativePath>uploads/87b78359-3a5d-4a59-99df-19470e6adb5d_z7875233461071_795e81c718fe93950586b1a26133e96a.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -350,14 +350,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\5de8942d-e7b2-41e3-a82c-6b47e48d5bfd_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\87b78359-3a5d-4a59-99df-19470e6adb5d_z7875233461071_795e81c718fe93950586b1a26133e96a.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\65609365-fdf5-41d5-91e5-c96720c4b2af_z7867741451473_3715ef460025833934b3c75fc8231db2.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\92ce0957-4b03-4826-90dc-b57b16938e98_z7871573904659_8d8601ded14eb7a90b8f0c272c0f5869.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/65609365-fdf5-41d5-91e5-c96720c4b2af_z7867741451473_3715ef460025833934b3c75fc8231db2.jpg</RelativePath>
+      <RelativePath>uploads/92ce0957-4b03-4826-90dc-b57b16938e98_z7871573904659_8d8601ded14eb7a90b8f0c272c0f5869.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -366,14 +366,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\65609365-fdf5-41d5-91e5-c96720c4b2af_z7867741451473_3715ef460025833934b3c75fc8231db2.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\92ce0957-4b03-4826-90dc-b57b16938e98_z7871573904659_8d8601ded14eb7a90b8f0c272c0f5869.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\65c0a5c6-4e13-460b-9404-f2b4b7df25f7_z7823387215888_878f444bb74f06ec4f44dda9c31a172e.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\9478bfbc-f40a-4e79-aeaa-6efb2e02d1c9_z7812881801288_729a811b7ce004c792b548ac5ef17309.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/65c0a5c6-4e13-460b-9404-f2b4b7df25f7_z7823387215888_878f444bb74f06ec4f44dda9c31a172e.jpg</RelativePath>
+      <RelativePath>uploads/9478bfbc-f40a-4e79-aeaa-6efb2e02d1c9_z7812881801288_729a811b7ce004c792b548ac5ef17309.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -382,14 +382,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\65c0a5c6-4e13-460b-9404-f2b4b7df25f7_z7823387215888_878f444bb74f06ec4f44dda9c31a172e.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\9478bfbc-f40a-4e79-aeaa-6efb2e02d1c9_z7812881801288_729a811b7ce004c792b548ac5ef17309.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\670a1d5b-f438-4c1d-91cb-514ec78a5062_z7812881785614_1d7fb8ec52811bdf63adac4646b84834.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\9fb0a443-ff32-4e8c-b680-3ddd681c1d6b_z7871573904659_8d8601ded14eb7a90b8f0c272c0f5869.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/670a1d5b-f438-4c1d-91cb-514ec78a5062_z7812881785614_1d7fb8ec52811bdf63adac4646b84834.jpg</RelativePath>
+      <RelativePath>uploads/9fb0a443-ff32-4e8c-b680-3ddd681c1d6b_z7871573904659_8d8601ded14eb7a90b8f0c272c0f5869.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -398,14 +398,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\670a1d5b-f438-4c1d-91cb-514ec78a5062_z7812881785614_1d7fb8ec52811bdf63adac4646b84834.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\9fb0a443-ff32-4e8c-b680-3ddd681c1d6b_z7871573904659_8d8601ded14eb7a90b8f0c272c0f5869.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6cc56804-c970-41c4-ab3b-d6cc612adc92_chim canh cut.mp4))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\a6a21c0e-e7a7-425f-93b5-9c2ba585be96_z7871573994855_c52dc42da49012c17ec3e5429e79fb0a.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/6cc56804-c970-41c4-ab3b-d6cc612adc92_chim canh cut.mp4</RelativePath>
+      <RelativePath>uploads/a6a21c0e-e7a7-425f-93b5-9c2ba585be96_z7871573994855_c52dc42da49012c17ec3e5429e79fb0a.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -414,14 +414,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6cc56804-c970-41c4-ab3b-d6cc612adc92_chim canh cut.mp4))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\a6a21c0e-e7a7-425f-93b5-9c2ba585be96_z7871573994855_c52dc42da49012c17ec3e5429e79fb0a.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6ee06ae4-a5bf-4f30-bc71-6b21403d151c_z7823387215989_b86b723ab64db9c8880fa4fd70e64267.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\a8d63fa2-bba0-4ab4-8971-4538b681b1c3_z7875233495553_ddf3b7c1face50c9db57383dfaca6f64.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/6ee06ae4-a5bf-4f30-bc71-6b21403d151c_z7823387215989_b86b723ab64db9c8880fa4fd70e64267.jpg</RelativePath>
+      <RelativePath>uploads/a8d63fa2-bba0-4ab4-8971-4538b681b1c3_z7875233495553_ddf3b7c1face50c9db57383dfaca6f64.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -430,14 +430,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\6ee06ae4-a5bf-4f30-bc71-6b21403d151c_z7823387215989_b86b723ab64db9c8880fa4fd70e64267.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\a8d63fa2-bba0-4ab4-8971-4538b681b1c3_z7875233495553_ddf3b7c1face50c9db57383dfaca6f64.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\72ec61a2-a8da-4408-95ba-bac31456a474_meme-meo-5.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\ae337a1e-3239-4dcd-80af-bb0875124b69_z7825074185401_9b256c2a9d55ab566da2dec867c3face.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/72ec61a2-a8da-4408-95ba-bac31456a474_meme-meo-5.jpg</RelativePath>
+      <RelativePath>uploads/ae337a1e-3239-4dcd-80af-bb0875124b69_z7825074185401_9b256c2a9d55ab566da2dec867c3face.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -446,14 +446,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\72ec61a2-a8da-4408-95ba-bac31456a474_meme-meo-5.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\ae337a1e-3239-4dcd-80af-bb0875124b69_z7825074185401_9b256c2a9d55ab566da2dec867c3face.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\74792dee-4992-4d49-8d14-5177193b66c0_meme-meo-5.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\afc571ff-e95c-4e5a-b58c-88826c86a9ba_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/74792dee-4992-4d49-8d14-5177193b66c0_meme-meo-5.jpg</RelativePath>
+      <RelativePath>uploads/afc571ff-e95c-4e5a-b58c-88826c86a9ba_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -462,14 +462,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\74792dee-4992-4d49-8d14-5177193b66c0_meme-meo-5.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\afc571ff-e95c-4e5a-b58c-88826c86a9ba_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\7791e100-fe9a-4c57-a235-56f8f5829e95_images.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b8c1abd6-c41b-4f60-b078-13fde1812b05_z7875233607059_56c0554a6217ba237569c7c1799bc76c.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/7791e100-fe9a-4c57-a235-56f8f5829e95_images.jpg</RelativePath>
+      <RelativePath>uploads/b8c1abd6-c41b-4f60-b078-13fde1812b05_z7875233607059_56c0554a6217ba237569c7c1799bc76c.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -478,14 +478,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\7791e100-fe9a-4c57-a235-56f8f5829e95_images.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b8c1abd6-c41b-4f60-b078-13fde1812b05_z7875233607059_56c0554a6217ba237569c7c1799bc76c.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\7bc36067-b14b-47eb-a3b5-590beb3708ee_z7867741414968_656cae29e92f924afe22257c9ac3aa53.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\baa03c92-4693-4c31-8172-8fe8a997741e_z7812881801161_24ae6bd4ed42ac1bedc77ff43cc471c6.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/7bc36067-b14b-47eb-a3b5-590beb3708ee_z7867741414968_656cae29e92f924afe22257c9ac3aa53.jpg</RelativePath>
+      <RelativePath>uploads/baa03c92-4693-4c31-8172-8fe8a997741e_z7812881801161_24ae6bd4ed42ac1bedc77ff43cc471c6.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -494,14 +494,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\7bc36067-b14b-47eb-a3b5-590beb3708ee_z7867741414968_656cae29e92f924afe22257c9ac3aa53.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\baa03c92-4693-4c31-8172-8fe8a997741e_z7812881801161_24ae6bd4ed42ac1bedc77ff43cc471c6.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\7bca7607-3f64-4694-a2c2-3443ee9e1347_de nhay.mp4))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\be4b1a6e-918f-4614-9448-9feefd944119_z7825074224882_4bed32951dfdf824d5f24cd902b840f2.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/7bca7607-3f64-4694-a2c2-3443ee9e1347_de nhay.mp4</RelativePath>
+      <RelativePath>uploads/be4b1a6e-918f-4614-9448-9feefd944119_z7825074224882_4bed32951dfdf824d5f24cd902b840f2.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -510,14 +510,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\7bca7607-3f64-4694-a2c2-3443ee9e1347_de nhay.mp4))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\be4b1a6e-918f-4614-9448-9feefd944119_z7825074224882_4bed32951dfdf824d5f24cd902b840f2.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\a09db95b-f713-4a21-8221-9ad92f374de4_z7867741360578_bc5870604601891dd030febd0b69623a.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\c8606bbd-d5b6-49ea-a749-43a8cacd57e5_z7812881837696_7eb8549865d75cbb06cb3973893e3f2f.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/a09db95b-f713-4a21-8221-9ad92f374de4_z7867741360578_bc5870604601891dd030febd0b69623a.jpg</RelativePath>
+      <RelativePath>uploads/c8606bbd-d5b6-49ea-a749-43a8cacd57e5_z7812881837696_7eb8549865d75cbb06cb3973893e3f2f.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -526,14 +526,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\a09db95b-f713-4a21-8221-9ad92f374de4_z7867741360578_bc5870604601891dd030febd0b69623a.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\c8606bbd-d5b6-49ea-a749-43a8cacd57e5_z7812881837696_7eb8549865d75cbb06cb3973893e3f2f.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\aed53392-f522-4f0e-8a4d-396ee05efbdd_meme-meo-5.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d4223a9f-28b0-4830-b44c-e4643e22fe03_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/aed53392-f522-4f0e-8a4d-396ee05efbdd_meme-meo-5.jpg</RelativePath>
+      <RelativePath>uploads/d4223a9f-28b0-4830-b44c-e4643e22fe03_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -542,14 +542,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\aed53392-f522-4f0e-8a4d-396ee05efbdd_meme-meo-5.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d4223a9f-28b0-4830-b44c-e4643e22fe03_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\af0e4c9a-4fbe-4e9a-b207-e09c60fa8975_z7812881785614_1d7fb8ec52811bdf63adac4646b84834.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d77055e0-2cf4-441d-a374-cf1f465d7e78_z7871574032181_37200cb1f8ebe64580d53220435b8d6d.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/af0e4c9a-4fbe-4e9a-b207-e09c60fa8975_z7812881785614_1d7fb8ec52811bdf63adac4646b84834.jpg</RelativePath>
+      <RelativePath>uploads/d77055e0-2cf4-441d-a374-cf1f465d7e78_z7871574032181_37200cb1f8ebe64580d53220435b8d6d.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -558,14 +558,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\af0e4c9a-4fbe-4e9a-b207-e09c60fa8975_z7812881785614_1d7fb8ec52811bdf63adac4646b84834.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d77055e0-2cf4-441d-a374-cf1f465d7e78_z7871574032181_37200cb1f8ebe64580d53220435b8d6d.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b41810ed-f271-4b2a-b309-d925b3de21ac_meme-meo-5.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e0a90fad-7d2e-42da-9dc3-73be4269b89f_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/b41810ed-f271-4b2a-b309-d925b3de21ac_meme-meo-5.jpg</RelativePath>
+      <RelativePath>uploads/e0a90fad-7d2e-42da-9dc3-73be4269b89f_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -574,14 +574,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b41810ed-f271-4b2a-b309-d925b3de21ac_meme-meo-5.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e0a90fad-7d2e-42da-9dc3-73be4269b89f_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b5f0664e-a044-4977-a40d-80068bac2b77_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e1174a84-cc93-4a13-abd3-e81f909f2be1_z7867741451473_3715ef460025833934b3c75fc8231db2.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/b5f0664e-a044-4977-a40d-80068bac2b77_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg</RelativePath>
+      <RelativePath>uploads/e1174a84-cc93-4a13-abd3-e81f909f2be1_z7867741451473_3715ef460025833934b3c75fc8231db2.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -590,14 +590,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b5f0664e-a044-4977-a40d-80068bac2b77_z7812881837699_03b58abc9f0f4eabfb97828ee9bc9e17.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e1174a84-cc93-4a13-abd3-e81f909f2be1_z7867741451473_3715ef460025833934b3c75fc8231db2.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b634e792-f099-4431-9185-4017a79d0f40_troi song.mp4))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e19bc3b3-e7d8-446b-bcfd-92911f89229e_z7875233461071_795e81c718fe93950586b1a26133e96a.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/b634e792-f099-4431-9185-4017a79d0f40_troi song.mp4</RelativePath>
+      <RelativePath>uploads/e19bc3b3-e7d8-446b-bcfd-92911f89229e_z7875233461071_795e81c718fe93950586b1a26133e96a.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -606,14 +606,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b634e792-f099-4431-9185-4017a79d0f40_troi song.mp4))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e19bc3b3-e7d8-446b-bcfd-92911f89229e_z7875233461071_795e81c718fe93950586b1a26133e96a.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\c3035108-fcac-4871-80c7-5282a65814fd_images.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e2e35ea1-3689-4bb7-92b6-4bd1751e093c_z7871574032181_37200cb1f8ebe64580d53220435b8d6d.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/c3035108-fcac-4871-80c7-5282a65814fd_images.jpg</RelativePath>
+      <RelativePath>uploads/e2e35ea1-3689-4bb7-92b6-4bd1751e093c_z7871574032181_37200cb1f8ebe64580d53220435b8d6d.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -622,14 +622,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\c3035108-fcac-4871-80c7-5282a65814fd_images.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e2e35ea1-3689-4bb7-92b6-4bd1751e093c_z7871574032181_37200cb1f8ebe64580d53220435b8d6d.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\ce8799b3-42fe-4382-be49-82cce0802892_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e98e2310-e8f6-47d1-8f9d-6ca31043337b_z7812881801287_595191bed7f740b8a47102ac2f0aa925.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/ce8799b3-42fe-4382-be49-82cce0802892_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg</RelativePath>
+      <RelativePath>uploads/e98e2310-e8f6-47d1-8f9d-6ca31043337b_z7812881801287_595191bed7f740b8a47102ac2f0aa925.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -638,14 +638,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\ce8799b3-42fe-4382-be49-82cce0802892_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\e98e2310-e8f6-47d1-8f9d-6ca31043337b_z7812881801287_595191bed7f740b8a47102ac2f0aa925.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d0fd1108-91ae-4563-95fb-14d910022a06_ChatGPT Image 09_04_19 23 thg 5, 2026.png))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\f4547353-01a5-4412-a463-4eb18a1ba0df_z7812881801303_55d30512b5115c438412550a5ec9cbb2.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/d0fd1108-91ae-4563-95fb-14d910022a06_ChatGPT Image 09_04_19 23 thg 5, 2026.png</RelativePath>
+      <RelativePath>uploads/f4547353-01a5-4412-a463-4eb18a1ba0df_z7812881801303_55d30512b5115c438412550a5ec9cbb2.jpg</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -654,14 +654,14 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d0fd1108-91ae-4563-95fb-14d910022a06_ChatGPT Image 09_04_19 23 thg 5, 2026.png))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\f4547353-01a5-4412-a463-4eb18a1ba0df_z7812881801303_55d30512b5115c438412550a5ec9cbb2.jpg))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d62bd7d3-b034-43ec-afb2-81fa9fcc301f_ChatGPT Image 09_13_49 23 thg 5, 2026.png))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\f9c76cc4-884c-41db-a255-5fa30008725c_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/d62bd7d3-b034-43ec-afb2-81fa9fcc301f_ChatGPT Image 09_13_49 23 thg 5, 2026.png</RelativePath>
+      <RelativePath>uploads/f9c76cc4-884c-41db-a255-5fa30008725c_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>All</AssetMode>
       <AssetRole>Primary</AssetRole>
@@ -670,151 +670,7 @@
       <AssetTraitValue></AssetTraitValue>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d62bd7d3-b034-43ec-afb2-81fa9fcc301f_ChatGPT Image 09_13_49 23 thg 5, 2026.png))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d9b333ba-45f9-424f-b4e7-0e2779fd5eae_z7867741414968_656cae29e92f924afe22257c9ac3aa53.jpg))">
-      <SourceType>Package</SourceType>
-      <SourceId>BatTrang.API</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/d9b333ba-45f9-424f-b4e7-0e2779fd5eae_z7867741414968_656cae29e92f924afe22257c9ac3aa53.jpg</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d9b333ba-45f9-424f-b4e7-0e2779fd5eae_z7867741414968_656cae29e92f924afe22257c9ac3aa53.jpg))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\daee8a28-faee-461c-b1fd-c9eb06cb9513_meme-meo-5.jpg))">
-      <SourceType>Package</SourceType>
-      <SourceId>BatTrang.API</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/daee8a28-faee-461c-b1fd-c9eb06cb9513_meme-meo-5.jpg</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\daee8a28-faee-461c-b1fd-c9eb06cb9513_meme-meo-5.jpg))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\eadfaf74-bfd4-4e38-8c7c-ed287839046c_z7825074225038_a085f5244d3d6f905a0aa940a95080e7.jpg))">
-      <SourceType>Package</SourceType>
-      <SourceId>BatTrang.API</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/eadfaf74-bfd4-4e38-8c7c-ed287839046c_z7825074225038_a085f5244d3d6f905a0aa940a95080e7.jpg</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\eadfaf74-bfd4-4e38-8c7c-ed287839046c_z7825074225038_a085f5244d3d6f905a0aa940a95080e7.jpg))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\edb48de6-4290-4f72-9f58-97a0f2a6f358_view nui.mp4))">
-      <SourceType>Package</SourceType>
-      <SourceId>BatTrang.API</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/edb48de6-4290-4f72-9f58-97a0f2a6f358_view nui.mp4</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\edb48de6-4290-4f72-9f58-97a0f2a6f358_view nui.mp4))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\fc5b0610-c292-4f66-9956-baf1c58258e6_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg))">
-      <SourceType>Package</SourceType>
-      <SourceId>BatTrang.API</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/fc5b0610-c292-4f66-9956-baf1c58258e6_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\fc5b0610-c292-4f66-9956-baf1c58258e6_z7812881837697_fb2761e3ebc919a9e59bc18e2ed22728.jpg))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\fd056648-b7c6-4796-a2eb-062716e9a4d8_chim canh cut.mp4))">
-      <SourceType>Package</SourceType>
-      <SourceId>BatTrang.API</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/fd056648-b7c6-4796-a2eb-062716e9a4d8_chim canh cut.mp4</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\fd056648-b7c6-4796-a2eb-062716e9a4d8_chim canh cut.mp4))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\fd39c274-666b-4570-969c-2505d0f9e2ff_z7812881837776_f7fd078b9db5ada738007cc6cfecd15b.jpg))">
-      <SourceType>Package</SourceType>
-      <SourceId>BatTrang.API</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/fd39c274-666b-4570-969c-2505d0f9e2ff_z7812881837776_f7fd078b9db5ada738007cc6cfecd15b.jpg</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\fd39c274-666b-4570-969c-2505d0f9e2ff_z7812881837776_f7fd078b9db5ada738007cc6cfecd15b.jpg))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\fe188dc6-5f88-4e22-bd0f-4e0bc3fef6b4_meme-meo-5.jpg))">
-      <SourceType>Package</SourceType>
-      <SourceId>BatTrang.API</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/fe188dc6-5f88-4e22-bd0f-4e0bc3fef6b4_meme-meo-5.jpg</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\fe188dc6-5f88-4e22-bd0f-4e0bc3fef6b4_meme-meo-5.jpg))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\fec4b8b7-609a-4842-81a6-54bff6470295_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg))">
-      <SourceType>Package</SourceType>
-      <SourceId>BatTrang.API</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/fec4b8b7-609a-4842-81a6-54bff6470295_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\fec4b8b7-609a-4842-81a6-54bff6470295_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\f9c76cc4-884c-41db-a255-5fa30008725c_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>
 </Project>

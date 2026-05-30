@@ -184,6 +184,11 @@ body:has(#success-page) #site-header {
   text-transform: uppercase;
   transition: color 0.2s ease;
 }
+.form-group label .required {
+  color: #e74c3c;
+  margin-left: 2px;
+  font-weight: bold;
+}
 .form-control {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.14);
@@ -396,7 +401,7 @@ textarea.form-control {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  max-height: 260px;
+  max-height: 320px;
   overflow-y: auto;
   margin-bottom: var(--space-5);
   padding-right: 4px;
@@ -413,25 +418,48 @@ textarea.form-control {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: var(--space-3);
+  background: #fdf8f3;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: var(--radius-md);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.checkout-item-row:hover {
+  border-color: rgba(200, 146, 42, 0.3);
+  box-shadow: 0 2px 8px rgba(200, 146, 42, 0.08);
 }
 .checkout-item-row__img {
-  width: 52px;
-  height: 52px;
+  width: 72px;
+  height: 72px;
   object-fit: cover;
   border-radius: var(--radius-sm);
-  background: #f5f0ea;
+  background: #f0e9e0;
   border: 1px solid rgba(0, 0, 0, 0.08);
   flex-shrink: 0;
+}
+/* Placeholder when no image */
+.checkout-item-row__img--placeholder {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-sm);
+  background: #f0e9e0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(44,26,12,0.25);
 }
 .checkout-item-row__info {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 .checkout-item-row__name {
   font-size: var(--fs-sm);
-  font-weight: var(--fw-medium);
+  font-weight: var(--fw-semibold);
   color: #2C1A0C;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -439,15 +467,29 @@ textarea.form-control {
   overflow: hidden;
   line-height: 1.4;
 }
+.checkout-item-row__size {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: var(--fw-medium);
+  color: rgba(44,26,12,0.55);
+  background: rgba(200,146,42,0.1);
+  border: 1px solid rgba(200,146,42,0.2);
+  border-radius: 4px;
+  padding: 1px 7px;
+  width: fit-content;
+}
 .checkout-item-row__qty {
   font-size: var(--fs-xs);
   color: rgba(44, 26, 12, 0.45);
-  margin-top: 2px;
+}
+.checkout-item-row__qty strong {
+  color: rgba(44,26,12,0.7);
+  font-weight: var(--fw-semibold);
 }
 .checkout-item-row__price {
   font-size: var(--fs-sm);
-  font-weight: var(--fw-semibold);
-  color: #2C1A0C;
+  font-weight: var(--fw-bold);
+  color: var(--color-accent);
   flex-shrink: 0;
   text-align: right;
 }
@@ -540,6 +582,27 @@ textarea.form-control {
 }
 .btn-place-order.loading .btn-text {
   opacity: 0.7;
+}
+
+/* ── Privacy Policy Notice ── */
+.checkout-privacy-policy-text {
+  font-size: 12px;
+  color: rgba(92, 58, 30, 0.75);
+  line-height: 1.6;
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-4);
+  text-align: justify;
+}
+.checkout-privacy-policy-text .privacy-link {
+  color: #c8922a;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px dashed #c8922a;
+  transition: all 0.25s ease;
+}
+.checkout-privacy-policy-text .privacy-link:hover {
+  color: #3b2612;
+  border-bottom-style: solid;
 }
 
 /* ── Trust Badges ── */

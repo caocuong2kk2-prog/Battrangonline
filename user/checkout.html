@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/checkout.css">
   <link rel="stylesheet" href="css/responsive.css">
-  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="assets/images/logo.png" type="image/png">
   <style>
     /* Đặt nền body khớp với section kem, ẩn đường kẻ header */
     body.page-body { background-color: #f8f2ec; }
@@ -84,12 +84,12 @@
               
               <div class="form-row">
                 <div class="form-group" id="group-name">
-                  <label for="shipping-name">Họ và tên *</label>
+                  <label for="shipping-name">Họ và tên <span class="required">*</span></label>
                   <input class="form-control" type="text" id="shipping-name" placeholder="Nguyễn Văn A" required autocomplete="name">
                   <span class="field-error-msg" id="err-name">Vui lòng nhập họ và tên.</span>
                 </div>
                 <div class="form-group" id="group-phone">
-                  <label for="shipping-phone">Số điện thoại *</label>
+                  <label for="shipping-phone">Số điện thoại <span class="required">*</span></label>
                   <input class="form-control" type="tel" id="shipping-phone" placeholder="0989 123 456" required autocomplete="tel">
                   <span class="field-error-msg" id="err-phone">Số điện thoại không hợp lệ (9–12 số).</span>
                 </div>
@@ -105,7 +105,7 @@
               </div>
               
               <div class="form-group" id="group-address">
-                <label for="shipping-address">Địa chỉ giao hàng *</label>
+                <label for="shipping-address">Địa chỉ giao hàng <span class="required">*</span></label>
                 <input class="form-control" type="text" id="shipping-address" placeholder="Số nhà, ngõ/đường, phường/xã, quận/huyện, tỉnh/TP" required autocomplete="street-address">
                 <span class="field-error-msg" id="err-address">Vui lòng nhập địa chỉ giao hàng.</span>
               </div>
@@ -184,6 +184,10 @@
                 </svg>
               </button>
 
+              <p class="checkout-privacy-policy-text">
+                Dữ liệu cá nhân của bạn sẽ được sử dụng để xử lý đơn đặt hàng, hỗ trợ trải nghiệm của bạn trên trang web này và cho các mục đích khác được mô tả trong <a href="privacy-policy.html" target="_blank" class="privacy-link">chính sách riêng tư</a> của chúng tôi.
+              </p>
+
               <!-- Trust Badges -->
               <div class="checkout-trust-badges">
                 <div class="checkout-trust-badge">
@@ -209,6 +213,24 @@
     </section>
 
   </main>
+
+  <!-- Lightbox Modal (Checkout) -->
+  <div id="co-lb" style="position:fixed;inset:0;z-index:99999;display:none;background:rgba(0,0,0,0.92);flex-direction:column;align-items:center;justify-content:center;overflow:hidden;">
+    <!-- Toolbar -->
+    <div style="position:absolute;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:2;background:linear-gradient(to bottom,rgba(0,0,0,0.65),transparent);pointer-events:none;">
+      <span id="co-lb-counter" style="color:rgba(255,255,255,0.7);font-size:14px;font-family:sans-serif;pointer-events:auto;"></span>
+      <button id="co-lb-close" style="pointer-events:auto;background:rgba(255,255,255,0.12);color:#fff;border:none;width:36px;height:36px;font-size:22px;cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;">×</button>
+    </div>
+    <!-- Arrows -->
+    <button id="co-lb-prev" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:#fff;border:none;width:46px;height:46px;font-size:22px;border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:2;">❮</button>
+    <button id="co-lb-next" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:#fff;border:none;width:46px;height:46px;font-size:22px;border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:2;">❯</button>
+    <!-- Hint -->
+    <div style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.4);font-size:11px;font-family:sans-serif;pointer-events:none;white-space:nowrap;">Lăn chuột để zoom • Nhấp đôi để reset</div>
+    <!-- Viewport -->
+    <div id="co-lb-vp" style="position:relative;width:90vw;height:88vh;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+      <div id="co-lb-media" style="display:flex;align-items:center;justify-content:center;transform-origin:center center;transition:opacity 0.18s;will-change:transform;"></div>
+    </div>
+  </div>
 
   <!-- FOOTER -->
   <div id="footer-placeholder"></div>
@@ -258,8 +280,65 @@
           return;
         }
 
-        renderSummary(selectedItems);
-        setupFormSubmit(selectedItems);
+        // Prefill logged in user info if available
+        var user = null;
+        if (window.AuthService && typeof window.AuthService.getCurrentUser === 'function') {
+          user = window.AuthService.getCurrentUser();
+        } else {
+          try {
+            user = JSON.parse(localStorage.getItem('current_user') || 'null');
+          } catch(e) {}
+        }
+
+        if (user) {
+          var fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.name || '';
+          var inputName = document.getElementById('shipping-name');
+          var inputPhone = document.getElementById('shipping-phone');
+          var inputEmail = document.getElementById('shipping-email');
+
+          if (inputName && fullName) inputName.value = fullName;
+          if (inputPhone && user.phone) inputPhone.value = user.phone;
+          if (inputEmail && user.email) inputEmail.value = user.email;
+        }
+
+        // Heal cart items if price is missing or NaN
+        var needsHeal = selectedItems.some(function (item) {
+          return item.price === undefined || item.price === null || isNaN(item.price);
+        });
+
+        if (needsHeal && window.PhucGiaTienAPI) {
+          var healPromises = selectedItems.map(function (item) {
+            if (item.price === undefined || item.price === null || isNaN(item.price)) {
+              return window.PhucGiaTienAPI.getProductBySlug(item.slug)
+                .then(function (p) {
+                  item.price = p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0);
+                  if (!item.size && p.variants && p.variants.length) {
+                    item.size = p.variants[0].size;
+                  }
+                  // Update in main cart
+                  var mainCart = window.CartAPI.getCart();
+                  var mainItem = mainCart.find(function (x) { return x.id === item.id; });
+                  if (mainItem) {
+                    mainItem.price = item.price;
+                    mainItem.size = item.size || mainItem.size;
+                    localStorage.setItem('pgt_cart', JSON.stringify(mainCart));
+                  }
+                })
+                .catch(function (err) {
+                  console.error('Failed to heal checkout item', err);
+                });
+            }
+            return Promise.resolve();
+          });
+
+          Promise.all(healPromises).then(function () {
+            renderSummary(selectedItems);
+            setupFormSubmit(selectedItems);
+          });
+        } else {
+          renderSummary(selectedItems);
+          setupFormSubmit(selectedItems);
+        }
 
         // Real-time clear error on input
         ['shipping-name', 'shipping-phone', 'shipping-email', 'shipping-address'].forEach(function(id) {
@@ -285,16 +364,29 @@
         
         var total = subtotal;
 
+        // Helper: build thumbnail HTML – handles image and video sources
+        function buildThumb(src, alt) {
+          if (!src) {
+            return '<div class="checkout-item-row__img checkout-item-row__img--placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>';
+          }
+          var norm = src.startsWith('http') || src.startsWith('/') ? src : '/user/' + src;
+          var isVideo = /\.(mp4|webm|mov|avi|ogg)$/i.test(norm);
+          var cursor = 'style="cursor:zoom-in;"';
+          if (isVideo) {
+            return '<video class="checkout-item-row__img" src="' + norm + '" muted playsinline preload="metadata" ' + cursor + ' data-co-lb-src="' + norm + '"></video>';
+          }
+          return '<img class="checkout-item-row__img" src="' + norm + '" alt="' + (alt || '') + '" loading="lazy" ' + cursor + ' data-co-lb-src="' + norm + '">';
+        }
+
         // Render item rows
         if (listEl) {
           listEl.innerHTML = items.map(function(item) {
-            var imgPath = item.image.startsWith('http') || item.image.startsWith('/') ? item.image : '/user/' + item.image;
             return [
               '<div class="checkout-item-row">',
-                '<img class="checkout-item-row__img" src="' + imgPath + '" alt="' + item.name + '" loading="lazy">',
+                buildThumb(item.image, item.name),
                 '<div class="checkout-item-row__info">',
-                  '<p class="checkout-item-row__name">' + item.name + '</p>',
-                  '<p class="checkout-item-row__qty">x' + item.qty + '</p>',
+                  '<a href="product-detail.html?id=' + item.id + '" target="_blank" class="checkout-item-row__name" style="text-decoration: none; display: block; transition: color 0.2s;" onmouseover="this.style.color=\'var(--color-accent)\'" onmouseout="this.style.color=\'\'">' + (item.size ? item.name + ' - ' + item.size : item.name) + '</a>',
+                  '<p class="checkout-item-row__qty">Số lượng: <strong>' + item.qty + '</strong></p>',
                 '</div>',
                 '<span class="checkout-item-row__price">' + window.formatVND(item.price * item.qty) + '</span>',
               '</div>'
@@ -359,66 +451,276 @@
           }
 
           // Build order data
-          var orderCode = sessionStorage.getItem('temp_memo_code') || ('PGT' + Math.floor(100000 + Math.random() * 900000));
           var subtotal = items.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
           var total = subtotal;
 
-          var orderData = {
-            orderCode: orderCode,
-            date: new Date().toLocaleDateString('vi-VN'),
-            timestamp: Date.now(),
-            name: name,
-            phone: phone.replace(/\D/g, ''), // chuẩn hóa SĐT chỉ số
-            email: email,
+          // Prepare payload for backend API
+          var apiPayload = {
+            customer: name,
+            phone: phone.replace(/\D/g, ''),
+            email: email || '',
             address: address,
-            notes: notes,
-            paymentMethod: 'Thanh toán khi nhận hàng (COD)',
+            customerNote: notes || null,
             items: items.map(function(i) {
-              return { name: i.name, qty: i.qty, price: i.price, image: i.image };
-            }),
-            subtotal: subtotal,
-            total: total,
-            status: 'pending',                              // Trạng thái ban đầu
-            statusHistory: [
-              { status: 'pending', time: new Date().toLocaleString('vi-VN'), note: 'Đơn hàng đã được tiếp nhận thành công.' }
-            ]
+              return {
+                id: parseInt(i.id, 10),
+                size: i.size || null,
+                qty: parseInt(i.qty, 10)
+              };
+            })
           };
 
-          // Lưu đơn mới nhất (cho order-success.html)
-          localStorage.setItem('pgt_last_order', JSON.stringify(orderData));
+          // Send to backend API
+          if (window.PhucGiaTienAPI && typeof window.PhucGiaTienAPI.createOrder === 'function') {
+            window.PhucGiaTienAPI.createOrder(apiPayload)
+              .then(function(response) {
+                var finalOrderCode = response.orderCode || ('PGT' + Math.floor(100000 + Math.random() * 900000));
+                
+                var orderData = {
+                  orderCode: finalOrderCode,
+                  date: new Date().toLocaleDateString('vi-VN'),
+                  timestamp: Date.now(),
+                  name: name,
+                  phone: phone.replace(/\D/g, ''), // chuẩn hóa SĐT chỉ số
+                  email: email,
+                  address: address,
+                  customerNote: notes,
+                  paymentMethod: 'Thanh toán khi nhận hàng (COD)',
+                  items: items.map(function(i) {
+                    return { productId: i.id, name: i.name, qty: i.qty, price: i.price, image: i.image, size: i.size };
+                  }),
+                  subtotal: subtotal,
+                  total: total,
+                  status: 'pending',                              // Trạng thái ban đầu
+                  statusHistory: [
+                    { status: 'pending', time: new Date().toLocaleString('vi-VN'), note: 'Đơn hàng đã được tiếp nhận thành công.' }
+                  ]
+                };
 
-          // Lưu vào mảng tất cả đơn (cho tra cứu)
-          var allOrders = [];
-          try { allOrders = JSON.parse(localStorage.getItem('pgt_orders') || '[]'); } catch(e) {}
-          allOrders.unshift(orderData); // đơn mới nhất lên đầu
-          if (allOrders.length > 50) allOrders = allOrders.slice(0, 50); // giới hạn 50 đơn
-          localStorage.setItem('pgt_orders', JSON.stringify(allOrders));
+                // Lưu đơn mới nhất (cho order-success.html)
+                localStorage.setItem('pgt_last_order', JSON.stringify(orderData));
 
+                // Lưu vào mảng tất cả đơn (cho tra cứu)
+                var allOrders = [];
+                try { allOrders = JSON.parse(localStorage.getItem('pgt_orders') || '[]'); } catch(e) {}
+                allOrders.unshift(orderData); // đơn mới nhất lên đầu
+                if (allOrders.length > 50) allOrders = allOrders.slice(0, 50); // giới hạn 50 đơn
+                localStorage.setItem('pgt_orders', JSON.stringify(allOrders));
 
-          // Clear purchased items from cart
-          if (window.CartAPI) {
-            var cart = window.CartAPI.getCart();
-            var remaining = cart.filter(function(i) { return !i.selected; });
-            localStorage.setItem('pgt_cart', JSON.stringify(remaining));
-            document.dispatchEvent(new CustomEvent('cart-updated'));
+                // Clear purchased items from cart
+                if (window.CartAPI) {
+                  var cart = window.CartAPI.getCart();
+                  var remaining = cart.filter(function(i) { return !i.selected; });
+                  localStorage.setItem('pgt_cart', JSON.stringify(remaining));
+                  document.dispatchEvent(new CustomEvent('cart-updated'));
+                }
+
+                // Clear applied promo
+                sessionStorage.removeItem('applied_promo_percent');
+
+                // Redirect to success page
+                setTimeout(function() {
+                  window.location.href = 'order-success.html';
+                }, 600);
+              })
+              .catch(function(err) {
+                console.error('Order creation error:', err);
+                isSubmitting = false;
+                if (submitBtn) {
+                  submitBtn.classList.remove('loading');
+                  submitBtn.disabled = false;
+                }
+                if (typeof window.showToast === 'function') {
+                  window.showToast('Không thể kết nối đến máy chủ hoặc xử lý đơn hàng. Vui lòng thử lại!', 'error');
+                } else {
+                  alert('Có lỗi xảy ra trong quá trình đặt hàng. Vui lòng thử lại!');
+                }
+              });
+          } else {
+            // Fallback for standalone frontend mock mode
+            var orderCode = sessionStorage.getItem('temp_memo_code') || ('PGT' + Math.floor(100000 + Math.random() * 900000));
+            var orderData = {
+              orderCode: orderCode,
+              date: new Date().toLocaleDateString('vi-VN'),
+              timestamp: Date.now(),
+              name: name,
+              phone: phone.replace(/\D/g, ''),
+              email: email,
+              address: address,
+              customerNote: notes,
+              paymentMethod: 'Thanh toán khi nhận hàng (COD)',
+              items: items.map(function(i) {
+                return { name: i.name, qty: i.qty, price: i.price, image: i.image, size: i.size };
+              }),
+              subtotal: subtotal,
+              total: total,
+              status: 'pending',
+              statusHistory: [
+                { status: 'pending', time: new Date().toLocaleString('vi-VN'), note: 'Đơn hàng đã được tiếp nhận thành công.' }
+              ]
+            };
+
+            localStorage.setItem('pgt_last_order', JSON.stringify(orderData));
+            var allOrders = [];
+            try { allOrders = JSON.parse(localStorage.getItem('pgt_orders') || '[]'); } catch(e) {}
+            allOrders.unshift(orderData);
+            if (allOrders.length > 50) allOrders = allOrders.slice(0, 50);
+            localStorage.setItem('pgt_orders', JSON.stringify(allOrders));
+
+            if (window.CartAPI) {
+              var cart = window.CartAPI.getCart();
+              var remaining = cart.filter(function(i) { return !i.selected; });
+              localStorage.setItem('pgt_cart', JSON.stringify(remaining));
+              document.dispatchEvent(new CustomEvent('cart-updated'));
+            }
+            sessionStorage.removeItem('applied_promo_percent');
+
+            setTimeout(function() {
+              window.location.href = 'order-success.html';
+            }, 600);
           }
+        });
+      }
 
-          // Clear applied promo
-          sessionStorage.removeItem('applied_promo_percent');
+      // ── Checkout Lightbox ───────────────────────
+      function initCheckoutLightbox() {
+        var lb       = document.getElementById('co-lb');
+        var lbMedia  = document.getElementById('co-lb-media');
+        var lbVp     = document.getElementById('co-lb-vp');
+        var lbClose  = document.getElementById('co-lb-close');
+        var lbPrev   = document.getElementById('co-lb-prev');
+        var lbNext   = document.getElementById('co-lb-next');
+        var lbCnt    = document.getElementById('co-lb-counter');
+        if (!lb) return;
 
-          // Small delay for UX feedback then redirect
+        var srcs   = [];
+        var curIdx = 0;
+        var zs = 1, px = 0, py = 0;
+        var MIN_Z = 1, MAX_Z = 5, STEP = 0.4;
+
+        function clamp() {
+          if (zs <= 1) { px = 0; py = 0; return; }
+          var maxX = Math.max(0, (lbVp.clientWidth  * zs - lbVp.clientWidth)  / 2);
+          var maxY = Math.max(0, (lbVp.clientHeight * zs - lbVp.clientHeight) / 2);
+          px = Math.max(-maxX, Math.min(maxX, px));
+          py = Math.max(-maxY, Math.min(maxY, py));
+        }
+        function applyT(anim) {
+          lbMedia.style.transition = anim ? 'transform 0.2s ease' : 'none';
+          lbMedia.style.transform  = 'translate(' + px + 'px,' + py + 'px) scale(' + zs + ')';
+          lbVp.style.cursor = zs > 1 ? 'grab' : 'zoom-in';
+        }
+        function resetZ(anim) { zs = 1; px = 0; py = 0; applyT(anim); }
+        function zoomTo(ns, ox, oy, anim) {
+          var prev = zs;
+          zs = Math.max(MIN_Z, Math.min(MAX_Z, ns));
+          if (ox !== undefined) { var d = zs / prev; px = ox + (px - ox) * d; py = oy + (py - oy) * d; }
+          clamp(); applyT(anim);
+        }
+
+        function renderLb() {
+          var src = srcs[curIdx] || '';
+          var isVid = /\.(mp4|webm|mov|avi|ogg)$/i.test(src);
+          lbMedia.style.opacity = '0';
+          resetZ(false);
           setTimeout(function() {
-            window.location.href = 'order-success.html';
-          }, 600);
+            if (isVid) {
+              lbMedia.innerHTML = '<video src="' + src + '" autoplay loop controls style="max-width:85vw;max-height:85vh;border-radius:8px;box-shadow:0 4px 30px rgba(0,0,0,0.7);object-fit:contain;display:block;"></video>';
+            } else {
+              lbMedia.innerHTML = '<img src="' + src + '" style="max-width:85vw;max-height:85vh;border-radius:8px;box-shadow:0 4px 30px rgba(0,0,0,0.7);object-fit:contain;display:block;user-select:none;" draggable="false">';
+            }
+            lbMedia.style.opacity = '1';
+            if (lbCnt) lbCnt.textContent = srcs.length > 1 ? (curIdx + 1) + ' / ' + srcs.length : '';
+          }, 150);
+          if (lbPrev) lbPrev.style.display = srcs.length > 1 ? 'flex' : 'none';
+          if (lbNext) lbNext.style.display = srcs.length > 1 ? 'flex' : 'none';
+        }
+
+        function openLb(idx) {
+          curIdx = idx;
+          renderLb();
+          lb.style.display = 'flex';
+          document.body.style.overflow = 'hidden';
+        }
+        function closeLb() {
+          lb.style.display = 'none';
+          lbMedia.innerHTML = '';
+          document.body.style.overflow = '';
+          resetZ(false);
+        }
+
+        // Delegate click on summary list thumbnails
+        var summaryList = document.getElementById('summary-items-list');
+        if (summaryList) {
+          summaryList.addEventListener('click', function(e) {
+            var thumb = e.target.closest('[data-co-lb-src]');
+            if (!thumb) return;
+            // Rebuild src list from all visible thumbnails
+            srcs = Array.from(summaryList.querySelectorAll('[data-co-lb-src]'))
+                        .map(function(el) { return el.getAttribute('data-co-lb-src'); })
+                        .filter(Boolean);
+            var clicked = thumb.getAttribute('data-co-lb-src');
+            curIdx = Math.max(0, srcs.indexOf(clicked));
+            openLb(curIdx);
+          });
+        }
+
+        lbClose.addEventListener('click', closeLb);
+        lb.addEventListener('click', function(e) { if (e.target === lb) closeLb(); });
+        if (lbPrev) lbPrev.addEventListener('click', function(e) { e.stopPropagation(); curIdx = (curIdx - 1 + srcs.length) % srcs.length; renderLb(); });
+        if (lbNext) lbNext.addEventListener('click', function(e) { e.stopPropagation(); curIdx = (curIdx + 1) % srcs.length; renderLb(); });
+
+        // Keyboard
+        document.addEventListener('keydown', function(e) {
+          if (lb.style.display === 'none') return;
+          if (e.key === 'Escape') closeLb();
+          if (e.key === 'ArrowLeft')  { curIdx = (curIdx - 1 + srcs.length) % srcs.length; renderLb(); }
+          if (e.key === 'ArrowRight') { curIdx = (curIdx + 1) % srcs.length; renderLb(); }
+        });
+
+        // Scroll-wheel zoom
+        lbVp.addEventListener('wheel', function(e) {
+          e.preventDefault();
+          var rect = lbVp.getBoundingClientRect();
+          var ox = e.clientX - rect.left - rect.width  / 2;
+          var oy = e.clientY - rect.top  - rect.height / 2;
+          zoomTo(zs + (e.deltaY < 0 ? STEP * 0.6 : -STEP * 0.6), ox, oy, false);
+        }, { passive: false });
+
+        // Double-click zoom
+        lbVp.addEventListener('dblclick', function(e) {
+          if (zs > 1) { resetZ(true); } else {
+            var rect = lbVp.getBoundingClientRect();
+            zoomTo(2, e.clientX - rect.left - rect.width / 2, e.clientY - rect.top - rect.height / 2, true);
+          }
+        });
+
+        // Drag/pan
+        var drag = false, dx, dy, px0, py0;
+        lbVp.addEventListener('mousedown', function(e) {
+          if (zs <= 1 || e.button !== 0) return;
+          drag = true; dx = e.clientX; dy = e.clientY; px0 = px; py0 = py;
+          lbVp.style.cursor = 'grabbing'; e.preventDefault();
+        });
+        window.addEventListener('mousemove', function(e) {
+          if (!drag) return;
+          px = px0 + (e.clientX - dx); py = py0 + (e.clientY - dy);
+          clamp(); applyT(false);
+        });
+        window.addEventListener('mouseup', function() {
+          if (!drag) return; drag = false;
+          lbVp.style.cursor = zs > 1 ? 'grab' : 'zoom-in';
         });
       }
 
       // Run on load (wait for cart.js + common.js to init)
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
+          initCheckoutLightbox();
           setTimeout(initCheckout, 650);
         });
       } else {
+        initCheckoutLightbox();
         setTimeout(initCheckout, 650);
       }
     })();

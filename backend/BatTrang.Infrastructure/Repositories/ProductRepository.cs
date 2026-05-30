@@ -19,9 +19,20 @@ namespace BatTrang.Infrastructure.Repositories
         {
             var query = _context.Products
                 .Include(p => p.Category)
-                .Include(p => p.Images)
-                .Include(p => p.GlazeLine)
                 .Include(p => p.Variants)
+                    .ThenInclude(v => v.Images)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Size)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.GlazeLine)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.ProductType)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Material)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Color)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Pattern)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(filter.Category) && filter.Category != "all")
@@ -37,15 +48,10 @@ namespace BatTrang.Infrastructure.Repositories
 
             if (!string.IsNullOrEmpty(filter.Quality) && filter.Quality != "all")
             {
-                if (filter.Quality == "cao-cap")
+                var glazeLineIds = filter.Quality.Split(',').Select(id => int.TryParse(id.Trim(), out var val) ? val : 0).Where(v => v > 0).ToList();
+                if (glazeLineIds.Any())
                 {
-                    query = query.Where(p => (p.Material != null && p.Material.ToLower().Contains("cao cấp")) || 
-                                             p.Name.ToLower().Contains("cao cấp"));
-                }
-                else if (filter.Quality == "trung")
-                {
-                    query = query.Where(p => (p.Material == null || !p.Material.ToLower().Contains("cao cấp")) && 
-                                             !p.Name.ToLower().Contains("cao cấp"));
+                    query = query.Where(p => p.Variants.Any(v => v.GlazeLineId.HasValue && glazeLineIds.Contains(v.GlazeLineId.Value)));
                 }
             }
 
@@ -83,21 +89,50 @@ namespace BatTrang.Infrastructure.Repositories
 
         public async Task<Product?> GetProductBySlugAsync(string slug)
         {
-            return await _context.Products
+            var query = _context.Products
                 .Include(p => p.Category)
-                .Include(p => p.Images)
-                .Include(p => p.GlazeLine)
                 .Include(p => p.Variants)
-                .FirstOrDefaultAsync(p => p.Slug == slug);
+                    .ThenInclude(v => v.Images)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Size)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.GlazeLine)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.ProductType)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Material)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Color)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Pattern);
+                
+            if (int.TryParse(slug, out int id))
+            {
+                var productById = await query.FirstOrDefaultAsync(p => p.Id == id);
+                if (productById != null) return productById;
+            }
+
+            return await query.FirstOrDefaultAsync(p => p.Slug == slug);
         }
 
         public async Task<IReadOnlyList<Product>> GetFeaturedProductsAsync(int limit)
         {
             return await _context.Products
                 .Include(p => p.Category)
-                .Include(p => p.Images)
-                .Include(p => p.GlazeLine)
                 .Include(p => p.Variants)
+                    .ThenInclude(v => v.Images)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Size)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.GlazeLine)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.ProductType)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Material)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Color)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Pattern)
                 .OrderByDescending(p => p.Id) // Or another logic for featured
                 .Take(limit)
                 .ToListAsync();
@@ -106,26 +141,37 @@ namespace BatTrang.Infrastructure.Repositories
         public async Task<Product?> GetProductWithImagesAsync(int id)
         {
             return await _context.Products
-                .Include(p => p.Images)
                 .Include(p => p.Variants)
+                    .ThenInclude(v => v.Images)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Size)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.GlazeLine)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.ProductType)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Material)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Color)
+                .Include(p => p.Variants)
+                    .ThenInclude(v => v.Pattern)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<Dictionary<int, string>> GetProductImagesAsync(IEnumerable<int> productIds)
         {
-            var images = await _context.ProductImages
-                .Where(img => productIds.Contains(img.ProductId))
+            var variants = await _context.ProductVariants
+                .Include(v => v.Images)
+                .Where(v => productIds.Contains(v.ProductId))
                 .ToListAsync();
 
             var dict = new Dictionary<int, string>();
             foreach (var pid in productIds.Distinct())
             {
-                var img = images
-                    .Where(x => x.ProductId == pid)
-                    .OrderBy(x => x.SortOrder)
-                    .FirstOrDefault();
-                if (img != null)
+                var variant = variants.FirstOrDefault(v => v.ProductId == pid && v.Images != null && v.Images.Any());
+                if (variant != null)
                 {
+                    var img = variant.Images.OrderBy(x => x.SortOrder).First();
                     dict[pid] = img.ImageUrl;
                 }
             }

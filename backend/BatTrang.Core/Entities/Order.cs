@@ -15,7 +15,8 @@ namespace BatTrang.Core.Entities
         public string CustomerPhone { get; set; } = null!;
         public string CustomerEmail { get; set; } = null!;
         public string Address { get; set; } = null!;
-        public string? Note { get; set; }
+        public string? CustomerNote { get; set; }
+        public string? AdminNote { get; set; }
         
         public decimal Total { get; set; }
         public string Status { get; set; } = "pending"; // pending, confirmed, shipping, completed, cancelled

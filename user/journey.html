@@ -30,23 +30,25 @@
     .story-tab-btn {
       padding: var(--space-3) var(--space-5);
       font-size: var(--fs-sm);
-      font-weight: var(--fw-medium);
-      color: var(--color-text-muted);
+      font-weight: var(--fw-semibold);
+      color: var(--color-primary-light);
       border-bottom: 2px solid transparent;
       margin-bottom: -1px;
       white-space: nowrap;
       background: transparent;
       cursor: pointer;
-      transition: color var(--transition-fast), border-color var(--transition-fast);
+      transition: all var(--transition-fast);
     }
 
     .story-tab-btn:hover {
-      opacity: 0.8;
+      color: var(--color-primary-dark);
+      opacity: 1;
     }
 
     .story-tab-btn.active {
       color: var(--color-accent);
       border-bottom-color: var(--color-accent);
+      font-weight: var(--fw-bold);
     }
 
     .story-panel {
@@ -230,7 +232,7 @@
       transform: translateY(-2px);
     }
   </style>
-  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="assets/images/logo.png" type="image/png">
 </head>
 
 <body class="page-body">

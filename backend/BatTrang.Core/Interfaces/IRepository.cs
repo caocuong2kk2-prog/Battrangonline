@@ -10,5 +10,7 @@ namespace BatTrang.Core.Interfaces
         Task<T> AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(T entity);
+        Task<int> CountAsync();
+        Task<int> CountAsync(System.Linq.Expressions.Expression<System.Func<T, bool>> predicate);
     }
 }

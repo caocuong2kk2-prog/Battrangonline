@@ -26,36 +26,7 @@ namespace BatTrang.API.Controllers
         {
             var result = await _productRepo.GetProductsAsync(filter);
             
-            var dtos = result.Data.Select(p => new ProductDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Slug = p.Slug,
-                BasePrice = p.Variants.Any() ? p.Variants.Min(v => v.Price) : 0,
-                BaseOriginalPrice = p.Variants.Any() ? p.Variants.Max(v => v.OriginalPrice) : null,
-                Category = p.Category?.Slug ?? "",
-                Material = p.Material,
-                Style = p.Style,
-                Color = p.Color,
-                GlazeLineId = p.GlazeLineId,
-                GlazeLineName = p.GlazeLine?.Name,
-                Pattern = p.Pattern,
-                Usage = p.Usage,
-                TotalStock = p.Variants.Sum(v => v.Stock),
-                Status = p.Status,
-                Badge = p.Badge,
-                ShortDescription = p.ShortDescription,
-                Description = p.Description,
-                Images = p.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new List<string>(),
-                Variants = p.Variants.Select(v => new ProductVariantDto
-                {
-                    Id = v.Id,
-                    Size = v.Size,
-                    Price = v.Price,
-                    OriginalPrice = v.OriginalPrice,
-                    Stock = v.Stock
-                }).ToList()
-            });
+            var dtos = result.Data.Select(p => MapToDto(p)).ToList();
 
             return Ok(new PaginatedResult<ProductDto>
             {
@@ -70,36 +41,7 @@ namespace BatTrang.API.Controllers
         public async Task<IActionResult> GetFeaturedProducts([FromQuery] int limit = 6)
         {
             var products = await _productRepo.GetFeaturedProductsAsync(limit);
-            var dtos = products.Select(p => new ProductDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Slug = p.Slug,
-                BasePrice = p.Variants.Any() ? p.Variants.Min(v => v.Price) : 0,
-                BaseOriginalPrice = p.Variants.Any() ? p.Variants.Max(v => v.OriginalPrice) : null,
-                Category = p.Category?.Slug ?? "",
-                Material = p.Material,
-                Style = p.Style,
-                Color = p.Color,
-                GlazeLineId = p.GlazeLineId,
-                GlazeLineName = p.GlazeLine?.Name,
-                Pattern = p.Pattern,
-                Usage = p.Usage,
-                TotalStock = p.Variants.Sum(v => v.Stock),
-                Status = p.Status,
-                Badge = p.Badge,
-                ShortDescription = p.ShortDescription,
-                Description = p.Description,
-                Images = p.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new List<string>(),
-                Variants = p.Variants.Select(v => new ProductVariantDto
-                {
-                    Id = v.Id,
-                    Size = v.Size,
-                    Price = v.Price,
-                    OriginalPrice = v.OriginalPrice,
-                    Stock = v.Stock
-                }).ToList()
-            });
+            var dtos = products.Select(p => MapToDto(p)).ToList();
             return Ok(dtos);
         }
 
@@ -110,7 +52,13 @@ namespace BatTrang.API.Controllers
             var p = await _productRepo.GetProductBySlugAsync(slug);
             if (p == null) return NotFound();
 
-            var dto = new ProductDto
+            var dto = MapToDto(p);
+            return Ok(dto);
+        }
+
+        private ProductDto MapToDto(Product p)
+        {
+            return new ProductDto
             {
                 Id = p.Id,
                 Name = p.Name,
@@ -118,30 +66,33 @@ namespace BatTrang.API.Controllers
                 BasePrice = p.Variants.Any() ? p.Variants.Min(v => v.Price) : 0,
                 BaseOriginalPrice = p.Variants.Any() ? p.Variants.Max(v => v.OriginalPrice) : null,
                 Category = p.Category?.Slug ?? "",
-                Material = p.Material,
-                Style = p.Style,
-                Color = p.Color,
-                GlazeLineId = p.GlazeLineId,
-                GlazeLineName = p.GlazeLine?.Name,
-                Pattern = p.Pattern,
                 Usage = p.Usage,
                 TotalStock = p.Variants.Sum(v => v.Stock),
                 Status = p.Status,
                 Badge = p.Badge,
                 ShortDescription = p.ShortDescription,
                 Description = p.Description,
-                Images = p.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new List<string>(),
                 Variants = p.Variants.Select(v => new ProductVariantDto
                 {
                     Id = v.Id,
-                    Size = v.Size,
+                    SizeId = v.SizeId,
+                    SizeName = v.Size?.Name,
+                    ProductTypeId = v.ProductTypeId,
+                    ProductTypeName = v.ProductType?.Name,
+                    MaterialId = v.MaterialId,
+                    MaterialName = v.Material?.Name,
+                    ColorId = v.ColorId,
+                    ColorName = v.Color?.Name,
+                    PatternId = v.PatternId,
+                    PatternName = v.Pattern?.Name,
+                    GlazeLineId = v.GlazeLineId,
+                    GlazeLineName = v.GlazeLine?.Name,
+                    Images = v.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new List<string>(),
                     Price = v.Price,
                     OriginalPrice = v.OriginalPrice,
                     Stock = v.Stock
                 }).ToList()
             };
-
-            return Ok(dto);
         }
     }
 }

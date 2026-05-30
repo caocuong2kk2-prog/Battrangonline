@@ -8,6 +8,6 @@ namespace BatTrang.Core.Entities
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
 
-        public ICollection<Product> Products { get; set; } = new List<Product>();
+        public ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
     }
 }

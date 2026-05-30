@@ -2,8 +2,9 @@
 (function (global) {
     'use strict';
 
-    var API_BASE = 'http://localhost:5080/api/admin';
-    var PUBLIC_API_BASE = 'http://localhost:5080/api';
+    var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api';
+    var API_BASE = dynamicBase + '/admin';
+    var PUBLIC_API_BASE = dynamicBase;
 
     function getToken() {
         var authStr = localStorage.getItem('pgt_admin_session');
@@ -26,10 +27,13 @@
             total: o.total != null ? o.total : o.Total,
             status: String(o.status || o.Status || '').toLowerCase(),
             date: o.date || o.Date,
-            note: o.note || o.Note,
+            customerNote: o.customerNote || o.CustomerNote,
+            adminNote: o.adminNote || o.AdminNote,
             items: (o.items || o.Items || []).map(function (i) {
                 return {
+                    productId: i.productId != null ? i.productId : i.ProductId,
                     name: i.name || i.Name,
+                    size: i.size || i.Size,
                     qty: i.qty != null ? i.qty : i.Qty,
                     price: i.price != null ? i.price : i.Price,
                     imageUrl: i.imageUrl || i.ImageUrl
@@ -42,7 +46,9 @@
         options = options || {};
         options.headers = options.headers || {};
 
-        if (options.method && options.method !== 'GET') {
+        if (!options.method || options.method === 'GET') {
+            options.cache = 'no-store';
+        } else {
             options.headers['Content-Type'] = 'application/json';
         }
 
@@ -73,12 +79,55 @@
             });
     }
 
+    // ── Caching helper for fast page transitions (indefinite within session) ──
+    function _cachedFetch(cacheKey, endpoint, options, isPublic) {
+        if (!options || (options.method || 'GET') === 'GET') {
+            var cached = sessionStorage.getItem(cacheKey);
+            if (cached) {
+                try { return Promise.resolve(JSON.parse(cached)); } catch (e) {}
+            }
+            return _fetch(endpoint, options, isPublic).then(function(data) {
+                sessionStorage.setItem(cacheKey, JSON.stringify(data));
+                return data;
+            });
+        }
+        return _fetch(endpoint, options, isPublic);
+    }
+
+    // ── TTL-based caching helper (for frequently updated data like orders) ──
+    // ttlMs: milliseconds before cache expires. Default: 30 seconds.
+    function _ttlCachedFetch(cacheKey, endpoint, options, isPublic, ttlMs) {
+        ttlMs = ttlMs || 30000;
+        if (!options || (options.method || 'GET') === 'GET') {
+            try {
+                var raw = sessionStorage.getItem(cacheKey);
+                if (raw) {
+                    var wrapper = JSON.parse(raw);
+                    if (wrapper && wrapper.ts && (Date.now() - wrapper.ts) < ttlMs) {
+                        return Promise.resolve(wrapper.data);
+                    }
+                }
+            } catch (e) {}
+            return _fetch(endpoint, options, isPublic).then(function(data) {
+                try { sessionStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
+                return data;
+            });
+        }
+        return _fetch(endpoint, options, isPublic);
+    }
+
+    // Invalidate a TTL cache key (forces next load to fetch fresh)
+    function _invalidate(key) {
+        sessionStorage.removeItem(key);
+    }
+
     var AdminData = {
         products: {
             load: function () {
-                return _fetch('/products');
+                return _cachedFetch('pgt_admin_products', '/products');
             },
             save: function (product) {
+                sessionStorage.removeItem('pgt_admin_products');
                 if (product.id) {
                     return _fetch('/products/' + product.id, {
                         method: 'PUT',
@@ -92,15 +141,18 @@
                 }
             },
             delete: function (id) {
+                sessionStorage.removeItem('pgt_admin_products');
                 return _fetch('/products/' + id, { method: 'DELETE' });
             },
             bulkStatus: function (ids, status) {
+                sessionStorage.removeItem('pgt_admin_products');
                 return _fetch('/products/bulk-status', {
                     method: 'POST',
                     body: JSON.stringify({ ids: ids, status: status })
                 });
             },
             bulkDelete: function (ids) {
+                sessionStorage.removeItem('pgt_admin_products');
                 return _fetch('/products/bulk-delete', {
                     method: 'POST',
                     body: JSON.stringify({ ids: ids })
@@ -109,12 +161,15 @@
         },
         orders: {
             load: function () {
-                return _fetch('/orders').then(function (data) {
+                // Use 30s TTL so page transitions feel instant but fresh orders appear quickly
+                return _ttlCachedFetch('pgt_admin_orders', '/orders', {}, false, 30000).then(function (data) {
                     if (!Array.isArray(data)) return [];
                     return data.map(normalizeOrder);
                 });
             },
             create: function (order) {
+                _invalidate('pgt_admin_orders');
+                _invalidate('pgt_admin_customers');
                 return _fetch('/orders', {
                     method: 'POST',
                     body: JSON.stringify(order)
@@ -123,10 +178,29 @@
                 });
             },
             updateStatus: function (id, status) {
+                _invalidate('pgt_admin_orders');
                 return _fetch('/orders/' + id + '/status', {
                     method: 'PATCH',
                     body: JSON.stringify({ status: status })
                 });
+            },
+            updateNote: function (id, note) {
+                _invalidate('pgt_admin_orders');
+                return _fetch('/orders/' + id + '/note', {
+                    method: 'PATCH',
+                    body: JSON.stringify({ adminNote: note })
+                });
+            },
+            delete: function (id) {
+                _invalidate('pgt_admin_orders');
+                return _fetch('/orders/' + id, {
+                    method: 'DELETE'
+                });
+            },
+            // Force a fresh fetch (bypass cache), used by SignalR notification handler
+            refresh: function () {
+                _invalidate('pgt_admin_orders');
+                _invalidate('pgt_admin_customers');
             },
             updatePendingBadge: function (orders) {
                 var promise = orders ? Promise.resolve(orders) : AdminData.orders.load();
@@ -144,24 +218,27 @@
         },
         customers: {
             load: function () {
-                return _fetch('/customers');
+                // Customers also updated by order creation — use 60s TTL
+                return _ttlCachedFetch('pgt_admin_customers', '/customers', {}, false, 60000);
             },
             create: function (customer) {
+                _invalidate('pgt_admin_customers');
                 return _fetch('/customers', {
                     method: 'POST',
                     body: JSON.stringify(customer)
                 });
             },
             delete: function (id) {
+                _invalidate('pgt_admin_customers');
                 return _fetch('/customers/' + id, { method: 'DELETE' });
             }
         },
         categories: {
             load: function () {
-                // Public endpoint
-                return _fetch('/categories', {}, true);
+                return _cachedFetch('pgt_admin_categories', '/categories', {}, true);
             },
             save: function (cat) {
+                sessionStorage.removeItem('pgt_admin_categories');
                 if (cat.isNew) {
                     return _fetch('/categories', {
                         method: 'POST',
@@ -175,14 +252,16 @@
                 }
             },
             delete: function (id) {
+                sessionStorage.removeItem('pgt_admin_categories');
                 return _fetch('/categories/' + id, { method: 'DELETE' });
             }
         },
         glazeLines: {
             load: function () {
-                return _fetch('/glazelines', {}, true);
+                return _cachedFetch('pgt_admin_glazelines', '/glazelines', {}, true);
             },
             save: function (gl) {
+                sessionStorage.removeItem('pgt_admin_glazelines');
                 if (!gl.id) {
                     return _fetch('/glazelines', {
                         method: 'POST',
@@ -196,14 +275,131 @@
                 }
             },
             delete: function (id) {
+                sessionStorage.removeItem('pgt_admin_glazelines');
                 return _fetch('/glazelines/' + id, { method: 'DELETE' });
+            }
+        },
+        productTypes: {
+            load: function () {
+                return _cachedFetch('pgt_admin_producttypes', '/producttypes', {}, true);
+            },
+            save: function (pt) {
+                sessionStorage.removeItem('pgt_admin_producttypes');
+                if (!pt.id) {
+                    return _fetch('/producttypes', {
+                        method: 'POST',
+                        body: JSON.stringify(pt)
+                    });
+                } else {
+                    return _fetch('/producttypes/' + pt.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(pt)
+                    });
+                }
+            },
+            delete: function (id) {
+                sessionStorage.removeItem('pgt_admin_producttypes');
+                return _fetch('/producttypes/' + id, { method: 'DELETE' });
+            }
+        },
+        materials: {
+            load: function () {
+                return _cachedFetch('pgt_admin_materials', '/materials', {}, true);
+            },
+            save: function (mat) {
+                sessionStorage.removeItem('pgt_admin_materials');
+                if (!mat.id) {
+                    return _fetch('/materials', {
+                        method: 'POST',
+                        body: JSON.stringify(mat)
+                    });
+                } else {
+                    return _fetch('/materials/' + mat.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(mat)
+                    });
+                }
+            },
+            delete: function (id) {
+                sessionStorage.removeItem('pgt_admin_materials');
+                return _fetch('/materials/' + id, { method: 'DELETE' });
+            }
+        },
+        colors: {
+            load: function () {
+                return _cachedFetch('pgt_admin_colors', '/colors', {}, true);
+            },
+            save: function (col) {
+                sessionStorage.removeItem('pgt_admin_colors');
+                if (!col.id) {
+                    return _fetch('/colors', {
+                        method: 'POST',
+                        body: JSON.stringify(col)
+                    });
+                } else {
+                    return _fetch('/colors/' + col.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(col)
+                    });
+                }
+            },
+            delete: function (id) {
+                sessionStorage.removeItem('pgt_admin_colors');
+                return _fetch('/colors/' + id, { method: 'DELETE' });
+            }
+        },
+        patterns: {
+            load: function () {
+                return _cachedFetch('pgt_admin_patterns', '/patterns', {}, true);
+            },
+            save: function (pat) {
+                sessionStorage.removeItem('pgt_admin_patterns');
+                if (!pat.id) {
+                    return _fetch('/patterns', {
+                        method: 'POST',
+                        body: JSON.stringify(pat)
+                    });
+                } else {
+                    return _fetch('/patterns/' + pat.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(pat)
+                    });
+                }
+            },
+            delete: function (id) {
+                sessionStorage.removeItem('pgt_admin_patterns');
+                return _fetch('/patterns/' + id, { method: 'DELETE' });
+            }
+        },
+        sizes: {
+            load: function () {
+                return _cachedFetch('pgt_admin_sizes', '/sizes', {}, true);
+            },
+            save: function (size) {
+                sessionStorage.removeItem('pgt_admin_sizes');
+                if (!size.id) {
+                    return _fetch('/sizes', {
+                        method: 'POST',
+                        body: JSON.stringify(size)
+                    });
+                } else {
+                    return _fetch('/sizes/' + size.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(size)
+                    });
+                }
+            },
+            delete: function (id) {
+                sessionStorage.removeItem('pgt_admin_sizes');
+                return _fetch('/sizes/' + id, { method: 'DELETE' });
             }
         },
         journey: {
             loadTopics: function () {
-                return _fetch('/journey/topics', {}, true);
+                return _cachedFetch('pgt_admin_topics', '/journey/topics', {}, true);
             },
             saveTopic: function (topic, isNew) {
+                sessionStorage.removeItem('pgt_admin_topics');
                 if (isNew) {
                     return _fetch('/journey/topics', {
                         method: 'POST',
@@ -217,13 +413,18 @@
                 }
             },
             deleteTopic: function (id) {
+                sessionStorage.removeItem('pgt_admin_topics');
                 return _fetch('/journey/topics/' + id, { method: 'DELETE' });
             },
             loadVideos: function (topicId) {
                 var qs = topicId ? '?topicId=' + topicId : '';
-                return _fetch('/journey/videos' + qs, {}, true);
+                return _cachedFetch('pgt_admin_videos_' + (topicId || 'all'), '/journey/videos' + qs, {}, true);
             },
             saveVideo: function (video) {
+                // Clear all video caches since we don't know exactly which topic cache to invalidate
+                for (var key in sessionStorage) {
+                    if (key.startsWith('pgt_admin_videos_')) sessionStorage.removeItem(key);
+                }
                 if (video.id) {
                     return _fetch('/journey/videos/' + video.id, {
                         method: 'PUT',
@@ -237,12 +438,42 @@
                 }
             },
             deleteVideo: function (id) {
+                for (var key in sessionStorage) {
+                    if (key.startsWith('pgt_admin_videos_')) sessionStorage.removeItem(key);
+                }
                 return _fetch('/journey/videos/' + id, { method: 'DELETE' });
             }
         },
         analytics: {
-            getDashboardData: function () {
-                return _fetch('/analytics');
+            getDashboardData: function (startDate, endDate) {
+                var qs = '';
+                if (startDate && endDate) {
+                    qs = '?startDate=' + encodeURIComponent(startDate) + '&endDate=' + encodeURIComponent(endDate);
+                }
+                return _fetch('/analytics' + qs);
+            },
+            getRevenueByRange: function (startYear, startMonth, endYear, endMonth) {
+                var qs = '?startYear=' + startYear + '&startMonth=' + startMonth +
+                         '&endYear=' + endYear + '&endMonth=' + endMonth;
+                return _fetch('/analytics/revenue-by-range' + qs);
+            }
+        },
+        accounts: {
+            load: function () {
+                return _cachedFetch('pgt_admin_accounts', '/auth/accounts');
+            },
+            register: function (data) {
+                sessionStorage.removeItem('pgt_admin_accounts');
+                return _fetch('/auth/register', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+            },
+            delete: function (username) {
+                sessionStorage.removeItem('pgt_admin_accounts');
+                return _fetch('/auth/accounts/' + encodeURIComponent(username), {
+                    method: 'DELETE'
+                });
             }
         },
         settings: {
@@ -258,6 +489,17 @@
         },
 
         // Format utilities
+        fmtDate: function (dStr) {
+            if (!dStr) return '';
+            try {
+                var d = new Date(dStr);
+                if (isNaN(d.getTime())) return dStr;
+                var pad = function(n) { return n < 10 ? '0' + n : n; };
+                return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+            } catch (e) {
+                return dStr;
+            }
+        },
         fmt: function (n) { return new Intl.NumberFormat('vi-VN').format(n) + 'đ'; },
         fmtShort: function (n) {
             // Xử lý các trường hợp không hợp lệ
@@ -287,7 +529,7 @@
         },
         getStatusLabel: function (s) {
             switch (s) {
-                case 'pending': return 'Chờ xử lý';
+                case 'pending': return 'Chờ xác nhận';
                 case 'confirmed': return 'Đã xác nhận';
                 case 'shipping': return 'Đang giao';
                 case 'completed': return 'Hoàn thành';
@@ -306,6 +548,17 @@
                 'dia-gom': 'Đĩa Gốm'
             };
             return map[slug] || slug;
+        },
+        notifications: {
+            getAll: function () {
+                return _fetch('/notifications');
+            },
+            markAsRead: function (id) {
+                return _fetch('/notifications/' + id + '/read', { method: 'PATCH' });
+            },
+            markAllAsRead: function () {
+                return _fetch('/notifications/read-all', { method: 'PATCH' });
+            }
         }
     };
 

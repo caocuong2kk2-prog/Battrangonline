@@ -12,27 +12,41 @@ namespace BatTrang.Core.DTOs
         public decimal BasePrice { get; set; }
         public decimal? BaseOriginalPrice { get; set; }
         public string Category { get; set; } = null!; // Category slug
-        public string? Material { get; set; }
-        public string? Style { get; set; }
-        public string? Color { get; set; }
-        public int? GlazeLineId { get; set; }
-        public string? GlazeLineName { get; set; }
-        public string? Pattern { get; set; }
-        public string? Usage { get; set; }
+        
         // Computed total stock for display
         public int TotalStock { get; set; }
         public string Status { get; set; } = null!;
         public string? Badge { get; set; }
         public string? ShortDescription { get; set; }
         public string? Description { get; set; }
-        public List<string> Images { get; set; } = new List<string>();
+        public string? Usage { get; set; }
         public List<ProductVariantDto> Variants { get; set; } = new List<ProductVariantDto>();
     }
 
     public class ProductVariantDto
     {
         public int Id { get; set; }
-        public string Size { get; set; } = null!;
+        
+        public int? SizeId { get; set; }
+        public string? SizeName { get; set; }
+        
+        public int? ProductTypeId { get; set; }
+        public string? ProductTypeName { get; set; }
+        
+        public int? MaterialId { get; set; }
+        public string? MaterialName { get; set; }
+        
+        public int? ColorId { get; set; }
+        public string? ColorName { get; set; }
+        
+        public int? PatternId { get; set; }
+        public string? PatternName { get; set; }
+        
+        public int? GlazeLineId { get; set; }
+        public string? GlazeLineName { get; set; }
+
+        public List<string> Images { get; set; } = new List<string>();
+
         public decimal Price { get; set; }
         public decimal? OriginalPrice { get; set; }
         public int Stock { get; set; }

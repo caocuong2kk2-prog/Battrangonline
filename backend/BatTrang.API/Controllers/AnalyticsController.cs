@@ -1,4 +1,5 @@
 using BatTrang.Core.DTOs;
+using BatTrang.Core.Entities;
 using BatTrang.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -185,7 +186,8 @@ namespace BatTrang.API.Controllers
             foreach (var tp in topProducts)
             {
                 var pFull = await _productRepo.GetProductWithImagesAsync(tp.Id);
-                tp.Images = pFull?.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new System.Collections.Generic.List<string>();
+                tp.Images = pFull?.Variants?.SelectMany(v => v.Images ?? Enumerable.Empty<ProductImage>())
+                    .OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new System.Collections.Generic.List<string>();
                 tp.FirstImage = tp.Images.FirstOrDefault();
             }
 

@@ -1,169 +1,1125 @@
 <!DOCTYPE html>
-<html lang="vi"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Thống Kê – Phúc Gia Tiên Admin</title>
-<link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/components.css">
+<html lang="vi">
+
+<head>
+  <script>if (localStorage.getItem('sidebar-collapsed') === 'true') document.documentElement.classList.add('sidebar-collapsed');</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Thống Kê – Phúc Gia Tiên Admin</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    /* ===== REVENUE FILTER SECTION ===== */
+    .rev-filter-card {
+      background: linear-gradient(135deg, #2e1f0e 0%, #3d2a14 40%, #2e1f0e 100%);
+      border: 1px solid rgba(200, 146, 42, 0.28);
+      border-radius: 20px;
+      padding: 26px 30px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .rev-filter-card::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(200, 146, 42, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .rev-filter-card::after {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      left: -40px;
+      width: 150px;
+      height: 150px;
+      background: radial-gradient(circle, rgba(200, 146, 42, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .rev-filter-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #C8922A;
+      margin: 0 0 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rev-filter-title svg {
+      opacity: .85;
+    }
+
+    /* Preset chips */
+    .rev-presets {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .rev-preset-btn {
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1.5px solid rgba(200, 146, 42, 0.3);
+      background: rgba(200, 146, 42, 0.06);
+      color: #C8922A;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s ease;
+      white-space: nowrap;
+    }
+
+    .rev-preset-btn:hover {
+      background: rgba(200, 146, 42, 0.18);
+      border-color: rgba(200, 146, 42, 0.6);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(200, 146, 42, 0.2);
+    }
+
+    .rev-preset-btn.active {
+      background: #C8922A;
+      border-color: #C8922A;
+      color: #1A0F05;
+      box-shadow: 0 4px 16px rgba(200, 146, 42, 0.4);
+    }
+
+    /* Date range pickers row */
+    .rev-filter-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .rev-filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .rev-filter-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(200, 146, 42, 0.7);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .rev-filter-selects {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .rev-select {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1.5px solid rgba(200, 146, 42, 0.25);
+      border-radius: 10px;
+      color: #F5EFE6;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: all .2s ease;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8922A' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 34px;
+      min-width: 80px;
+    }
+
+    .rev-select option {
+      background: #2d1a08;
+      color: #F5EFE6;
+    }
+
+    .rev-select:hover,
+    .rev-select:focus {
+      border-color: #C8922A;
+      background-color: rgba(200, 146, 42, 0.1);
+      box-shadow: 0 0 0 3px rgba(200, 146, 42, 0.15);
+    }
+
+    .rev-filter-arrow {
+      color: rgba(200, 146, 42, 0.5);
+      font-size: 18px;
+      padding-bottom: 2px;
+      flex-shrink: 0;
+    }
+
+    .rev-apply-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #C8922A, #e0a93c);
+      color: #1A0F05;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .25s ease;
+      box-shadow: 0 4px 14px rgba(200, 146, 42, 0.35);
+      white-space: nowrap;
+    }
+
+    .rev-apply-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(200, 146, 42, 0.45);
+      background: linear-gradient(135deg, #d99b2f, #e8b440);
+    }
+
+    .rev-apply-btn:active {
+      transform: translateY(0);
+    }
+
+    .rev-apply-btn.loading {
+      opacity: .7;
+      pointer-events: none;
+    }
+
+    /* ===== RANGE RESULT SUMMARY ===== */
+    .range-summary-bar {
+      display: none;
+      background: rgba(200, 146, 42, 0.08);
+      border: 1px solid rgba(200, 146, 42, 0.2);
+      border-radius: 12px;
+      padding: 16px 24px;
+      margin-bottom: 24px;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .range-summary-bar.visible {
+      display: flex;
+    }
+
+    .range-kpi {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .range-kpi__label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .range-kpi__value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #C8922A;
+    }
+
+    .range-kpi__sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .range-kpi-divider {
+      width: 1px;
+      height: 44px;
+      background: rgba(200, 146, 42, 0.2);
+    }
+
+    /* ===== KPI CARDS ===== */
+    .analytics-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 28px;
+      align-items: stretch;
+    }
+    @media (max-width: 768px) {
+      .analytics-kpi-grid { grid-template-columns: 1fr; }
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      min-height: 110px;
+      transition: box-shadow .22s, transform .22s;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      top: -24px; right: -24px;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      opacity: .07;
+      filter: blur(20px);
+    }
+    .kpi-card--gold::after { background: #C8922A; }
+    .kpi-card--green::after { background: #16a34a; }
+    .kpi-card--blue::after  { background: #2563eb; }
+
+    .kpi-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .09);
+    }
+
+    .kpi-card__icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .kpi-card__icon--gold { background: rgba(200, 146, 42, 0.12); }
+    .kpi-card__icon--green { background: rgba(22, 163, 74, 0.1); }
+    .kpi-card__icon--blue  { background: rgba(37, 99, 235, 0.1); }
+
+    .kpi-card__body { flex: 1; min-width: 0; }
+
+    .kpi-card__label {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .kpi-card__value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .kpi-card__change {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 7px;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .kpi-card__change--up   { color: #16a34a; background: rgba(22,163,74,0.09); }
+    .kpi-card__change--down { color: #dc2626; background: rgba(220,38,38,0.09); }
+    .kpi-card__change--neutral { color: var(--text-muted); background: rgba(0,0,0,0.05); }
+
+    /* ===== CHARTS ===== */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-wrap {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .chart-wrap svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ===== LOADING SKELETON ===== */
+    @keyframes shimmer {
+      0% {
+        background-position: -468px 0;
+      }
+
+      100% {
+        background-position: 468px 0;
+      }
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, rgba(200, 146, 42, 0.08) 25%, rgba(200, 146, 42, 0.15) 50%, rgba(200, 146, 42, 0.08) 75%);
+      background-size: 936px 100%;
+      animation: shimmer 1.4s infinite linear;
+      border-radius: 8px;
+    }
+
+    /* ===== FILTER LOADING OVERLAY ===== */
+    .chart-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 260px;
+      gap: 12px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .chart-loading__spinner {
+      width: 24px;
+      height: 24px;
+      border: 2.5px solid rgba(200, 146, 42, 0.2);
+      border-top-color: #C8922A;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    /* ===== TABLE ===== */
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    .data-table th {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-muted);
+      padding: 10px 14px;
+      border-bottom: 2px solid var(--border);
+      text-align: left;
+    }
+
+    .data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tbody tr {
+      transition: background .15s;
+    }
+
+    .data-table tbody tr:hover {
+      background: rgba(200, 146, 42, 0.04);
+    }
+
+    .progress-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border);
+      overflow: hidden;
+    }
+
+    .progress-bar__fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #C8922A, #e0a93c);
+      transition: width .6s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    /* Legend */
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-3);
+    }
+
+    .chart-legend__item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .chart-legend__dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Tooltip style for SVG charts */
+    .svg-tooltip {
+      position: absolute;
+      background: rgba(26, 15, 5, 0.92);
+      border: 1px solid rgba(200, 146, 42, 0.35);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 12px;
+      color: #F5EFE6;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .15s;
+      white-space: nowrap;
+      z-index: 100;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .3);
+    }
+
+    .svg-tooltip.visible {
+      opacity: 1;
+    }
+  </style>
 </head>
+
 <body class="admin-layout">
-<aside class="admin-sidebar" id="adminSidebar">
-  <div class="sidebar-header"><div class="sidebar-brand"><div class="sidebar-brand__icon">⚱️</div><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
-  <nav class="sidebar-nav">
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand__icon">⚱️</div>
+        <div>
+          <div class="sidebar-brand__name">Phúc Gia Tiên</div>
+          <div class="sidebar-brand__sub">Quản trị hệ thống</div>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
     <span class="sidebar-section-label">Tổng quan</span>
-    <ul class="sidebar-nav__list"><li><a href="index.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li></ul>
+    <ul class="sidebar-nav__list">
+      <li><a href="index.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li>
+    </ul>
+    
     <span class="sidebar-section-label">Kinh doanh</span>
     <ul class="sidebar-nav__list">
       <li><a href="products.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
       <li><a href="orders.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
       <li><a href="customers.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
     </ul>
-    <span class="sidebar-section-label">Danh mục</span>
+
+    <span class="sidebar-section-label">Danh mục & Thuộc tính</span>
     <ul class="sidebar-nav__list">
       <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="sidebar-nav__text">Danh mục</span></a></li>
-      <li><a href="glazelines.html" class="sidebar-nav__link">
-        <svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-        </svg>
-        <span class="sidebar-nav__text">Dòng men</span></a></li>
-      <li><a href="journey.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
-      <li><a href="analytics.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
+      <li><a href="product-types.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg><span class="sidebar-nav__text">Phân khúc</span></a></li>
+      <li><a href="materials.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg><span class="sidebar-nav__text">Chất liệu</span></a></li>
+      <li><a href="colors.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg><span class="sidebar-nav__text">Màu sắc</span></a></li>
+      <li><a href="sizes.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line><line x1="12" y1="8" x2="12" y2="16"></line></svg><span class="sidebar-nav__text">Kích thước</span></a></li>
+      <li><a href="patterns.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg><span class="sidebar-nav__text">Hoa văn</span></a></li>
+      <li><a href="glazelines.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg><span class="sidebar-nav__text">Dòng men</span></a></li>
     </ul>
+
+    <span class="sidebar-section-label">Nội dung</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="journey.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
+    </ul>
+
+    <span class="sidebar-section-label">Báo cáo</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="analytics.html" class="sidebar-nav__link active"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
+    </ul>
+
     <span class="sidebar-section-label">Hệ thống</span>
-    <ul class="sidebar-nav__list"><li><a href="settings.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-nav__text">Cài đặt</span></a></li></ul>
+    <ul class="sidebar-nav__list">
+      <li><a href="settings.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-nav__text">Cài đặt</span></a></li>
+      <li class="admin-only"><a href="accounts.html" class="sidebar-nav__link" id="nav-accounts-link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><span class="sidebar-nav__text">Tài khoản</span></a></li>
+    </ul>
   </nav>
-  <div class="sidebar-footer"><div class="sidebar-user js-logout"><div class="sidebar-user__avatar js-admin-initial">A</div><div class="sidebar-user__info"><div class="sidebar-user__name js-admin-name">Admin</div><div class="sidebar-user__role">Quản trị viên</div></div><button class="sidebar-user__logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div></div>
-</aside>
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-<div class="admin-main-wrapper">
-  <header class="admin-topbar">
-    <button class="topbar-toggle" id="sidebarToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-    <div class="topbar-breadcrumb"><span class="topbar-breadcrumb__item">Danh mục</span><span class="topbar-breadcrumb__separator">›</span><span class="topbar-breadcrumb__current">Thống kê</span></div>
-    <div class="topbar-actions"><div class="topbar-user" id="topbarUser"><div class="topbar-user__avatar js-admin-initial">A</div><span class="topbar-user__name js-admin-name">Admin</span></div></div>
-  </header>
-
-  <main class="admin-content">
-    <div class="page-header">
-      <div><h1 class="page-title">Thống Kê & Báo Cáo</h1><p class="page-subtitle">Phân tích doanh thu và hiệu suất kinh doanh</p></div>
-    </div>
-
-    <!-- KPI Row -->
-    <div class="analytics-kpi-grid">
-      <div class="kpi-card"><div class="kpi-card__icon kpi-card__icon--gold"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C8922A" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div class="kpi-card__body"><div class="kpi-card__label">Doanh thu T5/2026</div><div class="kpi-card__value" id="an-revenue">512tr</div><div class="kpi-card__change kpi-card__change--up">↑ 32% so T4</div></div></div>
-      <div class="kpi-card"><div class="kpi-card__icon kpi-card__icon--green"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="kpi-card__body"><div class="kpi-card__label">Giá trị đơn TB (AOV)</div><div class="kpi-card__value" id="an-aov">33tr</div><div class="kpi-card__change kpi-card__change--up">↑ 8% tháng này</div></div></div>
-      <div class="kpi-card"><div class="kpi-card__icon kpi-card__icon--blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="kpi-card__body"><div class="kpi-card__label">Khách quay lại</div><div class="kpi-card__value" id="an-return">68%</div><div class="kpi-card__change kpi-card__change--up">↑ 5% so kỳ trước</div></div></div>
-    </div>
-    <!-- Charts Grid -->
-    <div class="dashboard-grid" style="margin-bottom:var(--sp-6)">
-      <div class="card">
-        <div class="card-header"><span class="card-title">📈 Doanh Thu 6 Tháng</span></div>
-        <div class="card-body"><div class="chart-wrap" id="monthly-chart" style="min-height:260px"></div></div>
+    <div class="sidebar-footer">
+      <div class="sidebar-user js-logout">
+        <div class="sidebar-user__avatar js-admin-initial">A</div>
+        <div class="sidebar-user__info">
+          <div class="sidebar-user__name js-admin-name">Admin</div>
+          <div class="sidebar-user__role">Quản trị viên</div>
+        </div><button class="sidebar-user__logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg></button>
       </div>
-      <div class="card">
-        <div class="card-header"><span class="card-title">🥧 Phân Bổ Doanh Thu Theo Danh Mục</span></div>
-        <div class="card-body">
-          <div class="analytics-donut-wrap" style="display:flex;align-items:center;justify-content:center;gap:var(--sp-8);flex-wrap:wrap;">
-            <div id="donut-chart"></div>
-            <div id="donut-legend" class="chart-legend" style="flex-direction:column;gap:var(--sp-3)"></div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="admin-main-wrapper">
+    <header class="admin-topbar">
+      <button class="topbar-toggle" id="sidebarToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg></button>
+      <div class="topbar-breadcrumb"><span class="topbar-breadcrumb__item">Danh mục</span><span
+          class="topbar-breadcrumb__separator">›</span><span class="topbar-breadcrumb__current">Thống kê</span></div>
+      <div class="topbar-actions">
+        <div class="topbar-user" id="topbarUser">
+          <div class="topbar-user__avatar js-admin-initial">A</div><span
+            class="topbar-user__name js-admin-name">Admin</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Thống Kê &amp; Báo Cáo</h1>
+          <p class="page-subtitle">Phân tích doanh thu và hiệu suất kinh doanh</p>
+        </div>
+      </div>
+
+      <!-- ===== KPI Row (tháng hiện tại) ===== -->
+      <div class="analytics-kpi-grid" id="kpi-row">
+        <div class="kpi-card kpi-card--gold">
+          <div class="kpi-card__icon kpi-card__icon--gold"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="#C8922A" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23" />
+              <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+            </svg></div>
+          <div class="kpi-card__body">
+            <div class="kpi-card__label" id="an-revenue-label">Doanh thu tháng này</div>
+            <div class="kpi-card__value" id="an-revenue">—</div>
+            <div class="kpi-card__change kpi-card__change--neutral" id="an-revenue-change" style="display:none"></div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-card--green">
+          <div class="kpi-card__icon kpi-card__icon--green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="#16a34a" stroke-width="2">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+            </svg></div>
+          <div class="kpi-card__body">
+            <div class="kpi-card__label">Giá trị đơn TB (AOV)</div>
+            <div class="kpi-card__value" id="an-aov">—</div>
+            <div class="kpi-card__change kpi-card__change--neutral" id="an-aov-change" style="display:none"></div>
+          </div>
+        </div>
+        <div class="kpi-card kpi-card--blue">
+          <div class="kpi-card__icon kpi-card__icon--blue"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="#2563eb" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+            </svg></div>
+          <div class="kpi-card__body">
+            <div class="kpi-card__label">Khách hàng quay lại</div>
+            <div class="kpi-card__value" id="an-return">—</div>
+            <div class="kpi-card__change kpi-card__change--neutral" id="an-return-change" style="display:none"></div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Monthly breakdown table -->
-    <div class="card">
-      <div class="card-header"><span class="card-title">📊 Chi Tiết Doanh Thu Theo Tháng</span></div>
-      <div class="table-wrap" style="border:none;box-shadow:none;border-radius:0">
-        <table class="data-table">
-          <thead><tr><th>Tháng</th><th>Doanh thu</th><th>So tháng trước</th><th>Tỉ trọng</th></tr></thead>
-          <tbody id="monthly-table"></tbody>
-        </table>
+      <!-- ===== REVENUE FILTER CARD ===== -->
+      <div class="rev-filter-card">
+        <p class="rev-filter-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C8922A" stroke-width="2.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          Lọc doanh thu theo khoảng tháng
+        </p>
+
+        <!-- Quick Presets -->
+        <div class="rev-presets" id="rev-presets">
+          <button class="rev-preset-btn" data-preset="3" id="preset-3">3 Tháng gần đây</button>
+          <button class="rev-preset-btn active" data-preset="6" id="preset-6">6 Tháng gần đây</button>
+          <button class="rev-preset-btn" data-preset="12" id="preset-12">12 Tháng gần đây</button>
+          <button class="rev-preset-btn" data-preset="year" id="preset-year">Năm nay</button>
+          <button class="rev-preset-btn" data-preset="custom" id="preset-custom">Tùy chỉnh</button>
+        </div>
+
+        <!-- Date Range Row -->
+        <div class="rev-filter-row">
+          <div class="rev-filter-group">
+            <span class="rev-filter-label">Từ tháng</span>
+            <div class="rev-filter-selects">
+              <select class="rev-select" id="filter-start-month" aria-label="Tháng bắt đầu"></select>
+              <select class="rev-select" id="filter-start-year" aria-label="Năm bắt đầu"></select>
+            </div>
+          </div>
+          <div class="rev-filter-arrow">→</div>
+          <div class="rev-filter-group">
+            <span class="rev-filter-label">Đến tháng</span>
+            <div class="rev-filter-selects">
+              <select class="rev-select" id="filter-end-month" aria-label="Tháng kết thúc"></select>
+              <select class="rev-select" id="filter-end-year" aria-label="Năm kết thúc"></select>
+            </div>
+          </div>
+          <button class="rev-apply-btn" id="rev-apply-btn" onclick="applyFilter()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="22 2 11 13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+            Áp dụng
+          </button>
+        </div>
       </div>
-    </div>
-  </main>
-</div>
 
-<div id="admin-toast-container"></div>
-<script src="js/admin-data.js"></script><script src="js/admin-core.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded',function(){
-  AdminData.analytics.getDashboardData().then(function(data){
-    
-  // Monthly line chart
-  var chartEl=document.getElementById('monthly-chart');
-  if(chartEl){
-    var d=data.monthlyRevenue;
-    var W=chartEl.clientWidth||560, H=250;
-    var pad={top:20,right:20,bottom:40,left:65};
-    var cW=W-pad.left-pad.right, cH=H-pad.top-pad.bottom;
-    var maxV=Math.max.apply(null,d.map(function(x){return x.revenue;}));
-    function xP(i){return pad.left+i*(cW/(d.length-1));}
-    function yP(v){return pad.top+cH-((v/maxV)*cH);}
-    var pts=d.map(function(x,i){return{x:xP(i),y:yP(x.revenue)};});
-    function smoothPath(pts){
-      var s='M '+pts[0].x+' '+pts[0].y;
-      for(var i=0;i<pts.length-1;i++){var cx=(pts[i].x+pts[i+1].x)/2;s+=' C '+cx+' '+pts[i].y+','+cx+' '+pts[i+1].y+','+pts[i+1].x+' '+pts[i+1].y;}
-      return s;
-    }
-    var lp=smoothPath(pts);
-    var ap=lp+' L '+pts[pts.length-1].x+' '+(pad.top+cH)+' L '+pts[0].x+' '+(pad.top+cH)+' Z';
-    var svg='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">';
-    svg+='<defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C8922A" stop-opacity=".2"/><stop offset="100%" stop-color="#C8922A" stop-opacity="0"/></linearGradient></defs>';
-    for(var g=0;g<=4;g++){var gy=pad.top+cH-(g/4)*cH;svg+='<line x1="'+pad.left+'" y1="'+gy+'" x2="'+(pad.left+cW)+'" y2="'+gy+'" stroke="rgba(0,0,0,.05)" stroke-dasharray="4,4"/><text x="'+(pad.left-8)+'" y="'+(gy+4)+'" text-anchor="end" font-size="11" fill="#9B8B75">'+Math.round(maxV*g/4/1e6)+'tr</text>';}
-    d.forEach(function(x,i){svg+='<text x="'+xP(i)+'" y="'+(pad.top+cH+22)+'" text-anchor="middle" font-size="11" fill="#9B8B75">'+x.label+'</text>';});
-    svg+='<path d="'+ap+'" fill="url(#mg)"/>';
-    svg+='<path d="'+lp+'" fill="none" stroke="#C8922A" stroke-width="2.5" stroke-linecap="round"/>';
-    pts.forEach(function(p,i){svg+='<circle cx="'+p.x+'" cy="'+p.y+'" r="5" fill="#C8922A" stroke="#fff" stroke-width="2.5"/><title>'+d[i].label+': '+(d[i].revenue/1e6).toFixed(0)+'tr</title>';});
-    svg+='</svg>';
-    chartEl.innerHTML=svg;
-  }
+      <!-- ===== RANGE SUMMARY BAR ===== -->
+      <div class="range-summary-bar" id="range-summary-bar">
+        <div class="range-kpi">
+          <span class="range-kpi__label">Tổng doanh thu</span>
+          <span class="range-kpi__value" id="rs-total">-</span>
+          <span class="range-kpi__sub" id="rs-period">-</span>
+        </div>
+        <div class="range-kpi-divider"></div>
+        <div class="range-kpi">
+          <span class="range-kpi__label">Tổng đơn hoàn thành</span>
+          <span class="range-kpi__value" id="rs-orders">-</span>
+          <span class="range-kpi__sub">đơn hàng</span>
+        </div>
+        <div class="range-kpi-divider"></div>
+        <div class="range-kpi">
+          <span class="range-kpi__label">Giá trị đơn TB</span>
+          <span class="range-kpi__value" id="rs-aov">-</span>
+          <span class="range-kpi__sub">/ đơn hàng</span>
+        </div>
+        <div class="range-kpi-divider"></div>
+        <div class="range-kpi">
+          <span class="range-kpi__label">Tháng cao nhất</span>
+          <span class="range-kpi__value" id="rs-peak-label">-</span>
+          <span class="range-kpi__sub" id="rs-peak-val">-</span>
+        </div>
+      </div>
 
-  // Donut chart
-  var donutEl=document.getElementById('donut-chart');
-  var legendEl=document.getElementById('donut-legend');
-  if(donutEl){
-    var cats=data.categoryRevenue;
-    var R=80, r=50, cx=100, cy=100;
-    var total=cats.reduce(function(s,c){return s+c.value;},0);
-    var svg='<svg width="200" height="200" viewBox="0 0 200 200">';
-    var angle=-90;
-    cats.forEach(function(c){
-      var slice=(c.value/total)*360;
-      var rad=Math.PI/180;
-      var x1=cx+R*Math.cos(angle*rad), y1=cy+R*Math.sin(angle*rad);
-      var x2=cx+R*Math.cos((angle+slice)*rad), y2=cy+R*Math.sin((angle+slice)*rad);
-      var xi1=cx+r*Math.cos(angle*rad), yi1=cy+r*Math.sin(angle*rad);
-      var xi2=cx+r*Math.cos((angle+slice)*rad), yi2=cy+r*Math.sin((angle+slice)*rad);
-      var large=slice>180?1:0;
-      svg+='<path d="M '+x1+' '+y1+' A '+R+' '+R+' 0 '+large+' 1 '+x2+' '+y2+' L '+xi2+' '+yi2+' A '+r+' '+r+' 0 '+large+' 0 '+xi1+' '+yi1+' Z" fill="'+c.color+'" stroke="#fff" stroke-width="2"/>';
-      angle+=slice;
-    });
-    svg+='<text x="100" y="95" text-anchor="middle" font-size="14" font-weight="700" fill="#1A0F05">Doanh thu</text>';
-    svg+='<text x="100" y="115" text-anchor="middle" font-size="12" fill="#9B8B75">danh mục</text>';
-    svg+='</svg>';
-    donutEl.innerHTML=svg;
-    legendEl.innerHTML=cats.map(function(c){return '<div class="chart-legend__item"><div class="chart-legend__dot" style="background:'+c.color+'"></div><span>'+c.name+' ('+c.value+'%)</span></div>';}).join('');
-  }
+      <!-- ===== Charts Grid ===== -->
+      <div class="dashboard-grid" style="margin-bottom:var(--sp-6)">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title" id="monthly-chart-title">📈 Doanh Thu Theo Tháng</span>
+          </div>
+          <div class="card-body" style="position:relative">
+            <div class="chart-wrap" id="monthly-chart" style="min-height:260px"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">🥧 Phân Bổ Doanh Thu Theo Danh Mục</span></div>
+          <div class="card-body">
+            <div class="analytics-donut-wrap"
+              style="display:flex;align-items:center;justify-content:center;gap:var(--sp-8);flex-wrap:wrap;">
+              <div id="donut-chart"></div>
+              <div id="donut-legend" class="chart-legend" style="flex-direction:column;gap:var(--sp-3)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  // Monthly table
-  var d=data.monthlyRevenue;
-  var maxRev=Math.max.apply(null,d.map(function(x){return x.revenue;}));
-  var tbody=document.getElementById('monthly-table');
-  if(tbody){
-    tbody.innerHTML=d.map(function(x,i){
-      var prev=i>0?d[i-1].revenue:null;
-      var change=prev?((x.revenue-prev)/prev*100).toFixed(1):null;
-      var changeHtml=change?('<span style="color:'+(change>0?'var(--success)':'var(--danger)')+';">'+(change>0?'↑':'↓')+Math.abs(change)+'%</span>'):'—';
-      var pct=Math.round(x.revenue/maxRev*100);
-      return '<tr>'+
-        '<td><strong>'+x.label+'</strong></td>'+
-        '<td><strong style="color:var(--accent)">'+AdminData.fmtShort(x.revenue)+'</strong></td>'+
-        '<td>'+changeHtml+'</td>'+
-        '<td style="min-width:120px"><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="flex:1;margin:0"><div class="progress-bar__fill" style="width:'+pct+'%"></div></div><span style="font-size:var(--fs-xs);color:var(--text-muted);white-space:nowrap">'+pct+'%</span></div></td>'+
-      '</tr>';
-    }).join('');
-  }
-  }).catch(function(e) { console.error("Error loading analytics:", e); });
-});
-</script>
-</body></html>
+      <!-- ===== Monthly breakdown table ===== -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">📊 Chi Tiết Doanh Thu Theo Tháng</span></div>
+        <div class="table-wrap" style="border:none;box-shadow:none;border-radius:0">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tháng</th>
+                <th>Doanh thu</th>
+                <th>So tháng trước</th>
+                <th>Tỉ trọng</th>
+              </tr>
+            </thead>
+            <tbody id="monthly-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Tooltip -->
+  <div class="svg-tooltip" id="chart-tooltip"></div>
+  <div id="admin-toast-container"></div>
+  <script src="js/admin-data.js"></script>
+  <script src="js/admin-core.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      // ── helpers ──
+      var tooltip = document.getElementById('chart-tooltip');
+      function showTooltip(e, html) {
+        tooltip.innerHTML = html;
+        tooltip.classList.add('visible');
+        moveTooltip(e);
+      }
+      function moveTooltip(e) {
+        var x = e.clientX + 14, y = e.clientY - 40;
+        if (x + 180 > window.innerWidth) x = e.clientX - 190;
+        tooltip.style.left = x + 'px';
+        tooltip.style.top = y + 'px';
+      }
+      function hideTooltip() { tooltip.classList.remove('visible'); }
+
+      function fmtVN(n) {
+        n = Number(n);
+        if (n >= 1e9) return (n / 1e9).toFixed(1).replace('.0', '') + ' tỷ';
+        if (n >= 1e6) return (n / 1e6).toFixed(1).replace('.0', '') + ' tr';
+        if (n >= 1e3) return (n / 1e3).toFixed(1).replace('.0', '') + 'k';
+        return n.toLocaleString('vi-VN') + 'đ';
+      }
+      function fmtFull(n) { return Number(n).toLocaleString('vi-VN') + 'đ'; }
+
+      // ── populate selects ──
+      var now = new Date();
+      var curYear = now.getFullYear();
+      var curMonth = now.getMonth() + 1; // 1-12
+
+      var smEl = document.getElementById('filter-start-month');
+      var syEl = document.getElementById('filter-start-year');
+      var emEl = document.getElementById('filter-end-month');
+      var eyEl = document.getElementById('filter-end-year');
+
+      var monthNames = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+      monthNames.forEach(function (name, i) {
+        var o1 = new Option(name, i + 1);
+        var o2 = new Option(name, i + 1);
+        smEl.add(o1); emEl.add(o2);
+      });
+      for (var y = curYear - 4; y <= curYear; y++) {
+        syEl.add(new Option(y, y));
+        eyEl.add(new Option(y, y));
+      }
+
+      // ── set default range to last 6 months ──
+      function setDefaultRange(months) {
+        var d = new Date(curYear, curMonth - 1 - months + 1, 1);
+        smEl.value = d.getMonth() + 1;
+        syEl.value = d.getFullYear();
+        emEl.value = curMonth;
+        eyEl.value = curYear;
+      }
+
+      // ── preset buttons ──
+      var presetBtns = document.querySelectorAll('.rev-preset-btn');
+      var activePreset = '6';
+
+      function setActivePreset(p) {
+        activePreset = p;
+        presetBtns.forEach(function (btn) {
+          btn.classList.toggle('active', btn.dataset.preset === p);
+        });
+      }
+
+      presetBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var p = btn.dataset.preset;
+          setActivePreset(p);
+
+          if (p === 'custom') return; // just highlight, let user pick manually
+
+          var d;
+          if (p === 'year') {
+            smEl.value = 1; syEl.value = curYear;
+            emEl.value = curMonth; eyEl.value = curYear;
+          } else {
+            var months = parseInt(p);
+            setDefaultRange(months);
+          }
+          applyFilter();
+        });
+      });
+
+      // Detect manual select change → set to custom
+      [smEl, syEl, emEl, eyEl].forEach(function (el) {
+        el.addEventListener('change', function () { setActivePreset('custom'); });
+      });
+
+      // ── render line chart ──
+      function renderLineChart(data, containerId) {
+        var chartEl = document.getElementById(containerId);
+        if (!chartEl) return;
+
+        if (!data || data.length === 0) {
+          chartEl.innerHTML = '<div class="chart-loading" style="opacity:.5">Không có dữ liệu trong khoảng này</div>';
+          return;
+        }
+
+        var W = Math.max(chartEl.clientWidth || 0, 400), H = 270;
+        var pad = { top: 24, right: 40, bottom: 46, left: 76 };
+        var cW = W - pad.left - pad.right, cH = H - pad.top - pad.bottom;
+        var maxV = Math.max.apply(null, data.map(function (x) { return Number(x.revenue); }));
+        var displayMaxV = maxV > 0 ? maxV : 1000000;
+
+        function xP(i) { return pad.left + (data.length > 1 ? i * (cW / (data.length - 1)) : cW / 2); }
+        function yP(v) { return pad.top + cH - ((Number(v) / displayMaxV) * cH); }
+        var pts = data.map(function (x, i) { return { x: xP(i), y: yP(x.revenue) }; });
+
+        function smoothPath(pts) {
+          if (pts.length === 1) return 'M ' + pts[0].x + ' ' + pts[0].y;
+          var s = 'M ' + pts[0].x + ' ' + pts[0].y;
+          for (var i = 0; i < pts.length - 1; i++) {
+            var cx = (pts[i].x + pts[i + 1].x) / 2;
+            s += ' C ' + cx + ' ' + pts[i].y + ',' + cx + ' ' + pts[i + 1].y + ',' + pts[i + 1].x + ' ' + pts[i + 1].y;
+          }
+          return s;
+        }
+
+        var lp = smoothPath(pts);
+        var ap = lp + ' L ' + pts[pts.length - 1].x + ' ' + (pad.top + cH) + ' L ' + pts[0].x + ' ' + (pad.top + cH) + ' Z';
+
+        var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">';
+        svg += '<defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C8922A" stop-opacity=".22"/><stop offset="100%" stop-color="#C8922A" stop-opacity="0"/></linearGradient></defs>';
+
+        // grid lines + y-labels
+        for (var g = 0; g <= 4; g++) {
+          var gy = pad.top + cH - (g / 4) * cH;
+          svg += '<line x1="' + pad.left + '" y1="' + gy + '" x2="' + (pad.left + cW) + '" y2="' + gy + '" stroke="rgba(0,0,0,.06)" stroke-dasharray="4,4"/>';
+          svg += '<text x="' + (pad.left - 10) + '" y="' + (gy + 4) + '" text-anchor="end" font-size="11" fill="#9B8B75">' + fmtVN(displayMaxV * g / 4) + '</text>';
+        }
+
+        // x-labels
+        var step = data.length > 10 ? Math.ceil(data.length / 8) : 1;
+        data.forEach(function (x, i) {
+          if (data.length <= 10 || i % step === 0 || i === data.length - 1) {
+            svg += '<text x="' + xP(i) + '" y="' + (pad.top + cH + 22) + '" text-anchor="middle" font-size="10" fill="#9B8B75">' + x.label + '</text>';
+          }
+        });
+
+        svg += '<path d="' + ap + '" fill="url(#mg)"/>';
+        svg += '<path d="' + lp + '" fill="none" stroke="#C8922A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
+
+        // dots with invisible hit area for tooltip
+        pts.forEach(function (p, i) {
+          var rev = Number(data[i].revenue);
+          svg += '<circle cx="' + p.x + '" cy="' + p.y + '" r="4.5" fill="' + (rev > 0 ? '#C8922A' : 'rgba(200,146,42,0.3)') + '" stroke="#fff" stroke-width="2" class="chart-dot" data-label="' + data[i].label + '" data-rev="' + rev + '"/>';
+          svg += '<circle cx="' + p.x + '" cy="' + p.y + '" r="14" fill="transparent" class="chart-hit" data-label="' + data[i].label + '" data-rev="' + rev + '"/>';
+        });
+        svg += '</svg>';
+
+        chartEl.innerHTML = svg;
+
+        // attach tooltip events
+        chartEl.querySelectorAll('.chart-hit').forEach(function (el) {
+          el.addEventListener('mouseenter', function (e) {
+            showTooltip(e, '<strong>' + el.dataset.label + '</strong><br>' + fmtFull(el.dataset.rev));
+          });
+          el.addEventListener('mousemove', moveTooltip);
+          el.addEventListener('mouseleave', hideTooltip);
+        });
+      }
+
+      // ── render monthly table ──
+      function renderTable(data) {
+        var tbody = document.getElementById('monthly-table');
+        if (!tbody) return;
+        if (!data || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:32px">Không có dữ liệu</td></tr>';
+          return;
+        }
+        var maxRev = Math.max.apply(null, data.map(function (x) { return Number(x.revenue); }));
+        tbody.innerHTML = data.map(function (x, i) {
+          var prev = i > 0 ? Number(data[i - 1].revenue) : null;
+          var rev = Number(x.revenue);
+          var change = prev !== null && prev > 0 ? ((rev - prev) / prev * 100).toFixed(1) : null;
+          var changeHtml = change !== null
+            ? '<span style="color:' + (change > 0 ? 'var(--success)' : 'var(--danger)') + ';">' + (change > 0 ? '↑' : '↓') + Math.abs(change) + '%</span>'
+            : '<span style="color:var(--text-muted)">—</span>';
+          var pct = maxRev > 0 ? Math.round(rev / maxRev * 100) : 0;
+          return '<tr>' +
+            '<td><strong>' + x.label + '</strong></td>' +
+            '<td><strong style="color:var(--accent)">' + fmtVN(rev) + '</strong><br><small style="color:var(--text-muted)">' + fmtFull(rev) + '</small></td>' +
+            '<td>' + changeHtml + '</td>' +
+            '<td style="min-width:140px"><div style="display:flex;align-items:center;gap:8px"><div class="progress-bar" style="flex:1;margin:0"><div class="progress-bar__fill" style="width:' + pct + '%"></div></div><span style="font-size:var(--fs-xs);color:var(--text-muted);white-space:nowrap">' + pct + '%</span></div></td>' +
+            '</tr>';
+        }).join('');
+      }
+
+      // ── update range summary bar ──
+      function updateRangeSummary(rangeData, label) {
+        var bar = document.getElementById('range-summary-bar');
+        var months = rangeData.months || [];
+        var total = Number(rangeData.totalRevenue || 0);
+        var orders = Number(rangeData.totalOrders || 0);
+        var aov = Number(rangeData.aov || 0);
+
+        // peak month
+        var peak = months.reduce(function (best, m) {
+          return Number(m.revenue) > Number(best.revenue) ? m : best;
+        }, { revenue: 0, label: '—' });
+
+        document.getElementById('rs-total').textContent = fmtVN(total);
+        document.getElementById('rs-period').textContent = label;
+        document.getElementById('rs-orders').textContent = orders;
+        document.getElementById('rs-aov').textContent = fmtVN(aov);
+        document.getElementById('rs-peak-label').textContent = peak.label;
+        document.getElementById('rs-peak-val').textContent = fmtVN(Number(peak.revenue));
+
+        bar.classList.add('visible');
+      }
+
+      // ── global apply filter ──
+      window.applyFilter = function () {
+        var sM = parseInt(smEl.value), sY = parseInt(syEl.value);
+        var eM = parseInt(emEl.value), eY = parseInt(eyEl.value);
+        var startTs = new Date(sY, sM - 1, 1).getTime();
+        var endTs = new Date(eY, eM - 1, 1).getTime();
+        if (startTs > endTs) {
+          AdminCore && AdminCore.toast && AdminCore.toast('Tháng bắt đầu phải trước tháng kết thúc', 'error');
+          return;
+        }
+
+        var btn = document.getElementById('rev-apply-btn');
+        btn.classList.add('loading');
+        btn.querySelector('svg').style.display = 'none';
+        btn.childNodes[btn.childNodes.length - 1].textContent = ' Đang tải...';
+
+        var chartEl = document.getElementById('monthly-chart');
+        chartEl.innerHTML = '<div class="chart-loading"><div class="chart-loading__spinner"></div>Đang tải dữ liệu...</div>';
+
+        var label = 'T' + sM + '/' + sY + ' – T' + eM + '/' + eY;
+        document.getElementById('monthly-chart-title').textContent = '📈 Doanh Thu ' + label;
+
+        AdminData.analytics.getRevenueByRange(sY, sM, eY, eM)
+          .then(function (data) {
+            renderLineChart(data.months, 'monthly-chart');
+            renderTable(data.months);
+            updateRangeSummary(data, label);
+          })
+          .catch(function (err) {
+            chartEl.innerHTML = '<div class="chart-loading" style="color:var(--danger)">Lỗi tải dữ liệu: ' + err.message + '</div>';
+          })
+          .finally(function () {
+            btn.classList.remove('loading');
+            btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 2 11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Áp dụng';
+          });
+      };
+
+      // ── render donut (static from main data) with hover tooltip ──
+      function renderDonut(cats) {
+        var donutEl = document.getElementById('donut-chart');
+        var legendEl = document.getElementById('donut-legend');
+        if (!donutEl) return;
+        var R = 80, r = 50, cx = 100, cy = 100;
+        var total = cats.reduce(function (s, c) { return s + Number(c.value); }, 0);
+        var svg = '<svg width="200" height="200" viewBox="0 0 200 200" style="overflow:visible">';
+        if (total <= 0) {
+          svg += '<circle cx="' + cx + '" cy="' + cy + '" r="65" fill="none" stroke="#E5DCD0" stroke-width="25"/>';
+        } else {
+          var angle = -90;
+          cats.forEach(function (c, idx) {
+            var slice = (Number(c.value) / total) * 360;
+            var rad = Math.PI / 180;
+            var x1 = cx + R * Math.cos(angle * rad), y1 = cy + R * Math.sin(angle * rad);
+            var x2 = cx + R * Math.cos((angle + slice) * rad), y2 = cy + R * Math.sin((angle + slice) * rad);
+            var xi1 = cx + r * Math.cos(angle * rad), yi1 = cy + r * Math.sin(angle * rad);
+            var xi2 = cx + r * Math.cos((angle + slice) * rad), yi2 = cy + r * Math.sin((angle + slice) * rad);
+            var large = slice > 180 ? 1 : 0;
+            svg += '<path d="M ' + x1 + ' ' + y1 + ' A ' + R + ' ' + R + ' 0 ' + large + ' 1 ' + x2 + ' ' + y2 + ' L ' + xi2 + ' ' + yi2 + ' A ' + r + ' ' + r + ' 0 ' + large + ' 0 ' + xi1 + ' ' + yi1 + ' Z"'
+              + ' fill="' + c.color + '" stroke="#fff" stroke-width="2"'
+              + ' class="donut-slice" data-name="' + c.name + '" data-pct="' + c.value + '"'
+              + ' style="cursor:pointer;transition:filter .15s"/>'; 
+            angle += slice;
+          });
+        }
+        svg += '<text x="100" y="95" text-anchor="middle" font-size="14" font-weight="700" fill="#1A0F05">Doanh thu</text>';
+        svg += '<text x="100" y="115" text-anchor="middle" font-size="12" fill="#9B8B75">danh mục</text>';
+        svg += '</svg>';
+        donutEl.innerHTML = svg;
+        legendEl.innerHTML = cats.map(function (c) {
+          return '<div class="chart-legend__item"><div class="chart-legend__dot" style="background:' + c.color + '"></div><span>' + c.name + ' (' + c.value + '%)</span></div>';
+        }).join('');
+        // Attach tooltip to donut slices
+        donutEl.querySelectorAll('.donut-slice').forEach(function(slice) {
+          slice.addEventListener('mouseenter', function(e) {
+            slice.style.filter = 'brightness(1.15) drop-shadow(0 2px 8px rgba(0,0,0,0.25))';
+            showTooltip(e, '<strong>' + slice.dataset.name + '</strong><br>' + slice.dataset.pct + '% doanh thu');
+          });
+          slice.addEventListener('mousemove', moveTooltip);
+          slice.addEventListener('mouseleave', function() {
+            slice.style.filter = '';
+            hideTooltip();
+          });
+        });
+      }
+
+      // ── init: load main dashboard then apply default 6-month filter ──
+      document.addEventListener('DOMContentLoaded', function () {
+        // Load dashboard KPIs + donut
+        AdminData.analytics.getDashboardData().then(function (data) {
+          var revLabelEl = document.getElementById('an-revenue-label');
+          if (revLabelEl) revLabelEl.textContent = 'Doanh thu ' + (data.currentMonthLabel || '');
+
+          var revEl = document.getElementById('an-revenue');
+          if (revEl) revEl.textContent = AdminData.fmtShort(data.currentMonthRevenue || 0);
+
+          var revChangeEl = document.getElementById('an-revenue-change');
+          if (revChangeEl) {
+            var prevRev = data.previousMonthRevenue || 0;
+            var change = data.revenuePercentChange || 0;
+            if (prevRev <= 0) {
+              revChangeEl.className = 'kpi-card__change kpi-card__change--neutral';
+              revChangeEl.textContent = 'Chưa có dữ liệu so sánh';
+            } else {
+              var isUp = change >= 0;
+              revChangeEl.className = 'kpi-card__change ' + (isUp ? 'kpi-card__change--up' : 'kpi-card__change--down');
+              revChangeEl.textContent = (isUp ? '↑ ' : '↓ ') + Math.abs(change) + '% so với ' + (data.previousMonthLabel || 'tháng trước');
+            }
+            revChangeEl.style.display = '';
+          }
+
+          var aovEl = document.getElementById('an-aov');
+          if (aovEl) aovEl.textContent = AdminData.fmtShort(data.currentMonthAov || 0);
+
+          var aovChangeEl = document.getElementById('an-aov-change');
+          if (aovChangeEl) {
+            var prevAov = data.previousMonthAov || 0;
+            var chA = data.aovPercentChange || 0;
+            if (prevAov <= 0) {
+              aovChangeEl.className = 'kpi-card__change kpi-card__change--neutral';
+              aovChangeEl.textContent = 'Chưa có dữ liệu so sánh';
+            } else {
+              var isUpA = chA >= 0;
+              aovChangeEl.className = 'kpi-card__change ' + (isUpA ? 'kpi-card__change--up' : 'kpi-card__change--down');
+              aovChangeEl.textContent = (isUpA ? '↑ ' : '↓ ') + Math.abs(chA) + '% so với ' + (data.previousMonthLabel || 'tháng trước');
+            }
+            aovChangeEl.style.display = '';
+          }
+
+          var retEl = document.getElementById('an-return');
+          if (retEl) retEl.textContent = (data.returnCustomerRate || 0) + '%';
+
+          var retChangeEl = document.getElementById('an-return-change');
+          if (retChangeEl) {
+            var totalCust = data.totalCustomers || 0;
+            retChangeEl.className = 'kpi-card__change kpi-card__change--neutral';
+            retChangeEl.textContent = 'Tổng ' + totalCust + ' khách hàng';
+            retChangeEl.style.display = '';
+          }
+
+          // Donut from main data (all time category breakdown)
+          if (data.categoryRevenue) renderDonut(data.categoryRevenue);
+
+        }).catch(function (e) { console.error('Error loading analytics:', e); });
+
+        // Set default selects to 6 months and apply
+        setDefaultRange(6);
+        applyFilter();
+      });
+    })();
+  </script>
+</body>
+
+</html>

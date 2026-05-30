@@ -33,6 +33,8 @@ builder.Services.AddScoped<IContactRepository, ContactRepository>();
 builder.Services.AddScoped<ISiteConfigRepository, SiteConfigRepository>();
 builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
 builder.Services.AddScoped<BatTrang.Infrastructure.Services.NotificationService>();
+builder.Services.AddSingleton<BatTrang.Infrastructure.Services.FileCleanupService>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<BatTrang.Infrastructure.Services.FileCleanupService>());
 
 // CORS
 builder.Services.AddCors(options =>

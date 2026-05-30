@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BatTrang.Infrastructure.Data;
 
 namespace BatTrang.API.Controllers
 {
@@ -26,13 +27,15 @@ namespace BatTrang.API.Controllers
         private readonly IProductRepository _productRepo;
         private readonly ICustomerRepository _customerRepo;
         private readonly IHubContext<NotificationHub> _hubContext;
+        private readonly AppDbContext _context;
 
-        public AdminOrdersController(IOrderRepository orderRepo, IProductRepository productRepo, ICustomerRepository customerRepo, IHubContext<NotificationHub> hubContext)
+        public AdminOrdersController(IOrderRepository orderRepo, IProductRepository productRepo, ICustomerRepository customerRepo, IHubContext<NotificationHub> hubContext, AppDbContext context)
         {
             _orderRepo = orderRepo;
             _productRepo = productRepo;
             _customerRepo = customerRepo;
             _hubContext = hubContext;
+            _context = context;
         }
 
         [HttpGet]
@@ -141,14 +144,14 @@ namespace BatTrang.API.Controllers
                 if (product == null)
                     return BadRequest(new { message = $"Sản phẩm #{item.Id} không tồn tại" });
 
-                var variant = product.Variants.FirstOrDefault(v => v.Size == item.Size) ?? product.Variants.FirstOrDefault();
+                var variant = product.Variants.FirstOrDefault(v => v.Size?.Name == item.Size) ?? product.Variants.FirstOrDefault();
                 var price = variant?.Price ?? 0;
 
                 order.Items.Add(new OrderItem
                 {
                     ProductId = product.Id,
                     ProductName = product.Name,
-                    Size = variant?.Size ?? item.Size,
+                    Size = item.Size,
                     UnitPrice = price,
                     Quantity = item.Qty
                 });
@@ -161,17 +164,22 @@ namespace BatTrang.API.Controllers
             order.Total = total;
             await _orderRepo.AddAsync(order);
 
+            var created = await _orderRepo.GetByOrderCodeAsync(order.OrderCode);
+            if (created == null) return StatusCode(500, new { message = "Không thể tải đơn hàng vừa tạo" });
+
             try
             {
-                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "OrderPlaced", $"Đơn hàng mới {order.OrderCode} vừa được tạo bởi quản trị viên!");
+                var msg = $"Đơn hàng #{created.OrderCode} vừa được tạo tại cửa hàng.";
+                var noti = new BatTrang.Core.Entities.Notification { Type = "OrderPlaced", Message = msg };
+                _context.Notifications.Add(noti);
+                await _context.SaveChangesAsync();
+                
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "OrderPlaced", msg);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[SignalR Push Error] {ex.Message}");
             }
-
-            var created = await _orderRepo.GetByOrderCodeAsync(order.OrderCode);
-            if (created == null) return StatusCode(500, new { message = "Không thể tải đơn hàng vừa tạo" });
 
             var productIds = created.Items.Select(i => i.ProductId).Distinct().ToList();
             var productImages = await _productRepo.GetProductImagesAsync(productIds);
@@ -217,8 +225,12 @@ namespace BatTrang.API.Controllers
                     "cancelled" => "Đã huỷ",
                     _           => dto.Status
                 };
-                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "OrderStatusChanged",
-                    $"Đơn hàng #{order.OrderCode} đã chuyển sang trạng thái: {statusLabel}!");
+                var msg = $"Đơn hàng #{order.OrderCode} đã chuyển sang trạng thái: {statusLabel}!";
+                var noti = new BatTrang.Core.Entities.Notification { Type = "OrderStatusChanged", Message = msg };
+                _context.Notifications.Add(noti);
+                await _context.SaveChangesAsync();
+
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "OrderStatusChanged", msg);
             }
             catch (Exception ex)
             {
@@ -247,7 +259,7 @@ namespace BatTrang.API.Controllers
                 if (product == null) continue;
 
                 // Tìm variant khớp size đặt hàng
-                var variant = product.Variants.FirstOrDefault(v => v.Size == item.Size)
+                var variant = product.Variants.FirstOrDefault(v => v.Size?.Name == item.Size)
                            ?? product.Variants.FirstOrDefault();
 
                 if (variant == null) continue;
@@ -295,7 +307,12 @@ namespace BatTrang.API.Controllers
 
             try
             {
-                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "OrderDeleted", $"Đơn hàng #{id} đã bị xóa khỏi hệ thống!");
+                var msg = $"Đơn hàng #{order.OrderCode} vừa bị xoá khỏi hệ thống.";
+                var noti = new BatTrang.Core.Entities.Notification { Type = "OrderDeleted", Message = msg };
+                _context.Notifications.Add(noti);
+                await _context.SaveChangesAsync();
+
+                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "OrderDeleted", msg);
             }
             catch (Exception ex)
             {

@@ -25,5 +25,27 @@ namespace BatTrang.Infrastructure.Repositories
             await _context.AdminUsers.AddAsync(user);
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdateAsync(AdminUser user)
+        {
+            _context.AdminUsers.Update(user);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<System.Collections.Generic.IEnumerable<AdminUser>> GetAllAsync()
+        {
+            return await _context.AdminUsers.ToListAsync();
+        }
+
+        public async Task<AdminUser?> GetByIdAsync(int id)
+        {
+            return await _context.AdminUsers.FindAsync(id);
+        }
+
+        public async Task DeleteAsync(AdminUser user)
+        {
+            _context.AdminUsers.Remove(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }

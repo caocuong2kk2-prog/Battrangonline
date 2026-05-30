@@ -29,10 +29,16 @@ namespace BatTrang.Infrastructure.Repositories
 
         public async Task UpdateConfigsAsync(Dictionary<string, string> configs)
         {
+            var keys = configs.Keys.ToList();
+            var existingConfigs = await _context.SiteConfigs
+                .Where(s => keys.Contains(s.Key))
+                .ToListAsync();
+
+            var existingDict = existingConfigs.ToDictionary(c => c.Key, c => c);
+
             foreach (var kvp in configs)
             {
-                var existing = await _context.SiteConfigs.FirstOrDefaultAsync(s => s.Key == kvp.Key);
-                if (existing != null)
+                if (existingDict.TryGetValue(kvp.Key, out var existing))
                 {
                     existing.Value = kvp.Value;
                 }

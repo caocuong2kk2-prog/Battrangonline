@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/checkout.css">
   <link rel="stylesheet" href="css/responsive.css">
-  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="assets/images/logo.png" type="image/png">
 
   <style>
     /* Override bg cho trang xác nhận đơn hàng */
@@ -219,10 +219,12 @@
         if (addressEl) addressEl.textContent = order.address;
 
         // Notes (tùy chọn)
-        if (order.notes) {
+        if (order.customerNote) {
           var notesRow = document.getElementById('customer-notes-row');
           if (notesRow) {
-            notesRow.textContent = '📝 ' + order.notes;
+            notesRow.innerHTML = '<i class="fas fa-comment-dots"></i> Lời dặn: ' + order.customerNote;
+            notesRow.style.color = 'var(--accent)';
+            notesRow.style.fontWeight = '600';
             notesRow.style.display = 'block';
           }
         }
@@ -254,12 +256,18 @@
               else imgUrl = 'assets/images/placeholder.jpg';
             }
 
+            var isVideo = /\.(mp4|mov|avi|webm|ogg)$/i.test(imgUrl);
+            var mediaHtml = isVideo
+              ? '<video src="' + imgUrl + '" autoplay loop muted playsinline style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.15); flex-shrink: 0;"></video>'
+              : '<img src="' + imgUrl + '" alt="' + item.name + '" style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.15); flex-shrink: 0;">';
+
+            var displayName = item.size ? item.name + ' - ' + item.size : item.name;
             return [
               '<div class="success-item-row" style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-3); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: var(--space-2);">',
                 '<div style="display: flex; align-items: center; gap: var(--space-3);">',
-                  '<img src="' + imgUrl + '" alt="' + item.name + '" style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.15); flex-shrink: 0;">',
+                  mediaHtml,
                   '<div style="display: flex; flex-direction: column; text-align: left;">',
-                    '<span class="success-item-row__name" style="color: #ffffff; font-weight: 500; font-size: var(--fs-sm);">' + item.name + '</span>',
+                    (item.productId ? '<a href="product-detail.html?id=' + item.productId + '" target="_blank" class="success-item-row__name" style="color: #ffffff; font-weight: 500; font-size: var(--fs-sm); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color=\'var(--color-accent)\'" onmouseout="this.style.color=\'#ffffff\'">' + displayName + '</a>' : '<span class="success-item-row__name" style="color: #ffffff; font-weight: 500; font-size: var(--fs-sm);">' + displayName + '</span>'),
                     '<span style="font-size: var(--fs-xs); color: rgba(255,255,255,0.5); margin-top: 2px;">Số lượng: ' + item.qty + '</span>',
                   '</div>',
                 '</div>',

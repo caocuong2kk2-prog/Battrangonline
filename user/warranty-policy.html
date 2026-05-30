@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chính Sách Bảo Hành – Phúc Gia Tiên</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <style>
+    .policy-content-wrapper {
+      padding: var(--space-16) 0;
+      background: #ffffff;
+    }
+    .policy-content {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body class="page-body">
+  <div id="header-placeholder"></div>
+
+  <main id="main-content">
+    <section class="page-hero">
+      <div class="page-hero__bg">
+        <img class="js-config-page-banner" src="assets/images/about-hero.jpg" alt="Banner" role="presentation" loading="eager">
+      </div>
+      <div class="container">
+        <div class="page-hero__content">
+          <h1 class="page-hero__title">CHÍNH SÁCH BẢO HÀNH</h1>
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
+            <span class="breadcrumb__item"><span class="breadcrumb__current">Chính Sách Bảo Hành</span></span>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="policy-content-wrapper">
+      <div class="container">
+        <div class="policy-content" id="policy-content-container">
+          <div class="spinner" style="margin:4rem auto;"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if(window.PhucGiaTienAPI) {
+        PhucGiaTienAPI.getSiteConfigs().then(function(configs) {
+          var content = configs['policyWarranty'];
+          var container = document.getElementById('policy-content-container');
+          if (content) {
+            container.innerHTML = content;
+          } else {
+            container.innerHTML = '<p style="text-align:center;color:#666;">Nội dung đang được cập nhật...</p>';
+          }
+        }).catch(function(err) {
+          document.getElementById('policy-content-container').innerHTML = '<p style="text-align:center;color:red;">Lỗi tải nội dung.</p>';
+        });
+      }
+    });
+  </script>
+</body>
+</html>
