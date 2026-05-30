@@ -14,7 +14,7 @@
 
     if (url.includes('tiktok.com')) {
       var tkMatch = url.match(/video\/(\d+)/);
-      if (tkMatch) return 'https://www.tiktok.com/embed/' + tkMatch[1];
+      if (tkMatch) return 'https://www.tiktok.com/player/v1/' + tkMatch[1] + '?music_info=1&description=1';
     }
     if (url.includes('facebook.com') || url.includes('fb.watch')) {
       return 'https://www.facebook.com/plugins/video.php?href=' + encodeURIComponent(url) + '&show_text=false&width=560';

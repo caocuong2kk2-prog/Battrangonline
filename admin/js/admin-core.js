@@ -176,6 +176,41 @@ document.addEventListener('click',function(e){
   if(btn){closeModal(btn.dataset.closeModal);}
 });
 
+// ── Global Enter Key to Save ──
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    var tag = e.target.tagName.toLowerCase();
+    // Only apply if user is focused on an input or select
+    if (tag === 'input' || tag === 'select') {
+      // Exclude textarea/checkbox/radio if necessary (input type)
+      if (e.target.type === 'checkbox' || e.target.type === 'radio') return;
+
+      var modal = e.target.closest('.modal-overlay.is-open');
+      var form = e.target.closest('form');
+      var saveBtn = null;
+      
+      if (modal) {
+        saveBtn = modal.querySelector('.modal-footer [id^="btn-save"]') || 
+                  modal.querySelector('.modal-footer .btn--primary');
+      } else if (form) {
+        saveBtn = form.querySelector('[id^="btn-save"]') || 
+                  form.querySelector('.btn--primary');
+      } else {
+        // Fallback for page-level save buttons outside form
+        var main = e.target.closest('.admin-content');
+        if(main) {
+          saveBtn = main.querySelector('[id^="btn-save"]');
+        }
+      }
+      
+      if (saveBtn && !saveBtn.disabled) {
+        e.preventDefault();
+        saveBtn.click();
+      }
+    }
+  }
+});
+
 // ── formatVND ──
 window.fmtVND=function(n){return Number(n).toLocaleString('vi-VN')+'đ';};
 

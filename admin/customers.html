@@ -208,9 +208,9 @@
       html+='<div class="order-detail-box"><div class="order-detail-box__title">🛒 Lịch sử đơn hàng ('+orders.length+' đơn)</div>'+
         orders.map(function(o){
           var itemHtml = (o.items || []).map(function(i){
-             var codeStr = i.productId ? ' <span style="color:var(--text-muted);font-size:var(--fs-xs)">[SP'+String(i.productId).padStart(3,"0")+']</span>' : '';
              var p = i.productId ? getProductById(i.productId) : null;
              var productImages = (p && p.images && p.images.length > 0) ? p.images : (i.imageUrl ? [i.imageUrl] : []);
+             
              var imgStr = '';
              if (productImages.length > 0) {
                  if (typeof window.generateAdminThumbnailHTML === 'function') {
@@ -221,16 +221,32 @@
                      imgStr = '<img src="'+productImages[0]+'" class="zoomable" data-images=\'' + JSON.stringify(productImages).replace(/'/g, '&#39;') + '\' alt="" style="width:72px;height:72px;object-fit:cover;border-radius:10px;flex-shrink:0;border:1px solid var(--border);">';
                  }
              } else {
-                 imgStr = '<div style="width:72px;height:72px;background:var(--surface-100);border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px">🏺</div>';
+                 imgStr = '<div style="width:72px;height:72px;background:var(--surface-100);border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;">🏺</div>';
              }
-             return '<div style="display:flex;align-items:center;gap:var(--sp-2);padding:4px 0;border-bottom:1px solid var(--border-color);"><div style="display:flex;align-items:center;justify-content:center;overflow:hidden">'+imgStr+'</div><div style="flex:1;font-size:var(--fs-sm);"><div style="line-height:1.3;font-weight:500">'+i.name+codeStr+'</div><div style="font-size:var(--fs-xs);color:var(--text-muted)">Số lượng: '+i.qty+' &times; '+AdminData.fmt(i.price)+'</div></div></div>';
+
+             var productCode = i.productId ? ('<span style="display:inline-block;font-size:10.5px;font-weight:700;color:var(--accent);background:rgba(200,146,42,0.1);border:1px solid rgba(200,146,42,0.25);border-radius:4px;padding:1px 7px;letter-spacing:.04em;">#SP' + String(i.productId).padStart(4,'0') + '</span>') : '';
+             var sizeHtml = i.size ? ('<span style="display:inline-block;font-size:10.5px;color:var(--text-muted);background:var(--surface-100);border:1px solid var(--border);border-radius:4px;padding:1px 7px;margin-left:4px;">Size: '+escapeHTML(i.size)+'</span>') : '';
+             var nameHtml = escapeHTML(i.name);
+             if (p && p.slug) {
+                 nameHtml = '<a href="../product-detail.html?slug=' + p.slug + '" target="_blank" style="color:inherit; text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color=\'var(--accent)\'" onmouseout="this.style.color=\'inherit\'" title="Xem chi tiết sản phẩm trên website">' + escapeHTML(i.name) + '</a>';
+             }
+             
+             return '<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px dashed var(--border);">' +
+               imgStr +
+               '<div style="flex:1;min-width:0;">' +
+                 '<div style="font-weight:600;font-size:13.5px;line-height:1.4;margin-bottom:5px;">' + nameHtml + '</div>' +
+                 '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:5px;">' + productCode + sizeHtml + '</div>' +
+                 '<div style="font-size:12px;color:var(--text-muted);">Số lượng: <strong>'+i.qty+'</strong> &times; '+AdminData.fmt(i.price)+'</div>' +
+               '</div>' +
+               '<div style="font-weight:700;font-size:14px;color:var(--accent);text-align:right;white-space:nowrap;margin-left:8px;flex-shrink:0;">'+AdminData.fmt(i.price*i.qty)+'</div>' +
+               '</div>';
           }).join('');
-          // Remove last border bottom
+          
           if(itemHtml) itemHtml = '<div style="display:flex;flex-direction:column;">' + itemHtml + '</div>';
           return '<div class="order-detail-line" style="flex-direction:column; align-items:flex-start; gap:var(--sp-1);">'+
                    '<div style="width:100%; display:flex; justify-content:space-between; align-items:center;">'+
-                     '<span><strong>'+o.id+'</strong> – '+o.date+'</span>'+
-                     '<div><span class="badge '+AdminData.getStatusBadge(o.status)+'">'+AdminData.getStatusLabel(o.status)+'</span> <strong style="color:var(--accent)">'+AdminData.fmt(o.total)+'</strong></div>'+
+                     '<span><strong>#'+o.id+'</strong> – '+AdminData.fmtDate(o.date)+'</span>'+
+                     '<div style="display:flex; align-items:center; gap: 8px;"><span class="badge '+AdminData.getStatusBadge(o.status)+'">'+AdminData.getStatusLabel(o.status)+'</span> <strong style="color:var(--accent)">'+AdminData.fmt(o.total)+'</strong></div>'+
                    '</div>'+
                    (itemHtml ? '<div style="width:100%; margin-top:var(--sp-2); background:var(--surface-50); padding:var(--sp-2); border-radius:var(--radius-md);">'+itemHtml+'</div>' : '')+
                  '</div>';
