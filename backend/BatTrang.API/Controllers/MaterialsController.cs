@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace BatTrang.API.Controllers
 {
@@ -21,6 +22,7 @@ namespace BatTrang.API.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [OutputCache(PolicyName = "FiltersCache")]
         public async Task<IActionResult> GetAll()
         {
             var items = await _context.Materials
@@ -36,3 +38,4 @@ namespace BatTrang.API.Controllers
         }
     }
 }
+

@@ -382,7 +382,7 @@
         <div class="page-hero__content">
           <h1 class="page-hero__title">TRA CỨU ĐƠN HÀNG</h1>
           <nav class="breadcrumb" aria-label="Breadcrumb">
-            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
+            <span class="breadcrumb__item"><a class="breadcrumb__link" href="/">Trang Chủ</a></span>
             <span class="breadcrumb__item"><span class="breadcrumb__current">Tra Cứu Đơn Hàng</span></span>
           </nav>
         </div>
@@ -418,6 +418,24 @@
         <!-- NOTIFICATION CONTAINER -->
         <div style="max-width: 800px; margin: 0 auto;" id="notification-area"></div>
 
+        <!-- DATE FILTER -->
+        <div id="tracking-date-filter" style="display:none; max-width: 800px; margin: 0 auto var(--space-6); background: #fff; padding: var(--space-4) var(--space-6); border-radius: var(--radius-lg); border: 1px solid rgba(200, 146, 42, 0.12); box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+          <div style="display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end;">
+            <div style="flex:1; min-width:140px;">
+              <label for="filter-date-from" style="display:block; font-size:11px; font-weight:700; text-transform:uppercase; color:#5c3a1e; margin-bottom:6px;">Từ ngày</label>
+              <input type="date" id="filter-date-from" style="width:100%; padding:10px 12px; border:1px solid #d4c4b0; border-radius:4px; font-family:var(--font-body); color:#1a0f05; outline:none;">
+            </div>
+            <div style="flex:1; min-width:140px;">
+              <label for="filter-date-to" style="display:block; font-size:11px; font-weight:700; text-transform:uppercase; color:#5c3a1e; margin-bottom:6px;">Đến ngày</label>
+              <input type="date" id="filter-date-to" style="width:100%; padding:10px 12px; border:1px solid #d4c4b0; border-radius:4px; font-family:var(--font-body); color:#1a0f05; outline:none;">
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button type="button" onclick="applyDateFilter()" style="padding:10px 20px; background:var(--color-primary); color:#fff; border:none; border-radius:4px; font-weight:600; cursor:pointer; height:42px;">Lọc đơn hàng</button>
+              <button type="button" onclick="clearDateFilter()" style="padding:10px 20px; background:#f3f4f6; color:#374151; border:none; border-radius:4px; font-weight:600; cursor:pointer; height:42px;">Xóa</button>
+            </div>
+          </div>
+        </div>
+
         <!-- RESULTS CONTAINER -->
         <div class="user-orders-list" id="tracking-results-container">
           <!-- Populated dynamically -->
@@ -427,6 +445,21 @@
     </section>
 
   </main>
+
+  <!-- CANCEL MODAL -->
+  <div id="cancel-order-modal" class="img-modal" style="display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.6);">
+    <div style="background:#fff; padding:24px; border-radius:8px; max-width:400px; width:90%; position:relative;">
+      <h3 id="cancel-modal-title" style="margin-bottom:16px; font-family:var(--font-heading); color:#dc2626;">Hủy Đơn Hàng</h3>
+      <p style="font-size:14px; color:#555; margin-bottom:12px;" id="cancel-modal-desc">Vui lòng cho chúng tôi biết lý do bạn muốn hủy đơn hàng này.</p>
+      <input type="hidden" id="cancel-order-code">
+      <input type="hidden" id="cancel-order-phone">
+      <textarea id="cancel-reason-input" placeholder="Lý do hủy..." rows="3" style="width:100%; padding:8px; border:1px solid #d4c4b0; border-radius:4px; margin-bottom:16px; font-family:var(--font-body);"></textarea>
+      <div style="display:flex; justify-content:flex-end; gap:12px;">
+        <button type="button" onclick="closeCancelModal()" style="padding:8px 16px; background:#f3f4f6; color:#374151; border:none; border-radius:4px; font-weight:600; cursor:pointer;">Đóng</button>
+        <button type="button" onclick="submitCancelOrder()" style="padding:8px 16px; background:#dc2626; color:#fff; border:none; border-radius:4px; font-weight:600; cursor:pointer;" id="btn-submit-cancel">Xác nhận Hủy</button>
+      </div>
+    </div>
+  </div>
 
   <!-- MEDIA MODAL -->
   <div id="product-img-modal" class="img-modal" onclick="closeImgModal(event)">
@@ -438,6 +471,7 @@
   <div id="footer-placeholder"></div>
 
   <!-- SCRIPTS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
   <script src="js/api.js"></script>
   <script src="js/cart.js"></script>
   <script src="js/common.js"></script>
@@ -503,6 +537,10 @@
           // Fallback time for first step if no statusHistory exists
           if (step.key === 'pending' && !time && order.date) {
             time = order.date;
+          }
+          
+          if (time && window.formatDate) {
+            time = window.formatDate(time);
           }
           
           var note = histEntry ? histEntry.note : ((isDone || isActive) ? step.defaultNote : '');
@@ -585,7 +623,7 @@
             '<div class="order-summary-header">',
               '<div class="order-header-info">',
                 '<span class="order-code-badge">' + order.orderCode + '</span>',
-                '<span class="order-date-label">Ngày đặt: ' + order.date + '</span>',
+                '<span class="order-date-label">Ngày đặt: ' + (window.formatDate ? window.formatDate(order.date) : order.date) + '</span>',
               '</div>',
               '<span class="order-badge-status ' + statusInfo.cls + '">' + statusInfo.text + '</span>',
             '</div>',
@@ -600,7 +638,11 @@
                 '<span class="price">' + totalVND + '</span>',
               '</div>',
             '</div>',
-            '<div class="order-summary-footer">',
+            '<div class="order-summary-footer" style="display:flex; justify-content:flex-end; gap:8px;">',
+              (order.isCancelRequested ? '<span style="color:#d97706; font-size:var(--fs-xs); align-self:center; margin-right:auto; font-weight:600;"><i class="fas fa-spinner fa-spin"></i> Đang chờ duyệt hủy</span>' : ''),
+              (!order.isCancelRequested && order.status !== 'cancelled' && order.cancelReason && order.cancelReason.indexOf('Bị từ chối') !== -1 ? '<span style="color:#dc2626; font-size:var(--fs-xs); align-self:center; margin-right:auto; font-weight:600;" title="' + order.cancelReason.replace(/"/g, '&quot;') + '"><i class="fas fa-exclamation-circle"></i> ' + order.cancelReason.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>' : ''),
+              (order.status === 'pending' ? '<button type="button" class="btn-cancel-order" onclick="openCancelModal(\'' + order.orderCode + '\', \'' + rPhone + '\', \'pending\')" style="background:none; border:1px solid #dc2626; color:#dc2626; padding:8px 16px; border-radius:var(--radius-sm); font-size:var(--fs-xs); font-weight:600; cursor:pointer;">HỦY ĐƠN HÀNG</button>' : ''),
+              (order.status === 'confirmed' && !order.isCancelRequested && (!order.cancelReason || order.cancelReason.indexOf('Bị từ chối') === -1) ? '<button type="button" class="btn-cancel-order" onclick="openCancelModal(\'' + order.orderCode + '\', \'' + rPhone + '\', \'confirmed\')" style="background:none; border:1px solid #dc2626; color:#dc2626; padding:8px 16px; border-radius:var(--radius-sm); font-size:var(--fs-xs); font-weight:600; cursor:pointer;">YÊU CẦU HỦY</button>' : ''),
               '<button type="button" class="btn-toggle-details" onclick="toggleOrderDetails(' + index + ')">XEM TIẾN TRÌNH & CHI TIẾT</button>',
             '</div>',
             
@@ -638,21 +680,103 @@
         ].join('');
       }
 
-      // Render multiple orders list
-      function renderOrdersList(orders) {
+      window.currentRawOrders = [];
+      
+      window.applyDateFilter = function() {
+        applyAndRenderOrders();
+      };
+      
+      window.clearDateFilter = function() {
+        var fromEl = document.getElementById('filter-date-from');
+        var toEl = document.getElementById('filter-date-to');
+        if (fromEl) fromEl.value = '';
+        if (toEl) toEl.value = '';
+        applyAndRenderOrders();
+      };
+      
+      function applyAndRenderOrders() {
+        var fromEl = document.getElementById('filter-date-from');
+        var toEl = document.getElementById('filter-date-to');
+        var fromDate = fromEl ? fromEl.value : '';
+        var toDate = toEl ? toEl.value : '';
+        
+        var filtered = window.currentRawOrders || [];
+        if (fromDate || toDate) {
+          filtered = filtered.filter(function(o) {
+            if (!o.date && !o.timestamp) return true;
+            
+            var orderDateVal = null;
+            if (o.timestamp) {
+               orderDateVal = new Date(o.timestamp);
+            } else if (o.date) {
+               var dStr = o.date.indexOf('T') > -1 ? o.date.split('T')[0] : o.date.split(' ')[0];
+               if (dStr.indexOf('-') > -1) {
+                 var dParts = dStr.split('-');
+                 if (dParts.length === 3) {
+                   orderDateVal = new Date(parseInt(dParts[0], 10), parseInt(dParts[1], 10)-1, parseInt(dParts[2], 10));
+                 }
+               } else if (dStr.indexOf('/') > -1) {
+                 var slashParts = dStr.split('/');
+                 if (slashParts.length === 3) {
+                   orderDateVal = new Date(parseInt(slashParts[2], 10), parseInt(slashParts[1], 10)-1, parseInt(slashParts[0], 10));
+                 }
+               }
+               if (!orderDateVal || isNaN(orderDateVal.getTime())) {
+                 orderDateVal = new Date(o.date);
+               }
+            }
+            
+            // If date is completely invalid, hide it when filtering is active
+            if (!orderDateVal || isNaN(orderDateVal.getTime())) return false;
+            
+            orderDateVal.setHours(0,0,0,0);
+            
+            if (fromDate) {
+              var fParts = fromDate.split('-');
+              var f = new Date(parseInt(fParts[0], 10), parseInt(fParts[1], 10)-1, parseInt(fParts[2], 10));
+              f.setHours(0,0,0,0);
+              if (orderDateVal < f) return false;
+            }
+            if (toDate) {
+              var tParts = toDate.split('-');
+              var t = new Date(parseInt(tParts[0], 10), parseInt(tParts[1], 10)-1, parseInt(tParts[2], 10));
+              t.setHours(0,0,0,0);
+              if (orderDateVal > t) return false;
+            }
+            return true;
+          });
+        }
+        
         var container = document.getElementById('tracking-results-container');
         if (!container) return;
 
-        if (orders.length === 0) {
-          container.innerHTML = '';
+        if (!filtered || filtered.length === 0) {
+          container.innerHTML = '<div style="text-align: center; color: #8a6a50; padding: var(--space-8); background: #fff; border-radius: var(--radius-lg); border: 1px solid rgba(200, 146, 42, 0.12);">Không có đơn hàng nào được tìm thấy.</div>';
           return;
         }
 
-        var html = orders.map(function(order, idx) {
+        var html = filtered.map(function(order, idx) {
           return renderOrderCard(order, idx);
         }).join('');
 
         container.innerHTML = html;
+      }
+      
+      // Render multiple orders list
+      function renderOrdersList(orders) {
+        window.currentRawOrders = orders || [];
+        
+        // Show/hide filter based on results count
+        var filterDiv = document.getElementById('tracking-date-filter');
+        if (filterDiv) {
+          if (orders && orders.length > 1) {
+             filterDiv.style.display = 'block';
+          } else {
+             filterDiv.style.display = 'none';
+          }
+        }
+        
+        applyAndRenderOrders();
       }
 
       // Modal functions
@@ -694,6 +818,81 @@
              if (vid) vid.pause();
           }
         }
+      };
+
+      window.openCancelModal = function(code, phone, type) {
+        document.getElementById('cancel-order-code').value = code;
+        document.getElementById('cancel-order-phone').value = phone;
+        document.getElementById('cancel-reason-input').value = '';
+        var title = type === 'pending' ? 'Hủy Đơn Hàng' : 'Yêu Cầu Hủy Đơn';
+        var desc = type === 'pending' ? 'Đơn hàng sẽ được hủy ngay lập tức. Vui lòng nhập lý do (tùy chọn):' : 'Đơn hàng đang đóng gói. Vui lòng nhập lý do để Gửi yêu cầu hủy đến Cửa hàng:';
+        document.getElementById('cancel-modal-title').innerText = title;
+        document.getElementById('cancel-modal-desc').innerText = desc;
+        document.getElementById('btn-submit-cancel').innerText = type === 'pending' ? 'Xác nhận Hủy' : 'Gửi Yêu Cầu';
+        document.getElementById('cancel-order-modal').style.display = 'flex';
+      };
+
+      window.closeCancelModal = function() {
+        document.getElementById('cancel-order-modal').style.display = 'none';
+      };
+
+      window.submitCancelOrder = function() {
+        var code = document.getElementById('cancel-order-code').value;
+        var phone = document.getElementById('cancel-order-phone').value;
+        var reason = document.getElementById('cancel-reason-input').value.trim();
+        var btn = document.getElementById('btn-submit-cancel');
+        btn.disabled = true;
+        btn.innerText = 'Đang xử lý...';
+
+        fetch(window.PhucGiaTienAPI.apiBase + '/orders/' + code + '/cancel', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: phone, reason: reason })
+        })
+        .then(function(res) { return res.json().then(function(data) { return { status: res.status, data: data }; }); })
+        .then(function(res) {
+          btn.disabled = false;
+          if (res.status >= 200 && res.status < 300) {
+            closeCancelModal();
+            window.showToast(res.data.message, 'success');
+            var searchInput = document.getElementById('search-query-input');
+            var token = localStorage.getItem('customer_token');
+            if (token && window.PhucGiaTienAPI && typeof window.PhucGiaTienAPI.getCustomerOrders === 'function') {
+                window.PhucGiaTienAPI.getCustomerOrders().then(function(userOrders) {
+                    if (userOrders) renderOrdersList(userOrders);
+                });
+            } else if (searchInput && searchInput.value) {
+                window.handleTrackingSearch();
+            } else {
+                // Update local storage and re-render instantly without reloading
+                if (window.PhucGiaTienAPI && typeof window.PhucGiaTienAPI.getOrder === 'function') {
+                  window.PhucGiaTienAPI.getOrder(code).then(function(liveOrder) {
+                    var all = loadAllOrders();
+                    var idx = all.findIndex(function(x) { return x.orderCode.toLowerCase() === code.toLowerCase(); });
+                    if (idx >= 0) {
+                      all[idx].status = liveOrder.status;
+                      all[idx].isCancelRequested = liveOrder.isCancelRequested;
+                      all[idx].cancelReason = liveOrder.cancelReason;
+                      localStorage.setItem('pgt_orders', JSON.stringify(all));
+                    }
+                    renderOrdersList(all);
+                  }).catch(function() {
+                    setTimeout(function() { window.location.reload(); }, 1500);
+                  });
+                } else {
+                  setTimeout(function() { window.location.reload(); }, 1500);
+                }
+            }
+          } else {
+            window.showToast(res.data.message || 'Không thể thực hiện yêu cầu.', 'error');
+            btn.innerText = document.getElementById('cancel-modal-title').innerText.includes('Yêu Cầu') ? 'Gửi Yêu Cầu' : 'Xác nhận Hủy';
+          }
+        })
+        .catch(function(err) {
+          btn.disabled = false;
+          btn.innerText = document.getElementById('cancel-modal-title').innerText.includes('Yêu Cầu') ? 'Gửi Yêu Cầu' : 'Xác nhận Hủy';
+          window.showToast('Lỗi kết nối.', 'error');
+        });
       };
 
       // Display alert banner
@@ -766,6 +965,7 @@
                 }),
                 total: liveOrder.total,
                 status: liveOrder.status,
+                isCancelRequested: liveOrder.isCancelRequested,
                 statusHistory: liveOrder.statusHistory || []
               };
 
@@ -887,7 +1087,7 @@
             searchCardContainer.style.display = 'block';
             // Add a login prompt below the form
             var loginPrompt = '<p style="text-align: center; margin-top: var(--space-6); font-size: var(--fs-sm); color: #6b4c2e;">' +
-                              'Đã có tài khoản? <a href="login.html" style="color: var(--color-accent); font-weight: 600; text-decoration: underline;">Đăng nhập ngay</a> để xem toàn bộ lịch sử đơn hàng.' +
+                              'Đã có tài khoản? <a href="login" style="color: var(--color-accent); font-weight: 600; text-decoration: underline;">Đăng nhập ngay</a> để xem toàn bộ lịch sử đơn hàng.' +
                               '</p>';
             if (!searchCardContainer.innerHTML.includes('Đã có tài khoản?')) {
               searchCardContainer.insertAdjacentHTML('beforeend', loginPrompt);
@@ -940,6 +1140,61 @@
               window.handleTrackingSearch();
             }
           }
+        }
+        
+        // ── REALTIME UPDATES VIA SIGNALR ──
+        if (window.signalR && window.PhucGiaTienAPI && window.PhucGiaTienAPI.apiBase) {
+          var hubUrl = window.PhucGiaTienAPI.apiBase.replace('/api', '/hub/notifications');
+          var connection = new signalR.HubConnectionBuilder()
+            .withUrl(hubUrl)
+            .withAutomaticReconnect()
+            .build();
+            
+          connection.on("ReceiveNotification", function(eventType, message) {
+            if (eventType === 'OrderStatusChanged' || eventType === 'OrderCancelled' || eventType === 'CancelRequested' || eventType === 'OrderDeleted') {
+              var match = message.match(/#([A-Za-z0-9]+)/);
+              if (match && match[1]) {
+                var updatedCode = match[1].toLowerCase();
+                var needsRefresh = false;
+                
+                var all = loadAllOrders();
+                if (all.some(function(o) { return o.orderCode.toLowerCase() === updatedCode; })) {
+                  needsRefresh = true;
+                }
+                
+                if (window.localStorage.getItem('customer_token')) {
+                  needsRefresh = true;
+                }
+                
+                if (needsRefresh) {
+                   if (window.localStorage.getItem('customer_token') && typeof window.PhucGiaTienAPI.getCustomerOrders === 'function') {
+                      window.PhucGiaTienAPI.getCustomerOrders().then(function(userOrders) {
+                        if (userOrders) renderOrdersList(userOrders);
+                      }).catch(function(){});
+                   } else if (typeof window.PhucGiaTienAPI.getOrder === 'function') {
+                      window.PhucGiaTienAPI.getOrder(updatedCode).then(function(liveOrder) {
+                        var aIdx = all.findIndex(function(x) { return x.orderCode.toLowerCase() === updatedCode; });
+                        if (aIdx >= 0) {
+                          all[aIdx].status = liveOrder.status;
+                          all[aIdx].isCancelRequested = liveOrder.isCancelRequested;
+                          all[aIdx].cancelReason = liveOrder.cancelReason;
+                          localStorage.setItem('pgt_orders', JSON.stringify(all));
+                        }
+                        renderOrdersList(all);
+                      }).catch(function() {
+                        var filtered = all.filter(function(x) { return x.orderCode.toLowerCase() !== updatedCode; });
+                        localStorage.setItem('pgt_orders', JSON.stringify(filtered));
+                        renderOrdersList(filtered);
+                      });
+                   }
+                }
+              }
+            }
+          });
+          
+          connection.start().catch(function(err) {
+            console.error('[SignalR] Tracking Hub Connection Error:', err);
+          });
         }
       }
 

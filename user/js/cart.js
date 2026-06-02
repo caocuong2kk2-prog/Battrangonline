@@ -30,6 +30,45 @@
     document.dispatchEvent(new CustomEvent('cart-updated', { detail: { cart: cart } }));
   }
 
+  function findMatchingStock(item, productData) {
+    if (!productData) return 99;
+    if (!productData.variants || productData.variants.length === 0) {
+      return productData.totalStock !== undefined ? productData.totalStock : (productData.stock || 0);
+    }
+    
+    var matchingVariant = productData.variants.find(function (v) {
+      var sizeParts = [];
+      var size = v.sizeName || v.size;
+      if (size) sizeParts.push(size);
+      if (v.patternName) sizeParts.push(v.patternName);
+      if (v.colorName) sizeParts.push(v.colorName);
+      if (v.productTypeName) sizeParts.push(v.productTypeName);
+      if (v.materialName) sizeParts.push(v.materialName);
+      
+      var variantSizeStr = sizeParts.join(' · ') || null;
+      if (!variantSizeStr) variantSizeStr = 'Phiên bản ' + v.id;
+      
+      var s1 = (item.size || '').toString().trim().toLowerCase();
+      var s2 = (variantSizeStr || '').toString().trim().toLowerCase();
+      return s1 === s2;
+    });
+    
+    if (matchingVariant) {
+      return matchingVariant.stock || 0;
+    }
+    
+    var fallbackVariant = productData.variants.find(function (v) {
+      var size = v.sizeName || v.size;
+      return size && size.toString().trim().toLowerCase() === (item.size || '').toString().trim().toLowerCase();
+    });
+    
+    if (fallbackVariant) {
+      return fallbackVariant.stock || 0;
+    }
+    
+    return productData.variants[0] ? (productData.variants[0].stock || 0) : (productData.totalStock || 0);
+  }
+
   // ─── Public API exposed to other pages ──────────────────────────────────────
   window.CartAPI = {
     getCart: loadCart,
@@ -86,10 +125,21 @@
           return i.id === id; 
       });
       if (idx >= 0) {
-        if (qty <= 0) {
-          cart.splice(idx, 1);
+        var targetQty = Math.max(1, qty);
+        var maxStock = 99;
+        var item = cart[idx];
+        if (window.cartProductsMap && window.cartProductsMap[item.slug]) {
+          var pData = window.cartProductsMap[item.slug];
+          maxStock = findMatchingStock(item, pData);
+        }
+        
+        if (targetQty > maxStock) {
+          cart[idx].qty = maxStock > 0 ? maxStock : 1;
+          if (typeof window.showToast === 'function') {
+            window.showToast('Không thể đặt vượt quá số lượng sản phẩm có sẵn trong kho (' + maxStock + ')', 'warning');
+          }
         } else {
-          cart[idx].qty = Math.min(qty, 99);
+          cart[idx].qty = targetQty;
         }
       }
       saveCart(cart);
@@ -183,7 +233,62 @@
   function initCartPage() {
     if (!document.getElementById('cart-item-list')) return; // not on cart page
 
-    // Heal cart items if price is missing or NaN
+    var cart = loadCart();
+    
+    // 1. Fetch live stock for all items in the cart
+    var uniqueSlugs = [];
+    cart.forEach(function (item) {
+      if (item.slug && uniqueSlugs.indexOf(item.slug) === -1) {
+        uniqueSlugs.push(item.slug);
+      }
+    });
+
+    var fetchPromises = uniqueSlugs.map(function (slug) {
+      return window.PhucGiaTienAPI.getProductBySlug(slug)
+        .catch(function (err) {
+          console.error('Failed to fetch product for stock validation:', slug, err);
+          return null;
+        });
+    });
+
+    Promise.all(fetchPromises).then(function (products) {
+      var productMap = {};
+      products.forEach(function (p) {
+        if (p) {
+          productMap[p.slug] = p;
+        }
+      });
+      window.cartProductsMap = productMap;
+
+      // Validate quantities against live stock before rendering
+      var updatedCart = loadCart();
+      var changed = false;
+      updatedCart.forEach(function (item) {
+        var pData = productMap[item.slug];
+        if (pData) {
+          var liveStock = findMatchingStock(item, pData);
+          if (liveStock < item.qty) {
+            var oldQty = item.qty;
+            item.qty = Math.max(1, liveStock);
+            if (oldQty !== item.qty) {
+              changed = true;
+              if (typeof window.showToast === 'function') {
+                window.showToast('Số lượng sản phẩm "' + item.name + '" đã được tự động điều chỉnh về ' + item.qty + ' do giới hạn tồn kho thực tế.', 'warning');
+              }
+            }
+          }
+        }
+      });
+
+      if (changed) {
+        saveCart(updatedCart);
+      }
+
+      runCartPageInitAndRender();
+    });
+  }
+
+  function runCartPageInitAndRender() {
     var cart = loadCart();
     var needsHeal = cart.some(function (item) {
       return item.price === undefined || item.price === null || isNaN(item.price);
@@ -232,12 +337,10 @@
       clearBtn.addEventListener('click', function () {
         if (confirm('Xóa tất cả sản phẩm trong giỏ hàng?')) {
           window.CartAPI.clearCart();
-
           renderCart();
         }
       });
     }
-
 
     // Checkout
     var checkoutBtn = document.getElementById('cart-checkout-btn');
@@ -261,10 +364,35 @@
           }
           return;
         }
-        window.location.href = 'checkout.html';
+
+        // Validate stock for all selected items before placing order
+        var hasOutOfStock = false;
+        var outOfStockName = '';
+        if (window.cartProductsMap) {
+          hasOutOfStock = selectedItems.some(function (item) {
+            var pData = window.cartProductsMap[item.slug];
+            if (pData) {
+              var stock = findMatchingStock(item, pData);
+              if (stock <= 0) {
+                outOfStockName = item.name;
+                return true;
+              }
+            }
+            return false;
+          });
+        }
+        
+        if (hasOutOfStock) {
+          e.preventDefault();
+          if (typeof window.showToast === 'function') {
+            window.showToast('Sản phẩm "' + outOfStockName + '" đã hết hàng. Vui lòng bỏ chọn hoặc xóa trước khi thanh toán!', 'error');
+          }
+          return;
+        }
+
+        window.location.href = "checkout";
       });
     }
-
   }
 
   function renderCart() {
@@ -365,6 +493,23 @@
 
   function renderCartItem(item) {
     var displayName = item.size ? item.name + ' - ' + item.size : item.name;
+    
+    var stockStatusHtml = '';
+    var maxStock = 99;
+    if (window.cartProductsMap && window.cartProductsMap[item.slug]) {
+      var pData = window.cartProductsMap[item.slug];
+      var liveStock = findMatchingStock(item, pData);
+      maxStock = liveStock;
+      
+      if (liveStock <= 0) {
+        stockStatusHtml = '<span class="cart-item__stock-status out-of-stock" style="color:#d32f2f; font-size:11px; font-weight:600; margin-left:12px; text-transform:uppercase;">Hết hàng</span>';
+      } else if (liveStock <= 5) {
+        stockStatusHtml = '<span class="cart-item__stock-status low-stock" style="color:#a45a32; font-size:11px; font-weight:600; margin-left:12px;">Chỉ còn ' + liveStock + ' sản phẩm</span>';
+      } else {
+        stockStatusHtml = '<span class="cart-item__stock-status in-stock" style="color:#2e7d32; font-size:11px; font-weight:600; margin-left:12px;">Còn hàng (' + liveStock + ')</span>';
+      }
+    }
+
     return [
       '<div class="cart-item" role="listitem" data-id="' + item.id + '" data-size="' + item.size + '">',
       '<div class="cart-item__checkbox">',
@@ -378,11 +523,11 @@
       '<div class="cart-item__details">',
       '<h3 class="cart-item__title"><a href="product-detail.html?slug=' + item.slug + '" style="color:var(--color-bg-mid);text-decoration:none">' + displayName + '</a></h3>',
       '<div class="cart-item__meta">',
-      '<span>Đơn giá: <span class="cart-item__price-unit">' + window.formatVND(item.price) + '</span></span>',
+      '<span>Đơn giá: <span class="cart-item__price-unit">' + window.formatVND(item.price) + '</span></span>' + stockStatusHtml,
       '</div>',
       '<div class="cart-item__qty">',
       '<button class="cart-item__qty-btn" data-id="' + item.id + '" data-size="' + item.size + '" data-delta="-1" aria-label="Giảm">−</button>',
-      '<input class="cart-item__qty-input" type="number" value="' + item.qty + '" min="1" max="99" data-id="' + item.id + '" data-size="' + item.size + '" aria-label="Số lượng">',
+      '<input class="cart-item__qty-input" type="number" value="' + item.qty + '" min="1" max="' + maxStock + '" data-id="' + item.id + '" data-size="' + item.size + '" aria-label="Số lượng">',
       '<button class="cart-item__qty-btn" data-id="' + item.id + '" data-size="' + item.size + '" data-delta="1" aria-label="Tăng">+</button>',
       '</div>',
       '</div>',

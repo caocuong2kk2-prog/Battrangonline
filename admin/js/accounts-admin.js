@@ -2,7 +2,7 @@
 
 var session = getAdminSession();
 if (!session || session.role !== 'admin') {
-  window.location.href = 'index.html';
+  window.location.href = "index";
 }
 
 var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api';

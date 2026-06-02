@@ -2,7 +2,7 @@
 (function(){'use strict';
 
 var ADMIN_SESSION_KEY='pgt_admin_session';
-var PUBLIC_PAGES=['login.html'];
+var PUBLIC_PAGES=["login"];
 
 // ── Anti-flicker Sidebar Collapse State Check ──
 if (localStorage.getItem('sidebar-collapsed') === 'true') {
@@ -11,7 +11,7 @@ if (localStorage.getItem('sidebar-collapsed') === 'true') {
 
 // ── Auth Guard ──
 function isPublicPage(){
-  var page=location.pathname.split('/').pop()||'index.html';
+  var page=location.pathname.split('/').pop()||"./";
   return PUBLIC_PAGES.some(function(p){return page===p;});
 }
 function getAdminSession(){
@@ -20,7 +20,7 @@ function getAdminSession(){
 function requireAuth(){
   if(isPublicPage())return;
   var sess=getAdminSession();
-  if(!sess){window.location.href='login.html';}
+  if(!sess){window.location.href="login";}
 }
 requireAuth();
 
@@ -37,7 +37,7 @@ window.escapeHTML = function (str) {
 
 function adminLogout(){
   localStorage.removeItem(ADMIN_SESSION_KEY);
-  location.href='login.html';
+  location.href="login";
 }
 window.adminLogout=adminLogout;
 window.getAdminSession=getAdminSession;
@@ -112,7 +112,7 @@ function initSidebarTooltips() {
 
 // ── Active Nav ──
 function initActiveNav(){
-  var page=location.pathname.split('/').pop()||'index.html';
+  var page=location.pathname.split('/').pop()||"./";
   document.querySelectorAll('.sidebar-nav__link').forEach(function(a){
     var href=a.getAttribute('href')||'';
     if(href===page||href.endsWith('/'+page)){a.classList.add('active');}
@@ -152,16 +152,51 @@ window.adminToast=function(msg,type,dur){
   setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(100%)';t.style.transition='all .3s ease';setTimeout(function(){t.remove();},320);},dur);
 };
 
-// ── Modal helpers ──
+// ── Modal helpers (with focus trap) ──
+var _modalTrapHandler = null;
+var _modalPrevFocus = null;
+
 window.openModal=function(id){
   var m=document.getElementById(id);
-  if(m)m.classList.add('is-open');
+  if(!m) return;
+  _modalPrevFocus = document.activeElement;
+  m.classList.add('is-open');
   document.body.style.overflow='hidden';
+
+  // Focus first input/textarea inside modal
+  setTimeout(function(){
+    var first = m.querySelector('input:not([disabled]):not([type="hidden"]), textarea:not([disabled]), select:not([disabled]), button:not([disabled])');
+    if(first) first.focus();
+  }, 50);
+
+  // Set up focus trap and ESC to close
+  if(_modalTrapHandler) document.removeEventListener('keydown', _modalTrapHandler);
+  _modalTrapHandler = function(e){
+    if(e.key === 'Escape') {
+      closeModal(id);
+      return;
+    }
+    if(e.key !== 'Tab') return;
+    var focusable = m.querySelectorAll('input:not([disabled]):not([type="hidden"]), textarea:not([disabled]), select:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])');
+    if(!focusable.length) return;
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    if(e.shiftKey){
+      if(document.activeElement === first){ e.preventDefault(); last.focus(); }
+    } else {
+      if(document.activeElement === last){ e.preventDefault(); first.focus(); }
+    }
+  };
+  document.addEventListener('keydown', _modalTrapHandler);
 };
 window.closeModal=function(id){
   var m=document.getElementById(id);
   if(m)m.classList.remove('is-open');
   document.body.style.overflow='';
+  // Remove focus trap
+  if(_modalTrapHandler){ document.removeEventListener('keydown', _modalTrapHandler); _modalTrapHandler = null; }
+  // Restore previous focus
+  if(_modalPrevFocus && _modalPrevFocus.focus){ try{ _modalPrevFocus.focus(); }catch(e){} _modalPrevFocus = null; }
 };
 // Close on overlay click
 document.addEventListener('click',function(e){
@@ -248,12 +283,7 @@ window.generateAdminThumbnailHTML = function(src, size, extraClasses, extraAttrs
                '<img src="' + thumbSrc + '" style="width:100%;height:100%;object-fit:cover;pointer-events:none;">' + playOverlay +
              '</div>';
     } else if (platform === 'facebook') {
-      var embedUrl = 'https://www.facebook.com/plugins/video.php?href=' + encodeURIComponent(src) + '&show_text=false&width=250';
-      var scale = size === 40 ? 0.3 : 0.45;
-      return '<div class="' + classes.trim() + '"' + attrs + ' data-src="' + src + '" style="position:relative;width:' + size + 'px;height:' + size + 'px;border-radius:4px;overflow:hidden;background:#000;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;">' +
-               '<iframe src="' + embedUrl + '" scrolling="no" frameborder="0" allowfullscreen style="width:250px;height:250px;border:none;pointer-events:none;transform:scale(' + scale + ');transform-origin:center;flex-shrink:0;" tabindex="-1"></iframe>' +
-               playOverlay +
-             '</div>';
+      return '<div class="admin-async-thumb ' + classes.trim() + '"' + attrs + ' data-src="' + src + '" style="position:relative;width:' + size + 'px;height:' + size + 'px;border-radius:4px;overflow:hidden;background:#1877f2;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:10px;cursor:pointer;flex-direction:column;font-weight:600;"><span style="font-size:14px;margin-bottom:2px;pointer-events:none;">▶️</span><span style="pointer-events:none;">Facebook</span></div>';
     } else if (platform === 'tiktok') {
       return '<div class="admin-async-thumb ' + classes.trim() + '"' + attrs + ' data-src="' + src + '" style="position:relative;width:' + size + 'px;height:' + size + 'px;border-radius:4px;overflow:hidden;background:#010101;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:10px;cursor:pointer;flex-direction:column;font-weight:600;"><span style="font-size:14px;margin-bottom:2px;pointer-events:none;">▶️</span><span style="pointer-events:none;">TikTok</span></div>';
     }
@@ -268,6 +298,30 @@ window.initAdminAsyncThumbnails = function(container) {
       var src = thumb.dataset.src;
       var proxyUrl = API_BASE + '/upload/video-thumbnail?url=' + encodeURIComponent(src);
       fetch(proxyUrl).then(function(res) { return res.json(); }).then(function(data) {
+        var applyIframeFallback = function() {
+            var platform = window.getAdminPlatform(src);
+            var isSmall = thumb.style.width === '40px';
+            var w = isSmall ? 40 : 60;
+            var playOverlay = '<div style="position:absolute;inset:0;z-index:10;cursor:pointer;background:transparent;"></div>';
+            thumb.style.background = '#000';
+            thumb.style.padding = '0';
+            thumb.style.display = 'block'; // Remove flex to avoid flex alignment issues
+            
+            if (platform === 'facebook') {
+                var scaleFb = w / 250;
+                var fbEmbedUrl = 'https://www.facebook.com/plugins/video.php?href=' + encodeURIComponent(src) + '&show_text=false';
+                var fbStyle = 'position:absolute;top:50%;left:50%;border:none;pointer-events:none;width:250px;height:250px;transform:translate(-50%,-50%) scale(' + scaleFb + ');transform-origin:center;';
+                thumb.innerHTML = '<iframe src="' + fbEmbedUrl + '" scrolling="no" frameborder="0" allowfullscreen style="' + fbStyle + '" tabindex="-1"></iframe>' + playOverlay;
+            } else if (platform === 'tiktok') {
+                var scaleTt = w / 300;
+                var ttMatch = src.match(/video\/(\d+)/);
+                if (ttMatch) {
+                    var ttStyle = 'position:absolute;top:50%;left:50%;border:none;pointer-events:none;width:300px;height:400px;transform:translate(-50%,-50%) scale(' + scaleTt + ');transform-origin:center;';
+                    thumb.innerHTML = '<iframe src="https://www.tiktok.com/player/v1/' + ttMatch[1] + '" allowfullscreen style="' + ttStyle + '" tabindex="-1"></iframe>' + playOverlay;
+                }
+            }
+        };
+
         if (data && data.url) {
           var img = new Image();
           img.onload = function() {
@@ -275,9 +329,12 @@ window.initAdminAsyncThumbnails = function(container) {
                               '<div style="position:absolute;z-index:3;width:24px;height:24px;background:#010101;border-radius:50%;display:flex;align-items:center;justify-content:center;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>';
             thumb.innerHTML = '<img src="' + data.url + '" style="width:100%;height:100%;object-fit:cover;pointer-events:none;">' + playOverlay;
           };
+          img.onerror = applyIframeFallback;
           img.src = data.url;
+        } else {
+            applyIframeFallback();
         }
-      }).catch(function() {});
+      }).catch(function() { applyIframeFallback(); });
     });
 };
 
@@ -384,6 +441,101 @@ window.adminConfirm=function(msg,cb,options){
   }, 10);
 };
 
+// ── Prompt dialog ──
+window.adminPrompt = function(msg, defaultText, cb, options) {
+  var opts = options || {};
+  var title = opts.title || 'Nhập thông tin';
+  var type = opts.type || 'info';
+  
+  var modal = document.getElementById('admin-prompt-modal');
+  if(!modal){
+    modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.id = 'admin-prompt-modal';
+    modal.style.zIndex = '9999';
+    modal.innerHTML = 
+      '<div class="modal" style="max-width:440px;">' +
+        '<div class="modal-header" style="padding:16px 20px;">' +
+          '<h2 class="modal-title" style="font-size:18px;display:flex;align-items:center;gap:8px;">' +
+            '<span id="prompt-modal-icon">✏️</span>' +
+            '<span id="prompt-modal-title">Nhập liệu</span>' +
+          '</h2>' +
+          '<button class="modal-close" id="prompt-modal-close-btn" style="width:28px;height:28px;">✕</button>' +
+        '</div>' +
+        '<div class="modal-body" style="padding:20px;font-size:15px;line-height:1.5;color:var(--text-primary);text-align:left;">' +
+          '<div id="prompt-modal-message" style="margin-bottom:12px;"></div>' +
+          '<input type="text" id="prompt-modal-input" class="form-control" style="width:100%;">' +
+        '</div>' +
+        '<div class="modal-footer" style="padding:12px 20px;gap:10px;">' +
+          '<button class="btn btn--secondary" id="prompt-modal-cancel-btn" style="padding:8px 16px;font-size:14px;">Hủy bỏ</button>' +
+          '<button class="btn" id="prompt-modal-ok-btn" style="padding:8px 16px;font-size:14px;"></button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(modal);
+  }
+  
+  var titleEl = modal.querySelector('#prompt-modal-title');
+  var iconEl = modal.querySelector('#prompt-modal-icon');
+  var messageEl = modal.querySelector('#prompt-modal-message');
+  var inputEl = modal.querySelector('#prompt-modal-input');
+  var okBtn = modal.querySelector('#prompt-modal-ok-btn');
+  var cancelBtn = modal.querySelector('#prompt-modal-cancel-btn');
+  var closeBtn = modal.querySelector('#prompt-modal-close-btn');
+  
+  titleEl.textContent = title;
+  messageEl.innerHTML = msg.replace(/\n/g, '<br>');
+  inputEl.value = defaultText || '';
+  inputEl.placeholder = opts.placeholder || 'Nhập lý do...';
+  
+  var icons = { warning: '⚠️', danger: '🛑', info: 'ℹ️', success: '✅' };
+  iconEl.textContent = icons[type] || '✏️';
+  
+  okBtn.className = 'btn';
+  okBtn.style.backgroundColor = '';
+  okBtn.style.borderColor = '';
+  okBtn.style.color = '';
+  
+  if(type === 'danger'){
+    okBtn.classList.add('btn--danger');
+    okBtn.style.backgroundColor = '#dc2626';
+    okBtn.style.borderColor = '#dc2626';
+    okBtn.style.color = '#ffffff';
+  } else {
+    okBtn.classList.add('btn--primary');
+  }
+  okBtn.textContent = opts.okText || 'Xác nhận';
+  
+  var cleanup = function(){
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  };
+  
+  var newOkBtn = okBtn.cloneNode(true);
+  var newCancelBtn = cancelBtn.cloneNode(true);
+  var newCloseBtn = closeBtn.cloneNode(true);
+  okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+  cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+  closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+  
+  newOkBtn.addEventListener('click', function(){
+    var val = inputEl.value;
+    cleanup();
+    if(cb) cb(val);
+  });
+  
+  var handleCancel = function(){
+    cleanup();
+  };
+  
+  newCancelBtn.addEventListener('click', handleCancel);
+  newCloseBtn.addEventListener('click', handleCancel);
+  
+  setTimeout(function(){
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    inputEl.focus();
+  }, 10);
+};
 
 // ── Custom Select (Premium UI) ──
 window.initCustomSelects=function(root){
@@ -533,7 +685,7 @@ function initBrandSchema() {
   // Get cached config dynamically to avoid flickering the old default logo
   var cached = null;
   try {
-    cached = JSON.parse(localStorage.getItem('pgt_site_config') || 'null');
+    cached = JSON.parse(sessionStorage.getItem('pgt_site_config') || 'null');
   } catch (e) {}
   var initialLogoUrl = (cached && cached.logoUrl) ? cached.logoUrl : 'assets/images/logo.png';
 
@@ -543,7 +695,7 @@ function initBrandSchema() {
     if (brand.tagName === 'DIV') {
       var a = document.createElement('a');
       a.className = brand.className;
-      a.href = 'index.html';
+      a.href = "./";
       a.innerHTML = brand.innerHTML;
       brand.parentNode.replaceChild(a, brand);
       brand = a;
@@ -664,7 +816,7 @@ function renderBranding(config) {
 
 function applySiteConfig() {
   var CONFIG_KEY = 'pgt_site_config';
-  var cached = localStorage.getItem(CONFIG_KEY);
+  var cached = sessionStorage.getItem(CONFIG_KEY);
   if (cached) {
     try {
       var config = JSON.parse(cached);
@@ -678,7 +830,7 @@ function applySiteConfig() {
     AdminData.settings.load().then(function(newConfig) {
       if (!newConfig) return;
 
-      var currentCached = localStorage.getItem(CONFIG_KEY);
+      var currentCached = sessionStorage.getItem(CONFIG_KEY);
       var isChanged = true;
       if (currentCached) {
         try {
@@ -691,7 +843,7 @@ function applySiteConfig() {
       }
 
       // Always save latest config to cache
-      localStorage.setItem(CONFIG_KEY, JSON.stringify(newConfig));
+      sessionStorage.setItem(CONFIG_KEY, JSON.stringify(newConfig));
 
       // Re-render only if there are visual branding changes or it wasn't cached yet
       if (isChanged || !currentCached) {
@@ -754,13 +906,13 @@ document.addEventListener('DOMContentLoaded',function(){
                   var ttMatch = src.match(/video\/(\d+)/);
                   var ttId = (ttMatch && ttMatch[1]) ? ttMatch[1] : '';
                   if (ttId) {
-                      lbMedia.innerHTML = '<iframe src="https://www.tiktok.com/player/v1/' + ttId + '?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen style="width:400px; height:700px; max-width:90vw; max-height:90vh; border:none; border-radius:8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);"></iframe>';
+                      lbMedia.innerHTML = '<iframe src="https://www.tiktok.com/player/v1/' + ttId + '?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen style="width:40vw; min-width:320px; max-width:450px; height:80vh; max-height:800px; border:none; border-radius:8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);"></iframe>';
                   } else {
                       lbMedia.innerHTML = '<a href="' + src + '" target="_blank" style="color:white;font-size:24px;text-decoration:underline;">Xem video trên TikTok</a>';
                   }
               } else if (src && (src.includes('facebook.com') || src.includes('fb.watch'))) {
                   var fbEmbedUrl = 'https://www.facebook.com/plugins/video.php?href=' + encodeURIComponent(src) + '&show_text=false&autoplay=1';
-                  lbMedia.innerHTML = '<iframe src="' + fbEmbedUrl + '" scrolling="no" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowfullscreen style="width:400px; height:700px; max-width:90vw; max-height:90vh; border:none; border-radius:8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);"></iframe>';
+                  lbMedia.innerHTML = '<iframe src="' + fbEmbedUrl + '" scrolling="no" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowfullscreen style="width:80vw; max-width:1200px; height:45vw; max-height:90vh; border:none; border-radius:8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);"></iframe>';
               } else {
                   lbMedia.innerHTML = '<img src="' + src + '" style="max-width:90vw; max-height:90vh; border-radius:8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit:contain;">';
               }
@@ -875,6 +1027,9 @@ document.addEventListener('DOMContentLoaded',function(){
             dot = "gold";
             if (message.indexOf('Hoàn thành') !== -1) dot = "green";
             if (message.indexOf('huỷ') !== -1) dot = "red";
+          } else if (eventType === "OrderCancelled" || eventType === "CancelRequested") {
+            toastType = "warning";
+            dot = "red";
           } else if (eventType === "CustomerRegistered") {
             toastType = "info";
             dot = "blue";
@@ -888,7 +1043,7 @@ document.addEventListener('DOMContentLoaded',function(){
 
           if (window.AdminData) {
             // Invalidate order cache so admin sees fresh data immediately
-            if (eventType === 'OrderPlaced' || eventType === 'OrderStatusChanged') {
+            if (eventType === 'OrderPlaced' || eventType === 'OrderStatusChanged' || eventType === 'OrderCancelled' || eventType === 'CancelRequested') {
               AdminData.orders.refresh();
             }
             AdminData.orders.updatePendingBadge();
@@ -965,7 +1120,7 @@ document.addEventListener('DOMContentLoaded',function(){
                          '</div>' +
                          '<div class="noti-body" id="notiBody"></div>' +
                          '<div class="noti-footer">' +
-                           '<button class="noti-see-more" id="notiSeeMore" style="display:none;">Xem tất cả</button>' +
+                           '<button class="noti-see-more" id="notiSeeMore" style="display:none;">Xem thêm</button>' +
                          '</div>' +
                        '</div>';
     wrap.insertAdjacentHTML('beforeend', dropdownHtml);
@@ -996,10 +1151,25 @@ document.addEventListener('DOMContentLoaded',function(){
     window.renderAdminNotifications = function() {
       var liveActs = window.adminNotificationsCache || [];
       
-      var hasUnread = liveActs.some(function(a) { return a.isRead === false; });
+      var unreadCount = liveActs.filter(function(a) { return a.isRead === false; }).length;
+      var prevUnread = parseInt(badge ? (badge.dataset.prevCount || '0') : '0', 10);
       if (badge) {
-        if (hasUnread) badge.classList.add('active');
-        else badge.classList.remove('active');
+        if (unreadCount > 0) {
+          badge.classList.add('active');
+          badge.textContent = unreadCount > 99 ? '99+' : (unreadCount > 1 ? unreadCount : '');
+          badge.dataset.prevCount = unreadCount;
+          // Ring animation on new notifications
+          if (unreadCount > prevUnread) {
+            bellBtn.classList.remove('has-new');
+            void bellBtn.offsetWidth; // reflow to restart animation
+            bellBtn.classList.add('has-new');
+          }
+        } else {
+          badge.classList.remove('active');
+          badge.textContent = '';
+          badge.dataset.prevCount = '0';
+          bellBtn.classList.remove('has-new');
+        }
       }
       
       if (liveActs.length === 0) {
@@ -1015,7 +1185,11 @@ document.addEventListener('DOMContentLoaded',function(){
         var unreadClass = a.isRead === false ? ' unread' : '';
         var timeStr = '';
         try { 
-          var d = new Date(a.createdAt);
+          var dateStr = a.createdAt;
+          if (typeof dateStr === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$/.test(dateStr)) {
+              dateStr += 'Z';
+          }
+          var d = new Date(dateStr);
           var now = new Date();
           var diff = (now - d) / 1000;
           if (diff < 60) timeStr = 'Vài giây trước';
@@ -1028,6 +1202,7 @@ document.addEventListener('DOMContentLoaded',function(){
         if (a.type === 'OrderPlaced') dot = 'green';
         else if (a.type === 'OrderStatusChanged') dot = 'gold';
         else if (a.type === 'CustomerRegistered') dot = 'blue';
+        else if (a.type === 'OrderCancelled' || a.type === 'CancelRequested') dot = 'red';
         
         return '<div class="noti-item' + unreadClass + '" data-id="' + a.id + '">' +
                  '<div class="noti-dot ' + dot + '"></div>' +
@@ -1056,8 +1231,12 @@ document.addEventListener('DOMContentLoaded',function(){
     btnReadAll.addEventListener('click', function(e) {
       e.stopPropagation();
       if (window.AdminData && window.AdminData.notifications) {
-        window.AdminData.notifications.markAllAsRead().then(function() {
-          window.loadAndRenderNotifications();
+        if (window.adminNotificationsCache) {
+            window.adminNotificationsCache.forEach(function(a) { a.isRead = true; });
+            window.renderAdminNotifications();
+        }
+        window.AdminData.notifications.markAllAsRead().catch(function(err) {
+            console.error("Lỗi khi markAllAsRead:", err);
         });
       }
     });
@@ -1067,11 +1246,52 @@ document.addEventListener('DOMContentLoaded',function(){
       if (item && item.dataset.id) {
         var id = item.dataset.id;
         var act = window.adminNotificationsCache.find(function(a) { return a.id.toString() === id.toString(); });
-        if (act && act.isRead === false) {
-          act.isRead = true;
-          window.renderAdminNotifications();
-          if (window.AdminData && window.AdminData.notifications) {
-            window.AdminData.notifications.markAsRead(id);
+        if (act) {
+          // 1. Đánh dấu đã đọc
+          if (act.isRead === false) {
+            act.isRead = true;
+            window.renderAdminNotifications();
+            if (window.AdminData && window.AdminData.notifications) {
+              window.AdminData.notifications.markAsRead(id);
+            }
+          }
+          
+          // 2. Điều hướng đến trang liên quan
+          var targetUrl = '';
+          if (act.type === 'OrderPlaced') {
+            targetUrl = 'orders.html#tab=pending';
+          } else if (act.type === 'OrderStatusChanged') {
+            // Parse trạng thái từ nội dung message để dẫn đúng tab
+            var msg = act.message || '';
+            var statusTab = 'all';
+            if (msg.indexOf('Chờ xử lý') !== -1 || msg.indexOf('Chờ xác nhận') !== -1) statusTab = 'pending';
+            else if (msg.indexOf('Đã xác nhận') !== -1) statusTab = 'confirmed';
+            else if (msg.indexOf('Đang giao') !== -1) statusTab = 'shipping';
+            else if (msg.indexOf('Hoàn thành') !== -1) statusTab = 'completed';
+            else if (msg.indexOf('Đã huỷ') !== -1 || msg.indexOf('Đã hủy') !== -1) statusTab = 'cancelled';
+            targetUrl = 'orders.html#tab=' + statusTab;
+          } else if (act.type === 'CancelRequested') {
+            targetUrl = 'orders.html#tab=cancel_request';
+          } else if (act.type === 'OrderCancelled') {
+            targetUrl = 'orders.html#tab=cancelled';
+          } else if (act.type === 'CustomerRegistered') {
+            targetUrl = 'customers.html';
+          }
+          
+          if (targetUrl) {
+            dropdown.classList.remove('is-open');
+            // Nếu đang ở trang đích rồi thì reload, không thì chuyển trang
+            var currentPage = window.location.pathname.split('/').pop() || 'index.html';
+            var targetPage = targetUrl.split('#')[0];
+            if (currentPage === targetPage) {
+              // Đang ở trang đích, cập nhật hash và reload data
+              window.location.hash = targetUrl.split('#')[1] ? '#' + targetUrl.split('#')[1] : '';
+              if (typeof window.onAdminNotification === 'function') {
+                window.onAdminNotification('FallbackPoll', 'Navigate from notification');
+              }
+            } else {
+              window.location.href = targetUrl;
+            }
           }
         }
       }
@@ -1079,8 +1299,19 @@ document.addEventListener('DOMContentLoaded',function(){
     
     document.getElementById('notiSeeMore').addEventListener('click', function(e) {
       e.stopPropagation();
-      showLimit += 10;
-      window.renderAdminNotifications();
+      var btn = this;
+      var originalText = btn.innerHTML;
+      btn.innerHTML = 'Đang tải...';
+      btn.style.opacity = '0.7';
+      btn.style.cursor = 'wait';
+      
+      setTimeout(function() {
+          showLimit += 10;
+          window.renderAdminNotifications();
+          btn.innerHTML = originalText;
+          btn.style.opacity = '1';
+          btn.style.cursor = 'pointer';
+      }, 400);
     });
   }
 

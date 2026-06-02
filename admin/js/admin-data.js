@@ -29,6 +29,8 @@
             date: o.date || o.Date,
             customerNote: o.customerNote || o.CustomerNote,
             adminNote: o.adminNote || o.AdminNote,
+            isCancelRequested: o.isCancelRequested != null ? o.isCancelRequested : o.IsCancelRequested,
+            cancelReason: o.cancelReason || o.CancelReason,
             items: (o.items || o.Items || []).map(function (i) {
                 return {
                     productId: i.productId != null ? i.productId : i.ProductId,
@@ -63,7 +65,7 @@
             .then(function (res) {
                 if (res.status === 401) {
                     localStorage.removeItem('pgt_admin_session');
-                    window.location.href = 'login.html';
+                    window.location.href = "login";
                     throw new Error('Unauthorized');
                 }
                 if (!res.ok) {
@@ -197,6 +199,13 @@
                     method: 'DELETE'
                 });
             },
+            rejectCancel: function (id, reason) {
+                _invalidate('pgt_admin_orders');
+                return _fetch('/orders/' + id + '/reject-cancel', {
+                    method: 'POST',
+                    body: JSON.stringify({ reason: reason || '' })
+                });
+            },
             // Force a fresh fetch (bypass cache), used by SignalR notification handler
             refresh: function () {
                 _invalidate('pgt_admin_orders');
@@ -206,7 +215,7 @@
                 var promise = orders ? Promise.resolve(orders) : AdminData.orders.load();
                 return promise.then(function (list) {
                     if (!Array.isArray(list)) list = [];
-                    var pending = list.filter(function (o) { return o.status === 'pending'; }).length;
+                    var pending = list.filter(function (o) { return o.status === 'pending' || o.isCancelRequested; }).length;
                     var badge = document.getElementById('sb-pending');
                     if (badge) {
                         badge.textContent = pending > 0 ? String(pending) : '';
@@ -491,11 +500,28 @@
         // Format utilities
         fmtDate: function (dStr) {
             if (!dStr) return '';
+            if (typeof dStr === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$/.test(dStr)) {
+                dStr += 'Z';
+            }
             try {
                 var d = new Date(dStr);
-                if (isNaN(d.getTime())) return dStr;
+                if (isNaN(d.getTime())) {
+                    // Try parsing DD/MM/YYYY or DD-MM-YYYY
+                    var parts = dStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/);
+                    if (parts) {
+                        var day = parseInt(parts[1], 10);
+                        var month = parseInt(parts[2], 10) - 1;
+                        var year = parseInt(parts[3], 10);
+                        var hour = parts[4] ? parseInt(parts[4], 10) : 0;
+                        var min = parts[5] ? parseInt(parts[5], 10) : 0;
+                        var sec = parts[6] ? parseInt(parts[6], 10) : 0;
+                        d = new Date(year, month, day, hour, min, sec);
+                    } else {
+                        return dStr;
+                    }
+                }
                 var pad = function(n) { return n < 10 ? '0' + n : n; };
-                return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+                return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ' ' + pad(d.getDate()) + '-' + pad(d.getMonth() + 1) + '-' + d.getFullYear();
             } catch (e) {
                 return dStr;
             }
@@ -551,7 +577,7 @@
         },
         notifications: {
             getAll: function () {
-                return _fetch('/notifications');
+                return _fetch('/notifications?t=' + new Date().getTime());
             },
             markAsRead: function (id) {
                 return _fetch('/notifications/' + id + '/read', { method: 'PATCH' });

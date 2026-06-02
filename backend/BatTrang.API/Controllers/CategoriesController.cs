@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace BatTrang.API.Controllers
 {
@@ -21,6 +22,7 @@ namespace BatTrang.API.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [OutputCache(PolicyName = "FiltersCache")]
         public async Task<IActionResult> GetAll()
         {
             var categories = await _categoryRepo.ListAllAsync();
@@ -37,3 +39,4 @@ namespace BatTrang.API.Controllers
         }
     }
 }
+

@@ -4,6 +4,7 @@ using BatTrang.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace BatTrang.API.Controllers
 {
@@ -13,10 +14,12 @@ namespace BatTrang.API.Controllers
     public class AdminCategoriesController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepo;
+        private readonly IOutputCacheStore _cacheStore;
 
-        public AdminCategoriesController(ICategoryRepository categoryRepo)
+        public AdminCategoriesController(ICategoryRepository categoryRepo, IOutputCacheStore cacheStore)
         {
             _categoryRepo = categoryRepo;
+                    _cacheStore = cacheStore;
         }
 
         [HttpPost]
@@ -30,6 +33,7 @@ namespace BatTrang.API.Controllers
                 Description = dto.Desc
             };
             await _categoryRepo.AddAsync(category);
+            await _cacheStore.EvictByTagAsync("filters", default);
             return CreatedAtAction(nameof(Get), new { id = category.Slug }, dto);
         }
 
@@ -55,6 +59,7 @@ namespace BatTrang.API.Controllers
             category.Description = dto.Desc;
             await _categoryRepo.UpdateAsync(category);
 
+            await _cacheStore.EvictByTagAsync("filters", default);
             return NoContent();
         }
 
@@ -70,6 +75,7 @@ namespace BatTrang.API.Controllers
 
             BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(icon);
 
+            await _cacheStore.EvictByTagAsync("filters", default);
             return NoContent();
         }
     }

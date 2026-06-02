@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="vi"><head>
+<script>if(localStorage.getItem('sidebar-collapsed')==='true')document.documentElement.classList.add('sidebar-collapsed');</script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Thuộc Tính Sản Phẩm – Phúc Gia Tiên Admin</title>
+<link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/components.css">
+<style>
+.attr-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-6);
+  padding: var(--sp-1);
+  background: rgba(0,0,0,0.04);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+}
+.attr-tab-btn {
+  padding: 8px 16px;
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--t-fast);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.attr-tab-btn:hover {
+  background: rgba(200,146,42,0.08);
+  color: var(--accent);
+}
+.attr-tab-btn.active {
+  background: #fff;
+  color: var(--accent);
+  font-weight: var(--fw-semibold);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.attr-tab-btn .tab-icon { font-size: 1rem; }
+.attr-tab-panel { display: none; }
+.attr-tab-panel.active { display: block; }
+</style>
+</head>
+<body class="admin-layout">
+<aside class="admin-sidebar" id="adminSidebar">
+  <div class="sidebar-header"><div class="sidebar-brand"><div class="sidebar-brand__icon">⚱️</div><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
+  <nav class="sidebar-nav">
+    <span class="sidebar-section-label">Tổng quan</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="./" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li>
+    </ul>
+
+    <span class="sidebar-section-label">Kinh doanh</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="products" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
+      <li><a href="orders" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
+      <li><a href="customers" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
+      <li><a href="attributes" class="sidebar-nav__link active"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><span class="sidebar-nav__text">Thuộc tính SP</span></a></li>
+    </ul>
+
+    <span class="sidebar-section-label">Nội dung</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="journey" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
+    </ul>
+
+    <span class="sidebar-section-label">Báo cáo</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="analytics" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
+    </ul>
+
+    <span class="sidebar-section-label">Hệ thống</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="settings" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-nav__text">Cài đặt</span></a></li>
+      <li class="admin-only"><a href="accounts" class="sidebar-nav__link" id="nav-accounts-link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><span class="sidebar-nav__text">Tài khoản</span></a></li>
+    </ul>
+  </nav>
+  <div class="sidebar-footer"><div class="sidebar-user js-logout"><div class="sidebar-user__avatar js-admin-initial">A</div><div class="sidebar-user__info"><div class="sidebar-user__name js-admin-name">Admin</div><div class="sidebar-user__role">Quản trị viên</div></div><button class="sidebar-user__logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="admin-main-wrapper">
+  <header class="admin-topbar">
+    <button class="topbar-toggle" id="sidebarToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="topbar-breadcrumb"><span class="topbar-breadcrumb__item">Kinh doanh</span><span class="topbar-breadcrumb__separator">›</span><span class="topbar-breadcrumb__current" id="breadcrumb-current">Thuộc tính sản phẩm</span></div>
+    <div class="topbar-actions"><div class="topbar-user" id="topbarUser"><div class="topbar-user__avatar js-admin-initial">A</div><span class="topbar-user__name js-admin-name">Admin</span></div></div>
+  </header>
+
+  <main class="admin-content">
+    <div class="page-header">
+      <div><h1 class="page-title">Thuộc Tính Sản Phẩm</h1><p class="page-subtitle">Quản lý danh mục và các thuộc tính phân loại sản phẩm gốm sứ</p></div>
+      <div class="page-header__actions">
+        <button class="btn btn--primary" id="btn-add-attr">➕ <span id="btn-add-label">Thêm mới</span></button>
+      </div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="attr-tabs" id="attr-tabs">
+      <button class="attr-tab-btn active" data-tab="categories"><span class="tab-icon">🏷️</span> Danh mục</button>
+      <button class="attr-tab-btn" data-tab="productTypes"><span class="tab-icon">📊</span> Phân khúc</button>
+      <button class="attr-tab-btn" data-tab="materials"><span class="tab-icon">📦</span> Chất liệu</button>
+      <button class="attr-tab-btn" data-tab="colors"><span class="tab-icon">🎨</span> Màu sắc</button>
+      <button class="attr-tab-btn" data-tab="sizes"><span class="tab-icon">📐</span> Kích thước</button>
+      <button class="attr-tab-btn" data-tab="patterns"><span class="tab-icon">🖌️</span> Hoa văn</button>
+      <button class="attr-tab-btn" data-tab="glazeLines"><span class="tab-icon">✨</span> Dòng men</button>
+    </div>
+
+    <!-- Table (shared) -->
+    <div class="table-wrap">
+      <table class="data-table" id="attr-table">
+        <thead id="attr-thead"></thead>
+        <tbody id="attr-tbody"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<!-- Shared Modal -->
+<div class="modal-overlay" id="attrModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="attr-modal-title">Thêm mới</h2>
+      <button class="modal-close" data-close-modal="attrModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="attr-form">
+        <!-- Categories specific: hidden ID field -->
+        <div class="form-group" id="field-id-group" style="display:none;">
+          <label class="form-label">ID (slug) <span style="color:var(--danger)">*</span></label>
+          <input class="form-control" name="id" type="text" placeholder="VD: binh-gom">
+          <div class="form-hint">Chỉ dùng chữ thường, số, dấu gạch ngang</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" id="field-name-label">Tên <span style="color:var(--danger)">*</span></label>
+          <input class="form-control" name="name" type="text" id="field-name-input" placeholder="Nhập tên..." required>
+        </div>
+        <div class="form-group" id="field-desc-group" style="display:none;">
+          <label class="form-label">Mô tả</label>
+          <textarea class="form-control" name="description" rows="3" placeholder="Mô tả ngắn..."></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--secondary" data-close-modal="attrModal">Huỷ</button>
+      <button class="btn btn--primary" id="btn-save-attr">💾 Lưu</button>
+    </div>
+  </div>
+</div>
+
+<div id="admin-toast-container"></div>
+<script src="js/admin-data.js"></script><script src="js/admin-core.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  // ── Tab Configurations ──
+  var TABS = {
+    categories: {
+      label: 'Danh mục',
+      nameLabel: 'Tên danh mục',
+      namePlaceholder: 'VD: Lộc Bình, Đồ Thờ...',
+      hasDesc: false,
+      hasCatDesc: true, // categories.html has a different "desc" field (not "description")
+      hasSlugId: false,
+      api: 'categories',
+      productField: 'category',
+      idIsString: true,
+      thead: '<tr><th class="stt-cell">STT</th><th>Tên danh mục</th><th>Mô tả</th><th style="width:130px">Số sản phẩm</th><th style="width:130px">Hành động</th></tr>',
+      renderRow: function(item, idx, cnt) {
+        return '<tr>' +
+          '<td class="stt-cell">' + (idx+1) + '</td>' +
+          '<td><div class="product-name">' + escapeHTML(item.name) + '</div></td>' +
+          '<td><div class="product-cat">' + escapeHTML(item.desc || '') + '</div></td>' +
+          '<td><span class="badge badge--gold">' + cnt + ' SP</span></td>' +
+          '<td class="actions-cell">' +
+            '<button class="btn btn--sm btn--secondary btn-edit-attr" data-id="' + item.id + '">✏️ Sửa</button>' +
+            '<button class="btn btn--sm btn--danger btn-del-attr" data-id="' + item.id + '"' + (cnt > 0 ? ' disabled title="Xóa sản phẩm trước"' : '') + '>🗑️</button>' +
+          '</td>' +
+        '</tr>';
+      }
+    },
+    productTypes: {
+      label: 'Phân khúc',
+      nameLabel: 'Tên phân khúc',
+      namePlaceholder: 'VD: Cao cấp, Phổ thông...',
+      hasDesc: false, hasCatDesc: false, hasSlugId: false,
+      api: 'productTypes', productField: 'productTypeId', idIsString: false,
+      thead: '<tr><th class="stt-cell">STT</th><th>Tên phân khúc</th><th style="width:150px">Số sản phẩm</th><th style="width:130px">Hành động</th></tr>',
+      renderRow: function(item, idx, cnt) {
+        return '<tr><td class="stt-cell">' + (idx+1) + '</td>' +
+          '<td><div class="product-name">' + escapeHTML(item.name) + '</div></td>' +
+          '<td><span class="badge badge--gold">' + cnt + ' SP</span></td>' +
+          '<td class="actions-cell"><button class="btn btn--sm btn--secondary btn-edit-attr" data-id="' + item.id + '">✏️ Sửa</button>' +
+          '<button class="btn btn--sm btn--danger btn-del-attr" data-id="' + item.id + '"' + (cnt > 0 ? ' disabled title="Xóa sản phẩm trước"' : '') + '>🗑️</button></td></tr>';
+      }
+    },
+    materials: {
+      label: 'Chất liệu',
+      nameLabel: 'Tên chất liệu',
+      namePlaceholder: 'VD: Gốm sứ, Đất nung...',
+      hasDesc: true, hasCatDesc: false, hasSlugId: false,
+      api: 'materials', productField: 'materialId', idIsString: false,
+      thead: '<tr><th class="stt-cell">STT</th><th>Tên chất liệu</th><th>Mô tả</th><th style="width:130px">Số sản phẩm</th><th style="width:130px">Hành động</th></tr>',
+      renderRow: function(item, idx, cnt) {
+        return '<tr><td class="stt-cell">' + (idx+1) + '</td>' +
+          '<td><div class="product-name">' + escapeHTML(item.name) + '</div></td>' +
+          '<td><div class="product-cat">' + escapeHTML(item.description || '') + '</div></td>' +
+          '<td><span class="badge badge--gold">' + cnt + ' SP</span></td>' +
+          '<td class="actions-cell"><button class="btn btn--sm btn--secondary btn-edit-attr" data-id="' + item.id + '">✏️ Sửa</button>' +
+          '<button class="btn btn--sm btn--danger btn-del-attr" data-id="' + item.id + '"' + (cnt > 0 ? ' disabled title="Xóa sản phẩm trước"' : '') + '>🗑️</button></td></tr>';
+      }
+    },
+    colors: {
+      label: 'Màu sắc',
+      nameLabel: 'Tên màu',
+      namePlaceholder: 'VD: Đỏ, Xanh lam...',
+      hasDesc: false, hasCatDesc: false, hasSlugId: false,
+      api: 'colors', productField: 'colorId', idIsString: false,
+      thead: '<tr><th class="stt-cell">STT</th><th>Tên màu sắc</th><th style="width:150px">Số sản phẩm</th><th style="width:130px">Hành động</th></tr>',
+      renderRow: function(item, idx, cnt) {
+        return '<tr><td class="stt-cell">' + (idx+1) + '</td>' +
+          '<td><div class="product-name">' + escapeHTML(item.name) + '</div></td>' +
+          '<td><span class="badge badge--gold">' + cnt + ' SP</span></td>' +
+          '<td class="actions-cell"><button class="btn btn--sm btn--secondary btn-edit-attr" data-id="' + item.id + '">✏️ Sửa</button>' +
+          '<button class="btn btn--sm btn--danger btn-del-attr" data-id="' + item.id + '"' + (cnt > 0 ? ' disabled title="Xóa sản phẩm trước"' : '') + '>🗑️</button></td></tr>';
+      }
+    },
+    sizes: {
+      label: 'Kích thước',
+      nameLabel: 'Tên kích thước',
+      namePlaceholder: 'VD: 1.6m, 60x90cm, Bộ 5 món...',
+      hasDesc: false, hasCatDesc: false, hasSlugId: false,
+      api: 'sizes', productField: 'sizeId', idIsString: false,
+      thead: '<tr><th class="stt-cell">STT</th><th>Tên kích thước</th><th style="width:150px">Số sản phẩm</th><th style="width:130px">Hành động</th></tr>',
+      renderRow: function(item, idx, cnt) {
+        return '<tr><td class="stt-cell">' + (idx+1) + '</td>' +
+          '<td><div class="product-name">' + escapeHTML(item.name) + '</div></td>' +
+          '<td><span class="badge badge--gold">' + cnt + ' SP</span></td>' +
+          '<td class="actions-cell"><button class="btn btn--sm btn--secondary btn-edit-attr" data-id="' + item.id + '">✏️ Sửa</button>' +
+          '<button class="btn btn--sm btn--danger btn-del-attr" data-id="' + item.id + '"' + (cnt > 0 ? ' disabled title="Xóa sản phẩm trước"' : '') + '>🗑️</button></td></tr>';
+      }
+    },
+    patterns: {
+      label: 'Hoa văn',
+      nameLabel: 'Tên hoa văn',
+      namePlaceholder: 'VD: Trúc sen, Rồng phụng...',
+      hasDesc: false, hasCatDesc: false, hasSlugId: false,
+      api: 'patterns', productField: 'patternId', idIsString: false,
+      thead: '<tr><th class="stt-cell">STT</th><th>Tên hoa văn</th><th style="width:150px">Số sản phẩm</th><th style="width:130px">Hành động</th></tr>',
+      renderRow: function(item, idx, cnt) {
+        return '<tr><td class="stt-cell">' + (idx+1) + '</td>' +
+          '<td><div class="product-name">' + escapeHTML(item.name) + '</div></td>' +
+          '<td><span class="badge badge--gold">' + cnt + ' SP</span></td>' +
+          '<td class="actions-cell"><button class="btn btn--sm btn--secondary btn-edit-attr" data-id="' + item.id + '">✏️ Sửa</button>' +
+          '<button class="btn btn--sm btn--danger btn-del-attr" data-id="' + item.id + '"' + (cnt > 0 ? ' disabled title="Xóa sản phẩm trước"' : '') + '>🗑️</button></td></tr>';
+      }
+    },
+    glazeLines: {
+      label: 'Dòng men',
+      nameLabel: 'Tên dòng men',
+      namePlaceholder: 'VD: Men rạn, Men ngọc...',
+      hasDesc: true, hasCatDesc: false, hasSlugId: false,
+      api: 'glazeLines', productField: 'glazeLineId', idIsString: false,
+      thead: '<tr><th class="stt-cell">STT</th><th>Tên dòng men</th><th>Mô tả</th><th style="width:130px">Số sản phẩm</th><th style="width:130px">Hành động</th></tr>',
+      renderRow: function(item, idx, cnt) {
+        return '<tr><td class="stt-cell">' + (idx+1) + '</td>' +
+          '<td><div class="product-name">' + escapeHTML(item.name) + '</div></td>' +
+          '<td><div class="product-cat">' + escapeHTML(item.description || '') + '</div></td>' +
+          '<td><span class="badge badge--gold">' + cnt + ' SP</span></td>' +
+          '<td class="actions-cell"><button class="btn btn--sm btn--secondary btn-edit-attr" data-id="' + item.id + '">✏️ Sửa</button>' +
+          '<button class="btn btn--sm btn--danger btn-del-attr" data-id="' + item.id + '"' + (cnt > 0 ? ' disabled title="Xóa sản phẩm trước"' : '') + '>🗑️</button></td></tr>';
+      }
+    }
+  };
+
+  function escapeHTML(str) {
+    return window.escapeHTML ? window.escapeHTML(str) : String(str || '')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function toSlug(str) {
+    return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  }
+
+  // ── State ──
+  var currentTab = 'categories';
+  var items = [];
+  var products = [];
+  var editId = null;
+
+  // ── Read tab from URL hash ──
+  function getTabFromHash() {
+    var hash = location.hash.replace('#tab=', '');
+    return TABS[hash] ? hash : 'categories';
+  }
+
+  // ── Switch Tab ──
+  function switchTab(tabKey) {
+    currentTab = tabKey;
+    var cfg = TABS[tabKey];
+
+    // Update buttons
+    document.querySelectorAll('.attr-tab-btn').forEach(function(btn) {
+      btn.classList.toggle('active', btn.dataset.tab === tabKey);
+    });
+
+    // Update page/breadcrumb
+    document.getElementById('breadcrumb-current').textContent = cfg.label;
+    document.getElementById('btn-add-label').textContent = cfg.label;
+
+    // Update table header
+    document.getElementById('attr-thead').innerHTML = cfg.thead;
+    document.getElementById('attr-tbody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:var(--sp-8);color:var(--text-muted)">Đang tải...</td></tr>';
+
+    // Update hash
+    history.replaceState(null, '', '#tab=' + tabKey);
+
+    // Load data
+    loadTab(tabKey);
+  }
+
+  function loadTab(tabKey) {
+    var cfg = TABS[tabKey];
+    var api = AdminData[cfg.api];
+    if (!api) return;
+
+    Promise.all([api.load(), AdminData.products.load()]).then(function(res) {
+      items = res[0];
+      products = res[1];
+      renderTable();
+    }).catch(function(e) {
+      console.error(e);
+      adminToast('Lỗi khi tải dữ liệu', 'error');
+    });
+  }
+
+  function getProductCount(item) {
+    var cfg = TABS[currentTab];
+    var field = cfg.productField;
+    return products.filter(function(p) {
+      if (cfg.idIsString) return p[field] === item.id;
+      return p[field] === item.id;
+    }).length;
+  }
+
+  function renderTable() {
+    var cfg = TABS[currentTab];
+    var tbody = document.getElementById('attr-tbody');
+    if (!items.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:var(--sp-8);color:var(--text-muted)">Chưa có dữ liệu. Nhấn "Thêm mới" để bắt đầu.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = items.map(function(item, idx) {
+      return cfg.renderRow(item, idx, getProductCount(item));
+    }).join('');
+  }
+
+  // ── Modal logic ──
+  function openAddModal() {
+    var cfg = TABS[currentTab];
+    editId = null;
+    document.getElementById('attr-modal-title').textContent = 'Thêm ' + cfg.label;
+    document.getElementById('attr-form').reset();
+
+    // Show/hide fields
+    document.getElementById('field-id-group').style.display = cfg.hasSlugId ? '' : 'none';
+    document.getElementById('field-desc-group').style.display = (cfg.hasDesc || cfg.hasCatDesc) ? '' : 'none';
+    document.getElementById('field-name-label').innerHTML = cfg.nameLabel + ' <span style="color:var(--danger)">*</span>';
+    document.getElementById('field-name-input').placeholder = cfg.namePlaceholder;
+
+    // Enable ID field for new entry
+    if (cfg.hasSlugId) {
+      document.querySelector('[name="id"]').disabled = false;
+      document.querySelector('[name="id"]').value = '';
+    }
+
+    openModal('attrModal');
+  }
+
+  function openEditModal(rawId) {
+    var cfg = TABS[currentTab];
+    var id = cfg.idIsString ? rawId : parseInt(rawId);
+    var item = items.find(function(x) { return x.id === id; });
+    if (!item) return;
+
+    editId = id;
+    document.getElementById('attr-modal-title').textContent = 'Chỉnh Sửa ' + cfg.label;
+    document.getElementById('field-id-group').style.display = cfg.hasSlugId ? '' : 'none';
+    document.getElementById('field-desc-group').style.display = (cfg.hasDesc || cfg.hasCatDesc) ? '' : 'none';
+    document.getElementById('field-name-label').innerHTML = cfg.nameLabel + ' <span style="color:var(--danger)">*</span>';
+    document.getElementById('field-name-input').placeholder = cfg.namePlaceholder;
+
+    document.querySelector('[name="name"]').value = item.name || '';
+
+    if (cfg.hasSlugId) {
+      document.querySelector('[name="id"]').value = item.id || '';
+      document.querySelector('[name="id"]').disabled = true;
+    }
+    if (cfg.hasDesc) {
+      document.querySelector('[name="description"]').value = item.description || '';
+    }
+    if (cfg.hasCatDesc) {
+      document.querySelector('[name="description"]').value = item.desc || '';
+    }
+
+    openModal('attrModal');
+  }
+
+  function saveAttr() {
+    var cfg = TABS[currentTab];
+    var f = document.getElementById('attr-form');
+    var name = f.querySelector('[name="name"]').value.trim();
+    if (!name) { adminToast('Vui lòng điền tên!', 'error'); return; }
+
+    // ── Check trùng tên cho tất cả các tab ──
+    var nameLower = name.toLowerCase();
+    var duplicate = items.find(function(x) {
+      // Bỏ qua chính item đang sửa
+      if (editId && x.id === editId) return false;
+      return (x.name || '').toLowerCase() === nameLower;
+    });
+    if (duplicate) {
+      adminToast(cfg.label + ' "' + name + '" đã tồn tại!', 'error');
+      return;
+    }
+
+    var data = { name: name };
+
+    if (cfg.hasCatDesc) {
+      // Categories: auto-generate slug from name
+      var id = editId ? editId : toSlug(name);
+      data.id = id;
+      data.desc = f.querySelector('[name="description"]') ? f.querySelector('[name="description"]').value.trim() : '';
+      if (!editId) {
+        data.isNew = true;
+      }
+    } else {
+      if (editId) data.id = editId;
+      if (cfg.hasDesc && f.querySelector('[name="description"]')) {
+        data.description = f.querySelector('[name="description"]').value.trim();
+      }
+    }
+
+    var api = AdminData[cfg.api];
+    api.save(data).then(function() {
+      adminToast(editId ? 'Cập nhật thành công!' : 'Thêm thành công!', 'success');
+      return api.load();
+    }).then(function(newData) {
+      items = newData;
+      closeModal('attrModal');
+      renderTable();
+    }).catch(function(e) {
+      console.error(e);
+      adminToast('Có lỗi xảy ra: ' + (e.message || ''), 'error');
+    });
+  }
+
+  function deleteAttr(rawId) {
+    var cfg = TABS[currentTab];
+    var id = cfg.idIsString ? rawId : parseInt(rawId);
+    var item = items.find(function(x) { return x.id === id; });
+    var name = item ? item.name : rawId;
+
+    adminConfirm('Xoá ' + cfg.label.toLowerCase() + ' "' + name + '"?', function() {
+      var api = AdminData[cfg.api];
+      api.delete(id).then(function() {
+        items = items.filter(function(x) { return x.id !== id; });
+        adminToast('Đã xoá ' + cfg.label.toLowerCase(), 'warning');
+        renderTable();
+      }).catch(function(e) {
+        console.error(e);
+        adminToast('Lỗi khi xóa', 'error');
+      });
+    });
+  }
+
+  // ── Init ──
+  document.addEventListener('DOMContentLoaded', function() {
+    // Tab button clicks
+    document.getElementById('attr-tabs').addEventListener('click', function(e) {
+      var btn = e.target.closest('.attr-tab-btn');
+      if (btn && btn.dataset.tab) switchTab(btn.dataset.tab);
+    });
+
+    // Add button
+    document.getElementById('btn-add-attr').addEventListener('click', openAddModal);
+
+    // Save button
+    document.getElementById('btn-save-attr').addEventListener('click', saveAttr);
+
+    // Table actions (delegated)
+    document.getElementById('attr-tbody').addEventListener('click', function(e) {
+      var editBtn = e.target.closest('.btn-edit-attr');
+      var delBtn = e.target.closest('.btn-del-attr');
+      if (editBtn) openEditModal(editBtn.dataset.id);
+      if (delBtn) deleteAttr(delBtn.dataset.id);
+    });
+
+    // Load initial tab from URL hash
+    switchTab(getTabFromHash());
+  });
+
+  // Handle hash change (browser back/forward)
+  window.addEventListener('hashchange', function() {
+    switchTab(getTabFromHash());
+  });
+
+}());
+</script>
+</body></html>

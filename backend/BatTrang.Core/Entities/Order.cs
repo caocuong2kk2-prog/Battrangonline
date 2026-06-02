@@ -22,6 +22,11 @@ namespace BatTrang.Core.Entities
         public string Status { get; set; } = "pending"; // pending, confirmed, shipping, completed, cancelled
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        public bool IsCancelRequested { get; set; } = false;
+        public string? CancelReason { get; set; }
+        public DateTime? CancelRequestedAt { get; set; }
+        public DateTime? CancelledAt { get; set; }
+
         public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
     }
 }

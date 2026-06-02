@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
     content="Giới thiệu về Phúc Gia Tiên – thương hiệu gốm sứ thủ công Bát Tràng với hơn 5 năm kinh nghiệm, cam kết chất lượng và giá trị truyền thống.">
+  <meta property="og:title" content="Giới Thiệu – Phúc Gia Tiên">
+  <meta property="og:description" content="Thương hiệu gốm sứ thủ công Bát Tràng với cam kết chất lượng và giá trị truyền thống.">
+  <meta property="og:image" content="https://phucgiatien.vn/assets/images/about-hero.jpg">
+  <meta property="og:type" content="website">
   <title>Giới Thiệu – Phúc Gia Tiên</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -347,14 +351,16 @@
     }
 
     .team-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: var(--space-8);
-      max-width: 640px;
+      max-width: 1024px;
       margin: 0 auto;
     }
 
     .team-card {
+      width: calc(33.333% - (var(--space-8) * 2 / 3));
       text-align: center;
       background: #fbf7f2;
       border: 1px solid rgba(200, 146, 42, 0.15);
@@ -443,8 +449,8 @@
         height: 240px;
       }
 
-      .team-grid {
-        grid-template-columns: 1fr;
+      .team-card {
+        width: 100%;
       }
 
       .values-grid {
@@ -490,7 +496,7 @@
         <div class="page-hero__content">
           <h1 class="page-hero__title">GIỚI THIỆU</h1>
           <nav class="breadcrumb" aria-label="Breadcrumb">
-            <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
+            <span class="breadcrumb__item"><a class="breadcrumb__link" href="/">Trang Chủ</a></span>
             <span class="breadcrumb__item"><span class="breadcrumb__current">Giới Thiệu</span></span>
           </nav>
         </div>
@@ -507,7 +513,7 @@
 
           <!-- CTA -->
           <div class="about-story__cta">
-            <a class="btn btn--accent btn--lg" href="products.html" id="about-view-products-btn"
+            <a class="btn btn--accent btn--lg" href="products" id="about-view-products-btn"
               style="text-transform:uppercase;letter-spacing:0.06em;color: var(--color-primary);">Khám Phá Bộ Sưu
               Tập</a>
           </div>
@@ -561,7 +567,7 @@
         <h2 id="about-cta-heading" class="about-cta-strip__title">Mang Nghệ Thuật Gốm Sứ Vào Không Gian Của Bạn</h2>
         <p class="about-cta-strip__sub">Liên hệ ngay để được tư vấn chọn sản phẩm gốm sứ phù hợp nhất cho ngôi nhà của
           bạn.</p>
-        <a class="btn btn--accent btn--lg" href="contact.html" id="about-cta-contact-btn"
+        <a class="btn btn--accent btn--lg" href="contact" id="about-cta-contact-btn"
           style="text-transform:uppercase;letter-spacing:0.06em;">Liên Hệ Tư Vấn</a>
       </div>
     </section>
@@ -575,20 +581,6 @@
           <p class="section-header__desc" style="color: #6B5740;">Những người thổi hồn vào đất, gìn giữ và phát huy tinh hoa gốm sứ Bát Tràng.</p>
         </div>
         <div class="team-grid" id="about-team-grid">
-          <div class="team-card reveal" data-delay="0">
-            <img class="team-card__avatar js-config-team-1-img" src="assets/images/placeholder.jpg"
-              alt="Nghệ nhân 1" loading="lazy">
-            <h3 class="team-card__name js-config-team-1-name"></h3>
-            <p class="team-card__role js-config-team-1-role"></p>
-            <p class="team-card__bio js-config-team-1-bio"></p>
-          </div>
-          <div class="team-card reveal" data-delay="150">
-            <img class="team-card__avatar js-config-team-2-img" src="assets/images/placeholder.jpg"
-              alt="Nghệ nhân 2" loading="lazy">
-            <h3 class="team-card__name js-config-team-2-name"></h3>
-            <p class="team-card__role js-config-team-2-role"></p>
-            <p class="team-card__bio js-config-team-2-bio"></p>
-          </div>
         </div>
       </div>
     </section>

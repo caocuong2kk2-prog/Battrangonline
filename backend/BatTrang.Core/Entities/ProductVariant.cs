@@ -33,6 +33,7 @@ namespace BatTrang.Core.Entities
 
         public decimal Price { get; set; }
         public decimal? OriginalPrice { get; set; }
+        [System.ComponentModel.DataAnnotations.ConcurrencyCheck]
         public int Stock { get; set; }
     }
 }

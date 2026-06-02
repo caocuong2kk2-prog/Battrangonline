@@ -22,18 +22,39 @@
       populateTopicSelect();
     }).catch(function (e) { console.error(e); });
 
-    // 3. Tab Navigation
+    // 3. Tab Navigation (Hash Routing)
+    var VALID_TABS = ['videos', 'topics'];
+
+    function getTabFromHash() {
+      var hash = location.hash.replace('#tab=', '');
+      return VALID_TABS.indexOf(hash) !== -1 ? hash : 'videos';
+    }
+
+    function switchTab(tabKey) {
+      document.querySelectorAll('.journey-tab-btn').forEach(function (btn) {
+        btn.classList.toggle('active', btn.dataset.tab === tabKey);
+      });
+
+      document.querySelectorAll('.panel-section').forEach(function (panel) {
+        panel.classList.toggle('active', panel.id === 'panel-' + tabKey);
+      });
+
+      // Update URL hash
+      history.replaceState(null, '', '#tab=' + tabKey);
+    }
+
     document.querySelectorAll('.journey-tab-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var tab = this.dataset.tab;
-
-        document.querySelectorAll('.journey-tab-btn').forEach(function (b) { b.classList.remove('active'); });
-        this.classList.add('active');
-
-        document.querySelectorAll('.panel-section').forEach(function (p) { p.classList.remove('active'); });
-        document.getElementById('panel-' + tab).classList.add('active');
+        switchTab(this.dataset.tab);
       });
     });
+
+    window.addEventListener('hashchange', function () {
+      switchTab(getTabFromHash());
+    });
+
+    // Activate initial tab based on hash
+    switchTab(getTabFromHash());
 
     // 4. Modal Triggers: Add Topic
     document.getElementById('btn-add-topic').addEventListener('click', function () {
@@ -287,6 +308,17 @@
 
     if (!name) {
       adminToast('Vui lòng nhập tên chủ đề!', 'error');
+      return;
+    }
+
+    // ── Check trùng tên chủ đề ──
+    var nameLower = name.toLowerCase();
+    var duplicate = topics.find(function(x) {
+      if (editTopicId && x.id === editTopicId) return false;
+      return x.name.toLowerCase() === nameLower;
+    });
+    if (duplicate) {
+      adminToast('Chủ đề "' + name + '" đã tồn tại!', 'error');
       return;
     }
 

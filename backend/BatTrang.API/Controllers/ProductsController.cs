@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace BatTrang.API.Controllers
 {
@@ -22,6 +23,7 @@ namespace BatTrang.API.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [OutputCache(PolicyName = "ProductsCache")]
         public async Task<IActionResult> GetProducts([FromQuery] ProductFilterDto filter)
         {
             var result = await _productRepo.GetProductsAsync(filter);
@@ -38,6 +40,7 @@ namespace BatTrang.API.Controllers
 
         [HttpGet("featured")]
         [AllowAnonymous]
+        [OutputCache(PolicyName = "ProductsCache")]
         public async Task<IActionResult> GetFeaturedProducts([FromQuery] int limit = 6)
         {
             var products = await _productRepo.GetFeaturedProductsAsync(limit);
@@ -47,6 +50,7 @@ namespace BatTrang.API.Controllers
 
         [HttpGet("{slug}")]
         [AllowAnonymous]
+        [OutputCache(PolicyName = "ProductsCache")]
         public async Task<IActionResult> GetProductBySlug(string slug)
         {
             var p = await _productRepo.GetProductBySlugAsync(slug);

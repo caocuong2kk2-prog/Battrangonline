@@ -39,8 +39,30 @@
   }
 
   /* ---------- Header / Nav (mobile) ---------- */
+  .header-inner {
+    position: static;
+    padding-right: 0;
+    gap: var(--space-2);
+  }
+
+  /* Hide desktop user-account icon on mobile — it's accessible via the nav menu */
+  .header-action-btn--user {
+    display: none !important;
+  }
+
+  /* Make hamburger visible and properly sized */
   .nav-toggle {
-    display: flex;
+    display: flex !important;
+    position: static;
+    transform: none;
+    z-index: auto;
+    flex-shrink: 0;
+    margin-left: var(--space-1);
+  }
+
+  .header-actions {
+    margin-left: auto;
+    gap: 4px;
   }
 
   #site-nav {
@@ -63,6 +85,7 @@
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     box-shadow: -8px 0 24px rgba(0, 0, 0, 0.25);
     overflow-y: auto;
+    z-index: 1000; /* Ensure it covers floating widgets like Zalo/Messenger */
   }
 
   #site-nav.is-open {
@@ -85,6 +108,97 @@
 
   .nav-list__link.active::after {
     display: none;
+  }
+
+  .nav-mobile-account-item {
+    display: block !important;
+    margin-top: var(--space-4);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: var(--space-2);
+  }
+
+  .nav-mobile-account-link {
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    color: var(--color-accent) !important;
+  }
+
+  /* Mobile User Profile Promax */
+  .mobile-user-profile {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .mobile-user-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .mobile-user-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .mobile-user-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .mobile-user-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mobile-user-email {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mobile-user-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .mobile-user-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 0;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .mobile-user-btn--orders {
+    background: rgba(200, 169, 126, 0.15);
+    color: var(--color-accent) !important;
+    border: 1px solid rgba(200, 169, 126, 0.3);
+  }
+  .mobile-user-btn--logout {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ddd !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .btn-header-cta {
@@ -254,7 +368,7 @@
     display: none;
   }
 
-  button.filter-pill {
+  .filter-pill {
     padding: 6px 12px;
     font-size: 12px;
     flex-shrink: 0;
@@ -326,8 +440,41 @@
     --fs-4xl: 1.6rem;
   }
 
+  /* Header Compactness for small screens to prevent overflow */
+  .container {
+    padding: 0 12px; /* Reduce container padding slightly */
+  }
+
+  .site-logo {
+    gap: 8px; /* Less space between logo img and text */
+  }
+
+  .site-logo__img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .site-logo__name {
+    font-size: 14px; /* Shrink logo text so it fits */
+  }
+
   .site-logo__tagline {
     display: none;
+  }
+
+  .header-actions {
+    gap: 2px; /* Reduce gap between icons */
+  }
+
+  .header-action-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .nav-toggle {
+    width: 32px;
+    height: 32px;
+    margin-left: 2px;
   }
 
   /* Filter pills — extra compact */
@@ -335,7 +482,7 @@
     padding: var(--space-2);
   }
 
-  button.filter-pill {
+  .filter-pill {
     padding: 5px 10px;
     font-size: 11px;
   }

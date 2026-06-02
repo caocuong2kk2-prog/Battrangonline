@@ -32,7 +32,8 @@
   }
 
   // Active tab ID
-  var activeTopicId = 'tat-ca';
+  var urlParams = new URLSearchParams(window.location.search);
+  var activeTopicId = urlParams.get('topic') || 'tat-ca';
 
   // ── Render Tabs ──
   function renderTabs(topics) {
@@ -56,6 +57,16 @@
     container.querySelectorAll('.story-tab-btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
         activeTopicId = this.dataset.tab;
+        
+        // Update URL silently
+        var url = new URL(window.location.href);
+        if (activeTopicId === 'tat-ca') {
+          url.searchParams.delete('topic');
+        } else {
+          url.searchParams.set('topic', activeTopicId);
+        }
+        window.history.pushState(null, '', url.pathname + url.search);
+
         renderTabs(topics);
         // Lấy lại danh sách videos qua API để render lại, 
         // hoặc lý tưởng nhất là lưu videos vào một biến toàn cục

@@ -16,6 +16,15 @@ namespace BatTrang.Core.DTOs
         public string Date { get; set; } = null!; // Format YYYY-MM-DD
         public string? CustomerNote { get; set; }
         public string? AdminNote { get; set; }
+        public bool IsCancelRequested { get; set; }
+        public string? CancelReason { get; set; }
+        public DateTime? CancelRequestedAt { get; set; }
+        public DateTime? CancelledAt { get; set; }
+    }
+
+    public class RejectCancelDto
+    {
+        public string Reason { get; set; } = string.Empty;
     }
 
     public class OrderItemDto
@@ -59,5 +68,11 @@ namespace BatTrang.Core.DTOs
     public class UpdateOrderAdminNoteDto
     {
         public string? AdminNote { get; set; }
+    }
+
+    public class CancelOrderRequestDto
+    {
+        public string Phone { get; set; } = null!;
+        public string? Reason { get; set; }
     }
 }

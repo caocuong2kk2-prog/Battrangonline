@@ -38,6 +38,8 @@
         if (params.category && params.category !== 'all') query.push('category=' + encodeURIComponent(params.category));
         if (params.quality && params.quality !== 'all') query.push('quality=' + encodeURIComponent(params.quality));
         if (params.size && params.size !== 'all') query.push('size=' + encodeURIComponent(params.size));
+        if (params.material && params.material !== 'all') query.push('material=' + encodeURIComponent(params.material));
+        if (params.productType && params.productType !== 'all') query.push('productType=' + encodeURIComponent(params.productType));
         if (params.sort && params.sort !== 'newest') query.push('sort=' + encodeURIComponent(params.sort));
         if (params.page) query.push('page=' + params.page);
         if (params.limit) query.push('limit=' + params.limit);
@@ -74,26 +76,60 @@
       return _fetch('/glazelines');
     },
 
+    // --- Sizes ---
+    getSizes: function () {
+      return _fetch('/sizes');
+    },
+
+    // --- Materials ---
+    getMaterials: function () {
+      return _fetch('/materials');
+    },
+
+    // --- Product Types ---
+    getProductTypes: function () {
+      return _fetch('/producttypes');
+    },
+
     // --- Filters Data ---
     getFilters: function () {
-      return Promise.all([this.getCategories(), this.getGlazeLines()]).then(function (results) {
+      return Promise.all([
+        this.getCategories(),
+        this.getGlazeLines(),
+        this.getSizes(),
+        this.getMaterials(),
+        this.getProductTypes()
+      ]).then(function (results) {
         var cats = results[0];
         var glazes = results[1];
+        var sizes = results[2] || [];
+        var materials = results[3] || [];
+        var productTypes = results[4] || [];
 
         // Map glazes to qualities filter format
         var qualities = glazes.map(function (g) {
           return { id: g.id.toString(), name: g.name };
         });
 
+        // Size is now a free-text input field, no pills required
+        var sizeOptions = [];
+
+        // Map materials to filter format
+        var materialOptions = materials.map(function (m) {
+          return { id: m.id.toString(), name: m.name };
+        });
+
+        // Map product types to filter format
+        var productTypeOptions = productTypes.map(function (t) {
+          return { id: t.id.toString(), name: t.name };
+        });
+
         return {
           categories: [{ id: 'all', name: 'Tất cả' }].concat(cats),
           qualities: qualities,
-          sizes: [
-            { id: 'all', name: 'Tất cả' },
-            { id: 'lon', name: 'Cỡ lớn (>= 1m)' },
-            { id: 'vua', name: 'Cỡ vừa (50cm - 1m)' },
-            { id: 'nho', name: 'Cỡ nhỏ (< 50cm)' }
-          ]
+          sizes: sizeOptions,
+          materials: materialOptions,
+          productTypes: productTypeOptions
         };
       });
     },

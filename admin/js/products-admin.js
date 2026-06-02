@@ -37,8 +37,16 @@
     var formattedPrice = numPrice.toLocaleString('vi-VN') + 'đ';
     var subtitleParts = [ptype, material, formattedPrice, 'Tồn: ' + stock].filter(Boolean);
 
-    card.querySelector('.acc-title').textContent = titleParts.length > 0 ? titleParts.join(' • ') : 'Phiên bản mới';
-    card.querySelector('.acc-subtitle').textContent = subtitleParts.length > 0 ? subtitleParts.join(' • ') : 'Chưa nhập đủ thông tin';
+    var titleStr = titleParts.length > 0 ? titleParts.join(' • ') : 'Phiên bản mới';
+    var subtitleStr = subtitleParts.length > 0 ? subtitleParts.join(' • ') : 'Chưa nhập đủ thông tin';
+
+    var accTitle = card.querySelector('.acc-title');
+    accTitle.textContent = titleStr;
+    accTitle.title = titleStr;
+
+    var accSubtitle = card.querySelector('.acc-subtitle');
+    accSubtitle.textContent = subtitleStr;
+    accSubtitle.title = subtitleStr;
     
     var stockBadge = card.querySelector('.acc-stock');
     stockBadge.textContent = 'Còn ' + stock;
@@ -76,49 +84,49 @@
     var variantImages = (v && v.images) ? v.images : (v && v.mediaUrl ? [v.mediaUrl] : []);
 
     card.innerHTML = `
-        <div class="acc-header" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; cursor: pointer; user-select: none;">
-            <div style="display: flex; align-items: center; gap: 15px; flex: 1;">
-                <div class="acc-number" style="width: 24px; height: 24px; background: #b87b28; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0;">${currentVariantIndex}</div>
-                <div style="display: flex; flex-direction: column;">
-                    <div class="acc-title" style="font-weight: 600; font-size: 14px; color: #333; margin-bottom: 2px;">Phiên bản mới</div>
-                    <div class="acc-subtitle" style="font-size: 12px; color: #666;">...</div>
+        <div class="acc-header" style="display: flex; align-items: flex-start; justify-content: space-between; padding: 12px 15px; cursor: pointer; user-select: none; gap: 12px;">
+            <div style="display: flex; align-items: flex-start; gap: 12px; flex: 1; min-width: 0;">
+                <div class="acc-number" style="width: 24px; height: 24px; background: var(--accent); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0; margin-top: 2px;">${currentVariantIndex}</div>
+                <div style="display: flex; flex-direction: column; min-width: 0; flex: 1;">
+                    <div class="acc-title" style="font-weight: 600; font-size: 14px; color: var(--text-primary); margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: ${v ? 'nowrap' : 'normal'}; transition: white-space 0.3s;">Phiên bản mới</div>
+                    <div class="acc-subtitle" style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px; overflow: hidden; text-overflow: ellipsis; white-space: ${v ? 'nowrap' : 'normal'}; transition: white-space 0.3s;">Chưa nhập đủ thông tin</div>
+                    <div><span class="acc-stock" style="padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; background: #e8f5e9; color: #2e7d32; display: inline-block;">Còn 0</span></div>
                 </div>
             </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div class="acc-stock" style="padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; background: #e8f5e9; color: #2e7d32;">Còn 0</div>
-                <button type="button" class="btn btn--sm btn-duplicate-variant" style="background: transparent; border: 1px solid #ccc; color: #333; display: flex; align-items: center; padding: 4px 10px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Nhân bản</button>
-                <button type="button" class="btn btn--sm btn-delete-variant" style="background: transparent; border: 1px solid #ccc; color: #333; padding: 4px 10px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
-                <div class="acc-chevron" style="transition: transform 0.3s; color: #666; transform: ${v ? 'rotate(0)' : 'rotate(180deg)'};"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
+            <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                <button type="button" class="btn btn--sm btn-duplicate-variant" title="Nhân bản phiên bản" style="background: transparent; border: 1px solid var(--border); color: var(--text-secondary); padding: 6px; height: 28px; width: 28px; display: flex; align-items: center; justify-content: center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                <button type="button" class="btn btn--sm btn-delete-variant" title="Xóa phiên bản" style="background: transparent; border: 1px solid var(--border); color: var(--danger); padding: 6px; height: 28px; width: 28px; display: flex; align-items: center; justify-content: center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                <div class="acc-chevron" style="transition: transform 0.3s; color: var(--text-muted); padding: 4px; display: flex; align-items: center; transform: ${v ? 'rotate(0)' : 'rotate(180deg)'};"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></div>
             </div>
         </div>
         <div class="acc-body-wrapper" style="display: grid; grid-template-rows: ${v ? '0fr' : '1fr'}; transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: white;">
             <div class="acc-body" style="min-height: 0; overflow: hidden; border-top: 1px solid #eee;">
                 <div style="padding: 15px;">
                     <input type="hidden" class="v-id" value="${v ? v.id : 0}">
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;">
-                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: #666; font-weight: normal;">Kích thước <span style="color:red">*</span></label>
-                    <select class="form-control v-size" style="background: #fff;">${makeSelect(sizes, '', v ? v.sizeId : null)}</select>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: var(--text-secondary); font-size: 13px;">Kích thước <span style="color:red">*</span></label>
+                    <select class="form-control v-size" style="background: #fff; padding: 8px 12px;">${makeSelect(sizes, '', v ? v.sizeId : null)}</select>
                 </div>
-                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: #666; font-weight: normal;">Phân khúc</label>
-                    <select class="form-control v-ptype" style="background: #fff;">${makeSelect(productTypes, '', v ? v.productTypeId : null)}</select>
+                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: var(--text-secondary); font-size: 13px;">Phân khúc</label>
+                    <select class="form-control v-ptype" style="background: #fff; padding: 8px 12px;">${makeSelect(productTypes, '', v ? v.productTypeId : null)}</select>
                 </div>
-                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: #666; font-weight: normal;">Dòng men</label>
-                    <select class="form-control v-glaze" style="background: #fff;">${makeSelect(glazeLines, '', v ? v.glazeLineId : null)}</select>
+                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: var(--text-secondary); font-size: 13px;">Dòng men</label>
+                    <select class="form-control v-glaze" style="background: #fff; padding: 8px 12px;">${makeSelect(glazeLines, '', v ? v.glazeLineId : null)}</select>
                 </div>
-                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: #666; font-weight: normal;">Chất liệu</label>
-                    <select class="form-control v-material" style="background: #fff;">${makeSelect(materials, '', v ? v.materialId : null)}</select>
+                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: var(--text-secondary); font-size: 13px;">Chất liệu</label>
+                    <select class="form-control v-material" style="background: #fff; padding: 8px 12px;">${makeSelect(materials, '', v ? v.materialId : null)}</select>
                 </div>
-                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: #666; font-weight: normal;">Màu sắc</label>
-                    <select class="form-control v-color" style="background: #fff;">${makeSelect(colors, '', v ? v.colorId : null)}</select>
+                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: var(--text-secondary); font-size: 13px;">Màu sắc</label>
+                    <select class="form-control v-color" style="background: #fff; padding: 8px 12px;">${makeSelect(colors, '', v ? v.colorId : null)}</select>
                 </div>
-                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: #666; font-weight: normal;">Hoa văn</label>
-                    <select class="form-control v-pattern" style="background: #fff;">${makeSelect(patterns, '', v ? v.patternId : null)}</select>
+                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: var(--text-secondary); font-size: 13px;">Hoa văn</label>
+                    <select class="form-control v-pattern" style="background: #fff; padding: 8px 12px;">${makeSelect(patterns, '', v ? v.patternId : null)}</select>
                 </div>
-                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: #666; font-weight: normal;">Giá bán (VNĐ) <span style="color:red">*</span></label>
-                    <input type="text" class="form-control v-price" value="${v ? (v.price || '') : ''}" style="background: #fff;">
+                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: var(--text-secondary); font-size: 13px;">Giá bán (VNĐ) <span style="color:red">*</span></label>
+                    <input type="text" class="form-control v-price" value="${v ? (v.price || '') : ''}" style="background: #fff; padding: 8px 12px; font-weight: 600; color: var(--accent);">
                 </div>
-                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: #666; font-weight: normal;">Tồn kho <span style="color:red">*</span></label>
-                    <input type="number" class="form-control v-stock" value="${v ? (v.stock || 0) : 0}" style="background: #fff;">
+                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: var(--text-secondary); font-size: 13px;">Tồn kho <span style="color:red">*</span></label>
+                    <input type="number" class="form-control v-stock" value="${v ? (v.stock || 0) : 0}" style="background: #fff; padding: 8px 12px; font-weight: 600;">
                 </div>
             </div>
             
@@ -130,8 +138,8 @@
                     </div>
                     <div class="variant-image-gallery" data-vid="${vIdKey}" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
                     <div style="display:flex;flex:1;min-width:180px;gap:6px;">
-                        <input class="form-control variant-video-link" data-vid="${vIdKey}" type="text" placeholder="Dán link ảnh/video" style="margin-bottom:0;flex:1;background: #fff;">
-                        <button type="button" class="btn btn--secondary btn-add-variant-link" data-vid="${vIdKey}" style="white-space:nowrap;padding:0 15px;height:38px;">➕ Thêm</button>
+                        <input class="form-control variant-video-link" data-vid="${vIdKey}" type="text" placeholder="Dán link ảnh/video" style="margin-bottom:0;flex:1;background: #fff; padding: 8px 12px; height: 36px;">
+                        <button type="button" class="btn btn--secondary btn-add-variant-link" data-vid="${vIdKey}" style="white-space:nowrap;padding:0 12px;height:36px; border-radius: 6px;">➕ Thêm</button>
                     </div>
                 </div>
                 <input type="hidden" class="v-images-data" value="${JSON.stringify(variantImages).replace(/"/g, '&quot;')}">
@@ -207,6 +215,11 @@
         var isExpanded = accBodyWrapper.style.gridTemplateRows === '1fr';
         accBodyWrapper.style.gridTemplateRows = isExpanded ? '0fr' : '1fr';
         accChevron.style.transform = isExpanded ? 'rotate(0)' : 'rotate(180deg)';
+        
+        var titleEl = card.querySelector('.acc-title');
+        var subtitleEl = card.querySelector('.acc-subtitle');
+        if (titleEl) titleEl.style.whiteSpace = isExpanded ? 'nowrap' : 'normal';
+        if (subtitleEl) subtitleEl.style.whiteSpace = isExpanded ? 'nowrap' : 'normal';
     });
 
     // Delete Logic

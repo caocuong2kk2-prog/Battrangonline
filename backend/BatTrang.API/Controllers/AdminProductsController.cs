@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System;
 using System.Text.RegularExpressions;
 using System.Text;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace BatTrang.API.Controllers
 {
@@ -20,12 +21,14 @@ namespace BatTrang.API.Controllers
         private readonly IProductRepository _productRepo;
         private readonly ICategoryRepository _categoryRepo;
         private readonly BatTrang.Infrastructure.Data.AppDbContext _context;
+        private readonly IOutputCacheStore _cacheStore;
 
-        public AdminProductsController(IProductRepository productRepo, ICategoryRepository categoryRepo, BatTrang.Infrastructure.Data.AppDbContext context)
+        public AdminProductsController(IProductRepository productRepo, ICategoryRepository categoryRepo, BatTrang.Infrastructure.Data.AppDbContext context, IOutputCacheStore cacheStore)
         {
             _productRepo = productRepo;
             _categoryRepo = categoryRepo;
             _context = context;
+            _cacheStore = cacheStore;
         }
 
         [HttpGet]
@@ -151,6 +154,7 @@ namespace BatTrang.API.Controllers
 
             await _productRepo.AddAsync(product);
             dto.Id = product.Id;
+            await _cacheStore.EvictByTagAsync("products", default);
             return CreatedAtAction(nameof(GetAll), new { id = product.Id }, dto);
         }
 
@@ -266,6 +270,7 @@ namespace BatTrang.API.Controllers
 
 
             await _productRepo.UpdateAsync(product);
+            await _cacheStore.EvictByTagAsync("products", default);
             return NoContent();
         }
 
@@ -284,6 +289,7 @@ namespace BatTrang.API.Controllers
                 BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(img);
             }
 
+            await _cacheStore.EvictByTagAsync("products", default);
             return NoContent();
         }
 
@@ -305,6 +311,7 @@ namespace BatTrang.API.Controllers
                     }
                 }
             }
+            await _cacheStore.EvictByTagAsync("products", default);
             return NoContent();
         }
 
@@ -321,6 +328,7 @@ namespace BatTrang.API.Controllers
                     await _productRepo.UpdateAsync(product);
                 }
             }
+            await _cacheStore.EvictByTagAsync("products", default);
             return NoContent();
         }
 

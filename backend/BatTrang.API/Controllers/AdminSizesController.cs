@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace BatTrang.API.Controllers
 {
@@ -15,10 +16,12 @@ namespace BatTrang.API.Controllers
     public class AdminSizesController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IOutputCacheStore _cacheStore;
 
-        public AdminSizesController(AppDbContext context)
+        public AdminSizesController(AppDbContext context, IOutputCacheStore cacheStore)
         {
             _context = context;
+                    _cacheStore = cacheStore;
         }
 
         [HttpGet]
@@ -45,6 +48,7 @@ namespace BatTrang.API.Controllers
             };
             _context.Sizes.Add(entity);
             await _context.SaveChangesAsync();
+            await _cacheStore.EvictByTagAsync("filters", default);
             dto.Id = entity.Id;
             return Ok(dto);
         }
@@ -58,6 +62,7 @@ namespace BatTrang.API.Controllers
             entity.Name = dto.Name;
             entity.ValueInCm = dto.ValueInCm;
             await _context.SaveChangesAsync();
+            await _cacheStore.EvictByTagAsync("filters", default);
             return Ok(dto);
         }
 
@@ -68,6 +73,7 @@ namespace BatTrang.API.Controllers
             if (entity == null) return NotFound();
             _context.Sizes.Remove(entity);
             await _context.SaveChangesAsync();
+            await _cacheStore.EvictByTagAsync("filters", default);
             return NoContent();
         }
     }

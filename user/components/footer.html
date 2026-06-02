@@ -8,7 +8,7 @@
 
       <!-- Column 1: Brand -->
       <div class="footer-brand">
-        <a class="site-logo footer-brand__logo" href="index.html" aria-label="Trang chủ">
+        <a class="site-logo footer-brand__logo" href="/" aria-label="Trang chủ">
           <img class="site-logo__img js-config-logo" src="assets/images/logo.png" alt="Logo Phúc Gia Tiên" width="44"
             height="44">
           <div class="site-logo__text">
@@ -52,13 +52,13 @@
       <nav aria-label="Liên kết nhanh">
         <h3 class="footer-section__title">Liên Kết</h3>
         <ul class="footer-links" role="list">
-          <li><a class="footer-links__item" href="index.html">Trang Chủ</a></li>
-          <li><a class="footer-links__item" href="products.html">Sản Phẩm</a></li>
-          <li><a class="footer-links__item" href="journey.html">Hành Trình</a></li>
-          <li><a class="footer-links__item" href="about.html">Giới Thiệu</a></li>
-          <li><a class="footer-links__item" href="contact.html">Liên Hệ</a></li>
-          <li><a class="footer-links__item" href="order-tracking.html">Tra Cứu Đơn Hàng</a></li>
-          <li><a class="footer-links__item" href="shopping-guide.html">Hướng Dẫn Mua Hàng</a></li>
+          <li><a class="footer-links__item" href="/">Trang Chủ</a></li>
+          <li><a class="footer-links__item" href="products">Sản Phẩm</a></li>
+          <li><a class="footer-links__item" href="journey">Hành Trình</a></li>
+          <li><a class="footer-links__item" href="about">Giới Thiệu</a></li>
+          <li><a class="footer-links__item" href="contact">Liên Hệ</a></li>
+          <li><a class="footer-links__item" href="order-tracking">Tra Cứu Đơn Hàng</a></li>
+          <li><a class="footer-links__item" href="shopping-guide">Hướng Dẫn Mua Hàng</a></li>
         </ul>
       </nav>
 
@@ -124,11 +124,11 @@
           © <span id="footer-year"></span> <span class="js-config-store-name">Phúc Gia Tiên</span>. Bảo lưu mọi quyền.
         </p>
         <nav class="footer-bottom__links" aria-label="Policy links">
-          <a class="footer-bottom__link" href="terms-of-service.html">Điều khoản dịch vụ</a>
-          <a class="footer-bottom__link" href="privacy-policy.html">Chính sách bảo mật</a>
-          <a class="footer-bottom__link" href="return-policy.html">Chính sách đổi trả</a>
-          <a class="footer-bottom__link" href="shipping-policy.html">Chính sách giao nhận</a>
-          <a class="footer-bottom__link" href="warranty-policy.html">Chính sách bảo hành</a>
+          <a class="footer-bottom__link" href="terms-of-service">Điều khoản dịch vụ</a>
+          <a class="footer-bottom__link" href="privacy-policy">Chính sách bảo mật</a>
+          <a class="footer-bottom__link" href="return-policy">Chính sách đổi trả</a>
+          <a class="footer-bottom__link" href="shipping-policy">Chính sách giao nhận</a>
+          <a class="footer-bottom__link" href="warranty-policy">Chính sách bảo hành</a>
         </nav>
       </div>
     </div>
@@ -385,6 +385,27 @@
   @media print {
     .quick-contact-widget {
       display: none !important;
+    }
+  }
+
+  /* ===== MOBILE RESPONSIVENESS ===== */
+  @media (max-width: 768px) {
+    .quick-contact-widget {
+      bottom: 90px; /* Push up above sticky add to cart */
+      right: 12px;
+      gap: 10px;
+    }
+    .quick-contact-btn, #back-to-top {
+      width: 46px;
+      height: 46px;
+    }
+    .quick-contact-btn--phone .btn-icon {
+      width: 22px;
+      height: 22px;
+    }
+    .quick-contact-btn--zalo svg, .quick-contact-btn--messenger svg {
+      width: 46px;
+      height: 46px;
     }
   }
 

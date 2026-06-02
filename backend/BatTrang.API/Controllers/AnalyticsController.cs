@@ -155,31 +155,68 @@ namespace BatTrang.API.Controllers
             var categories = await _categoryRepo.ListAllAsync();
             
             var productIds = products.Select(p => p.Id).ToList();
-            var productImagesDict = await _productRepo.GetProductImagesAsync(productIds);
-            
-            var productSalesQty = new Dictionary<int, int>();
-            foreach(var o in currentOrders)
-            {
-                if (o.Status != "cancelled")
+            var topProducts = new List<TopProductDto>();
+
+            var soldItems = currentOrders
+                .Where(o => o.Status != "cancelled")
+                .SelectMany(o => o.Items)
+                .GroupBy(i => 
                 {
-                    foreach(var item in o.Items)
+                    var name = i.ProductName ?? "Không rõ";
+                    if (!string.IsNullOrEmpty(i.Size) && i.Size != "Default")
                     {
-                        if (!productSalesQty.ContainsKey(item.ProductId))
-                            productSalesQty[item.ProductId] = 0;
-                        productSalesQty[item.ProductId] += item.Quantity;
+                        if (!name.Contains(i.Size))
+                        {
+                            name += " - " + i.Size;
+                        }
                     }
-                }
+                    return name;
+                })
+                .Select(g => new
+                {
+                    ProductName = g.Key,
+                    ProductId = g.First().ProductId,
+                    SalesQty = g.Sum(i => i.Quantity),
+                    TotalRevenue = g.Sum(i => i.Quantity * i.UnitPrice)
+                }).ToList();
+
+            foreach(var sold in soldItems)
+            {
+                var p = products.FirstOrDefault(x => x.Id == sold.ProductId);
+                topProducts.Add(new TopProductDto
+                {
+                    Id = sold.ProductId,
+                    Name = sold.ProductName,
+                    Slug = p?.Slug,
+                    Category = categories.FirstOrDefault(c => c.Id == p?.CategoryId)?.Name ?? "Khác",
+                    BasePrice = p?.Variants?.FirstOrDefault()?.Price ?? 0,
+                    Stock = p?.Variants?.Sum(v => v.Stock) ?? 0,
+                    SalesQty = sold.SalesQty,
+                    TotalRevenue = sold.TotalRevenue
+                });
             }
 
-            var topProducts = products.Select(p => new TopProductDto
+            var soldProductIds = soldItems.Select(x => x.ProductId).Distinct().ToList();
+            var unsoldProducts = products.Where(p => !soldProductIds.Contains(p.Id)).ToList();
+            
+            foreach(var p in unsoldProducts)
             {
-                Id = p.Id,
-                Name = p.Name,
-                Category = categories.FirstOrDefault(c => c.Id == p.CategoryId)?.Name ?? "Khác",
-                BasePrice = p.Variants?.FirstOrDefault()?.Price ?? 0,
-                SalesQty = productSalesQty.ContainsKey(p.Id) ? productSalesQty[p.Id] : 0
-            })
-            .OrderByDescending(p => p.SalesQty > 0 ? p.SalesQty : p.BasePrice)
+                topProducts.Add(new TopProductDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Slug = p.Slug,
+                    Category = categories.FirstOrDefault(c => c.Id == p.CategoryId)?.Name ?? "Khác",
+                    BasePrice = p.Variants?.FirstOrDefault()?.Price ?? 0,
+                    Stock = p.Variants?.Sum(v => v.Stock) ?? 0,
+                    SalesQty = 0,
+                    TotalRevenue = 0
+                });
+            }
+
+            topProducts = topProducts
+            .OrderByDescending(p => p.TotalRevenue)
+            .ThenByDescending(p => p.SalesQty)
             .Take(5)
             .ToList();
 
@@ -215,6 +252,8 @@ namespace BatTrang.API.Controllers
                 CustomersPercentChange = System.Math.Round(customersPercentChange, 1),
 
                 CurrentMonthAov = currentAov,
+                PreviousMonthRevenue = previousRevenue,
+                PreviousMonthAov = previousAov,
                 AovPercentChange = System.Math.Round(aovPercentChange, 1),
                 ReturnCustomerRate = System.Math.Round(returnCustomerRate, 1),
                 CurrentMonthLabel = currentLabel,

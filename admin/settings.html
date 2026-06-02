@@ -19,7 +19,7 @@
           isReload = window.performance.navigation.type === 1;
         }
       } catch (e) { }
-      var fromOtherPage = document.referrer && !document.referrer.includes('settings.html');
+      var fromOtherPage = document.referrer && !document.referrer.includes("settings");
       if (!isReload || fromOtherPage) {
         // Fresh entrance → reset về tab đầu
         localStorage.removeItem('settings_active_tab');
@@ -267,7 +267,8 @@
       border-color: rgba(200, 146, 42, 0.2) !important;
       border-top-left-radius: var(--r-md) !important;
       border-top-right-radius: var(--r-md) !important;
-      background: rgba(200, 146, 42, 0.02) !important;
+      background: #ffffff !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
     }
 
     .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
@@ -691,6 +692,48 @@
       letter-spacing: 0.05em !important;
       display: block !important;
     }
+
+    /* ── Smart Bottom Action Bar ── */
+    .admin-smart-bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: var(--sidebar-width);
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      z-index: 900;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .admin-smart-bottom-bar.is-visible {
+      transform: translateY(0);
+    }
+
+    .admin-smart-bottom-bar__inner {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .admin-smart-bottom-bar__text {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 1024px) {
+      .admin-smart-bottom-bar {
+        left: 0;
+      }
+    }
   </style>
   <script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/super-build/ckeditor.js"></script>
 </head>
@@ -707,45 +750,82 @@
       </div>
     </div>
     <nav class="sidebar-nav">
-    <span class="sidebar-section-label">Tổng quan</span>
-    <ul class="sidebar-nav__list">
-      <li><a href="index.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li>
-    </ul>
-    
-    <span class="sidebar-section-label">Kinh doanh</span>
-    <ul class="sidebar-nav__list">
-      <li><a href="products.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
-      <li><a href="orders.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
-      <li><a href="customers.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
-    </ul>
+      <span class="sidebar-section-label">Tổng quan</span>
+      <ul class="sidebar-nav__list">
+        <li><a href="./" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg><span class="sidebar-nav__text">Dashboard</span></a></li>
+      </ul>
 
-    <span class="sidebar-section-label">Danh mục & Thuộc tính</span>
-    <ul class="sidebar-nav__list">
-      <li><a href="categories.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="sidebar-nav__text">Danh mục</span></a></li>
-      <li><a href="product-types.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg><span class="sidebar-nav__text">Phân khúc</span></a></li>
-      <li><a href="materials.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg><span class="sidebar-nav__text">Chất liệu</span></a></li>
-      <li><a href="colors.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg><span class="sidebar-nav__text">Màu sắc</span></a></li>
-      <li><a href="sizes.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line><line x1="12" y1="8" x2="12" y2="16"></line></svg><span class="sidebar-nav__text">Kích thước</span></a></li>
-      <li><a href="patterns.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="15"></line></svg><span class="sidebar-nav__text">Hoa văn</span></a></li>
-      <li><a href="glazelines.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg><span class="sidebar-nav__text">Dòng men</span></a></li>
-    </ul>
+      <span class="sidebar-section-label">Kinh doanh</span>
+      <ul class="sidebar-nav__list">
+        <li><a href="products" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 01-8 0" />
+            </svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
+        <li><a href="orders" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M9 11l3 3L22 4" />
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+            </svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending"
+              style="display:none"></span></a></li>
+        <li><a href="customers" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87" />
+              <path d="M16 3.13a4 4 0 010 7.75" />
+            </svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
+        <li><a href="attributes" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg><span class="sidebar-nav__text">Thuộc tính SP</span></a></li>
+      </ul>
 
-    <span class="sidebar-section-label">Nội dung</span>
-    <ul class="sidebar-nav__list">
-      <li><a href="journey.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
-    </ul>
 
-    <span class="sidebar-section-label">Báo cáo</span>
-    <ul class="sidebar-nav__list">
-      <li><a href="analytics.html" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
-    </ul>
+      <span class="sidebar-section-label">Nội dung</span>
+      <ul class="sidebar-nav__list">
+        <li><a href="journey" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
+      </ul>
 
-    <span class="sidebar-section-label">Hệ thống</span>
-    <ul class="sidebar-nav__list">
-      <li><a href="settings.html" class="sidebar-nav__link active"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-nav__text">Cài đặt</span></a></li>
-      <li class="admin-only"><a href="accounts.html" class="sidebar-nav__link" id="nav-accounts-link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><span class="sidebar-nav__text">Tài khoản</span></a></li>
-    </ul>
-  </nav>
+      <span class="sidebar-section-label">Báo cáo</span>
+      <ul class="sidebar-nav__list">
+        <li><a href="analytics" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg><span class="sidebar-nav__text">Thống kê</span></a></li>
+      </ul>
+
+      <span class="sidebar-section-label">Hệ thống</span>
+      <ul class="sidebar-nav__list">
+        <li><a href="settings" class="sidebar-nav__link active"><svg class="sidebar-nav__icon" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+            </svg><span class="sidebar-nav__text">Cài đặt</span></a></li>
+        <li class="admin-only"><a href="accounts" class="sidebar-nav__link" id="nav-accounts-link"><svg
+              class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg><span class="sidebar-nav__text">Tài khoản</span></a></li>
+      </ul>
+    </nav>
     <div class="sidebar-footer">
       <div class="sidebar-user js-logout">
         <div class="sidebar-user__avatar js-admin-initial">A</div>
@@ -1173,7 +1253,8 @@
                 <div class="form-group" style="grid-column:1/-1">
                   <div
                     style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap; gap:8px;">
-                    <label class="form-label" style="font-weight:700; margin-bottom:0;">Nội dung trang giới thiệu</label>
+                    <label class="form-label" style="font-weight:700; margin-bottom:0;">Nội dung trang giới
+                      thiệu</label>
                   </div>
                   <div class="textarea-wrap">
                     <textarea class="form-control rich-editor" id="about-story-html" rows="12"
@@ -1221,78 +1302,11 @@
                   <span class="settings-subsection__title">Đội Ngũ Nghệ Nhân</span>
                   <span class="settings-subsection__hint">2 thẻ nghệ nhân cuối trang</span>
                 </div>
-                <div class="settings-grid">
-                  <div class="form-group"><label class="form-label">👤 Tên nghệ nhân 1</label><input
-                      class="form-control" id="team-1-name" placeholder="Ví dụ: Nguyễn Văn Phúc"></div>
-                  <div class="form-group"><label class="form-label">Chức danh</label><input class="form-control"
-                      id="team-1-role" placeholder="Ví dụ: Nghệ Nhân Chính"></div>
-                  <div class="form-group" style="grid-column:1/-1">
-                    <label class="form-label">Giới thiệu ngắn</label>
-                    <div class="textarea-wrap">
-                      <textarea class="form-control rich-editor" id="team-1-bio" rows="2"
-                        placeholder="Phụ trách tạo hình và nung gốm. Hơn 6 năm kinh nghiệm…"></textarea>
-                    </div>
-                  </div>
-                  <div class="form-group" style="grid-column:1/-1; margin-bottom: 1.5rem;">
-                    <label class="form-label">Ảnh đại diện Nghệ nhân 1</label>
-                    <div style="max-width: 240px;">
-                      <div class="img-upload-card">
-                        <div class="img-upload-dropzone" id="drop-teamAvatar1" style="min-height: 120px;">
-                          <img class="img-upload-preview" id="preview-teamAvatar1" alt="Team 1 avatar preview"
-                            style="max-height: 100px;">
-                          <div class="img-upload-placeholder" id="ph-teamAvatar1">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                              <rect x="3" y="3" width="18" height="18" rx="2" />
-                              <circle cx="8.5" cy="8.5" r="1.5" />
-                              <polyline points="21 15 16 10 5 21" />
-                            </svg>
-                            <span>Kéo thả hoặc chọn ảnh</span>
-                            <span class="img-upload-hint-text">Khuyến nghị 400×400px (Vuông)</span>
-                          </div>
-                          <input type="file" accept="image/*" class="img-upload-input" id="file-teamAvatar1"
-                            data-target="teamAvatar1">
-                        </div>
-                        <div class="img-upload-actions"><button type="button" class="btn btn--outline"
-                            onclick="removeImage('teamAvatar1')">Xóa ảnh</button></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="form-group"><label class="form-label">👤 Tên nghệ nhân 2</label><input
-                      class="form-control" id="team-2-name" placeholder="Ví dụ: Lê Thị Tiên"></div>
-                  <div class="form-group"><label class="form-label">Chức danh</label><input class="form-control"
-                      id="team-2-role" placeholder="Ví dụ: Nghệ Nhân Vẽ & Sáng Tạo"></div>
-                  <div class="form-group" style="grid-column:1/-1">
-                    <label class="form-label">Giới thiệu ngắn</label>
-                    <div class="textarea-wrap">
-                      <textarea class="form-control rich-editor" id="team-2-bio" rows="2"
-                        placeholder="Phụ trách vẽ hoa văn và sáng tạo mẫu mới…"></textarea>
-                    </div>
-                  </div>
-                  <div class="form-group" style="grid-column:1/-1;">
-                    <label class="form-label">Ảnh đại diện Nghệ nhân 2</label>
-                    <div style="max-width: 240px;">
-                      <div class="img-upload-card">
-                        <div class="img-upload-dropzone" id="drop-teamAvatar2" style="min-height: 120px;">
-                          <img class="img-upload-preview" id="preview-teamAvatar2" alt="Team 2 avatar preview"
-                            style="max-height: 100px;">
-                          <div class="img-upload-placeholder" id="ph-teamAvatar2">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                              <rect x="3" y="3" width="18" height="18" rx="2" />
-                              <circle cx="8.5" cy="8.5" r="1.5" />
-                              <polyline points="21 15 16 10 5 21" />
-                            </svg>
-                            <span>Kéo thả hoặc chọn ảnh</span>
-                            <span class="img-upload-hint-text">Khuyến nghị 400×400px (Vuông)</span>
-                          </div>
-                          <input type="file" accept="image/*" class="img-upload-input" id="file-teamAvatar2"
-                            data-target="teamAvatar2">
-                        </div>
-                        <div class="img-upload-actions"><button type="button" class="btn btn--outline"
-                            onclick="removeImage('teamAvatar2')">Xóa ảnh</button></div>
-                      </div>
-                    </div>
-                  </div>
+                <div id="team-members-container" style="display:flex; flex-direction:column; gap:24px;">
+                  <!-- Dynamic cards injected here by JS -->
                 </div>
+                <button type="button" class="btn btn--outline" id="btn-add-team-member"
+                  style="margin-top:24px; width:100%; border-style:dashed;">+ Thêm nghệ nhân mới</button>
               </div>
 
             </div>
@@ -1426,6 +1440,15 @@
   </div>
 
   <div id="admin-toast-container"></div>
+
+  <!-- Smart Bottom Bar -->
+  <div class="admin-smart-bottom-bar" id="smartBottomBar">
+    <div class="admin-smart-bottom-bar__inner">
+      <span class="admin-smart-bottom-bar__text">Bạn có thay đổi chưa lưu?</span>
+      <button class="btn btn--primary" id="btn-save-all-bottom">💾 Lưu tất cả</button>
+    </div>
+  </div>
+
   <script src="js/admin-data.js"></script>
   <script src="js/admin-core.js"></script>
   <script>
@@ -1454,7 +1477,7 @@
 
       // ── Load config ───────────────────────────
       function loadConfig() {
-        var API_BASE = (window.AdminData && window.AdminData.apiBase) || ( (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api' );
+        var API_BASE = (window.AdminData && window.AdminData.apiBase) || ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api');
         fetch(API_BASE + '/site-config')
           .then(function (r) { return r.json(); })
           .then(function (apiConfig) {
@@ -1477,7 +1500,7 @@
 
             // Load Image Uploads
             // Chuyển đổi URL lưu trong DB → URL hiển thị trong admin
-            function resolvePreviewUrl(url) {
+            window.resolvePreviewUrl = function resolvePreviewUrl(url) {
               if (!url) return null;
               // 1. Base64 → dùng thẳng
               if (url.startsWith('data:')) return url;
@@ -1489,36 +1512,34 @@
               if (url.startsWith('assets/')) return '/' + url;
               // 5. Fallback: dùng thẳng
               return url;
-            }
+            };
 
-            function setupImagePreview(id, url) {
+            window.setupImagePreview = function setupImagePreview(id, url) {
               var previewEl = document.getElementById('preview-' + id);
               var phEl = document.getElementById('ph-' + id);
               if (!previewEl || !phEl) return;
-              var previewUrl = resolvePreviewUrl(url);
+              var previewUrl = window.resolvePreviewUrl(url);
               if (previewUrl) {
                 previewEl.src = previewUrl;
                 previewEl.classList.add('has-img');
                 phEl.classList.add('hidden');
                 // Ẩn placeholder khi ảnh lỗi
-                previewEl.onerror = function() {
+                previewEl.onerror = function () {
                   previewEl.removeAttribute('src');
                   previewEl.classList.remove('has-img');
                   phEl.classList.remove('hidden');
                 };
               }
-            }
-            setupImagePreview('logo', config.logoUrl);
-            setupImagePreview('homeBanner', config.homeBanner);
-            setupImagePreview('ctaBanner', config.ctaBanner);
-            setupImagePreview('productsBanner', config.productsBanner);
-            setupImagePreview('journeyBanner', config.journeyBanner);
-            setupImagePreview('aboutBanner', config.aboutBanner);
-            setupImagePreview('contactBanner', config.contactBanner);
-            setupImagePreview('pageBanner', config.pageBanner);
-            setupImagePreview('homeStoryImg', config.homeStoryImg);
-            setupImagePreview('teamAvatar1', config.teamAvatar1);
-            setupImagePreview('teamAvatar2', config.teamAvatar2);
+            };
+            window.setupImagePreview('logo', config.logoUrl);
+            window.setupImagePreview('homeBanner', config.homeBanner);
+            window.setupImagePreview('ctaBanner', config.ctaBanner);
+            window.setupImagePreview('productsBanner', config.productsBanner);
+            window.setupImagePreview('journeyBanner', config.journeyBanner);
+            window.setupImagePreview('aboutBanner', config.aboutBanner);
+            window.setupImagePreview('contactBanner', config.contactBanner);
+            window.setupImagePreview('pageBanner', config.pageBanner);
+            window.setupImagePreview('homeStoryImg', config.homeStoryImg);
             // Removed shipping and notification config loading
 
 
@@ -1540,15 +1561,15 @@
 
             // Con số thống kê đã được tích hợp trực tiếp vào nội dung aboutStoryHtml
 
-            document.getElementById('team-1-name').value = config.teamName1 || '';
-            document.getElementById('team-1-role').value = config.teamRole1 || '';
-            if (window.editors && editors['team-1-bio']) editors['team-1-bio'].setData(config.teamBio1 || '');
-            else document.getElementById('team-1-bio').value = config.teamBio1 || '';
-
-            document.getElementById('team-2-name').value = config.teamName2 || '';
-            document.getElementById('team-2-role').value = config.teamRole2 || '';
-            if (window.editors && editors['team-2-bio']) editors['team-2-bio'].setData(config.teamBio2 || '');
-            else document.getElementById('team-2-bio').value = config.teamBio2 || '';
+            var teamMembers = [];
+            if (config.teamMembers) {
+              try { teamMembers = JSON.parse(config.teamMembers); } catch (e) { }
+            } else if (config.teamName1 || config.teamName2) {
+              if (config.teamName1) teamMembers.push({ id: 'legacy-1', name: config.teamName1, role: config.teamRole1, bio: config.teamBio1, avatar: config.teamAvatar1 });
+              if (config.teamName2) teamMembers.push({ id: 'legacy-2', name: config.teamName2, role: config.teamRole2, bio: config.teamBio2, avatar: config.teamAvatar2 });
+              if (config.teamName3) teamMembers.push({ id: 'legacy-3', name: config.teamName3, role: config.teamRole3, bio: config.teamBio3, avatar: config.teamAvatar3 });
+            }
+            teamMembers.forEach(function (m) { addTeamMember(m); });
 
             document.getElementById('cv-1-title').value = config.coreValue1Title || '';
             document.getElementById('cv-1-desc').value = config.coreValue1Desc || '';
@@ -1609,7 +1630,7 @@
       }
 
       // ── Save config ───────────────────────────
-      document.getElementById('btn-save-all').addEventListener('click', function () {
+      var saveSettingsFn = function () {
         var config = {
           storeName: document.getElementById('store-name').value.trim(),
           slogan: document.getElementById('store-slogan').value.trim(),
@@ -1638,8 +1659,7 @@
           pageBanner: (function () { var s = document.getElementById('preview-pageBanner').getAttribute('src'); if (!s) return currentConfig.pageBanner || ''; if (s.startsWith('data:')) return s; s = s.replace('', '').replace('../user/', ''); return s || currentConfig.pageBanner || ''; })(),
           homeStoryImg: (function () { var s = document.getElementById('preview-homeStoryImg').getAttribute('src'); if (!s) return currentConfig.homeStoryImg || ''; if (s.startsWith('data:')) return s; s = s.replace('', '').replace('../user/', ''); return s || currentConfig.homeStoryImg || ''; })(),
           aboutStoryImg: currentConfig.aboutStoryImg || '',
-          teamAvatar1: (function () { var s = document.getElementById('preview-teamAvatar1').getAttribute('src'); if (!s) return currentConfig.teamAvatar1 || ''; if (s.startsWith('data:')) return s; s = s.replace('', '').replace('../user/', ''); return s || currentConfig.teamAvatar1 || ''; })(),
-          teamAvatar2: (function () { var s = document.getElementById('preview-teamAvatar2').getAttribute('src'); if (!s) return currentConfig.teamAvatar2 || ''; if (s.startsWith('data:')) return s; s = s.replace('', '').replace('../user/', ''); return s || currentConfig.teamAvatar2 || ''; })(),
+          teamMembers: JSON.stringify(collectTeamMembersData()),
 
           shipFee: currentConfig.shipFee || '0',
           shipMin: currentConfig.shipMin || '5000000',
@@ -1683,12 +1703,6 @@
             var cleaned = raw.replace(/src=["'](?:\.\.\/user\/|\/user\/|user\/)?assets\/([^"']+)["']/g, 'src="assets/$1"');
             return cleanCKEditorHtml(cleaned);
           })(),
-          teamName1: document.getElementById('team-1-name').value,
-          teamRole1: document.getElementById('team-1-role').value,
-          teamBio1: window.editors && editors['team-1-bio'] ? editors['team-1-bio'].getData() : document.getElementById('team-1-bio').value,
-          teamName2: document.getElementById('team-2-name').value,
-          teamRole2: document.getElementById('team-2-role').value,
-          teamBio2: window.editors && editors['team-2-bio'] ? editors['team-2-bio'].getData() : document.getElementById('team-2-bio').value,
 
           coreValue1Title: document.getElementById('cv-1-title').value,
           coreValue1Desc: document.getElementById('cv-1-desc').value,
@@ -1713,21 +1727,41 @@
         };
 
         // Gửi lưu cấu hình site
-        var API_BASE = (window.AdminData && window.AdminData.apiBase) || ( (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api' );
+        var API_BASE = (window.AdminData && window.AdminData.apiBase) || ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api');
         fetch(API_BASE + '/site-config', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + (function () { try { return JSON.parse(localStorage.getItem('pgt_admin_session')).token; } catch (e) { return ''; } })()
+          },
           body: JSON.stringify(config)
         }).then(function (res) {
           if (!res.ok) throw new Error('Yêu cầu lưu cấu hình thất bại với mã trạng thái ' + res.status);
           currentConfig = config;
-          localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+          sessionStorage.setItem(CONFIG_KEY, JSON.stringify(config));
           adminToast('Đã lưu tất cả cài đặt thành công!', 'success');
         }).catch(function (err) {
           console.error(err);
           adminToast('Lỗi: ' + (err.message || err), 'error');
         });
-      });
+      };
+
+      document.getElementById('btn-save-all').addEventListener('click', saveSettingsFn);
+      document.getElementById('btn-save-all-bottom').addEventListener('click', saveSettingsFn);
+
+      // Intersection Observer để hiện/ẩn Bottom Bar
+      var topActionBar = document.querySelector('.page-header__actions');
+      var smartBottomBar = document.getElementById('smartBottomBar');
+      if (topActionBar && smartBottomBar) {
+        var observer = new IntersectionObserver(function (entries) {
+          if (entries[0].isIntersecting) {
+            smartBottomBar.classList.remove('is-visible'); // Top button is visible -> hide bottom bar
+          } else {
+            smartBottomBar.classList.add('is-visible'); // Top button is hidden -> show bottom bar
+          }
+        }, { threshold: 0 });
+        observer.observe(topActionBar);
+      }
 
       // Khôi phục câu chuyện thương hiệu về mặc định + lưu thẳng lên CSDL
       var restoreBtn = document.getElementById('btn-restore-story-default');
@@ -1749,10 +1783,13 @@
               aboutStoryHtml: defaultHtml  // lưu bản clean (assets/ chuẩn) vào CSDL
             });
             adminToast('Đang khôi phục và lưu vào hệ thống...', 'success');
-            var API_BASE = (window.AdminData && window.AdminData.apiBase) || ( (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api' );
+            var API_BASE = (window.AdminData && window.AdminData.apiBase) || ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api');
             fetch(API_BASE + '/site-config', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + (function () { try { return JSON.parse(localStorage.getItem('pgt_admin_session')).token; } catch (e) { return ''; } })()
+              },
               body: JSON.stringify(patchConfig)
             }).then(function (res) {
               if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -1767,23 +1804,156 @@
         });
       }
 
+      function initDropZoneFor(id) {
+        var dropZone = document.getElementById('drop-' + id);
+        var fileInput = document.getElementById('file-' + id);
+        if (!dropZone || !fileInput) return;
 
+        dropZone.addEventListener('click', function (e) {
+          if (e.target === fileInput) return;
+          if (e.target.tagName !== 'BUTTON') fileInput.click();
+        });
 
-      // ── Setup Image Uploads ────────────────────────
+        fileInput.addEventListener('change', function () {
+          if (this.files && this.files[0]) handleImageUpload(this.files[0], id);
+        });
+
+        dropZone.addEventListener('dragover', function (e) {
+          e.preventDefault();
+          dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', function (e) {
+          e.preventDefault();
+          dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', function (e) {
+          e.preventDefault();
+          dropZone.classList.remove('drag-over');
+          if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleImageUpload(e.dataTransfer.files[0], id);
+          }
+        });
+      }
+
+      ['logo', 'homeBanner', 'ctaBanner', 'productsBanner', 'journeyBanner', 'aboutBanner', 'contactBanner', 'pageBanner', 'homeStoryImg', 'aboutStoryImg'].forEach(function (id) {
+        initDropZoneFor(id);
+      });
+
+      window.addTeamMember = function (member) {
+        member = member || { id: 'team-' + Date.now(), name: '', role: '', bio: '', avatar: '' };
+        var container = document.getElementById('team-members-container');
+        var index = container.children.length + 1;
+        var html = `
+          <div class="team-member-card" id="card-${member.id}" style="padding:16px; border:1px solid #eaeaea; border-radius:8px; background:#fafafa; position:relative;">
+            <button type="button" class="btn btn--outline" onclick="removeTeamMember('${member.id}')" style="position:absolute; top:16px; right:16px; border-color:#e02424; color:#e02424; padding:4px 12px; height:auto;">Xóa</button>
+            <h4 style="margin-bottom:16px; font-weight:600; color:#333;">Nghệ nhân</h4>
+            <div class="settings-grid">
+              <div class="form-group"><label class="form-label">👤 Tên nghệ nhân</label>
+                <input class="form-control dyn-team-name" data-id="${member.id}" value="${member.name}" placeholder="Ví dụ: Nguyễn Văn Phúc">
+              </div>
+              <div class="form-group"><label class="form-label">Chức danh</label>
+                <input class="form-control dyn-team-role" data-id="${member.id}" value="${member.role}" placeholder="Ví dụ: Nghệ Nhân Chính">
+              </div>
+              <div class="form-group" style="grid-column:1/-1">
+                <label class="form-label">Giới thiệu ngắn</label>
+                <div class="textarea-wrap">
+                  <textarea class="form-control dyn-team-bio" id="bio-${member.id}" rows="2">${member.bio}</textarea>
+                </div>
+              </div>
+              <div class="form-group" style="grid-column:1/-1; margin-bottom: 0;">
+                <label class="form-label">Ảnh đại diện</label>
+                <div style="max-width: 240px;">
+                  <div class="img-upload-card">
+                    <div class="img-upload-dropzone" id="drop-avatar-${member.id}" style="min-height: 120px;">
+                      <img class="img-upload-preview" id="preview-avatar-${member.id}" alt="Avatar preview" style="max-height: 100px;">
+                      <div class="img-upload-placeholder" id="ph-avatar-${member.id}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        <span>Kéo thả hoặc chọn ảnh</span>
+                      </div>
+                      <input type="file" accept="image/*" class="img-upload-input" id="file-avatar-${member.id}">
+                    </div>
+                    <div class="img-upload-actions">
+                      <button type="button" class="btn btn--outline" onclick="removeImage('avatar-${member.id}')">Xóa ảnh</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', html);
+
+        // Init CKEditor for this member
+        var textarea = document.getElementById('bio-' + member.id);
+        if (EditorClass && textarea) {
+          EditorClass.create(textarea, {
+            plugins: plugins, extraPlugins: [MyCustomUploadAdapterPlugin], toolbar: typeof CKEDITOR !== 'undefined' ? { items: ['heading', '|', 'bold', 'italic', '|', 'bulletedList', 'numberedList', '|', 'undo', 'redo'], shouldNotGroupWhenFull: true } : ['heading', '|', 'bold', 'italic', 'bulletedList', 'numberedList', '|', 'undo', 'redo']
+          }).then(function (editor) { editors['bio-' + member.id] = editor; }).catch(function (err) { });
+        }
+
+        // Init image upload logic
+        initDropZoneFor('avatar-' + member.id);
+        setupImagePreview('avatar-' + member.id, member.avatar);
+      };
+
+      window.removeTeamMember = function (id) {
+        if (!confirm('Xóa nghệ nhân này?')) return;
+        var card = document.getElementById('card-' + id);
+        if (card) card.remove();
+        if (editors['bio-' + id]) {
+          editors['bio-' + id].destroy();
+          delete editors['bio-' + id];
+        }
+      };
+
+      var btnAddTeamMember = document.getElementById('btn-add-team-member');
+      if (btnAddTeamMember) {
+        btnAddTeamMember.addEventListener('click', function () { addTeamMember(); });
+      }
+
+      window.collectTeamMembersData = function () {
+        var results = [];
+        document.querySelectorAll('.team-member-card').forEach(function (card) {
+          var idInput = card.querySelector('.dyn-team-name');
+          if (!idInput) return;
+          var id = idInput.getAttribute('data-id');
+          var name = idInput.value.trim();
+          var role = card.querySelector('.dyn-team-role').value.trim();
+          var bio = (window.editors && editors['bio-' + id]) ? editors['bio-' + id].getData() : document.getElementById('bio-' + id).value;
+
+          var avatar = '';
+          var preview = document.getElementById('preview-avatar-' + id);
+          if (preview) {
+            var s = preview.getAttribute('src');
+            if (s) {
+              if (s.startsWith('data:')) avatar = s;
+              else avatar = s.replace('', '').replace('../user/', '');
+            }
+          }
+
+          if (name || role || bio || avatar) {
+            results.push({ id: id, name: name, role: role, bio: bio, avatar: avatar });
+          }
+        });
+        return results;
+      };
+
       function handleImageUpload(file, targetId) {
         if (!file) return;
         if (file.size > 5 * 1024 * 1024) {
           adminToast('Ảnh quá lớn. Vui lòng chọn ảnh < 5MB', 'error');
           return;
         }
-        
+
         var formData = new FormData();
         formData.append('file', file);
         var fileInput = document.getElementById('file-' + targetId);
         if (fileInput) fileInput.value = '';
         adminToast('Đang tải ảnh lên máy chủ...', 'info');
 
-        var token = localStorage.getItem('admin_token') || '';
+        var token = (function () { try { return JSON.parse(localStorage.getItem('pgt_admin_session')).token; } catch (e) { return ''; } })();
         var apiUrl = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api/upload' : '/api/upload';
 
         fetch(apiUrl, {
@@ -1793,23 +1963,23 @@
           },
           body: formData
         })
-        .then(function(res) {
-          if (!res.ok) throw new Error('Upload failed');
-          return res.json();
-        })
-        .then(function(data) {
-          var fileUrl = data.url || data.Url;
-          if (fileUrl) {
-            document.getElementById('preview-' + targetId).src = fileUrl;
-            document.getElementById('preview-' + targetId).classList.add('has-img');
-            document.getElementById('ph-' + targetId).classList.add('hidden');
-            adminToast('Đã tải ảnh lên máy chủ thành công! Nhấn Lưu để áp dụng.', 'success');
-          }
-        })
-        .catch(function(err) {
-          console.error('Upload Error:', err);
-          adminToast('Lỗi tải ảnh lên máy chủ', 'error');
-        });
+          .then(function (res) {
+            if (!res.ok) throw new Error('Upload failed');
+            return res.json();
+          })
+          .then(function (data) {
+            var fileUrl = data.url || data.Url;
+            if (fileUrl) {
+              document.getElementById('preview-' + targetId).src = fileUrl;
+              document.getElementById('preview-' + targetId).classList.add('has-img');
+              document.getElementById('ph-' + targetId).classList.add('hidden');
+              adminToast('Đã tải ảnh lên máy chủ thành công! Nhấn Lưu để áp dụng.', 'success');
+            }
+          })
+          .catch(function (err) {
+            console.error('Upload Error:', err);
+            adminToast('Lỗi tải ảnh lên máy chủ', 'error');
+          });
       }
 
       window.removeImage = function (targetId) {
@@ -1854,11 +2024,61 @@
         });
       });
 
-      // ── Tab Switching Logic ──────────────────
+      // ── Tab Switching & Hash Routing Logic ──────────────────
       var tabs = document.querySelectorAll('.settings-tab');
       var panels = document.querySelectorAll('.settings-tab-panel');
+      var subtabs = document.querySelectorAll('.settings-subtab');
+      var subpanels = document.querySelectorAll('.settings-subtab-panel');
 
-      function activateTab(tabId) {
+      var TAB_MAP = {
+        'store': 'tab-store',
+        'media': 'tab-media',
+        'home': 'tab-home',
+        'about': 'tab-about',
+        'policies': 'tab-policies'
+      };
+
+      var SUBTAB_MAP = {
+        'privacy': 'subtab-policy-privacy',
+        'terms': 'subtab-policy-terms',
+        'warranty': 'subtab-policy-warranty',
+        'shopping': 'subtab-policy-shopping',
+        'shipping': 'subtab-policy-shipping',
+        'return': 'subtab-policy-return'
+      };
+
+      function getTabStateFromHash() {
+        var hash = location.hash.replace('#', '');
+        var params = {};
+        hash.split('&').forEach(function (p) {
+          var parts = p.split('=');
+          if (parts.length === 2) {
+            params[parts[0]] = parts[1];
+          }
+        });
+
+        // Fallback to localStorage if no parameters present in URL
+        var defaultTab = localStorage.getItem('settings_active_tab') || 'tab-store';
+        var defaultSub = localStorage.getItem('settings_active_subtab') || 'subtab-policy-privacy';
+
+        var mainTab = TAB_MAP[params.tab] ? TAB_MAP[params.tab] : defaultTab;
+        var subTab = SUBTAB_MAP[params.sub] ? SUBTAB_MAP[params.sub] : defaultSub;
+
+        // Validate main tab value
+        var validMain = false;
+        for (var k in TAB_MAP) { if (TAB_MAP[k] === mainTab) validMain = true; }
+        if (!validMain) mainTab = 'tab-store';
+
+        // Validate sub tab value
+        var validSub = false;
+        for (var sk in SUBTAB_MAP) { if (SUBTAB_MAP[sk] === subTab) validSub = true; }
+        if (!validSub) subTab = 'subtab-policy-privacy';
+
+        return { main: mainTab, sub: subTab };
+      }
+
+      function switchTab(tabId, subtabId) {
+        // 1. Kích hoạt Main Tab
         tabs.forEach(function (t) { t.classList.remove('active'); });
         panels.forEach(function (p) { p.classList.remove('active'); });
 
@@ -1868,6 +2088,18 @@
           activeTab.classList.add('active');
           activePanel.classList.add('active');
           localStorage.setItem('settings_active_tab', tabId);
+        }
+
+        // 2. Kích hoạt Subtab (nếu là tab chính sách)
+        subtabs.forEach(function (t) { t.classList.remove('active'); });
+        subpanels.forEach(function (p) { p.classList.remove('active'); });
+
+        var activeSubtab = document.querySelector('.settings-subtab[data-subtab="' + subtabId + '"]');
+        var activeSubpanel = document.getElementById(subtabId);
+        if (activeSubtab && activeSubpanel) {
+          activeSubtab.classList.add('active');
+          activeSubpanel.classList.add('active');
+          localStorage.setItem('settings_active_subtab', subtabId);
         }
 
         // Bỏ anti-flicker: reveal wrapper sau khi tab đúng đã được set
@@ -1885,60 +2117,50 @@
           }
         }
 
+        // 3. Cập nhật URL Hash
+        var mainKey = 'store';
+        for (var k in TAB_MAP) { if (TAB_MAP[k] === tabId) mainKey = k; }
+        var newHash = 'tab=' + mainKey;
+
+        if (tabId === 'tab-policies') {
+          var subKey = 'privacy';
+          for (var sk in SUBTAB_MAP) { if (SUBTAB_MAP[sk] === subtabId) subKey = sk; }
+          newHash += '&sub=' + subKey;
+        }
+
+        history.replaceState(null, '', '#' + newHash);
+
         // Force CKEditor layout/responsive updates
         window.dispatchEvent(new Event('resize'));
       }
 
+      // Đăng ký sự kiện click cho main tabs
       tabs.forEach(function (tab) {
         tab.addEventListener('click', function () {
           var target = this.getAttribute('data-tab');
-          activateTab(target);
+          var currentState = getTabStateFromHash();
+          switchTab(target, currentState.sub);
         });
       });
 
-      // Tab init: logic reset đã được xử lý trong <head> script
-      // Ở đây chỉ đọc kết quả và kích hoạt tab tương ứng
-      var savedTab = localStorage.getItem('settings_active_tab');
-      if (savedTab) {
-        activateTab(savedTab);
-      } else {
-        activateTab('tab-store'); // Default first tab
-      }
-
-      // ── Policies Sub-tab Switching Logic ──────
-      var subtabs = document.querySelectorAll('.settings-subtab');
-      var subpanels = document.querySelectorAll('.settings-subtab-panel');
-
-      function activateSubtab(subtabId) {
-        subtabs.forEach(function (t) { t.classList.remove('active'); });
-        subpanels.forEach(function (p) { p.classList.remove('active'); });
-
-        var activeSubtab = document.querySelector('.settings-subtab[data-subtab="' + subtabId + '"]');
-        var activeSubpanel = document.getElementById(subtabId);
-        if (activeSubtab && activeSubpanel) {
-          activeSubtab.classList.add('active');
-          activeSubpanel.classList.add('active');
-          localStorage.setItem('settings_active_subtab', subtabId);
-        }
-
-        // Force CKEditor layout/responsive updates
-        window.dispatchEvent(new Event('resize'));
-      }
-
+      // Đăng ký sự kiện click cho subtabs
       subtabs.forEach(function (subtab) {
         subtab.addEventListener('click', function () {
           var target = this.getAttribute('data-subtab');
-          activateSubtab(target);
+          var currentState = getTabStateFromHash();
+          switchTab(currentState.main, target);
         });
       });
 
-      // Init sub-tab
-      var savedSubtab = localStorage.getItem('settings_active_subtab');
-      if (savedSubtab && document.getElementById(savedSubtab)) {
-        activateSubtab(savedSubtab);
-      } else {
-        activateSubtab('subtab-policy-privacy');
-      }
+      // Lắng nghe sự kiện hashchange để điều hướng back/forward
+      window.addEventListener('hashchange', function () {
+        var state = getTabStateFromHash();
+        switchTab(state.main, state.sub);
+      });
+
+      // Khởi tạo tab đầu tiên dựa trên URL Hash
+      var initialState = getTabStateFromHash();
+      switchTab(initialState.main, initialState.sub);
 
       // ── Setup CKEditor 5 Custom Base64 Upload Adapter ────────────────────────
       class MyUploadAdapter {
@@ -1971,8 +2193,6 @@
       var editorConfigMap = {
         'home-story-text': 'homeStoryText',
         'about-story-html': 'aboutStoryHtml',
-        'team-1-bio': 'teamBio1',
-        'team-2-bio': 'teamBio2',
         'policy-privacy': 'policyPrivacy',
         'policy-terms': 'policyTerms',
         'policy-warranty': 'policyWarranty',

@@ -31,7 +31,7 @@
       originals.forEach(function (card) {
         var clone = card.cloneNode(true);
         clone.setAttribute('aria-hidden', 'true');
-        
+
         // Re-bind giỏ hàng trên card clone
         var btn = clone.querySelector('.home-product-card__btn-cart');
         if (btn) {
@@ -59,7 +59,7 @@
             window.CartAPI.addItem({ id: pData.id, slug: pData.slug, name: pData.name, price: price, size: sizeStr, images: images }, 1, e);
           });
         }
-        
+
         // Re-bind xem chi tiết trên card clone
         var detBtn = clone.querySelector('.home-product-card__btn-detail');
         if (detBtn) {
@@ -68,7 +68,7 @@
             window.location.href = 'product-detail.html?slug=' + detBtn.dataset.slug;
           });
         }
-        
+
         track.appendChild(clone);
       });
 
@@ -112,7 +112,7 @@
 
       animationFrameId = requestAnimationFrame(autoScroll);
     }
-    
+
     animationFrameId = requestAnimationFrame(autoScroll);
 
     // Dừng trôi khi di chuột vào hoặc chạm tay
@@ -168,7 +168,7 @@
       function animateScroll(currentTime) {
         var elapsed = currentTime - startTime;
         var progress = Math.min(elapsed / duration, 1);
-        
+
         // Công thức easeOutQuad cho tốc độ mượt mà tăng giảm êm ái
         var ease = progress * (2 - progress);
         var currentPos = start + changeAmount * ease;
@@ -223,22 +223,22 @@
       window.location.href = 'product-detail.html?slug=' + p.slug;
     });
 
-    var allImages = (p.images || []).concat((p.variants || []).reduce(function(acc, v) { return acc.concat(v.images || []); }, []));
+    var allImages = (p.images || []).concat((p.variants || []).reduce(function (acc, v) { return acc.concat(v.images || []); }, []));
     var firstMedia = (allImages.length > 0) ? allImages[0] : 'assets/images/placeholder.jpg';
     var isLocalVid = !!firstMedia.match(/\.(mp4|mov|avi|webm|ogg)$/i);
-    var isPlatformVid = firstMedia.includes('youtube.com') || firstMedia.includes('youtu.be') || 
-                        firstMedia.includes('tiktok.com') || 
-                        firstMedia.includes('facebook.com') || firstMedia.includes('fb.watch');
+    var isPlatformVid = firstMedia.includes('youtube.com') || firstMedia.includes('youtu.be') ||
+      firstMedia.includes('tiktok.com') ||
+      firstMedia.includes('facebook.com') || firstMedia.includes('fb.watch');
 
     var imgSrc = 'assets/images/placeholder.jpg';
     if (firstMedia && !isLocalVid && !isPlatformVid) {
       imgSrc = firstMedia;
     } else if (allImages.length > 0) {
-      var foundImg = allImages.find(function(img) {
+      var foundImg = allImages.find(function (img) {
         var isLocV = !!img.match(/\.(mp4|mov|avi|webm|ogg)$/i);
-        var isPlatV = img.includes('youtube.com') || img.includes('youtu.be') || 
-                      img.includes('tiktok.com') || 
-                      img.includes('facebook.com') || img.includes('fb.watch');
+        var isPlatV = img.includes('youtube.com') || img.includes('youtu.be') ||
+          img.includes('tiktok.com') ||
+          img.includes('facebook.com') || img.includes('fb.watch');
         return !isLocV && !isPlatV;
       });
       if (foundImg) {
@@ -272,14 +272,14 @@
     }
 
     var basePriceVal = p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0);
-    var priceDisplayHTML = basePriceVal === 0 
-      ? '<a href="contact.html" class="price-contact" style="text-decoration:none;" onclick="event.stopPropagation();">LIÊN HỆ</a>' 
+    var priceDisplayHTML = basePriceVal === 0
+      ? '<a href="contact" class="price-contact" style="text-decoration:none;" onclick="event.stopPropagation();">LIÊN HỆ</a>'
       : '<span class="home-product-card__price">' + window.formatVND(basePriceVal) + '</span>';
 
     // Serialize product data để dùng trên clone
     var pSafe = JSON.stringify({
       id: p.id, slug: p.slug, name: p.name, price: basePriceVal, images: allImages,
-      variants: (p.variants || []).map(function(v) {
+      variants: (p.variants || []).map(function (v) {
         return { price: v.price, images: v.images, sizeName: v.sizeName, size: v.size, patternName: v.patternName, colorName: v.colorName, productTypeName: v.productTypeName, materialName: v.materialName };
       })
     }).replace(/'/g, '&#39;');
@@ -287,59 +287,59 @@
     var subImagesHtml = '';
     if (allImages.length > 1) {
       subImagesHtml = '<div class="home-product-card__sub-images" style="position:absolute; bottom:10px; left:0; width:100%; display:flex; justify-content:center; gap:6px; opacity:0; transition: opacity 0.3s ease; z-index:3;">' +
-        allImages.slice(0, 4).map(function(img, i) { 
-            var isVid = !!img.match(/\.(mp4|mov|avi|webm|ogg)$/i);
-            var isVidStr = isVid ? 'true' : 'false';
-            var hoverScript = "var m = this.closest('.home-product-card__media'); var hi = m.querySelector('.home-product-card__hover'); var hv = m.querySelector('.home-product-card__hover-vid'); if("+isVidStr+"){ if(hv){ hv.src='"+img+"'; hv.style.opacity='1'; } if(hi) hi.style.opacity='0'; } else { if(hi){ hi.src='"+img+"'; hi.style.opacity='1'; } if(hv){ hv.style.opacity='0'; hv.src=''; } }";
-            return isVid 
-              ? '<video src="' + img + '" style="width:36px; height:36px; object-fit:cover; border-radius:4px; border:2px solid ' + (i===0 ? '#C8922A' : 'rgba(255,255,255,0.8)') + '; background:#fff; cursor:pointer;" muted onmouseover="' + hoverScript + '"></video>' 
-              : '<img src="' + img + '" style="width:36px; height:36px; object-fit:cover; border-radius:4px; border:2px solid ' + (i===0 ? '#C8922A' : 'rgba(255,255,255,0.8)') + '; background:#fff; cursor:pointer;" onmouseover="' + hoverScript + '" />'; 
+        allImages.slice(0, 4).map(function (img, i) {
+          var isVid = !!img.match(/\.(mp4|mov|avi|webm|ogg)$/i);
+          var isVidStr = isVid ? 'true' : 'false';
+          var hoverScript = "var m = this.closest('.home-product-card__media'); var hi = m.querySelector('.home-product-card__hover'); var hv = m.querySelector('.home-product-card__hover-vid'); if(" + isVidStr + "){ if(hv){ hv.src='" + img + "'; hv.style.opacity='1'; } if(hi) hi.style.opacity='0'; } else { if(hi){ hi.src='" + img + "'; hi.style.opacity='1'; } if(hv){ hv.style.opacity='0'; hv.src=''; } }";
+          return isVid
+            ? '<video src="' + img + '" style="width:36px; height:36px; object-fit:cover; border-radius:4px; border:2px solid ' + (i === 0 ? '#C8922A' : 'rgba(255,255,255,0.8)') + '; background:#fff; cursor:pointer;" muted onmouseover="' + hoverScript + '"></video>'
+            : '<img src="' + img + '" style="width:36px; height:36px; object-fit:cover; border-radius:4px; border:2px solid ' + (i === 0 ? '#C8922A' : 'rgba(255,255,255,0.8)') + '; background:#fff; cursor:pointer;" onmouseover="' + hoverScript + '" />';
         }).join('') +
-      '</div>';
+        '</div>';
     }
 
-    var primaryMediaHtml = isLocalVid 
+    var primaryMediaHtml = isLocalVid
       ? '<video class="home-product-card__img" src="' + firstMedia + '" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;pointer-events:none;"></video>'
-      : '<img class="home-product-card__img" src="' + imgSrc + '" alt="' + p.name + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;">';
-    
+      : '<img class="home-product-card__img" src="' + imgSrc + '" alt="' + p.name + '" loading="lazy" style="width:100%;height:100%;object-fit:contain;object-position:center;position:relative;z-index:1;">';
+
     var hoverLayerHtml = '<img class="home-product-card__hover" src="" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:0;z-index:1;transition:opacity 0.2s;pointer-events:none;">' +
-                         '<video class="home-product-card__hover-vid" src="" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:0;z-index:1;transition:opacity 0.2s;pointer-events:none;"></video>';
+      '<video class="home-product-card__hover-vid" src="" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:0;z-index:1;transition:opacity 0.2s;pointer-events:none;"></video>';
 
     // Dùng div cho media (tránh nested <a> không hợp lệ)
     article.innerHTML =
-      '<div class="home-product-card__media" onmouseenter="var sub=this.querySelector(\'.home-product-card__sub-images\'); if(sub) sub.style.opacity=\'1\';" onmouseleave="var sub=this.querySelector(\'.home-product-card__sub-images\'); if(sub) sub.style.opacity=\'0\'; var hi=this.querySelector(\'.home-product-card__hover\'); if(hi){hi.style.opacity=\'0\'; hi.src=\'\';} var hv=this.querySelector(\'.home-product-card__hover-vid\'); if(hv){hv.style.opacity=\'0\'; hv.src=\'\';}">' +
-        badgeHTML +
-        primaryMediaHtml +
-        hoverLayerHtml +
-        subImagesHtml +
-        '<div class="home-product-card__action">' +
-          '<div class="home-product-card__action-row">' +
-            ((p.status === 'inactive')
-              ? '<button class="home-product-card__btn-cart" disabled style="background:#f5f5f5;color:#999;border-color:#e0e0e0;cursor:not-allowed;">Tạm hết hàng</button>'
-              : ((basePriceVal === 0)
-                  ? '<button class="home-product-card__btn-cart" style="background:#d32f2f;color:#fff;border-color:#d32f2f;" onclick="window.location.href=\'contact.html\'; event.stopPropagation();">LIÊN HỆ</button>'
-                  : '<button class="home-product-card__btn-cart" data-product=\'' + pSafe + '\'>' +
-                    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
-                      '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>' +
-                      '<path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>' +
-                    '</svg>' +
-                    'Thêm giỏ hàng' +
-                    '</button>'
-                )
-            ) +
-            '<button class="home-product-card__btn-detail" title="Xem chi tiết" data-slug="' + p.slug + '">' +
-              '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
-                '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>' +
-              '</svg>' +
-            '</button>' +
-          '</div>' +
-        '</div>' +
+      '<div class="home-product-card__media" style="background-image:url(\'' + imgSrc + '\'); background-size:cover; background-position:center; position:relative;" onmouseenter="var sub=this.querySelector(\'.home-product-card__sub-images\'); if(sub) sub.style.opacity=\'1\';" onmouseleave="var sub=this.querySelector(\'.home-product-card__sub-images\'); if(sub) sub.style.opacity=\'0\'; var hi=this.querySelector(\'.home-product-card__hover\'); if(hi){hi.style.opacity=\'0\'; hi.src=\'\';} var hv=this.querySelector(\'.home-product-card__hover-vid\'); if(hv){hv.style.opacity=\'0\'; hv.src=\'\';}">' +
+      badgeHTML +
+      primaryMediaHtml +
+      hoverLayerHtml +
+      subImagesHtml +
+      '<div class="home-product-card__action">' +
+      '<div class="home-product-card__action-row">' +
+      ((p.status === 'inactive')
+        ? '<button class="home-product-card__btn-cart" disabled style="background:#f5f5f5;color:#999;border-color:#e0e0e0;cursor:not-allowed;">Tạm hết hàng</button>'
+        : ((basePriceVal === 0)
+          ? '<button class="home-product-card__btn-cart" style="background:#d32f2f;color:#fff;border-color:#d32f2f;" onclick="window.location.href=\'contact.html\'; event.stopPropagation();">LIÊN HỆ</button>'
+          : '<button class="home-product-card__btn-cart" data-product=\'' + pSafe + '\'>' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+          '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>' +
+          '<path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>' +
+          '</svg>' +
+          'Thêm giỏ hàng' +
+          '</button>'
+        )
+      ) +
+      '<button class="home-product-card__btn-detail" title="Xem chi tiết" data-slug="' + p.slug + '">' +
+      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>' +
+      '</svg>' +
+      '</button>' +
+      '</div>' +
+      '</div>' +
       '</div>' +
       '<div class="home-product-card__body">' +
-        '<h3 class="home-product-card__name">' + p.name + '</h3>' +
-        '<div class="home-product-card__price-row">' +
-          priceDisplayHTML +
-        '</div>' +
+      '<h3 class="home-product-card__name">' + p.name + '</h3>' +
+      '<div class="home-product-card__price-row">' +
+      priceDisplayHTML +
+      '</div>' +
       '</div>';
 
     // Bind nút thêm giỏ hàng
@@ -349,13 +349,13 @@
         e.preventDefault();
         e.stopPropagation();
         if (!window.CartAPI) return;
-        
+
         // If product has multiple variants, redirect to detail page for selection
         if (p.variants && p.variants.length > 1) {
           window.location.href = 'product-detail.html?slug=' + p.slug;
           return;
         }
-        
+
         // Single variant or no variants — add directly with full variant info
         var v = (p.variants && p.variants.length === 1) ? p.variants[0] : null;
         var price = v ? v.price : (p.basePrice || 0);
@@ -369,7 +369,7 @@
         }
         var sizeStr = sizeParts.join(' · ') || null;
         var images = (v && v.images && v.images.length > 0) ? v.images : allImages;
-        
+
         window.CartAPI.addItem({
           id: p.id, slug: p.slug, name: p.name,
           price: price, size: sizeStr, images: images

@@ -22,7 +22,7 @@
     const headerPh = document.getElementById('header-placeholder');
     if (headerPh) {
       try {
-        const res = await fetch(getComponentPath('header.html') + '?v=' + new Date().getTime());
+        const res = await fetch(getComponentPath("header.html") + '?v=' + new Date().getTime());
         if (res.ok) {
           const html = await res.text();
           headerPh.insertAdjacentHTML('beforebegin', html);
@@ -59,7 +59,7 @@
     const footerPh = document.getElementById('footer-placeholder');
     if (footerPh) {
       try {
-        const res = await fetch(getComponentPath('footer.html') + '?v=' + new Date().getTime());
+        const res = await fetch(getComponentPath("footer.html") + '?v=' + new Date().getTime());
         if (res.ok) {
           const html = await res.text();
           footerPh.insertAdjacentHTML('beforebegin', html);
@@ -161,7 +161,7 @@
     }
 
     // Active Nav Link
-    let currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    let currentPage = window.location.pathname.split('/').pop() || "/";
     currentPage = currentPage.toLowerCase().replace('.html', '');
     if (currentPage === '' || currentPage === '/') {
       currentPage = 'index';
@@ -209,7 +209,7 @@
       // Tạo và inject user button vào DOM
       userBtn = document.createElement('a');
       userBtn.className = 'header-action-btn header-action-btn--user';
-      userBtn.href = 'login.html';
+      userBtn.href = "login";
       userBtn.setAttribute('aria-label', 'Đăng nhập');
       userBtn.innerHTML = `
         <svg class="header-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -226,8 +226,8 @@
       let user = null;
       try {
         user = JSON.parse(localStorage.getItem('current_user'));
-      } catch(e) {}
-      
+      } catch (e) { }
+
       if (user) {
         userBtn.removeAttribute('href');
         userBtn.classList.add('is-logged-in');
@@ -237,7 +237,7 @@
         // Fix href của dropdown links khi đang ở /user/ subfolder
         const trackingHref = window.location.pathname.startsWith('/user/')
           ? '/user/order-tracking.html'
-          : 'order-tracking.html';
+          : "order-tracking";
 
         userBtn.innerHTML = `
           <div class="user-avatar-wrap">
@@ -254,10 +254,57 @@
             </div>
           </div>
         `;
+
+        // Update mobile menu account link with 'Promax' UI
+        const mobileAccountItem = document.querySelector('.nav-mobile-account-item');
+        if (mobileAccountItem) {
+          // Remove default padding/border of the li to make the card look clean
+          mobileAccountItem.style.borderTop = 'none';
+          mobileAccountItem.style.paddingTop = '0';
+
+          mobileAccountItem.innerHTML = `
+            <div class="mobile-user-profile">
+              <div class="mobile-user-header">
+                <div class="mobile-user-avatar">${initial}</div>
+                <div class="mobile-user-info">
+                  <span class="mobile-user-name">${fullName}</span>
+                  <span class="mobile-user-email">${user.email || 'Thành viên Phúc Gia Tiên'}</span>
+                </div>
+              </div>
+              <div class="mobile-user-actions">
+                <a href="${trackingHref}" class="mobile-user-btn mobile-user-btn--orders">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                  Đơn mua
+                </a>
+                <button type="button" class="mobile-user-btn mobile-user-btn--logout" onclick="window.logoutCustomer()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                  </svg>
+                  Đăng xuất
+                </button>
+              </div>
+            </div>
+          `;
+        }
+
       } else {
         // Không đăng nhập: fix href cho /user/ subfolder
         if (window.location.pathname.startsWith('/user/')) {
           userBtn.href = '/user/login.html';
+        }
+
+        // Cập nhật href cho mobile menu
+        const mobileAccountLink = document.getElementById('nav-mobile-account-link');
+        if (mobileAccountLink && window.location.pathname.startsWith('/user/')) {
+          mobileAccountLink.href = '/user/login.html';
         }
       }
     }
@@ -414,6 +461,32 @@
     return Number(amount).toLocaleString('vi-VN') + 'đ';
   };
 
+  window.formatDate = function (dStr) {
+    if (!dStr) return '';
+    try {
+      var d = new Date(dStr);
+      if (isNaN(d.getTime())) {
+        // Try parsing DD/MM/YYYY or DD-MM-YYYY
+        var parts = dStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/);
+        if (parts) {
+          var day = parseInt(parts[1], 10);
+          var month = parseInt(parts[2], 10) - 1;
+          var year = parseInt(parts[3], 10);
+          var hour = parts[4] ? parseInt(parts[4], 10) : 0;
+          var min = parts[5] ? parseInt(parts[5], 10) : 0;
+          var sec = parts[6] ? parseInt(parts[6], 10) : 0;
+          d = new Date(year, month, day, hour, min, sec);
+        } else {
+          return dStr;
+        }
+      }
+      var pad = function (n) { return n < 10 ? '0' + n : n; };
+      return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ' ' + pad(d.getDate()) + '-' + pad(d.getMonth() + 1) + '-' + d.getFullYear();
+    } catch (e) {
+      return dStr;
+    }
+  };
+
 
 
   function initLazyImages() {
@@ -491,7 +564,7 @@
         window.PGT_CONFIG = JSON.parse(cached);
         // Không return ở đây để API vẫn tiếp tục gọi ngầm và cập nhật dữ liệu mới nhất
       }
-    } catch(e) {}
+    } catch (e) { }
 
     // 2. Nếu chưa có, gọi API
     try {
@@ -500,11 +573,11 @@
       if (!res.ok) throw new Error('API ' + res.status);
       var apiConfig = await res.json();
       window.PGT_CONFIG = apiConfig || {};
-      
+
       // Lưu lại cache
       try {
         sessionStorage.setItem(CONFIG_KEY, JSON.stringify(window.PGT_CONFIG));
-      } catch(e) {}
+      } catch (e) { }
     } catch (e) {
       console.warn('[PGT] Không lấy được config từ API:', e.message);
       window.PGT_CONFIG = {};
@@ -514,21 +587,21 @@
   /** Chuẩn hóa đường dẫn ảnh trong HTML config (admin lưu ../user/assets/ hoặc base64). */
   function normalizeConfigAssetPaths(html) {
     if (!html || typeof html !== 'string') return '';
-    
+
     // Prefix /uploads/ with API base if needed
     var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080' : '';
     html = html.replace(/src=["'](\/uploads\/[^"']+)["']/gi, 'src="' + dynamicBase + '$1"');
-    
+
     return html
       .replace(/src=["'](?:\.\.\/user\/|\/user\/|user\/)?assets\/([^"']+)["']/gi, 'src="assets/$1"')
       .replace(/src=["']asse\/([^"']+)["']/gi, 'src="assets/$1"');
   }
-  
+
   function resolveImgUrl(url, defaultUrl) {
     if (!url) return defaultUrl;
     if (url.startsWith('/uploads/')) {
-       var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080' : '';
-       return dynamicBase + url;
+      var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080' : '';
+      return dynamicBase + url;
     }
     return url;
   }
@@ -612,25 +685,43 @@
     });
 
     document.querySelectorAll('.js-config-map-link').forEach(function (el) {
-      var mapUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(config.address);
+      // Default fallback if no iframe is provided or parsing fails
+      var mapUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(config.address || '');
+
+      // Google blocks opening 'embed' URLs directly in a new tab ("The Google Maps Embed API must be used in an iframe").
+      // To fix this, we must extract the exact coordinates from the iframe's protobuf string (pb=...)
       if (config.mapIframe) {
-        var match = config.mapIframe.match(/src=["']([^"']+)["']/);
-        if (match && match[1]) {
-          mapUrl = match[1];
+        var srcMatch = config.mapIframe.match(/src=["']([^"']+)["']/i);
+        if (srcMatch && srcMatch[1]) {
+          var embedUrl = srcMatch[1].replace(/&amp;/g, '&');
+
+          // Look for !2d (longitude) and !3d (latitude) in the pb= string
+          var coordMatch = embedUrl.match(/!2d([0-9.-]+)!3d([0-9.-]+)/);
+          if (coordMatch && coordMatch.length === 3) {
+            var lng = coordMatch[1];
+            var lat = coordMatch[2];
+            // Construct a standard Google Maps URL pointing exactly to these coordinates
+            mapUrl = 'https://www.google.com/maps/search/?api=1&query=' + lat + ',' + lng;
+          }
         }
       }
+
       el.href = mapUrl;
     });
 
     // 10. Image/Banner updates
     document.querySelectorAll('.js-config-logo').forEach(function (el) {
-      el.src = resolveImgUrl(config.logoUrl, '');
+      var logoUrl = resolveImgUrl(config.logoUrl, '');
+      if (logoUrl && !logoUrl.startsWith('data:')) {
+        logoUrl += '?v=' + Date.now();
+      }
+      el.src = logoUrl;
     });
     // Cập nhật favicon từ logoUrl trong DB
     if (config.logoUrl) {
       var oldFavicon = document.querySelector('link[rel="icon"]');
       var oldShortcut = document.querySelector('link[rel="shortcut icon"]');
-      
+
       var newFavicon = document.createElement('link');
       newFavicon.rel = 'icon';
 
@@ -658,7 +749,7 @@
       } else {
         newFavicon.href = resolveImgUrl(config.logoUrl, '') + '?v=' + Date.now();
       }
-      
+
       document.head.appendChild(newFavicon);
       if (oldFavicon) oldFavicon.remove();
       if (oldShortcut) oldShortcut.remove();
@@ -700,12 +791,7 @@
     document.querySelectorAll('.js-config-about-story-img').forEach(function (el) {
       el.src = resolveImgUrl(config.aboutStoryImg, 'assets/images/about-workshop.jpg');
     });
-    document.querySelectorAll('.js-config-team-1-img').forEach(function (el) {
-      el.src = resolveImgUrl(config.teamAvatar1, 'assets/images/team-husband.jpg');
-    });
-    document.querySelectorAll('.js-config-team-2-img').forEach(function (el) {
-      el.src = resolveImgUrl(config.teamAvatar2, 'assets/images/team-wife.jpg');
-    });
+
 
     // 11. New Dynamic Contents
     var homeText = config.homeStoryText || '';
@@ -741,13 +827,35 @@
     });
 
 
-    document.querySelectorAll('.js-config-team-1-name').forEach(function (el) { el.textContent = config.teamName1; });
-    document.querySelectorAll('.js-config-team-1-role').forEach(function (el) { el.textContent = config.teamRole1; });
-    document.querySelectorAll('.js-config-team-1-bio').forEach(function (el) { el.innerHTML = config.teamBio1; });
+    // 12. Dynamic Team Members Rendering
+    var teamGrid = document.getElementById('about-team-grid');
+    if (teamGrid) {
+      var teamMembers = [];
+      if (config.teamMembers) {
+        try { teamMembers = JSON.parse(config.teamMembers); } catch (e) { }
+      } else if (config.teamName1 || config.teamName2) {
+        if (config.teamName1) teamMembers.push({ name: config.teamName1, role: config.teamRole1, bio: config.teamBio1, avatar: config.teamAvatar1 });
+        if (config.teamName2) teamMembers.push({ name: config.teamName2, role: config.teamRole2, bio: config.teamBio2, avatar: config.teamAvatar2 });
+        if (config.teamName3) teamMembers.push({ name: config.teamName3, role: config.teamRole3, bio: config.teamBio3, avatar: config.teamAvatar3 });
+      }
 
-    document.querySelectorAll('.js-config-team-2-name').forEach(function (el) { el.textContent = config.teamName2; });
-    document.querySelectorAll('.js-config-team-2-role').forEach(function (el) { el.textContent = config.teamRole2; });
-    document.querySelectorAll('.js-config-team-2-bio').forEach(function (el) { el.innerHTML = config.teamBio2; });
+      var html = '';
+      teamMembers.forEach(function (m, idx) {
+        var delay = idx * 150;
+        var imgSrc = resolveImgUrl(m.avatar, 'assets/images/placeholder.jpg');
+        html += '<div class="team-card reveal" data-delay="' + delay + '">' +
+          '<img class="team-card__avatar" src="' + imgSrc + '" alt="' + (m.name || 'Nghệ nhân') + '" loading="lazy">' +
+          '<h3 class="team-card__name">' + (m.name || '') + '</h3>' +
+          '<p class="team-card__role">' + (m.role || '') + '</p>' +
+          '<div class="team-card__bio">' + (m.bio || '') + '</div>' +
+          '</div>';
+      });
+      teamGrid.innerHTML = html;
+
+      if (typeof window.initScrollReveal === 'function') {
+        window.initScrollReveal();
+      }
+    }
 
     document.querySelectorAll('.js-config-cv-1-title').forEach(function (el) { el.textContent = config.coreValue1Title; });
     document.querySelectorAll('.js-config-cv-1-desc').forEach(function (el) { el.innerHTML = config.coreValue1Desc; });
@@ -791,7 +899,7 @@
       fetchSiteConfig(),
       loadComponents()
     ]);
-    
+
     applyDynamicConfig();
     initHeader();
     initFooter();
@@ -919,19 +1027,65 @@
       var countHTML = '<p class="search-results__count">Tìm thấy ' + products.length + ' sản phẩm cho "' + query + '"</p>';
       var gridHTML = '<div class="search-results__grid">';
       products.forEach(function (p) {
-        var img = (p.images && p.images[0]) ? basePath + p.images[0] : basePath + 'assets/images/placeholder.jpg';
+        var allImages = (p.images || []).concat((p.variants || []).reduce(function (acc, v) { return acc.concat(v.images || []); }, []));
+        var firstMedia = (allImages.length > 0) ? allImages[0] : '';
+        var isLocalVid = firstMedia ? !!firstMedia.match(/\.(mp4|mov|avi|webm|ogg)$/i) : false;
+        var isPlatformVid = firstMedia ? (firstMedia.includes('youtube.com') || firstMedia.includes('youtu.be') || firstMedia.includes('tiktok.com') || firstMedia.includes('facebook.com') || firstMedia.includes('fb.watch')) : false;
+
+        var imgSrc = 'assets/images/placeholder.jpg';
+        if (firstMedia && !isLocalVid && !isPlatformVid) {
+          imgSrc = firstMedia;
+        } else if (allImages.length > 0) {
+          var foundImg = allImages.find(function (img) {
+            var isLocV = !!img.match(/\.(mp4|mov|avi|webm|ogg)$/i);
+            var isPlatV = img.includes('youtube.com') || img.includes('youtu.be') || img.includes('tiktok.com') || img.includes('facebook.com') || img.includes('fb.watch');
+            return !isLocV && !isPlatV;
+          });
+          if (foundImg) {
+            imgSrc = foundImg;
+          } else if (isPlatformVid) {
+            var ytMatch = firstMedia.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/))([A-Za-z0-9_-]{11})/);
+            var ytId = (ytMatch && ytMatch[1]) ? ytMatch[1] : '';
+            if (ytId) {
+              imgSrc = 'https://img.youtube.com/vi/' + ytId + '/hqdefault.jpg';
+            } else if (firstMedia.includes('tiktok.com')) {
+              imgSrc = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="%23000"/><text x="50%" y="50%" fill="%23fff" font-size="40" font-family="sans-serif" text-anchor="middle" dy=".3em">TikTok Video</text></svg>';
+            } else if (firstMedia.includes('facebook.com') || firstMedia.includes('fb.watch')) {
+              imgSrc = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="%231877f2"/><text x="50%" y="50%" fill="%23fff" font-size="40" font-family="sans-serif" text-anchor="middle" dy=".3em">Facebook Video</text></svg>';
+            }
+          }
+        }
+        var badgeHTML = '';
+        if (p.status === 'inactive') {
+          badgeHTML = '<span class="product-card__badge" style="background:#e07070;">Hết hàng</span>';
+        } else if (p.badge) {
+          badgeHTML = '<span class="product-card__badge">' + p.badge + '</span>';
+        }
+
+        var finalImgSrc = imgSrc.startsWith('/') || imgSrc.startsWith('http') || imgSrc.startsWith('data:') ? imgSrc : basePath + imgSrc;
         var href = basePath + 'product-detail.html?slug=' + p.slug;
         gridHTML +=
-          '<a class="search-result-card" href="' + href + '">' +
-          '<img class="search-result-card__img" src="' + img + '" alt="' + p.name + '" loading="lazy">' +
-          '<div class="search-result-card__body">' +
+          '<a class="search-result-card" href="' + href + '" style="display:flex; flex-direction:column; overflow:hidden;">' +
+          '<div class="product-card__media" style="background-image:url(\'' + finalImgSrc + '\'); margin:0; border-radius:0;">' +
+          badgeHTML +
+          '<img class="product-card__img" src="' + finalImgSrc + '" alt="' + p.name + '" loading="lazy">' +
+          '</div>' +
+          '<div class="search-result-card__body" style="display:flex; flex-direction:column; flex-grow:1; justify-content:space-between; gap:12px;">' +
+          '<div>' +
           '<p class="search-result-card__name">' + p.name + '</p>' +
           '<p class="search-result-card__price">' + fmt(p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0)) + '</p>' +
+          '</div>' +
+          '<button class="product-card__btn-cta" onclick="window.location.href=\'' + href + '\'; event.preventDefault(); event.stopPropagation();">XEM CHI TIẾT</button>' +
           '</div>' +
           '</a>';
       });
       gridHTML += '</div>';
-      resultsEl.innerHTML = countHTML + gridHTML;
+
+      var viewAllHTML = '<div style="text-align:center; margin-top: 24px;">' +
+        '<a href="' + basePath + 'products.html?q=' + encodeURIComponent(query) + '" class="btn btn--outline btn--sm" style="display:inline-flex;">Xem tất cả ' + products.length + ' kết quả &rarr;</a>' +
+        '</div>';
+
+      resultsEl.innerHTML = countHTML + gridHTML + viewAllHTML;
     }
 
     // Search logic (client-side filter from API)
@@ -958,6 +1112,21 @@
       clearBtn.classList.toggle('visible', val.length > 0);
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(function () { doSearch(val); }, 280);
+    });
+
+    // Handle Enter key
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        var val = input.value.trim();
+        if (val) {
+          var basePath = (function () {
+            var pn = window.location.pathname.toLowerCase();
+            return (pn === '/user' || pn.startsWith('/user/')) ? '/user/' : '';
+          })();
+          window.location.href = basePath + 'products.html?q=' + encodeURIComponent(val);
+        }
+      }
     });
 
     // Clear button

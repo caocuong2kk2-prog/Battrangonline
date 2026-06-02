@@ -55,11 +55,61 @@ namespace BatTrang.Infrastructure.Repositories
                 }
             }
 
-            // Simplified size filtering matching frontend mock
+            // Size filtering matching predefined values or range input
             if (!string.IsNullOrEmpty(filter.Size) && filter.Size != "all")
             {
-                // In a real production app, Size should be parsed or categorized more strictly in DB.
-                // For this demo, we'll fetch to memory or do basic LIKE. Let's do a simple approximation here.
+                var input = filter.Size.Trim().ToLower();
+                if (input == "under60")
+                {
+                    query = query.Where(p => p.Variants.Any(v => v.Size != null && v.Size.ValueInCm > 0 && v.Size.ValueInCm < 60));
+                }
+                else if (input == "above150")
+                {
+                    query = query.Where(p => p.Variants.Any(v => v.Size != null && v.Size.ValueInCm > 150));
+                }
+                else if (input.Contains('-'))
+                {
+                    var parts = input.Split('-');
+                    if (parts.Length == 2)
+                    {
+                        var minCm = ParseSizeToCm(parts[0].Trim());
+                        var maxCm = ParseSizeToCm(parts[1].Trim());
+                        if (minCm > 0 || maxCm > 0)
+                        {
+                            query = query.Where(p => p.Variants.Any(v => v.Size != null && v.Size.ValueInCm >= minCm && v.Size.ValueInCm <= maxCm));
+                        }
+                    }
+                }
+                else
+                {
+                    var items = input.Split(',').Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)).ToList();
+                    if (items.Any())
+                    {
+                        var parsedCms = items.Select(x => ParseSizeToCm(x)).Where(x => x > 0).ToList();
+                        query = query.Where(p => p.Variants.Any(v => v.Size != null && 
+                            (items.Contains(v.Size.Name.ToLower()) || 
+                             v.Size.Name.ToLower().Contains(input) ||
+                             (v.Size.ValueInCm > 0 && parsedCms.Contains(v.Size.ValueInCm)))));
+                    }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(filter.Material) && filter.Material != "all")
+            {
+                var materialIds = filter.Material.Split(',').Select(id => int.TryParse(id.Trim(), out var val) ? val : 0).Where(v => v > 0).ToList();
+                if (materialIds.Any())
+                {
+                    query = query.Where(p => p.Variants.Any(v => v.MaterialId.HasValue && materialIds.Contains(v.MaterialId.Value)));
+                }
+            }
+
+            if (!string.IsNullOrEmpty(filter.ProductType) && filter.ProductType != "all")
+            {
+                var typeIds = filter.ProductType.Split(',').Select(id => int.TryParse(id.Trim(), out var val) ? val : 0).Where(v => v > 0).ToList();
+                if (typeIds.Any())
+                {
+                    query = query.Where(p => p.Variants.Any(v => v.ProductTypeId.HasValue && typeIds.Contains(v.ProductTypeId.Value)));
+                }
             }
 
             switch (filter.Sort)
@@ -176,6 +226,28 @@ namespace BatTrang.Infrastructure.Repositories
                 }
             }
             return dict;
+        }
+
+        private static decimal ParseSizeToCm(string str)
+        {
+            if (string.IsNullOrEmpty(str)) return 0;
+            var cleaned = str.Replace("cm", "").Trim();
+            bool isMeter = false;
+            if (cleaned.EndsWith("m"))
+            {
+                isMeter = true;
+                cleaned = cleaned.Substring(0, cleaned.Length - 1).Trim();
+            }
+            if (decimal.TryParse(cleaned, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var val))
+            {
+                // Smart meter/cm check: values < 5 are treated as meters (e.g. 1.2m -> 120cm, 1.6 -> 160cm)
+                if (isMeter || val < 5)
+                {
+                    return val * 100;
+                }
+                return val;
+            }
+            return 0;
         }
     }
 }

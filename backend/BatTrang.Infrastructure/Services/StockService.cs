@@ -1,0 +1,90 @@
+using BatTrang.Core.Entities;
+using BatTrang.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace BatTrang.Infrastructure.Services
+{
+    public class StockService
+    {
+        private readonly AppDbContext _context;
+
+        public StockService(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        /// <summary>
+        /// Thực hiện thay đổi số lượng tồn kho an toàn, có cơ chế Retry nếu bị đụng độ (Concurrency).
+        /// </summary>
+        /// <param name="variantId">ID của ProductVariant</param>
+        /// <param name="delta">Số lượng thay đổi (Âm: Khách mua, Dương: Hoàn kho)</param>
+        /// <returns>True nếu thành công, False nếu không đủ kho hoặc không tìm thấy.</returns>
+        public async Task<bool> AdjustStockAsync(int variantId, int delta)
+        {
+            const int maxRetryCount = 3;
+
+            for (int i = 0; i < maxRetryCount; i++)
+            {
+                try
+                {
+                    var variant = await _context.ProductVariants
+                                                .Include(v => v.Product)
+                                                .FirstOrDefaultAsync(v => v.Id == variantId);
+                                                
+                    if (variant == null) return false;
+
+                    // Nếu là khách mua hàng (delta < 0), kiểm tra xem kho còn đủ không
+                    if (delta < 0 && variant.Stock < Math.Abs(delta))
+                    {
+                        return false; // Hết hàng hoặc không đủ hàng
+                    }
+
+                    variant.Stock = Math.Max(0, variant.Stock + delta);
+
+                    // Logic tự động Ẩn/Hiện sản phẩm khi hết hàng
+                    var product = variant.Product;
+                    if (product != null)
+                    {
+                        if (delta < 0)
+                        {
+                            var allVariants = await _context.ProductVariants
+                                                            .Where(v => v.ProductId == variant.ProductId)
+                                                            .ToListAsync();
+                            
+                            // Nếu tất cả các variant (bao gồm cả variant vừa bị trừ) đều <= 0
+                            if (allVariants.All(v => (v.Id == variantId ? variant.Stock : v.Stock) <= 0))
+                            {
+                                product.Status = "inactive";
+                                _context.Products.Update(product);
+                            }
+                        }
+                        else if (delta > 0 && product.Status == "inactive")
+                        {
+                            product.Status = "active";
+                            _context.Products.Update(product);
+                        }
+                    }
+
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    // Lỗi đồng thời do có thread khác vừa thay đổi Stock.
+                    // Xóa tracker và thử lại từ đầu để lấy số liệu mới nhất.
+                    _context.ChangeTracker.Clear();
+                    
+                    if (i == maxRetryCount - 1)
+                    {
+                        throw; // Quá số lần retry, bỏ cuộc
+                    }
+                }
+            }
+
+            return false;
+        }
+    }
+}

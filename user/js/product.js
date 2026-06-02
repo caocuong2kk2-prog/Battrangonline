@@ -14,6 +14,8 @@
     category: 'all',
     quality: 'all',
     size: 'all',
+    material: 'all',
+    productType: 'all',
     status: 'all',
     minPrice: 0,
     maxPrice: 50000000,
@@ -22,7 +24,153 @@
     page: 1,
     limit: 8,
     total: 0,
+    searchQuery: '',
   };
+
+  function syncStateFromUrl() {
+    var params = new URLSearchParams(window.location.search);
+    state.category = params.get('category') || params.get('cat') || 'all';
+    state.searchQuery = params.get('q') || '';
+    state.sort = params.get('sort') || 'newest';
+    state.quality = params.get('quality') || 'all';
+    state.size = params.get('size') || 'all';
+    state.material = params.get('material') || 'all';
+    state.productType = params.get('productType') || 'all';
+    state.status = params.get('status') || 'all';
+    state.minPrice = parseInt(params.get('minPrice'), 10) || 0;
+    state.maxPrice = parseInt(params.get('maxPrice'), 10) || 50000000;
+    state.page = parseInt(params.get('page'), 10) || 1;
+
+    if (state.minPrice !== 0 || state.maxPrice !== 50000000) {
+      state.isPriceFiltered = true;
+    } else {
+      state.isPriceFiltered = false;
+    }
+  }
+
+  function updateUrlFromState() {
+    var url = new URL(window.location.href);
+
+    if (state.category && state.category !== 'all') {
+      url.searchParams.set('category', state.category);
+    } else {
+      url.searchParams.delete('category');
+    }
+
+    if (state.searchQuery) {
+      url.searchParams.set('q', state.searchQuery);
+    } else {
+      url.searchParams.delete('q');
+    }
+
+    if (state.sort && state.sort !== 'newest') {
+      url.searchParams.set('sort', state.sort);
+    } else {
+      url.searchParams.delete('sort');
+    }
+
+    if (state.quality && state.quality !== 'all') {
+      url.searchParams.set('quality', state.quality);
+    } else {
+      url.searchParams.delete('quality');
+    }
+
+    if (state.size && state.size !== 'all') {
+      url.searchParams.set('size', state.size);
+    } else {
+      url.searchParams.delete('size');
+    }
+
+    if (state.material && state.material !== 'all') {
+      url.searchParams.set('material', state.material);
+    } else {
+      url.searchParams.delete('material');
+    }
+
+    if (state.productType && state.productType !== 'all') {
+      url.searchParams.set('productType', state.productType);
+    } else {
+      url.searchParams.delete('productType');
+    }
+
+    if (state.status && state.status !== 'all') {
+      url.searchParams.set('status', state.status);
+    } else {
+      url.searchParams.delete('status');
+    }
+
+    if (state.minPrice !== 0 || state.maxPrice !== 50000000) {
+      url.searchParams.set('minPrice', state.minPrice);
+      url.searchParams.set('maxPrice', state.maxPrice);
+    } else {
+      url.searchParams.delete('minPrice');
+      url.searchParams.delete('maxPrice');
+    }
+
+    if (state.page && state.page > 1) {
+      url.searchParams.set('page', state.page);
+    } else {
+      url.searchParams.delete('page');
+    }
+
+    url.searchParams.delete('cat');
+
+    if (window.location.search !== url.search) {
+      window.history.pushState(null, '', url.pathname + url.search);
+    }
+  }
+
+  function getFilterUrl(overrides) {
+    var url = new URL(window.location.href);
+    overrides = overrides || {};
+    var cat = overrides.category !== undefined ? overrides.category : state.category;
+    var q = overrides.searchQuery !== undefined ? overrides.searchQuery : state.searchQuery;
+    var sort = overrides.sort !== undefined ? overrides.sort : state.sort;
+    var qual = overrides.quality !== undefined ? overrides.quality : state.quality;
+    var sz = overrides.size !== undefined ? overrides.size : state.size;
+    var mat = overrides.material !== undefined ? overrides.material : state.material;
+    var ptype = overrides.productType !== undefined ? overrides.productType : state.productType;
+    var stat = overrides.status !== undefined ? overrides.status : state.status;
+    var minP = overrides.minPrice !== undefined ? overrides.minPrice : state.minPrice;
+    var maxP = overrides.maxPrice !== undefined ? overrides.maxPrice : state.maxPrice;
+    var pg = overrides.page !== undefined ? overrides.page : state.page;
+
+    if (cat && cat !== 'all') url.searchParams.set('category', cat); else url.searchParams.delete('category');
+    if (q) url.searchParams.set('q', q); else url.searchParams.delete('q');
+    if (sort && sort !== 'newest') url.searchParams.set('sort', sort); else url.searchParams.delete('sort');
+    if (qual && qual !== 'all') url.searchParams.set('quality', qual); else url.searchParams.delete('quality');
+    if (sz && sz !== 'all') url.searchParams.set('size', sz); else url.searchParams.delete('size');
+    if (mat && mat !== 'all') url.searchParams.set('material', mat); else url.searchParams.delete('material');
+    if (ptype && ptype !== 'all') url.searchParams.set('productType', ptype); else url.searchParams.delete('productType');
+    if (stat && stat !== 'all') url.searchParams.set('status', stat); else url.searchParams.delete('status');
+    if (minP !== 0 || maxP !== 50000000) {
+      url.searchParams.set('minPrice', minP);
+      url.searchParams.set('maxPrice', maxP);
+    } else {
+      url.searchParams.delete('minPrice');
+      url.searchParams.delete('maxPrice');
+    }
+    if (pg && pg > 1) url.searchParams.set('page', pg); else url.searchParams.delete('page');
+    url.searchParams.delete('cat');
+
+    return url.pathname + url.search;
+  }
+
+  function updateSEOMetadata() {
+    var catName = 'Tất cả sản phẩm';
+    if (state.category !== 'all') {
+      var activePill = document.querySelector('#category-pills .filter-pill.active');
+      if (activePill) {
+        catName = activePill.childNodes[0].textContent.trim();
+      }
+    }
+    document.title = catName + ' Bát Tràng Cao Cấp – Phúc Gia Tiên';
+    
+    var metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', 'Khám phá các sản phẩm ' + catName.toLowerCase() + ' thủ công truyền thống Bát Tràng tại Phúc Gia Tiên. Chất lượng cao cấp nung ở 1.200 độ C.');
+    }
+  }
 
   // -- Helper: set active pill in a container --
   function setActivePill(container, value) {
@@ -45,8 +193,9 @@
 
         // One pill per category
         filters.categories.forEach(function (c) {
-          var btn = document.createElement('button');
-          var isActive = (c.id === 'all');
+          var btn = document.createElement('a');
+          btn.href = getFilterUrl({ category: c.id, page: 1 });
+          var isActive = (String(c.id) === String(state.category));
           btn.className = 'filter-pill' + (isActive ? ' active' : '');
           btn.dataset.value = String(c.id);
           btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
@@ -72,45 +221,88 @@
         });
       }
 
-      // Populate Advanced Filters (Size & Quality)
+      // Sync Size Pills
       var sizePills = document.getElementById('size-pills');
-      if (sizePills && filters.sizes) {
-        sizePills.innerHTML = '';
-        filters.sizes.forEach(function (s) {
-          var btn = document.createElement('button');
-          var isActive = (s.id === 'all');
-          btn.className = 'filter-pill' + (isActive ? ' active' : '');
-          btn.dataset.value = String(s.id);
-          btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-          btn.textContent = s.name;
-          sizePills.appendChild(btn);
-        });
+      if (sizePills) {
+        setActivePill(sizePills, state.size);
+      }
         var qualityContainer = document.getElementById('quality-checkboxes');
-      if (qualityContainer) {
-        qualityContainer.innerHTML = '';
-        filters.qualities.forEach(function (q) {
-          var label = document.createElement('label');
-          label.className = 'custom-checkbox';
-          label.innerHTML = '<input type="checkbox" value="' + q.id + '"' + (state.quality.indexOf(q.id) > -1 ? ' checked' : '') + '><span class="checkmark"></span>' + q.name;
-          qualityContainer.appendChild(label);
-        });
+        if (qualityContainer) {
+          qualityContainer.innerHTML = '';
+          var selectedQualities = state.quality === 'all' ? [] : state.quality.split(',');
+          filters.qualities.forEach(function (q) {
+            var label = document.createElement('label');
+            label.className = 'custom-checkbox';
+            label.innerHTML = '<input type="checkbox" value="' + q.id + '"' + (selectedQualities.indexOf(String(q.id)) > -1 ? ' checked' : '') + '><span class="checkmark"></span>' + q.name;
+            qualityContainer.appendChild(label);
+          });
 
-        // Add event listener for quality checkboxes
-        qualityContainer.addEventListener('change', function(e) {
-          if (e.target.type === 'checkbox') {
-            var checkedBoxes = qualityContainer.querySelectorAll('input:checked');
-            var selectedVals = [];
-            checkedBoxes.forEach(function(cb) { selectedVals.push(cb.value); });
-            state.quality = selectedVals.length ? selectedVals.join(',') : 'all';
-            state.page = 1;
-            loadProducts();
-          }
-        });
-      }
-      }
+          // Add event listener for quality checkboxes
+          qualityContainer.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox') {
+              var checkedBoxes = qualityContainer.querySelectorAll('input:checked');
+              var selectedVals = [];
+              checkedBoxes.forEach(function(cb) { selectedVals.push(cb.value); });
+              state.quality = selectedVals.length ? selectedVals.join(',') : 'all';
+              state.page = 1;
+              loadProducts();
+            }
+          });
+        }
+
+        // Populate Segment/ProductType checkboxes
+        var segmentContainer = document.getElementById('segment-checkboxes');
+        if (segmentContainer && filters.productTypes) {
+          segmentContainer.innerHTML = '';
+          var selectedTypes = state.productType === 'all' ? [] : state.productType.split(',');
+          filters.productTypes.forEach(function (t) {
+            var label = document.createElement('label');
+            label.className = 'custom-checkbox';
+            label.innerHTML = '<input type="checkbox" value="' + t.id + '"' + (selectedTypes.indexOf(String(t.id)) > -1 ? ' checked' : '') + '><span class="checkmark"></span>' + t.name;
+            segmentContainer.appendChild(label);
+          });
+
+          // Add event listener for segment checkboxes
+          segmentContainer.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox') {
+              var checkedBoxes = segmentContainer.querySelectorAll('input:checked');
+              var selectedVals = [];
+              checkedBoxes.forEach(function(cb) { selectedVals.push(cb.value); });
+              state.productType = selectedVals.length ? selectedVals.join(',') : 'all';
+              state.page = 1;
+              loadProducts();
+            }
+          });
+        }
+
+        // Populate Material checkboxes
+        var materialContainer = document.getElementById('material-checkboxes');
+        if (materialContainer && filters.materials) {
+          materialContainer.innerHTML = '';
+          var selectedMaterials = state.material === 'all' ? [] : state.material.split(',');
+          filters.materials.forEach(function (m) {
+            var label = document.createElement('label');
+            label.className = 'custom-checkbox';
+            label.innerHTML = '<input type="checkbox" value="' + m.id + '"' + (selectedMaterials.indexOf(String(m.id)) > -1 ? ' checked' : '') + '><span class="checkmark"></span>' + m.name;
+            materialContainer.appendChild(label);
+          });
+
+          // Add event listener for material checkboxes
+          materialContainer.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox') {
+              var checkedBoxes = materialContainer.querySelectorAll('input:checked');
+              var selectedVals = [];
+              checkedBoxes.forEach(function(cb) { selectedVals.push(cb.value); });
+              state.material = selectedVals.length ? selectedVals.join(',') : 'all';
+              state.page = 1;
+              loadProducts();
+            }
+          });
+        }
 
       // Only init custom select for the sort dropdown
       initCustomSelects();
+      updateSEOMetadata();
     }).catch(function (e) {
       console.error('Error loading filters', e);
       // Fallback: still show "Tất cả" pill
@@ -242,7 +434,7 @@
     return true;
   }
 
-  function loadProducts() {
+  function loadProducts(skipPushState) {
     var grid = document.getElementById('product-list-grid');
     var countEl = document.getElementById('product-count');
     var paginationEl = document.getElementById('product-pagination');
@@ -251,17 +443,31 @@
 
     grid.innerHTML = '<div class="spinner" style="margin:4rem auto;"></div>';
 
+    if (!skipPushState) {
+      updateUrlFromState();
+    }
+
     PhucGiaTienAPI.getProducts({
       category: state.category,
       quality: state.quality,
       size: state.size,
+      material: state.material,
+      productType: state.productType,
       sort: state.sort,
-      page: 1, // Fetch all when doing client-side price filtering
+      page: 1, // Fetch all when doing client-side price/search filtering
       limit: 1000,
     }).then(function (res) {
-      // Client-side price & status filter
+      // Client-side price & status & search filter
       var filtered = res.data.filter(function(p) {
-        return matchesPrice(p) && matchesStatus(p);
+        var matchQ = true;
+        if (state.searchQuery) {
+          var q = state.searchQuery.toLowerCase();
+          matchQ = p.name.toLowerCase().includes(q) ||
+                   (p.category || '').toLowerCase().includes(q) ||
+                   (p.material || '').toLowerCase().includes(q) ||
+                   (p.style || '').toLowerCase().includes(q);
+        }
+        return matchesPrice(p) && matchesStatus(p) && matchQ;
       });
 
       state.total = filtered.length;
@@ -280,6 +486,7 @@
 
       // Update active tags UI
       updateActiveFiltersUI();
+      updateSEOMetadata();
 
       if (!filtered.length) {
         grid.innerHTML =
@@ -370,7 +577,7 @@
     }).replace(/'/g, '&#39;');
 
     article.innerHTML =
-      '<div class="product-card__media">' +
+      '<div class="product-card__media" style="background-image:url(\'' + imgSrc + '\');">' +
         badgeHTML +
         (isLocalVid 
           ? '<video class="product-card__img" src="' + firstMedia + '" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;pointer-events:none;"></video>'
@@ -402,7 +609,7 @@
         '<h3 class="product-card__name">' + p.name + '</h3>' +
         '<div class="product-card__price-row">' +
           ((p.basePrice === 0 || (p.variants && p.variants.length && p.variants[0].price === 0))
-            ? '<a href="contact.html" class="price-contact" style="text-decoration:none;" onclick="event.stopPropagation();">LIÊN HỆ</a>'
+            ? '<a href="contact" class="price-contact" style="text-decoration:none;" onclick="event.stopPropagation();">LIÊN HỆ</a>'
             : '<span class="product-card__price">' + window.formatVND(p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0)) + '</span>'
           ) +
         '</div>' +
@@ -486,13 +693,18 @@
     if (total <= 1) return;
 
     function addBtn(label, page, isActive, isDisabled) {
-      var btn = document.createElement('button');
+      var btn = document.createElement('a');
       btn.className = 'pagination__btn' + (isActive ? ' active' : '');
       btn.textContent = label;
-      btn.disabled = isDisabled;
+      btn.href = getFilterUrl({ page: page });
       btn.id = 'page-btn-' + label;
-      if (!isDisabled) {
-        btn.addEventListener('click', function () {
+      if (isDisabled) {
+        btn.setAttribute('aria-disabled', 'true');
+        btn.style.pointerEvents = 'none';
+        btn.style.opacity = '0.5';
+      } else {
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
           state.page = page;
           loadProducts();
           window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -551,15 +763,26 @@
       activeCount++;
     }
 
+    // Search tag
+    if (state.searchQuery) {
+      createTag('Từ khóa: "' + state.searchQuery + '"', 'search', 'all');
+    }
+
     // Price tag
     if (state.isPriceFiltered) {
       createTag(window.formatVND(state.minPrice) + ' - ' + (state.maxPrice >= 50000000 ? window.formatVND(state.maxPrice)+'+' : window.formatVND(state.maxPrice)), 'price', 'all');
     }
 
     // Size tag
-    if (state.size !== 'all') {
-      var sizeBtn = document.querySelector('#size-pills .filter-pill[data-value="'+state.size+'"]');
-      if (sizeBtn) createTag(sizeBtn.textContent, 'size', 'all');
+    if (state.size && state.size !== 'all' && state.size.trim() !== '') {
+      var sizeLabels = {
+        'under60': 'Dưới 60cm',
+        '60-100': '60cm – 100cm',
+        '100-150': '100cm – 150cm',
+        'above150': 'Trên 150cm'
+      };
+      var displayLabel = sizeLabels[state.size] || state.size;
+      createTag('Kích thước: ' + displayLabel, 'size', 'all');
     }
 
     // Quality tag (can be multiple)
@@ -569,6 +792,28 @@
         var cb = document.querySelector('#quality-checkboxes input[value="'+q+'"]');
         if (cb && cb.nextElementSibling && cb.nextElementSibling.nextSibling) {
           createTag(cb.nextElementSibling.nextSibling.textContent, 'quality', q);
+        }
+      });
+    }
+
+    // Material tag (can be multiple)
+    if (state.material !== 'all') {
+      var ms = state.material.split(',');
+      ms.forEach(function(m) {
+        var cb = document.querySelector('#material-checkboxes input[value="'+m+'"]');
+        if (cb && cb.nextElementSibling && cb.nextElementSibling.nextSibling) {
+          createTag(cb.nextElementSibling.nextSibling.textContent, 'material', m);
+        }
+      });
+    }
+
+    // Segment tag (can be multiple)
+    if (state.productType !== 'all') {
+      var pts = state.productType.split(',');
+      pts.forEach(function(pt) {
+        var cb = document.querySelector('#segment-checkboxes input[value="'+pt+'"]');
+        if (cb && cb.nextElementSibling && cb.nextElementSibling.nextSibling) {
+          createTag(cb.nextElementSibling.nextSibling.textContent, 'productType', pt);
         }
       });
     }
@@ -600,13 +845,18 @@
       var type = e.target.dataset.type;
       var value = e.target.dataset.value;
       
-      if (type === 'price') {
+      if (type === 'search') {
+        state.searchQuery = '';
+        var inlineInput = document.getElementById('inline-search-input');
+        if (inlineInput) inlineInput.value = '';
+      } else if (type === 'price') {
         state.isPriceFiltered = false;
         state.minPrice = 0; state.maxPrice = 50000000;
         if (window.priceSlider) window.priceSlider.set([0, 50000000]);
       } else if (type === 'size') {
         state.size = 'all';
-        setActivePill(document.getElementById('size-pills'), 'all');
+        var sizePills = document.getElementById('size-pills');
+        if (sizePills) setActivePill(sizePills, 'all');
       } else if (type === 'status') {
         state.status = 'all';
         setActivePill(document.getElementById('status-pills'), 'all');
@@ -614,6 +864,16 @@
         var qs = state.quality.split(',').filter(function(q) { return q !== value; });
         state.quality = qs.length ? qs.join(',') : 'all';
         var cb = document.querySelector('#quality-checkboxes input[value="'+value+'"]');
+        if (cb) cb.checked = false;
+      } else if (type === 'material') {
+        var ms = state.material.split(',').filter(function(m) { return m !== value; });
+        state.material = ms.length ? ms.join(',') : 'all';
+        var cb = document.querySelector('#material-checkboxes input[value="'+value+'"]');
+        if (cb) cb.checked = false;
+      } else if (type === 'productType') {
+        var pts = state.productType.split(',').filter(function(pt) { return pt !== value; });
+        state.productType = pts.length ? pts.join(',') : 'all';
+        var cb = document.querySelector('#segment-checkboxes input[value="'+value+'"]');
         if (cb) cb.checked = false;
       }
       
@@ -623,6 +883,9 @@
     
     // Clear all
     if (e.target.id === 'btn-clear-all-filters') {
+      state.searchQuery = '';
+      var inlineInput = document.getElementById('inline-search-input');
+      if (inlineInput) inlineInput.value = '';
       var resetBtn = document.getElementById('btn-reset-filters');
       if (resetBtn) resetBtn.click();
     }
@@ -630,12 +893,42 @@
 
   // -- Handle UI events --
   function bindFilters() {
+    // Inline Search
+    var inlineSearchInput = document.getElementById('inline-search-input');
+    var inlineSearchBtn = document.getElementById('inline-search-btn');
+
+    function executeInlineSearch() {
+      if (!inlineSearchInput) return;
+      var val = inlineSearchInput.value.trim();
+      state.searchQuery = val;
+
+      state.page = 1;
+      loadProducts();
+    }
+
+    if (inlineSearchBtn) {
+      inlineSearchBtn.addEventListener('click', executeInlineSearch);
+    }
+    if (inlineSearchInput) {
+      inlineSearchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          executeInlineSearch();
+        }
+      });
+      // Populate if there's already a query in state
+      if (state.searchQuery) {
+        inlineSearchInput.value = state.searchQuery;
+      }
+    }
+
     // Category pills
     var catPills = document.getElementById('category-pills');
     if (catPills) {
       catPills.addEventListener('click', function (e) {
         var pill = e.target.closest('.filter-pill');
         if (!pill) return;
+        e.preventDefault();
         state.category = pill.dataset.value;
         state.page = 1;
         setActivePill(catPills, pill.dataset.value);
@@ -689,7 +982,7 @@
       });
     }
 
-    // Advanced Filters handling
+    // Size pills
     var sizePills = document.getElementById('size-pills');
     if (sizePills) {
       sizePills.addEventListener('click', function (e) {
@@ -725,11 +1018,18 @@
       btnReset.addEventListener('click', function () {
         state.size = 'all';
         state.quality = 'all';
+        state.material = 'all';
+        state.productType = 'all';
         state.status = 'all';
         state.isPriceFiltered = false;
-        setActivePill(sizePills, 'all');
+        var sizePills = document.getElementById('size-pills');
+        if (sizePills) setActivePill(sizePills, 'all');
         var qualityCheckboxes = document.querySelectorAll('#quality-checkboxes input[type="checkbox"]');
         qualityCheckboxes.forEach(function(cb) { cb.checked = false; });
+        var materialCheckboxes = document.querySelectorAll('#material-checkboxes input[type="checkbox"]');
+        materialCheckboxes.forEach(function(cb) { cb.checked = false; });
+        var segmentCheckboxes = document.querySelectorAll('#segment-checkboxes input[type="checkbox"]');
+        segmentCheckboxes.forEach(function(cb) { cb.checked = false; });
         var statusPills = document.getElementById('status-pills');
         if (statusPills) setActivePill(statusPills, 'all');
         if (pricePills) setActivePill(pricePills, 'all');
@@ -828,7 +1128,7 @@
       if (isLightbox) {
         return '<video src="' + src + '" autoplay loop controls style="max-width:85vw; max-height:85vh; border-radius:8px; box-shadow: 0 4px 30px rgba(0,0,0,0.7); object-fit:contain; display:block;"></video>';
       } else {
-        return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#000;" data-is-video="1">' +
+        return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#000;background-image:url(' + src + ');background-size:cover;background-position:center;filter:blur(10px);" data-is-video="1">' +
                  '<video class="product-gallery__main-img" id="gallery-main-media" src="' + src + '" autoplay loop muted playsinline controls style="width:100%;height:100%;object-fit:contain;border:none;"></video>' +
                '</div>';
       }
@@ -993,7 +1293,7 @@
           // If no variants, just show default price
           var basePriceVal = p.basePrice || 0;
           detailPriceHTML = basePriceVal === 0 
-            ? '<a href="contact.html" class="product-info__price" id="detail-price" style="color:#d32f2f; text-transform:uppercase; text-decoration:none; display:block;">LIÊN HỆ</a>'
+            ? '<a href="contact" class="product-info__price" id="detail-price" style="color:#d32f2f; text-transform:uppercase; text-decoration:none; display:block;">LIÊN HỆ</a>'
             : '<p class="product-info__price" id="detail-price">' + window.formatVND(basePriceVal) + '</p>';
       }
 
@@ -1701,13 +2001,19 @@
 
     plus.addEventListener('click', function () {
       var val = parseInt(input.value, 10) || 1;
-      if (val < 99) input.value = val + 1;
+      var max = parseInt(input.max, 10) || 99;
+      if (val < max) input.value = val + 1;
+      else alert('Số lượng vượt quá sản phẩm hiện có trong kho (' + max + ')');
     });
 
     input.addEventListener('change', function () {
       var val = parseInt(input.value, 10);
+      var max = parseInt(input.max, 10) || 99;
       if (isNaN(val) || val < 1) input.value = 1;
-      if (val > 99) input.value = 99;
+      else if (val > max) {
+        input.value = max;
+        alert('Số lượng vượt quá sản phẩm hiện có trong kho (' + max + ')');
+      }
     });
   }
 
@@ -1724,13 +2030,23 @@
         priceEl.textContent = 'LIÊN HỆ';
         priceEl.style.color = '#d32f2f';
         priceEl.style.textTransform = 'uppercase';
-        if (priceEl.tagName === 'A') priceEl.href = 'contact.html';
+        if (priceEl.tagName === 'A') priceEl.href = "contact";
       } else {
         priceEl.textContent = window.formatVND(currentPrice);
         priceEl.style.color = 'var(--color-accent)';
         priceEl.style.textTransform = 'none';
         if (priceEl.tagName === 'A') priceEl.removeAttribute('href');
       }
+    }
+
+    // Cập nhật giá & nút ở sticky bar
+    var stickyPriceEl = document.getElementById('sticky-price');
+    if (stickyPriceEl) {
+      stickyPriceEl.textContent = currentPrice === 0 ? 'LIÊN HỆ' : window.formatVND(currentPrice);
+    }
+    var stickyBtnBuy = document.getElementById('sticky-btn-buy');
+    if (stickyBtnBuy) {
+      stickyBtnBuy.textContent = currentPrice === 0 ? 'LIÊN HỆ' : 'MUA NGAY';
     }
 
     // Cập nhật tình trạng tồn kho
@@ -1743,6 +2059,16 @@
     }
     var statusEl = document.getElementById('spec-status');
     if (statusEl) statusEl.innerHTML = statusText;
+
+    // Cập nhật giới hạn số lượng (max) theo tồn kho thực tế
+    var qtyInput = document.getElementById('qty-input');
+    if (qtyInput) {
+      qtyInput.max = stock > 0 ? stock : 1;
+      var currentVal = parseInt(qtyInput.value, 10) || 1;
+      if (currentVal > stock && stock > 0) {
+        qtyInput.value = stock;
+      }
+    }
 
     // (Moved title update logic to checkMatchingVariant)
 
@@ -1800,6 +2126,18 @@
                            '<div style="position:absolute;z-index:11;width:28px;height:28px;background:#1877f2;border-radius:50%;display:flex;align-items:center;justify-content:center;">' +
                              '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>' +
                            '</div></div>';
+           } else if (platform === 'tiktok') {
+             var ttMatch = src.match(/video\/(\d+)/);
+             if (ttMatch) {
+               innerHtml = '<div style="width:100%;height:100%;position:relative;overflow:hidden;pointer-events:none;background:#000;display:flex;align-items:center;justify-content:center;">' +
+                             '<iframe src="https://www.tiktok.com/player/v1/' + ttMatch[1] + '?music_info=0&description=0&native_context_menu=0" scrolling="no" frameborder="0" allowfullscreen style="width:300px;height:400px;border:none;pointer-events:none;transform:scale(0.3);transform-origin:center;" tabindex="-1"></iframe>' +
+                             '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.2);z-index:10;"></div>' +
+                             '<div style="position:absolute;z-index:11;width:28px;height:28px;background:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;">' +
+                               '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>' +
+                             '</div></div>';
+             } else {
+               innerHtml = buildPlatformBadge(platform);
+             }
            } else {
              innerHtml = buildPlatformBadge(platform);
            }
@@ -1974,6 +2312,7 @@
         }
 
         var match = isFullySelected ? partialMatch : null;
+        window.currentSelectedVariant = match;
 
         if (match) {
             currentPrice = parseFloat(match.price) || 0;
@@ -2086,7 +2425,7 @@
         if (window.CartAPI) {
           window.CartAPI.addItem(itemToAdd, qty);
         }
-        window.location.href = 'cart.html';
+        window.location.href = "cart";
       });
     }
 
@@ -2095,21 +2434,74 @@
     stickyHtml.className = 'sticky-add-to-cart';
     stickyHtml.innerHTML = 
       '<div class="sticky-add-to-cart__info">' +
+        '<div class="sticky-add-to-cart__label">Giá sản phẩm</div>' +
         '<div class="sticky-add-to-cart__price" id="sticky-price">' + (currentPrice === 0 ? 'LIÊN HỆ' : window.formatVND(currentPrice)) + '</div>' +
       '</div>' +
-      '<button class="btn btn-buy-now-solid" id="sticky-btn-buy">' + (currentPrice === 0 ? 'LIÊN HỆ' : 'MUA NGAY') + '</button>';
+      '<div class="sticky-add-to-cart__actions">' +
+        '<button class="sticky-cart-icon-btn" id="sticky-btn-cart" aria-label="Thêm vào giỏ">' + 
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>' +
+        '</button>' +
+        '<button class="sticky-buy-now-btn" id="sticky-btn-buy">' + (currentPrice === 0 ? 'LIÊN HỆ' : 'MUA NGAY') + '</button>' +
+      '</div>';
     document.body.appendChild(stickyHtml);
 
-    document.getElementById('sticky-btn-buy').addEventListener('click', function() {
+    function getStickyItemToAdd() {
+      var price = window.currentSelectedVariant ? window.currentSelectedVariant.price : (product.basePrice || 0);
+      var sizeStr = '';
+      if (window.currentSelectedVariant && window.currentSelectedVariant.sizeName) {
+         sizeStr = window.currentSelectedVariant.sizeName;
+      } else if (window.currentSelectedVariant && window.currentSelectedVariant.size) {
+         sizeStr = window.currentSelectedVariant.size;
+      } else {
+         sizeStr = product.size || '';
+      }
+      var imgs = (window.currentSelectedVariant && window.currentSelectedVariant.images && window.currentSelectedVariant.images.length > 0) ? window.currentSelectedVariant.images : product.images;
+      return { id: product.id, slug: product.slug, name: product.name, price: price, size: sizeStr, images: imgs };
+    }
+
+    // Logic nút thêm vào giỏ hàng ở sticky bar
+    document.getElementById('sticky-btn-cart').addEventListener('click', function(e) {
+      var hasVariants = product.variants && product.variants.length > 0;
+      if (hasVariants && !window.currentSelectedVariant) {
+        window.showToast('Vui lòng chọn đầy đủ phân loại hàng', 'warning');
+        var variantSection = document.querySelector('.product-info__variants') || document.querySelector('.attr-group') || document.getElementById('qty-input');
+        if (variantSection) {
+          variantSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+      }
       if (currentPrice === 0) {
-        window.location.href = 'contact.html';
+        window.location.href = "contact";
         return;
       }
       var qty = parseInt(document.getElementById('qty-input').value, 10) || 1;
-      var itemToAdd = { id: product.id, slug: product.slug, name: product.name, price: currentPrice, size: currentSize, images: product.images };
       if (window.CartAPI) {
-        window.CartAPI.addItem(itemToAdd, qty, { currentTarget: document.getElementById('btn-add-cart') || document.body });
+        window.CartAPI.addItem(getStickyItemToAdd(), qty, e);
+      } else {
+        window.showToast('Đã thêm "' + product.name + '" vào giỏ hàng!', 'success');
       }
+    });
+
+    // Logic nút mua ngay ở sticky bar (chuyển hướng sang giỏ hàng)
+    document.getElementById('sticky-btn-buy').addEventListener('click', function() {
+      var hasVariants = product.variants && product.variants.length > 0;
+      if (hasVariants && !window.currentSelectedVariant) {
+        window.showToast('Vui lòng chọn đầy đủ phân loại hàng', 'warning');
+        var variantSection = document.querySelector('.product-info__variants') || document.querySelector('.attr-group') || document.getElementById('qty-input');
+        if (variantSection) {
+          variantSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+      }
+      if (currentPrice === 0) {
+        window.location.href = "contact";
+        return;
+      }
+      var qty = parseInt(document.getElementById('qty-input').value, 10) || 1;
+      if (window.CartAPI) {
+        window.CartAPI.addItem(getStickyItemToAdd(), qty);
+      }
+      window.location.href = "cart";
     });
 
     // Hiện sticky bar khi cuộn qua nút mua chính
@@ -2153,7 +2545,7 @@
     var sliderEl = document.getElementById('price-slider');
     if (sliderEl && window.noUiSlider) {
       window.priceSlider = window.noUiSlider.create(sliderEl, {
-        start: [0, 50000000],
+        start: [state.minPrice, state.maxPrice],
         connect: true,
         step: 500000,
         range: {
@@ -2195,15 +2587,94 @@
   document.addEventListener('DOMContentLoaded', function () {
     // Product LIST page
     if (document.getElementById('product-list-grid')) {
+      syncStateFromUrl();
+
       // Init sort-select custom dropdown immediately (has static options)
       var sortWrap = document.getElementById('sort-select');
       if (sortWrap) {
+        sortWrap.value = state.sort;
         initCustomSelects(sortWrap.parentNode);
       }
       initAdvancedFilters();
       populateFilters(); // filter selects init after API data loads
       bindFilters();
-      loadProducts();
+
+      // Register popstate listener for back/forward navigation
+      window.addEventListener('popstate', function () {
+        syncStateFromUrl();
+
+        // Sync category pills UI
+        var catPills = document.getElementById('category-pills');
+        if (catPills) {
+          setActivePill(catPills, state.category);
+        }
+
+        // Sync Search Input UI
+        var inlineSearchInput = document.getElementById('inline-search-input');
+        if (inlineSearchInput) {
+          inlineSearchInput.value = state.searchQuery;
+        }
+
+        // Sync Sort select UI
+        var sortEl = document.getElementById('sort-select');
+        if (sortEl) {
+          sortEl.value = state.sort;
+          var wrapper = sortEl.closest('.custom-select-wrapper');
+          if (wrapper) {
+            var textEl = wrapper.querySelector('.custom-select__text');
+            var opt = sortEl.options[sortEl.selectedIndex];
+            if (textEl && opt) {
+              textEl.textContent = opt.text;
+            }
+            var options = wrapper.querySelectorAll('.custom-select__option');
+            options.forEach(function (optEl) {
+              optEl.classList.toggle('selected', optEl.dataset.value === state.sort);
+            });
+          }
+        }
+
+        // Sync Status pills UI
+        var statusPills = document.getElementById('status-pills');
+        if (statusPills) {
+          setActivePill(statusPills, state.status);
+        }
+
+        // Sync Size Text Input UI
+        var sizeInput = document.getElementById('size-input');
+        if (sizeInput) {
+          sizeInput.value = state.size === 'all' ? '' : state.size;
+        }
+
+        // Sync Quality checkboxes UI
+        var qualityCheckboxes = document.querySelectorAll('#quality-checkboxes input[type="checkbox"]');
+        var selectedQualities = state.quality === 'all' ? [] : state.quality.split(',');
+        qualityCheckboxes.forEach(function (cb) {
+          cb.checked = selectedQualities.indexOf(cb.value) > -1;
+        });
+
+        // Sync Material checkboxes UI
+        var materialCheckboxes = document.querySelectorAll('#material-checkboxes input[type="checkbox"]');
+        var selectedMaterials = state.material === 'all' ? [] : state.material.split(',');
+        materialCheckboxes.forEach(function (cb) {
+          cb.checked = selectedMaterials.indexOf(cb.value) > -1;
+        });
+
+        // Sync Segment checkboxes UI
+        var segmentCheckboxes = document.querySelectorAll('#segment-checkboxes input[type="checkbox"]');
+        var selectedTypes = state.productType === 'all' ? [] : state.productType.split(',');
+        segmentCheckboxes.forEach(function (cb) {
+          cb.checked = selectedTypes.indexOf(cb.value) > -1;
+        });
+
+        // Sync Price Slider UI
+        if (window.priceSlider) {
+          window.priceSlider.set([state.minPrice, state.maxPrice]);
+        }
+
+        loadProducts(true);
+      });
+
+      loadProducts(true);
     }
 
     // Product DETAIL page

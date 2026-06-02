@@ -11,12 +11,22 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Microsoft.AspNetCore.Rewrite;
+using BatTrang.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
+builder.Services.AddMemoryCache();
+builder.Services.AddOutputCache(options =>
+{
+    // Cấu hình các policy cache để dễ dàng xóa theo Tag
+    options.AddPolicy("ProductsCache", builder => builder.Expire(TimeSpan.FromMinutes(10)).Tag("products"));
+    options.AddPolicy("FiltersCache", builder => builder.Expire(TimeSpan.FromHours(24)).Tag("filters"));
+    options.AddPolicy("ConfigsCache", builder => builder.Expire(TimeSpan.FromHours(24)).Tag("configs"));
+});
 
 // DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -33,6 +43,7 @@ builder.Services.AddScoped<IContactRepository, ContactRepository>();
 builder.Services.AddScoped<ISiteConfigRepository, SiteConfigRepository>();
 builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
 builder.Services.AddScoped<BatTrang.Infrastructure.Services.NotificationService>();
+builder.Services.AddScoped<BatTrang.Infrastructure.Services.StockService>();
 builder.Services.AddSingleton<BatTrang.Infrastructure.Services.FileCleanupService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<BatTrang.Infrastructure.Services.FileCleanupService>());
 
@@ -106,6 +117,17 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseCors("AllowLiveServer");
+app.UseOutputCache();
+
+// Clean URL Rewrite Rules
+var rewriteOptions = new Microsoft.AspNetCore.Rewrite.RewriteOptions()
+    .AddRewrite(@"^admin/([a-zA-Z0-9_-]+)$", "admin/$1.html", skipRemainingRules: true)
+    .AddRewrite(@"^(?!(api|hub|admin|uploads|css|js|assets|components|images))([a-zA-Z0-9_-]+)$", "$2.html", skipRemainingRules: true);
+app.UseRewriter(rewriteOptions);
+
+// Use custom SEO Middleware to intercept and inject meta tags
+app.UseMiddleware<SeoMiddleware>();
+
 app.UseStaticFiles(); // Serves default wwwroot (like uploads)
 
 // Serve admin static files at /admin

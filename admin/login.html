@@ -48,7 +48,7 @@
 <script src="js/admin-core.js"></script>
 <script>
 // Redirect if already logged in
-if(localStorage.getItem('pgt_admin_session')){location.href='index.html';}
+if(localStorage.getItem('pgt_admin_session')){location.href="./";}
 // Particles
 (function(){
   var c=document.getElementById('particles');
@@ -89,7 +89,7 @@ document.getElementById('login-form').addEventListener('submit',function(e){
         username: data.username,
         role: data.role
     }));
-    location.href = 'index.html';
+    location.href = "./";
   })
   .catch(function(e) {
     err.style.display='block';

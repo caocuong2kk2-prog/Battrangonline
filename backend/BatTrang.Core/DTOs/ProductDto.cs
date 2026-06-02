@@ -57,6 +57,8 @@ namespace BatTrang.Core.DTOs
         public string? Category { get; set; }
         public string? Quality { get; set; }
         public string? Size { get; set; }
+        public string? Material { get; set; }
+        public string? ProductType { get; set; }
         public string? Sort { get; set; }
         public int Page { get; set; } = 1;
         public int Limit { get; set; } = 8;

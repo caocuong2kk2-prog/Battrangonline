@@ -96,9 +96,9 @@
 
         <!-- Action Buttons -->
         <div class="success-actions" style="display: flex; flex-direction: column; gap: var(--space-2); align-items: center; width: 100%;">
-          <a class="btn btn--primary btn--lg" href="products.html" id="btn-continue-shopping" style="width: 100%;">TIẾP TỤC MUA SẮM</a>
+          <a class="btn btn--primary btn--lg" href="products" id="btn-continue-shopping" style="width: 100%;">TIẾP TỤC MUA SẮM</a>
           <p style="font-size: var(--fs-xs); color: rgba(255,255,255,0.45); margin-top: var(--space-2); text-align: center;">
-            Quý khách có thể theo dõi đơn hàng bất kỳ lúc nào tại <a href="order-tracking.html" style="color: var(--color-accent); text-decoration: underline;">Trang tra cứu đơn hàng</a>.
+            Quý khách có thể theo dõi đơn hàng bất kỳ lúc nào tại <a href="order-tracking" style="color: var(--color-accent); text-decoration: underline;">Trang tra cứu đơn hàng</a>.
           </p>
         </div>
 
@@ -192,7 +192,7 @@
       function initSuccessPage() {
         var rawData = localStorage.getItem('pgt_last_order');
         if (!rawData) {
-          window.location.href = 'index.html';
+          window.location.href = "index";
           return;
         }
 
@@ -200,7 +200,7 @@
         try {
           order = JSON.parse(rawData);
         } catch(e) {
-          window.location.href = 'index.html';
+          window.location.href = "index";
           return;
         }
 
@@ -208,7 +208,7 @@
         var codeEl = document.getElementById('order-code-val');
         if (codeEl) codeEl.textContent = order.orderCode;
         var dateEl = document.getElementById('order-date-val');
-        if (dateEl) dateEl.textContent = order.date;
+        if (dateEl) dateEl.textContent = window.formatDate ? window.formatDate(order.date) : order.date;
 
         // Customer details
         var nameEl = document.getElementById('customer-name');
@@ -325,9 +325,12 @@
             var histEntry = order.statusHistory.filter(function(h) { return h.status === step.key; }).pop();
             var isDone = idx < currentStep;
             var isActive = idx === currentStep;
-            var cls = isDone ? 'done' : (isActive ? 'active' : '');
             var time = histEntry ? histEntry.time : '';
+            if (time && window.formatDate) {
+              time = window.formatDate(time);
+            }
             var note = histEntry ? histEntry.note : (isActive ? step.defaultNote : '');
+            var cls = isDone ? 'done' : (isActive ? 'active' : '');
             
             timelineHtml += '<div class="success-step ' + cls + '">'
               + '<div class="success-step__dot">' + (isDone || isActive ? '✓' : '') + '</div>'

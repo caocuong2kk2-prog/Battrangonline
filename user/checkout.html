@@ -34,8 +34,8 @@
       <div class="container">
         <h1 class="checkout-hero__title">Thanh Toán</h1>
         <nav class="breadcrumb" aria-label="Breadcrumb">
-          <span class="breadcrumb__item"><a class="breadcrumb__link" href="index.html">Trang Chủ</a></span>
-          <span class="breadcrumb__item"><a class="breadcrumb__link" href="cart.html">Giỏ Hàng</a></span>
+          <span class="breadcrumb__item"><a class="breadcrumb__link" href="/">Trang Chủ</a></span>
+          <span class="breadcrumb__item"><a class="breadcrumb__link" href="cart">Giỏ Hàng</a></span>
           <span class="breadcrumb__item"><span class="breadcrumb__current">Thanh Toán</span></span>
         </nav>
 
@@ -185,7 +185,7 @@
               </button>
 
               <p class="checkout-privacy-policy-text">
-                Dữ liệu cá nhân của bạn sẽ được sử dụng để xử lý đơn đặt hàng, hỗ trợ trải nghiệm của bạn trên trang web này và cho các mục đích khác được mô tả trong <a href="privacy-policy.html" target="_blank" class="privacy-link">chính sách riêng tư</a> của chúng tôi.
+                Dữ liệu cá nhân của bạn sẽ được sử dụng để xử lý đơn đặt hàng, hỗ trợ trải nghiệm của bạn trên trang web này và cho các mục đích khác được mô tả trong <a href="privacy-policy" target="_blank" class="privacy-link">chính sách riêng tư</a> của chúng tôi.
               </p>
 
               <!-- Trust Badges -->
@@ -276,7 +276,7 @@
           if (typeof window.showToast === 'function') {
             window.showToast('Giỏ hàng trống hoặc chưa chọn sản phẩm để thanh toán.', 'error');
           }
-          setTimeout(function() { window.location.href = 'cart.html'; }, 1500);
+          setTimeout(function() { window.location.href = "cart"; }, 1500);
           return;
         }
 
@@ -478,7 +478,7 @@
                 
                 var orderData = {
                   orderCode: finalOrderCode,
-                  date: new Date().toLocaleDateString('vi-VN'),
+                  date: new Date().toISOString(),
                   timestamp: Date.now(),
                   name: name,
                   phone: phone.replace(/\D/g, ''), // chuẩn hóa SĐT chỉ số
@@ -493,7 +493,7 @@
                   total: total,
                   status: 'pending',                              // Trạng thái ban đầu
                   statusHistory: [
-                    { status: 'pending', time: new Date().toLocaleString('vi-VN'), note: 'Đơn hàng đã được tiếp nhận thành công.' }
+                    { status: 'pending', time: new Date().toISOString(), note: 'Đơn hàng đã được tiếp nhận thành công.' }
                   ]
                 };
 
@@ -520,7 +520,7 @@
 
                 // Redirect to success page
                 setTimeout(function() {
-                  window.location.href = 'order-success.html';
+                  window.location.href = "order-success";
                 }, 600);
               })
               .catch(function(err) {
@@ -541,7 +541,7 @@
             var orderCode = sessionStorage.getItem('temp_memo_code') || ('PGT' + Math.floor(100000 + Math.random() * 900000));
             var orderData = {
               orderCode: orderCode,
-              date: new Date().toLocaleDateString('vi-VN'),
+              date: new Date().toISOString(),
               timestamp: Date.now(),
               name: name,
               phone: phone.replace(/\D/g, ''),
@@ -556,7 +556,7 @@
               total: total,
               status: 'pending',
               statusHistory: [
-                { status: 'pending', time: new Date().toLocaleString('vi-VN'), note: 'Đơn hàng đã được tiếp nhận thành công.' }
+                { status: 'pending', time: new Date().toISOString(), note: 'Đơn hàng đã được tiếp nhận thành công.' }
               ]
             };
 
@@ -576,7 +576,7 @@
             sessionStorage.removeItem('applied_promo_percent');
 
             setTimeout(function() {
-              window.location.href = 'order-success.html';
+              window.location.href = "order-success";
             }, 600);
           }
         });

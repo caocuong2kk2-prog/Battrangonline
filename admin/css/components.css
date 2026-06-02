@@ -1,7 +1,7 @@
 /* components.css – Cards, Tables, Modals, Badges, Forms, Charts */
 
 /* ── CARDS ── */
-.card{background:var(--card-bg);border-radius:var(--r-lg);border:1px solid var(--card-border);box-shadow:var(--shadow-sm);overflow:hidden}
+.card{background:var(--card-bg);border-radius:var(--r-lg);border:1px solid var(--card-border);box-shadow:var(--shadow-sm);overflow:hidden;min-width:0}
 .card-header{padding:var(--sp-5) var(--sp-6);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4)}
 .card-title{font-family:var(--font-heading);font-size:var(--fs-lg);font-weight:var(--fw-semibold);color:var(--text-primary)}
 .card-body{padding:var(--sp-6)}
@@ -166,8 +166,9 @@ select.form-control{cursor:pointer}
 
 /* ── DASHBOARD GRID ── */
 .dashboard-grid{display:grid;grid-template-columns:2fr 1fr;gap:var(--sp-6);margin-bottom:var(--sp-6)}
-.dashboard-grid--3{grid-template-columns:1fr 1fr 1fr}
+.dashboard-grid--3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sp-6);margin-bottom:var(--sp-6)}
 .dashboard-grid--bottom{display:grid;grid-template-columns:3fr 2fr;gap:var(--sp-6);margin-bottom:var(--sp-6)}
+.dashboard-grid > *, .dashboard-grid--3 > *, .dashboard-grid--bottom > * { min-width: 0; }
 
 /* ── ACTIVITY FEED ── */
 .activity-feed{display:flex;flex-direction:column;gap:0}
@@ -178,7 +179,7 @@ select.form-control{cursor:pointer}
 .activity-dot--gold{background:var(--accent)}
 .activity-dot--blue{background:var(--info)}
 .activity-dot--red{background:var(--danger)}
-.activity-text{font-size:var(--fs-sm);color:var(--text-secondary);flex:1}
+.activity-text{font-size:var(--fs-sm);color:var(--text-secondary);flex:1;min-width:0;word-wrap:break-word}
 .activity-text strong{color:var(--text-primary);font-weight:var(--fw-semibold)}
 .activity-time{font-size:var(--fs-xs);color:var(--text-muted);white-space:nowrap}
 

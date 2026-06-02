@@ -63,6 +63,9 @@ document.addEventListener('DOMContentLoaded',function(){
       } else if (val === 'month') {
           startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
           endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
+      } else if (val === 'all') {
+          startDate = new Date(2000, 0, 1).toISOString();
+          endDate = new Date(2100, 0, 1).toISOString();
       }
 
       return { startDate: startDate, endDate: endDate };
@@ -110,7 +113,7 @@ document.addEventListener('DOMContentLoaded',function(){
               '<td class="hide-mobile">' + AdminData.fmtDate(o.date) + '</td>' +
             '<td>' + AdminData.fmt(o.total) + '</td>' +
             '<td><span class="badge ' + AdminData.getStatusBadge(o.status) + '">' + AdminData.getStatusLabel(o.status) + '</span></td>' +
-            '<td class="actions-cell"><a href="orders.html" class="btn btn--sm btn--secondary">Xem</a></td>' +
+            '<td class="actions-cell"><a href="orders" class="btn btn--sm btn--secondary">Xem</a></td>' +
             '</tr>';
         }).join('');
       }
@@ -124,29 +127,34 @@ document.addEventListener('DOMContentLoaded',function(){
 
         topEl.innerHTML = sortedProds.map(function(p, i) {
           var qtyVal = p.salesQty;
+          var revVal = p.totalRevenue || 0;
+          var stockVal = p.stock || 0;
           var pct = Math.round(((qtyVal > 0 ? qtyVal : p.basePrice) / maxVal) * 100);
           var imgHtml = '';
           if (p.firstImage) {
             var isVid = !!p.firstImage.match(/\.(mp4|mov|avi|webm|ogg)$/i);
             var imagesJson = JSON.stringify(p.images || []).replace(/'/g, '&#39;');
             imgHtml = isVid 
-              ? '<video src="' + p.firstImage + '" data-images=\'' + imagesJson + '\' class="zoomable" style="width:40px;height:40px;border-radius:4px;object-fit:cover;margin-right:12px;cursor:pointer;" muted></video>'
-              : '<img src="' + p.firstImage + '" data-images=\'' + imagesJson + '\' class="zoomable" style="width:40px;height:40px;border-radius:4px;object-fit:cover;margin-right:12px;cursor:pointer;"/>';
+              ? '<video src="' + p.firstImage + '" data-images=\'' + imagesJson + '\' class="zoomable" style="width:48px;height:48px;border-radius:6px;object-fit:cover;margin-right:12px;cursor:pointer;" muted></video>'
+              : '<img src="' + p.firstImage + '" data-images=\'' + imagesJson + '\' class="zoomable" style="width:48px;height:48px;border-radius:6px;object-fit:cover;margin-right:12px;cursor:pointer;"/>';
           } else {
-            imgHtml = '<div style="width:40px;height:40px;border-radius:4px;background:#f5f5f5;margin-right:12px;display:flex;align-items:center;justify-content:center;font-size:16px;">🏺</div>';
+            imgHtml = '<div style="width:48px;height:48px;border-radius:6px;background:#f5f5f5;margin-right:12px;display:flex;align-items:center;justify-content:center;font-size:20px;">🏺</div>';
           }
           
-          var displayLabel = qtyVal > 0 ? (qtyVal + ' đã bán') : AdminData.fmt(p.basePrice);
+          var qtyHtml = qtyVal > 0 ? '<span style="color:var(--success);font-size:var(--fs-sm);font-weight:600">' + qtyVal + ' đã bán</span>' : '<span style="color:var(--text-muted);font-size:var(--fs-sm)">Chưa bán được</span>';
+          var revHtml = revVal > 0 ? '<div style="font-weight:700;color:var(--accent);font-size:var(--fs-md);">' + AdminData.fmt(revVal) + '</div>' : '<div style="font-weight:600;color:var(--text-main);font-size:var(--fs-md);">' + AdminData.fmt(p.basePrice) + '</div>';
+          var stockHtml = stockVal > 0 ? '<span style="color:var(--text-muted);font-size:var(--fs-xs)">Kho: ' + stockVal + '</span>' : '<span style="color:var(--danger);font-size:var(--fs-xs);font-weight:600">Hết hàng</span>';
+          var nameHtml = p.slug ? '<a href="../product-detail.html?slug=' + p.slug + '" target="_blank" style="color:inherit;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color=\'var(--accent)\'" onmouseout="this.style.color=\'inherit\'" title="Xem chi tiết sản phẩm trên website">' + p.name + '</a>' : p.name;
 
-          return '<div class="top-product-item" style="align-items:center;">' +
-          '<div class="top-product-item__rank">' + (i + 1) + '</div>' +
+          return '<div class="top-product-item" style="align-items:center;padding:var(--sp-3);border-bottom:1px solid var(--border-color);">' +
+          '<div class="top-product-item__rank" style="font-size:18px;font-weight:700;color:var(--text-muted);width:24px;text-align:center;">' + (i + 1) + '</div>' +
           imgHtml +
             '<div class="top-product-item__info" style="flex:1">' +
-            '<div class="top-product-item__name">' + p.name + '</div>' +
-            '<div class="top-product-item__cat">' + p.category + '</div>' +
-            '<div class="progress-bar"><div class="progress-bar__fill" style="width:' + pct + '%"></div></div>' +
+            '<div class="top-product-item__name" style="font-weight:600;margin-bottom:2px;">' + nameHtml + '</div>' +
+            '<div class="top-product-item__cat" style="font-size:var(--fs-xs);color:var(--text-muted);margin-bottom:6px;">' + p.category + ' &bull; ' + stockHtml + '</div>' +
+            '<div class="progress-bar" style="height:4px;background:var(--border-color);border-radius:2px;overflow:hidden;"><div class="progress-bar__fill" style="width:' + pct + '%;background:var(--primary);height:100%;"></div></div>' +
             '</div>' +
-            '<div class="top-product-item__revenue" style="font-weight:600;color:var(--accent);">' + displayLabel + '</div>' +
+            '<div class="top-product-item__revenue" style="text-align:right;padding-left:var(--sp-4);">' + revHtml + '<div style="margin-top:2px;">' + qtyHtml + '</div></div>' +
             '</div>';
         }).join('');
       }
