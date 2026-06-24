@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link Giới Thiệu - CTV Bát Tràng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <script src="js/api.js?v=5"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            renderLayout('links', 'Link & Banner Giới Thiệu');
+
+            try {
+                const profile = await Api.request('/affiliates/profile');
+                
+                let cookieDays = 30;
+                try {
+                    const config = await Api.request('/site-config');
+                    if (config.affiliateCookieDays) {
+                        cookieDays = parseInt(config.affiliateCookieDays, 10) || 30;
+                    }
+                } catch(e) {}
+                
+                const siteUrl = window.location.origin;
+                const refLink = `${siteUrl}?ref=${profile.affiliateCode}`;
+
+                const html = `
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Link Giới Thiệu Của Bạn</h3>
+                        </div>
+                        <div style="padding: 24px;">
+                            <p style="margin-bottom: 15px; color: var(--text-muted);">
+                                Copy đường link dưới đây và chia sẻ lên Facebook, Zalo hoặc Website của bạn. Khi khách hàng click vào link và mua hàng, bạn sẽ được nhận hoa hồng.
+                            </p>
+                            <div style="background-color: #eef2ff; color: #4338ca; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 0.95rem; border: 1px solid #c7d2fe;">
+                                💡 <strong>Lưu ý:</strong> Cookie giới thiệu sẽ được lưu tự động trong <strong>${cookieDays} ngày</strong>. Nghĩa là nếu khách click vào link của bạn hôm nay, nhưng trong vòng ${cookieDays} ngày tới mới mua hàng thì bạn vẫn được tính hoa hồng. Nếu quá ${cookieDays} ngày, khách hàng cần click lại vào link của bạn để gia hạn.
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" class="form-control" value="${refLink}" readonly id="refLinkInput" style="background: #f9fafb; font-weight: 500; color: var(--primary);">
+                                <button class="btn btn-primary" onclick="copyLink()" style="white-space: nowrap;">Copy Link</button>
+                            </div>
+                            <div id="copyAlert" style="margin-top: 10px; color: var(--success); font-weight: 500; display: none;">Đã copy vào bộ nhớ tạm!</div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('pageContent').innerHTML = html;
+
+                window.copyLink = function() {
+                    const input = document.getElementById('refLinkInput');
+                    if (window.copyToClipboard) {
+                        window.copyToClipboard(input.value, "Đã sao chép liên kết giới thiệu!");
+                    } else {
+                        input.select();
+                        document.execCommand('copy');
+                        const alert = document.getElementById('copyAlert');
+                        alert.style.display = 'block';
+                        setTimeout(() => alert.style.display = 'none', 3000);
+                    }
+                }
+            } catch (err) {
+                document.getElementById('pageContent').innerHTML = `<div class="alert alert-error" style="display:block">Lỗi: ${err.message}</div>`;
+            }
+        });
+    </script>
+</body>
+</html>

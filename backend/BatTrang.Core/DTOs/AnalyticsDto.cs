@@ -19,6 +19,8 @@ namespace BatTrang.Core.DTOs
         public decimal PreviousMonthAov { get; set; }
         public double AovPercentChange { get; set; }
         public double ReturnCustomerRate { get; set; }
+        public int UniqueOrderCustomers { get; set; }
+        public int RepeatOrderCustomers { get; set; }
         public string CurrentMonthLabel { get; set; } = null!;
         public string PreviousMonthLabel { get; set; } = null!;
 
@@ -39,6 +41,7 @@ namespace BatTrang.Core.DTOs
         public decimal TotalRevenue { get; set; }
         public int Stock { get; set; }
         public string? Slug { get; set; }
+        public string? Sku { get; set; }
         public string? FirstImage { get; set; }
         public List<string> Images { get; set; } = new List<string>();
     }

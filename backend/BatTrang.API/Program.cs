@@ -1,5 +1,8 @@
 using BatTrang.Core.Interfaces;
 using BatTrang.Infrastructure.Data;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 using BatTrang.API.Hubs;
 using BatTrang.Infrastructure.Repositories;
 using BatTrang.Infrastructure.Seed;
@@ -13,6 +16,9 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using Microsoft.AspNetCore.Rewrite;
 using BatTrang.API.Middlewares;
+using DotNetEnv;
+
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +29,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddOutputCache(options =>
 {
     // Cấu hình các policy cache để dễ dàng xóa theo Tag
-    options.AddPolicy("ProductsCache", builder => builder.Expire(TimeSpan.FromMinutes(10)).Tag("products"));
+    options.AddPolicy("ProductsCache", builder => builder.Expire(TimeSpan.FromMinutes(10)).SetVaryByQuery("*").Tag("products"));
     options.AddPolicy("FiltersCache", builder => builder.Expire(TimeSpan.FromHours(24)).Tag("filters"));
     options.AddPolicy("ConfigsCache", builder => builder.Expire(TimeSpan.FromHours(24)).Tag("configs"));
 });
@@ -44,8 +50,18 @@ builder.Services.AddScoped<ISiteConfigRepository, SiteConfigRepository>();
 builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
 builder.Services.AddScoped<BatTrang.Infrastructure.Services.NotificationService>();
 builder.Services.AddScoped<BatTrang.Infrastructure.Services.StockService>();
+builder.Services.AddScoped<BatTrang.Infrastructure.Services.CommissionService>();
+builder.Services.AddScoped<BatTrang.Infrastructure.Services.InvoiceService>();
+builder.Services.AddHttpClient<BatTrang.Infrastructure.Services.ReCaptchaService>();
+builder.Services.AddScoped<BatTrang.Infrastructure.Services.ReCaptchaService>();
 builder.Services.AddSingleton<BatTrang.Infrastructure.Services.FileCleanupService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<BatTrang.Infrastructure.Services.FileCleanupService>());
+builder.Services.AddHostedService<BatTrang.Infrastructure.Services.BadgeUpdateService>();
+builder.Services.AddHostedService<BatTrang.Infrastructure.Services.NotificationCleanupService>();
+builder.Services.AddHostedService<BatTrang.Infrastructure.Services.AffiliateTierEvaluationService>();
+builder.Services.AddHostedService<BatTrang.API.Services.CommissionAutoApproveService>();
+builder.Services.AddHostedService<BatTrang.Infrastructure.Services.DatabaseBackupService>();
+builder.Services.AddHostedService<BatTrang.API.Services.CampaignUpdateService>();
 
 // CORS
 builder.Services.AddCors(options =>
@@ -56,6 +72,19 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
+    });
+});
+
+// Rate Limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddFixedWindowLimiter("LoginPolicy", opt =>
+    {
+        opt.PermitLimit = 5;
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 0;
     });
 });
 
@@ -74,6 +103,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Jwt:Audience"]
         };
     });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("admin"));
+    options.AddPolicy("AdminOrStaff", policy => policy.RequireRole("admin", "staff"));
+});
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -119,16 +154,48 @@ using (var scope = app.Services.CreateScope())
 app.UseCors("AllowLiveServer");
 app.UseOutputCache();
 
+// Skip HTTPS redirect in Development (cloudflared/reverse proxy handles SSL)
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+app.UseWhen(context => !context.Request.Path.StartsWithSegments("/api") && !context.Request.Path.StartsWithSegments("/hub"), appBuilder =>
+{
+    appBuilder.UseStatusCodePagesWithReExecute("/404.html");
+});
+
 // Clean URL Rewrite Rules
 var rewriteOptions = new Microsoft.AspNetCore.Rewrite.RewriteOptions()
+    .AddRedirect(@"^admin$", "admin/")
     .AddRewrite(@"^admin/([a-zA-Z0-9_-]+)$", "admin/$1.html", skipRemainingRules: true)
-    .AddRewrite(@"^(?!(api|hub|admin|uploads|css|js|assets|components|images))([a-zA-Z0-9_-]+)$", "$2.html", skipRemainingRules: true);
+    .AddRedirect(@"^affiliate$", "affiliate/")
+    .AddRewrite(@"^affiliate/?$", "affiliate/index.html", skipRemainingRules: true)
+    .AddRewrite(@"^affiliate/([a-zA-Z0-9_-]+)$", "affiliate/$1.html", skipRemainingRules: true)
+    .AddRewrite(@"^danh-muc/([^/]+)$", "products.html?category=$1", skipRemainingRules: true)
+    .AddRewrite(@"^(about|cart|checkout|contact|forgot-password|index|journey|login|order-success|order-tracking|privacy-policy|product-detail|products|return-policy|shipping-policy|shopping-guide|terms-of-service|warranty-policy|404)$", "$1.html", skipRemainingRules: true)
+    .AddRewrite(@"^(?!(api|hub|admin|affiliate|uploads|css|js|assets|components|images|danh-muc|.*\.html$|.*\.txt$|.*\.xml$|.*\.ico$))([^/]+)$", "product-detail.html?slug=$2", skipRemainingRules: true);
 app.UseRewriter(rewriteOptions);
 
 // Use custom SEO Middleware to intercept and inject meta tags
 app.UseMiddleware<SeoMiddleware>();
 
-app.UseStaticFiles(); // Serves default wwwroot (like uploads)
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        if (ctx.File.Name.EndsWith(".html"))
+        {
+            ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            ctx.Context.Response.Headers.Append("Pragma", "no-cache");
+            ctx.Context.Response.Headers.Append("Expires", "0");
+        }
+        else
+        {
+            var maxAge = TimeSpan.FromDays(365);
+            ctx.Context.Response.Headers.Append("Cache-Control", $"public, max-age={maxAge.TotalSeconds}");
+        }
+    }
+}); // Serves default wwwroot (like uploads)
 
 // Serve admin static files at /admin
 var adminPath = System.IO.Path.GetFullPath(System.IO.Path.Combine(builder.Environment.ContentRootPath, "..", "..", "admin"));
@@ -142,7 +209,51 @@ if (System.IO.Directory.Exists(adminPath))
     app.UseStaticFiles(new StaticFileOptions
     {
         FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(adminPath),
-        RequestPath = "/admin"
+        RequestPath = "/admin",
+        OnPrepareResponse = ctx =>
+        {
+            if (ctx.File.Name.EndsWith(".html"))
+            {
+                ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+                ctx.Context.Response.Headers.Append("Pragma", "no-cache");
+                ctx.Context.Response.Headers.Append("Expires", "0");
+            }
+            else
+            {
+                var maxAge = TimeSpan.FromDays(365);
+                ctx.Context.Response.Headers.Append("Cache-Control", $"public, max-age={maxAge.TotalSeconds}");
+            }
+        }
+    });
+}
+
+// Serve affiliate static files at /affiliate
+var affiliatePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(builder.Environment.ContentRootPath, "..", "..", "affiliate"));
+if (System.IO.Directory.Exists(affiliatePath))
+{
+    app.UseDefaultFiles(new DefaultFilesOptions
+    {
+        FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(affiliatePath),
+        RequestPath = "/affiliate"
+    });
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(affiliatePath),
+        RequestPath = "/affiliate",
+        OnPrepareResponse = ctx =>
+        {
+            if (ctx.File.Name.EndsWith(".html"))
+            {
+                ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+                ctx.Context.Response.Headers.Append("Pragma", "no-cache");
+                ctx.Context.Response.Headers.Append("Expires", "0");
+            }
+            else
+            {
+                var maxAge = TimeSpan.FromDays(365);
+                ctx.Context.Response.Headers.Append("Cache-Control", $"public, max-age={maxAge.TotalSeconds}");
+            }
+        }
     });
 }
 
@@ -158,15 +269,31 @@ if (System.IO.Directory.Exists(userPath))
     app.UseStaticFiles(new StaticFileOptions
     {
         FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(userPath),
-        RequestPath = ""
+        RequestPath = "",
+        OnPrepareResponse = ctx =>
+        {
+            if (ctx.File.Name.EndsWith(".html"))
+            {
+                ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+                ctx.Context.Response.Headers.Append("Pragma", "no-cache");
+                ctx.Context.Response.Headers.Append("Expires", "0");
+            }
+            else
+            {
+                var maxAge = TimeSpan.FromDays(365);
+                ctx.Context.Response.Headers.Append("Cache-Control", $"public, max-age={maxAge.TotalSeconds}");
+            }
+        }
     });
 }
 
-app.UseSwagger();
-app.UseSwaggerUI();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
-// app.UseHttpsRedirection();
-
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 

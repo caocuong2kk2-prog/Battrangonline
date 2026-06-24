@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="vi"><head>
+<script>if(localStorage.getItem('sidebar-collapsed')==='true')document.documentElement.classList.add('sidebar-collapsed');</script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Quản Lý Quà Tặng – Phúc Gia Tiên Admin</title>
+<link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/components.css">
+<style>
+.gift-thumbnail {
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  background: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.gift-thumbnail:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+/* Lightbox */
+.gift-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  cursor: zoom-out;
+}
+.gift-lightbox.active {
+  opacity: 1;
+  visibility: visible;
+}
+.gift-lightbox img {
+  max-width: 85vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  transform: scale(0.92);
+  transition: transform 0.3s ease;
+}
+.gift-lightbox.active img {
+  transform: scale(1);
+}
+.gift-lightbox__close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.gift-lightbox__close:hover {
+  background: rgba(255,255,255,0.3);
+}
+.gift-lightbox__name {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  background: rgba(0,0,0,0.5);
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  max-width: 80vw;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gift-preview-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: var(--sp-2);
+}
+.gift-preview-box {
+  width: 80px;
+  height: 80px;
+  border: 2px dashed var(--border);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: var(--text-muted);
+  overflow: hidden;
+  position: relative;
+  background: var(--accent-bg);
+}
+.gift-preview-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.gift-upload-btn-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+</style>
+<link rel="icon" href="assets/images/logo.png" type="image/png">
+</head>
+<body class="admin-layout">
+<aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header"><div class="sidebar-brand"><img src="assets/images/logo.png" alt="Logo" class="sidebar-brand__icon" style="width: 32px; height: 32px; object-fit: contain; background: #fff; border-radius: 50%; padding: 2px;"><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
+  <nav class="sidebar-nav">
+    <span class="sidebar-section-label">Tổng quan</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="./" class="sidebar-nav__link" data-page="index"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li>
+    </ul>
+    
+    <span class="sidebar-section-label">Kinh doanh</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="products" class="sidebar-nav__link" data-page="products"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
+      <li><a href="campaigns" class="sidebar-nav__link" data-page="campaigns"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg><span class="sidebar-nav__text">Khuyến mãi</span></a></li>
+      <li><a href="gifts" class="sidebar-nav__link active" data-page="gifts"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M12 2v20M2 7h20v4H2zM12 7a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg><span class="sidebar-nav__text">Quà tặng</span></a></li>
+      <li><a href="orders" class="sidebar-nav__link" data-page="orders"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
+      <li><a href="customers" class="sidebar-nav__link" data-page="customers"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
+      <li><a href="attributes" class="sidebar-nav__link" data-page="attributes"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><span class="sidebar-nav__text">Thuộc tính SP</span></a></li>
+      <li><a href="affiliates" class="sidebar-nav__link" data-page="affiliates"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Cộng Tác Viên</span><span class="sidebar-nav__badge" id="sb-affiliates" style="display:none"></span></a></li>
+    </ul>
+
+    <span class="sidebar-section-label">Nội dung</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="journey" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
+    </ul>
+
+    <span class="sidebar-section-label">Báo cáo</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="analytics" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
+    </ul>
+
+    <span class="sidebar-section-label">Hệ thống</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="settings" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-nav__text">Cài đặt</span></a></li>
+      <li class="admin-only"><a href="accounts" class="sidebar-nav__link" id="nav-accounts-link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><span class="sidebar-nav__text">Tài khoản</span></a></li>
+    </ul>
+  </nav>
+  <div class="sidebar-footer"><div class="sidebar-user js-logout"><div class="sidebar-user__avatar js-admin-initial">A</div><div class="sidebar-user__info"><div class="sidebar-user__name js-admin-name">Admin</div><div class="sidebar-user__role">Quản trị viên</div></div><button class="sidebar-user__logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="admin-main-wrapper">
+  <header class="admin-topbar">
+    <button class="topbar-toggle" id="sidebarToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="topbar-breadcrumb"><span class="topbar-breadcrumb__item">Kinh doanh</span><span class="topbar-breadcrumb__separator">›</span><span class="topbar-breadcrumb__current">Quà tặng</span></div>
+    <div class="topbar-actions">
+      <button class="topbar-btn" title="Thông báo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="topbar-btn__badge"></span></button>
+      <div class="topbar-user" id="topbarUser"><div class="topbar-user__avatar js-admin-initial">A</div><span class="topbar-user__name js-admin-name">Admin</span></div>
+    </div>
+  </header>
+
+  <main class="admin-content">
+    <div class="page-header">
+      <div><h1 class="page-title">Quản Lý Quà Tặng</h1><p class="page-subtitle">Thiết lập và quản lý danh sách sản phẩm quà tặng khuyến mãi</p></div>
+      <div class="page-header__actions"><button class="btn btn--primary" id="btn-add-gift">➕ Thêm quà tặng</button></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <svg class="search-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-box__input" id="gift-search" type="search" placeholder="Tìm theo tên quà tặng...">
+      </div>
+      <select class="filter-select" id="gift-status-filter">
+        <option value="all">Tất cả trạng thái</option>
+        <option value="active">Đang áp dụng</option>
+        <option value="inactive">Tạm ngưng</option>
+      </select>
+      <div class="toolbar__spacer"></div>
+      <span style="font-size:var(--fs-xs);color:var(--text-muted)" id="gift-count"></span>
+    </div>
+
+    <!-- Bulk Actions Bar -->
+    <div class="bulk-actions-bar" id="gift-bulk-actions-bar">
+        <div class="bulk-actions-bar__left">
+            <span class="bulk-actions-bar__count" id="gift-bulk-selected-count">Đã chọn 0 quà tặng</span>
+        </div>
+        <div class="bulk-actions-bar__right">
+            <button class="btn btn--sm btn--danger" id="btn-gift-bulk-delete">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                Xóa
+            </button>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 36px; text-align: center;"><input type="checkbox" id="check-all-gift"></th>
+            <th style="width: 50px;">STT</th>
+            <th style="width: 105px; text-align: center;">Ảnh</th>
+            <th style="min-width: 200px;">Tên quà tặng</th>
+            <th style="width: 150px; text-align: right;">Giá trị</th>
+            <th style="width: 100px; text-align: center;">Tồn kho</th>
+            <th style="width: 120px; text-align: center;">Trạng thái</th>
+            <th style="width: 140px; text-align: center;">Hành động</th>
+          </tr>
+        </thead>
+        <tbody id="gifts-table-body">
+          <tr>
+            <td colspan="8" style="text-align:center; padding: 40px; color: var(--text-muted)">Đang tải dữ liệu...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<!-- Gift Modal -->
+<div class="modal-overlay" id="giftModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="gift-modal-title">Thêm Quà Tặng</h2>
+      <button type="button" class="modal-close" data-close-modal="giftModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="gift-form">
+        <input type="hidden" name="id" value="0">
+        
+        <div class="form-group">
+          <label class="form-label">Tên quà tặng <span>*</span></label>
+          <input class="form-control" name="name" type="text" placeholder="VD: Hộp Lụa Đỏ Phúc Gia Tiên" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Giá trị ước lượng (VNĐ)</label>
+            <input class="form-control" name="estimatedValue" type="text" placeholder="VD: 150000">
+            <div class="form-hint">Dùng hiển thị giá trị của quà cho khách xem</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tồn kho</label>
+            <input class="form-control" name="stock" type="number" placeholder="Bỏ trống nếu không giới hạn" min="0">
+            <div class="form-hint">Quà sẽ tạm hết nếu số lượng = 0</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Trạng thái</label>
+          <select class="form-control" name="status">
+            <option value="active">Đang áp dụng</option>
+            <option value="inactive">Tạm ngưng</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Hình ảnh quà tặng</label>
+          <div class="gift-preview-container">
+            <div class="gift-preview-box" id="gift-preview-box">🎁</div>
+            <div class="gift-upload-btn-wrap">
+              <input type="file" id="gift-image-file" accept="image/*" style="display: none;">
+              <button type="button" class="btn btn--secondary btn--sm" id="btn-upload-gift-image">📁 Chọn ảnh</button>
+              <input class="form-control" name="imageUrl" id="gift-image-url" type="text" placeholder="Hoặc dán URL ảnh tại đây" style="margin-top: 8px; font-size: 12px; width: 220px;">
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--secondary" data-close-modal="giftModal">Huỷ</button>
+      <button class="btn btn--primary" id="btn-save-gift">💾 Lưu quà tặng</button>
+    </div>
+  </div>
+</div>
+
+<div id="admin-toast-container"></div>
+
+<!-- Image Lightbox -->
+<div class="gift-lightbox" id="giftLightbox">
+  <button class="gift-lightbox__close" id="giftLightboxClose">✕</button>
+  <img src="" alt="" id="giftLightboxImg">
+  <div class="gift-lightbox__name" id="giftLightboxName"></div>
+</div>
+
+<script src="js/admin-data.js?v=15"></script>
+<script src="js/admin-core.js?v=15"></script>
+<script src="js/gifts-admin.js?v=10"></script>
+</body></html>
+

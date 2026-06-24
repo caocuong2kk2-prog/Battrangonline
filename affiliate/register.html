@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký Cộng Tác Viên - Bát Tràng Online</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
+</head>
+
+<body class="auth-layout">
+    <div class="auth-card">
+        <div class="auth-header">
+            <img src="images/logo.png" alt="Gốm Phúc Gia Tiên" class="auth-logo-img js-config-logo">
+            <h1 class="auth-title">Đăng ký Affiliate</h1>
+            <p class="auth-subtitle">Trở thành Đối tác Bán hàng của chúng tôi</p>
+        </div>
+
+        <div id="regAlert"></div>
+
+        <form id="regForm">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div class="form-group">
+                    <label class="form-label required-star">Họ và tên</label>
+                    <input type="text" id="name" class="form-control" required placeholder="Nhập họ và tên">
+                    <div class="error-text" id="err-name">Vui lòng nhập họ và tên</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required-star">Số điện thoại</label>
+                    <input type="text" id="phone" class="form-control" required placeholder="Nhập số điện thoại">
+                    <div class="error-text" id="err-phone">Số điện thoại không hợp lệ</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label required-star">Email</label>
+                <input type="email" id="email" class="form-control" required placeholder="Nhập địa chỉ email">
+                <div class="error-text" id="err-email">Email không hợp lệ</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label required-star">Mật khẩu</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" class="form-control" required
+                        placeholder="Tạo mật khẩu (ít nhất 8 ký tự, có hoa & số)">
+                    <button type="button" class="toggle-password" id="togglePasswordBtn" tabindex="-1"
+                        aria-label="Hiện/Ẩn mật khẩu">
+                        <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                        <svg class="eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="error-text" id="err-password">Mật khẩu phải có ít nhất 8 ký tự</div>
+            </div>
+
+            <div
+                style="background:#fef9ec; border:1px solid #f3d98a; border-radius:8px; padding:10px 14px; margin-bottom:14px; font-size:0.82rem; color:#92400e; line-height:1.5;">
+                💡 Bạn có thể bổ sung <strong>thông tin ngân hàng</strong> sau khi đăng ký trong phần Hồ sơ để có thể
+                rút hoa hồng.
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%;">Tạo tài khoản</button>
+
+            <div style="display: flex; align-items: center; margin: 20px 0;">
+                <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
+                <div style="padding: 0 10px; color: #6b7280; font-size: 0.85rem; font-weight: 500;">HOẶC</div>
+                <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
+            </div>
+            
+            <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                <div id="g_id_onload"
+                    data-client_id="239589807227-al90mli1iupk7ni6lc2s88tba2dbjh4j.apps.googleusercontent.com"
+                    data-context="signin"
+                    data-ux_mode="popup"
+                    data-callback="handleGoogleLogin"
+                    data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signup_with" data-size="large" data-logo_alignment="left"></div>
+            </div>
+
+            <div style="text-align: center; margin-top: 14px; font-size: 0.9rem;">
+                Đã có tài khoản? <a href="login" class="auth-link">Đăng nhập ngay</a>
+            </div>
+        </form>
+    </div>
+
+    <script src="js/api.js?v=5"></script>
+    <script>
+        const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const touched = {};
+
+        // Password visibility toggle logic
+        const passwordInput = document.getElementById('password');
+        const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+        if (togglePasswordBtn && passwordInput) {
+            togglePasswordBtn.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                togglePasswordBtn.querySelector('.eye-open').style.display = isPassword ? 'none' : 'block';
+                togglePasswordBtn.querySelector('.eye-closed').style.display = isPassword ? 'block' : 'none';
+            });
+        }
+
+        function validateField(id, condition) {
+            const input = document.getElementById(id);
+            const err = document.getElementById('err-' + id);
+            if (condition) {
+                input.classList.remove('is-invalid');
+                if (err) err.style.display = 'none';
+                return true;
+            } else {
+                input.classList.add('is-invalid');
+                if (err) err.style.display = 'block';
+                return false;
+            }
+        }
+
+        ['name', 'phone', 'email', 'password'].forEach(id => {
+            // Chỉ validate khi user rời khỏi ô (blur)
+            document.getElementById(id).addEventListener('blur', () => {
+                touched[id] = true;
+                validateInput(id);
+            });
+            // Khi đang gõ: chỉ validate nếu field đã bị touched (để clear lỗi ngay khi sửa)
+            document.getElementById(id).addEventListener('input', () => {
+                if (touched[id]) validateInput(id);
+            });
+        });
+
+        function validateInput(id) {
+            const val = document.getElementById(id).value.trim();
+            if (id === 'name') return validateField(id, val.length > 0);
+            if (id === 'phone') return validateField(id, phoneRegex.test(val));
+            if (id === 'email') return validateField(id, emailRegex.test(val));
+            if (id === 'password') {
+                const pass = document.getElementById('password').value;
+                let errMsg = '';
+                if (pass.length < 8) errMsg = 'Mật khẩu phải có ít nhất 8 ký tự';
+                else if (!/[A-Z]/.test(pass)) errMsg = 'Mật khẩu phải chứa ít nhất 1 chữ hoa';
+                else if (!/[0-9]/.test(pass)) errMsg = 'Mật khẩu phải chứa ít nhất 1 chữ số';
+                else if (typeof zxcvbn !== 'undefined' && zxcvbn(pass).score < 2) errMsg = 'Mật khẩu quá yếu (vui lòng thêm ký tự đặc biệt hoặc số)';
+                
+                const errEl = document.getElementById('err-password');
+                if (errMsg) {
+                    if (errEl) errEl.textContent = errMsg;
+                    return validateField(id, false);
+                } else {
+                    return validateField(id, true);
+                }
+            }
+            return true;
+        }
+
+        document.getElementById('regForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            let isValid = true;
+            isValid = validateInput('name') && isValid;
+            isValid = validateInput('phone') && isValid;
+            isValid = validateInput('email') && isValid;
+            isValid = validateInput('password') && isValid;
+            if (!isValid) return;
+
+            const btn = document.getElementById('submitBtn');
+            btn.textContent = "Đang xử lý...";
+            btn.disabled = true;
+
+            const payload = {
+                Name: document.getElementById('name').value.trim(),
+                Email: document.getElementById('email').value.trim(),
+                Phone: document.getElementById('phone').value.trim(),
+                Password: document.getElementById('password').value
+            };
+
+            try {
+                const res = await fetch('/api/affiliates/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    showToast('Đăng ký thành công! Chuyển hướng đến trang đăng nhập...', 'success', 2500);
+                    setTimeout(() => { window.location.href = 'login'; }, 2500);
+                } else {
+                    showToast(data.message || 'Lỗi đăng ký. Email hoặc SĐT có thể đã tồn tại.', 'error');
+                }
+            } catch (err) {
+                showToast('Lỗi kết nối máy chủ. Vui lòng thử lại.', 'error');
+            } finally {
+                btn.textContent = "Tạo tài khoản";
+                btn.disabled = false;
+            }
+        });
+
+        function showAlert(id, message, type) {
+            const el = document.getElementById(id);
+            el.innerHTML = `<div class="alert alert-${type}" style="display:block">${message}</div>`;
+        }
+
+        async function handleGoogleLogin(response) {
+            try {
+                const res = await fetch('/api/affiliates/google-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ credential: response.credential })
+                });
+
+                const data = await res.json().catch(() => ({}));
+
+                if (res.ok && data.token) {
+                    if (typeof Api !== 'undefined') Api.setToken(data.token);
+                    else localStorage.setItem('affiliate_token', data.token);
+                    showToast('Đăng nhập bằng Google thành công', 'success');
+                    setTimeout(() => { window.location.href = 'index'; }, 1200);
+                } else {
+                    showToast(data.message || 'Đăng nhập Google thất bại', 'error');
+                }
+            } catch (err) {
+                showToast('Lỗi kết nối đến máy chủ. Vui lòng thử lại.', 'error');
+            }
+        }
+    </script>
+</body>
+
+</html>

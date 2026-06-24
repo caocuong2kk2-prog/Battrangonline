@@ -2,7 +2,8 @@
 (function (global) {
     'use strict';
 
-    var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api';
+    var isLiveServer = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && (window.location.port !== '5055' && window.location.port !== '7275');
+    var dynamicBase = isLiveServer ? 'http://localhost:5055/api' : '/api';
     var API_BASE = dynamicBase + '/admin';
     var PUBLIC_API_BASE = dynamicBase;
 
@@ -31,6 +32,11 @@
             adminNote: o.adminNote || o.AdminNote,
             isCancelRequested: o.isCancelRequested != null ? o.isCancelRequested : o.IsCancelRequested,
             cancelReason: o.cancelReason || o.CancelReason,
+            cancelRequestedAt: o.cancelRequestedAt || o.CancelRequestedAt,
+            cancelledAt: o.cancelledAt || o.CancelledAt,
+            confirmedAt: o.confirmedAt || o.ConfirmedAt,
+            shippingAt: o.shippingAt || o.ShippingAt,
+            completedAt: o.completedAt || o.CompletedAt,
             items: (o.items || o.Items || []).map(function (i) {
                 return {
                     productId: i.productId != null ? i.productId : i.ProductId,
@@ -38,7 +44,8 @@
                     size: i.size || i.Size,
                     qty: i.qty != null ? i.qty : i.Qty,
                     price: i.price != null ? i.price : i.Price,
-                    imageUrl: i.imageUrl || i.ImageUrl
+                    imageUrl: i.imageUrl || i.ImageUrl,
+                    estimatedValue: i.estimatedValue != null ? i.estimatedValue : i.EstimatedValue
                 };
             })
         };
@@ -86,9 +93,9 @@
         if (!options || (options.method || 'GET') === 'GET') {
             var cached = sessionStorage.getItem(cacheKey);
             if (cached) {
-                try { return Promise.resolve(JSON.parse(cached)); } catch (e) {}
+                try { return Promise.resolve(JSON.parse(cached)); } catch (e) { }
             }
-            return _fetch(endpoint, options, isPublic).then(function(data) {
+            return _fetch(endpoint, options, isPublic).then(function (data) {
                 sessionStorage.setItem(cacheKey, JSON.stringify(data));
                 return data;
             });
@@ -109,9 +116,9 @@
                         return Promise.resolve(wrapper.data);
                     }
                 }
-            } catch (e) {}
-            return _fetch(endpoint, options, isPublic).then(function(data) {
-                try { sessionStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
+            } catch (e) { }
+            return _fetch(endpoint, options, isPublic).then(function (data) {
+                try { sessionStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) { }
                 return data;
             });
         }
@@ -126,10 +133,18 @@
     var AdminData = {
         products: {
             load: function () {
-                return _cachedFetch('pgt_admin_products', '/products');
+                sessionStorage.removeItem('pgt_admin_products');
+                sessionStorage.removeItem('pgt_admin_products_ttl');
+                return _fetch('/products');
+            },
+            refresh: function () {
+                sessionStorage.removeItem('pgt_admin_products');
+                sessionStorage.removeItem('pgt_admin_products_ttl');
+                return _fetch('/products');
             },
             save: function (product) {
                 sessionStorage.removeItem('pgt_admin_products');
+                sessionStorage.removeItem('pgt_admin_products_ttl');
                 if (product.id) {
                     return _fetch('/products/' + product.id, {
                         method: 'PUT',
@@ -144,10 +159,12 @@
             },
             delete: function (id) {
                 sessionStorage.removeItem('pgt_admin_products');
+                sessionStorage.removeItem('pgt_admin_products_ttl');
                 return _fetch('/products/' + id, { method: 'DELETE' });
             },
             bulkStatus: function (ids, status) {
                 sessionStorage.removeItem('pgt_admin_products');
+                sessionStorage.removeItem('pgt_admin_products_ttl');
                 return _fetch('/products/bulk-status', {
                     method: 'POST',
                     body: JSON.stringify({ ids: ids, status: status })
@@ -155,7 +172,42 @@
             },
             bulkDelete: function (ids) {
                 sessionStorage.removeItem('pgt_admin_products');
+                sessionStorage.removeItem('pgt_admin_products_ttl');
                 return _fetch('/products/bulk-delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids })
+                });
+            }
+        },
+        gifts: {
+            load: function () {
+                _invalidate('pgt_admin_gifts');
+                return _fetch('/gifts');
+            },
+            save: function (gift) {
+                _invalidate('pgt_admin_gifts');
+                _invalidate('pgt_admin_products');
+                if (gift.id) {
+                    return _fetch('/gifts/' + gift.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(gift)
+                    });
+                } else {
+                    return _fetch('/gifts', {
+                        method: 'POST',
+                        body: JSON.stringify(gift)
+                    });
+                }
+            },
+            delete: function (id) {
+                _invalidate('pgt_admin_gifts');
+                _invalidate('pgt_admin_products');
+                return _fetch('/gifts/' + id, { method: 'DELETE' });
+            },
+            bulkDelete: function (ids) {
+                _invalidate('pgt_admin_gifts');
+                _invalidate('pgt_admin_products');
+                return _fetch('/gifts/bulk-delete', {
                     method: 'POST',
                     body: JSON.stringify({ ids: ids })
                 });
@@ -163,8 +215,8 @@
         },
         orders: {
             load: function () {
-                // Use 30s TTL so page transitions feel instant but fresh orders appear quickly
-                return _ttlCachedFetch('pgt_admin_orders', '/orders', {}, false, 30000).then(function (data) {
+                _invalidate('pgt_admin_orders');
+                return _fetch('/orders').then(function (data) {
                     if (!Array.isArray(data)) return [];
                     return data.map(normalizeOrder);
                 });
@@ -206,6 +258,20 @@
                     body: JSON.stringify({ reason: reason || '' })
                 });
             },
+            bulkStatus: function (ids, status) {
+                _invalidate('pgt_admin_orders');
+                return _fetch('/orders/bulk-status', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids, status: status })
+                });
+            },
+            bulkDelete: function (ids) {
+                _invalidate('pgt_admin_orders');
+                return _fetch('/orders/bulk-delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids })
+                });
+            },
             // Force a fresh fetch (bypass cache), used by SignalR notification handler
             refresh: function () {
                 _invalidate('pgt_admin_orders');
@@ -227,8 +293,8 @@
         },
         customers: {
             load: function () {
-                // Customers also updated by order creation — use 60s TTL
-                return _ttlCachedFetch('pgt_admin_customers', '/customers', {}, false, 60000);
+                _invalidate('pgt_admin_customers');
+                return _fetch('/customers');
             },
             create: function (customer) {
                 _invalidate('pgt_admin_customers');
@@ -239,15 +305,98 @@
             },
             delete: function (id) {
                 _invalidate('pgt_admin_customers');
-                return _fetch('/customers/' + id, { method: 'DELETE' });
+                return _fetch('/customers/' + id + '?force=true', { method: 'DELETE' });
+            },
+            bulkDelete: function (ids) {
+                _invalidate('pgt_admin_customers');
+                return _fetch('/customers/bulk-delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids })
+                });
+            }
+        },
+        affiliates: {
+            updatePendingBadge: function () {
+                var sbBadge = document.getElementById('sb-affiliates');
+                if (!sbBadge) { console.warn('sb-affiliates missing in DOM'); return Promise.resolve(0); }
+                
+                return _fetch('/affiliates/pending-count').then(function(res) {
+                    var total = res && res.total !== undefined ? res.total : 0;
+                    if (total > 0) {
+                        sbBadge.style.display = '';
+                        sbBadge.textContent = total;
+                        sbBadge.style.backgroundColor = '#dc2626';
+                    } else {
+                        sbBadge.style.display = 'none';
+                    }
+                    return total;
+                }).catch(function() {
+                    console.warn('pending-count failed, falling back to heavy fetch');
+                    return Promise.all([
+                        _fetch('/affiliates').catch(() => []),
+                        _fetch('/affiliates/withdrawals').catch(() => []),
+                        _fetch('/affiliates/commissions').catch(() => [])
+                    ]).then(function (results) {
+                        var affiliates = results[0] || [];
+                        var withdrawals = results[1] || [];
+                        var commissions = results[2] || [];
+                        
+                        var pendingAffiliates = affiliates.filter(a => a.status === 'Pending').length;
+                        var pendingWithdrawals = withdrawals.filter(w => w.status === 'Pending').length;
+                        var pendingCommissions = commissions.filter(c => c.status === 'Pending').length;
+                        
+                        var total = pendingAffiliates + pendingWithdrawals + pendingCommissions;
+                        console.log('Affiliates badge update:', total, affiliates.length, withdrawals.length, commissions.length);
+                        
+                        if (total > 0) {
+                            sbBadge.style.display = '';
+                            sbBadge.textContent = total;
+                            sbBadge.style.backgroundColor = '#dc2626';
+                        } else {
+                            sbBadge.style.display = 'none';
+                        }
+                        return total;
+                    });
+                });
+            },
+            bulkStatus: function (ids, status) {
+                return _fetch('/affiliates/bulk-status', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids, status: status })
+                });
+            },
+            bulkTier: function (ids, tier) {
+                return _fetch('/affiliates/bulk-tier', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids, tier: tier })
+                });
+            },
+            bulkDelete: function (ids) {
+                return _fetch('/affiliates/bulk-delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids })
+                });
             }
         },
         categories: {
             load: function () {
-                return _cachedFetch('pgt_admin_categories', '/categories', {}, true);
+                return _ttlCachedFetch('pgt_admin_categories_v2', '/categories', {}, true, 30000).then(function (data) {
+                    if (Array.isArray(data)) {
+                        AdminData._categoriesMap = {};
+                        data.forEach(function (c) {
+                            AdminData._categoriesMap[c.id || c.Id] = c.name || c.Name;
+                            if (c.subCategories && Array.isArray(c.subCategories)) {
+                                c.subCategories.forEach(function(sc) {
+                                    AdminData._categoriesMap[sc.id || sc.Id] = sc.name || sc.Name;
+                                });
+                            }
+                        });
+                    }
+                    return data;
+                });
             },
             save: function (cat) {
-                sessionStorage.removeItem('pgt_admin_categories');
+                sessionStorage.removeItem('pgt_admin_categories_v2');
                 if (cat.isNew) {
                     return _fetch('/categories', {
                         method: 'POST',
@@ -261,8 +410,15 @@
                 }
             },
             delete: function (id) {
-                sessionStorage.removeItem('pgt_admin_categories');
+                sessionStorage.removeItem('pgt_admin_categories_v2');
                 return _fetch('/categories/' + id, { method: 'DELETE' });
+            },
+            bulkDelete: function (ids) {
+                sessionStorage.removeItem('pgt_admin_categories_v2');
+                return _fetch('/categories/bulk-delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids })
+                });
             }
         },
         glazeLines: {
@@ -286,6 +442,13 @@
             delete: function (id) {
                 sessionStorage.removeItem('pgt_admin_glazelines');
                 return _fetch('/glazelines/' + id, { method: 'DELETE' });
+            },
+            bulkDelete: function (ids) {
+                sessionStorage.removeItem('pgt_admin_glazelines');
+                return _fetch('/glazelines/bulk-delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids })
+                });
             }
         },
         productTypes: {
@@ -309,6 +472,13 @@
             delete: function (id) {
                 sessionStorage.removeItem('pgt_admin_producttypes');
                 return _fetch('/producttypes/' + id, { method: 'DELETE' });
+            },
+            bulkDelete: function (ids) {
+                sessionStorage.removeItem('pgt_admin_producttypes');
+                return _fetch('/producttypes/bulk-delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids })
+                });
             }
         },
         materials: {
@@ -332,6 +502,13 @@
             delete: function (id) {
                 sessionStorage.removeItem('pgt_admin_materials');
                 return _fetch('/materials/' + id, { method: 'DELETE' });
+            },
+            bulkDelete: function (ids) {
+                sessionStorage.removeItem('pgt_admin_materials');
+                return _fetch('/materials/bulk-delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids })
+                });
             }
         },
         colors: {
@@ -355,6 +532,13 @@
             delete: function (id) {
                 sessionStorage.removeItem('pgt_admin_colors');
                 return _fetch('/colors/' + id, { method: 'DELETE' });
+            },
+            bulkDelete: function (ids) {
+                sessionStorage.removeItem('pgt_admin_colors');
+                return _fetch('/colors/bulk-delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids })
+                });
             }
         },
         patterns: {
@@ -378,6 +562,13 @@
             delete: function (id) {
                 sessionStorage.removeItem('pgt_admin_patterns');
                 return _fetch('/patterns/' + id, { method: 'DELETE' });
+            },
+            bulkDelete: function (ids) {
+                sessionStorage.removeItem('pgt_admin_patterns');
+                return _fetch('/patterns/bulk-delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids })
+                });
             }
         },
         sizes: {
@@ -401,6 +592,13 @@
             delete: function (id) {
                 sessionStorage.removeItem('pgt_admin_sizes');
                 return _fetch('/sizes/' + id, { method: 'DELETE' });
+            },
+            bulkDelete: function (ids) {
+                sessionStorage.removeItem('pgt_admin_sizes');
+                return _fetch('/sizes/bulk-delete', {
+                    method: 'POST',
+                    body: JSON.stringify({ ids: ids })
+                });
             }
         },
         journey: {
@@ -463,7 +661,7 @@
             },
             getRevenueByRange: function (startYear, startMonth, endYear, endMonth) {
                 var qs = '?startYear=' + startYear + '&startMonth=' + startMonth +
-                         '&endYear=' + endYear + '&endMonth=' + endMonth;
+                    '&endYear=' + endYear + '&endMonth=' + endMonth;
                 return _fetch('/analytics/revenue-by-range' + qs);
             }
         },
@@ -496,12 +694,24 @@
                 });
             }
         },
+        notifications: {
+            getAll: function () {
+                return _fetch('/notifications');
+            },
+            markAsRead: function (id) {
+                return _fetch('/notifications/' + id + '/read', { method: 'PATCH' });
+            },
+            markAllAsRead: function () {
+                return _fetch('/notifications/read-all', { method: 'PATCH' });
+            }
+        },
 
         // Format utilities
         fmtDate: function (dStr) {
             if (!dStr) return '';
-            if (typeof dStr === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?$/.test(dStr)) {
-                dStr += 'Z';
+            // Remove the Z append because SQL Server dates are local time already
+            if (typeof dStr === 'string' && dStr.endsWith('Z')) {
+                dStr = dStr.slice(0, -1);
             }
             try {
                 var d = new Date(dStr);
@@ -520,7 +730,7 @@
                         return dStr;
                     }
                 }
-                var pad = function(n) { return n < 10 ? '0' + n : n; };
+                var pad = function (n) { return n < 10 ? '0' + n : n; };
                 return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ' ' + pad(d.getDate()) + '-' + pad(d.getMonth() + 1) + '-' + d.getFullYear();
             } catch (e) {
                 return dStr;
@@ -564,7 +774,9 @@
             }
         },
         getCatName: function (slug) {
-            // Simplified for now, in reality you'd load categories and match
+            if (AdminData._categoriesMap && AdminData._categoriesMap[slug]) {
+                return AdminData._categoriesMap[slug];
+            }
             var map = {
                 'loc-binh': 'Lộc Bình',
                 'do-tho': 'Đồ Thờ',
@@ -574,6 +786,48 @@
                 'dia-gom': 'Đĩa Gốm'
             };
             return map[slug] || slug;
+        },
+        journey: {
+            loadTopics: function () {
+                return _fetch('/journey/topics', null, true);
+            },
+            loadVideos: function (topicId) {
+                var endpoint = '/journey/videos';
+                if (topicId) endpoint += '?topicId=' + topicId;
+                return _fetch(endpoint, null, true);
+            },
+            saveTopic: function (data, isNew) {
+                if (isNew) {
+                    return _fetch('/journey/topics', {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    });
+                } else {
+                    return _fetch('/journey/topics/' + data.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(data)
+                    });
+                }
+            },
+            deleteTopic: function (id) {
+                return _fetch('/journey/topics/' + id, { method: 'DELETE' });
+            },
+            saveVideo: function (data) {
+                if (data.id && data.id !== 0) {
+                    return _fetch('/journey/videos/' + data.id, {
+                        method: 'PUT',
+                        body: JSON.stringify(data)
+                    });
+                } else {
+                    return _fetch('/journey/videos', {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    });
+                }
+            },
+            deleteVideo: function (id) {
+                return _fetch('/journey/videos/' + id, { method: 'DELETE' });
+            }
         },
         notifications: {
             getAll: function () {

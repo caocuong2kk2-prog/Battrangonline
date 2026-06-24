@@ -20,12 +20,13 @@
 .particle{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(200,146,42,.4);animation:float linear infinite}
 @keyframes float{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(-10vh) rotate(720deg);opacity:0}}
 </style>
+<link rel="icon" href="assets/images/logo.png" type="image/png">
 </head>
 <body class="admin-login-body">
 <div class="login-particles" id="particles"></div>
 <div class="login-card">
   <div class="login-card__header">
-    <div class="login-card__logo">⚱️</div>
+    <div class="login-card__logo" style="background: none; border: none; padding: 0; margin-bottom: 16px;"><img src="assets/images/logo.png" alt="Logo" style="width: 120px; height: auto; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));"></div>
     <h1 class="login-card__title">Phúc Gia Tiên</h1>
     <p class="login-card__subtitle">Trang quản trị hệ thống</p>
   </div>
@@ -44,8 +45,8 @@
   <div class="login-hint">Demo: <code>admin</code> / <code>1</code></div>
 </div>
 <div id="admin-toast-container"></div>
-<script src="js/admin-data.js"></script>
-<script src="js/admin-core.js"></script>
+<script src="js/admin-data.js?v=15"></script>
+<script src="js/admin-core.js?v=15"></script>
 <script>
 // Redirect if already logged in
 if(localStorage.getItem('pgt_admin_session')){location.href="./";}
@@ -72,7 +73,8 @@ document.getElementById('login-form').addEventListener('submit',function(e){
   btn.disabled = true;
   btn.textContent = 'Đang xử lý...';
 
-  var API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api';
+  var isLiveServer = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && (window.location.port !== '5055' && window.location.port !== '7275');
+  var API_BASE = isLiveServer ? 'http://localhost:5055/api' : '/api';
   fetch(API_BASE + '/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

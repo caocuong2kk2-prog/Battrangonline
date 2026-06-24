@@ -8,5 +8,6 @@ namespace BatTrang.Core.Interfaces
     {
         Task<Order?> GetByOrderCodeAsync(string orderCode);
         Task<IReadOnlyList<Order>> GetOrdersWithItemsAsync();
+        Task<IList<Order>> GetOrdersByCustomerIdAsync(int customerId);
     }
 }

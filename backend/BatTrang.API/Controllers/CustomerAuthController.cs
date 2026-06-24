@@ -43,6 +43,7 @@ namespace BatTrang.API.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("LoginPolicy")]
         public async Task<IActionResult> Login([FromBody] CustomerLoginRequest request)
         {
             var user = await _customerRepo.GetByPhoneOrEmailAsync(request.EmailOrPhone, request.EmailOrPhone);
@@ -110,7 +111,7 @@ namespace BatTrang.API.Controllers
                     Phone = request.Phone,
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
                     Status = "active",
-                    JoinedAt = DateTime.UtcNow
+                    JoinedAt = DateTime.UtcNow.AddHours(7)
                 };
                 created = await _customerRepo.AddAsync(newCustomer);
             }
@@ -120,7 +121,7 @@ namespace BatTrang.API.Controllers
             try
             {
                 var msg = $"Khách hàng mới {created.Name} ({created.Email}) vừa đăng ký tài khoản.";
-                var noti = new BatTrang.Core.Entities.Notification { Type = "CustomerRegistered", Message = msg, CreatedAt = DateTime.UtcNow };
+                var noti = new BatTrang.Core.Entities.Notification { Type = "CustomerRegistered", Message = msg, CreatedAt = DateTime.UtcNow.AddHours(7) };
                 _context.Notifications.Add(noti);
                 await _context.SaveChangesAsync();
 
@@ -151,7 +152,7 @@ namespace BatTrang.API.Controllers
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? ""));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.UtcNow.AddDays(30);
+            var expires = DateTime.UtcNow.AddHours(7).AddDays(30);
 
             var claims = new[]
             {
@@ -181,19 +182,25 @@ namespace BatTrang.API.Controllers
 
             var user = await _customerRepo.GetByPhoneOrEmailAsync(request.EmailOrPhone, request.EmailOrPhone);
             
-            // Luôn trả về OK chung chung để chống dò email
-            if (user == null || user.Status == "inactive")
-                return Ok(new { message = "Nếu tài khoản tồn tại trong hệ thống, hướng dẫn khôi phục sẽ được gửi đến bạn." });
+            if (user == null || string.IsNullOrEmpty(user.PasswordHash) || string.IsNullOrEmpty(user.Email))
+            {
+                return BadRequest(new { message = "Tài khoản không tồn tại trên hệ thống hoặc chưa được đăng ký thành viên." });
+            }
+
+            if (user.Status == "inactive")
+            {
+                return BadRequest(new { message = "Tài khoản của bạn đã bị vô hiệu hóa." });
+            }
 
             // Kiểm tra cooldown (60s)
-            if (user.LastResetSentAt.HasValue && (DateTime.UtcNow - user.LastResetSentAt.Value).TotalSeconds < 60)
+            if (user.LastResetSentAt.HasValue && (DateTime.UtcNow.AddHours(7) - user.LastResetSentAt.Value).TotalSeconds < 60)
             {
                 return BadRequest(new { message = "Vui lòng đợi 60 giây trước khi yêu cầu gửi lại Email khôi phục." });
             }
 
             // 2. Max attempts per day (Reset attempts logic)
             // If the last reset was more than 24 hours ago, reset the counter
-            if (user.LastResetSentAt.HasValue && (DateTime.UtcNow - user.LastResetSentAt.Value).TotalHours > 24)
+            if (user.LastResetSentAt.HasValue && (DateTime.UtcNow.AddHours(7) - user.LastResetSentAt.Value).TotalHours > 24)
             {
                 user.ResetAttempts = 0;
             }
@@ -203,26 +210,21 @@ namespace BatTrang.API.Controllers
                 return BadRequest(new { message = "Bạn đã yêu cầu khôi phục quá nhiều lần trong ngày. Vui lòng thử lại sau 24h." });
             }
 
-            if (user.Status == "inactive")
-            {
-                return BadRequest(new { message = "Tài khoản của bạn đã bị vô hiệu hóa." });
-            }
-
             // Sinh mã OTP 6 số (if using OTP) or Token for link
             string rawToken = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
             var safeToken = rawToken.Replace("+", "-").Replace("/", "_").Replace("=", "");
             
             user.ResetToken = BCrypt.Net.BCrypt.HashPassword(safeToken); // Hash Token
-            user.ResetTokenExpiresAt = DateTime.UtcNow.AddMinutes(30);
+            user.ResetTokenExpiresAt = DateTime.UtcNow.AddHours(7).AddMinutes(30);
 
-            var resetLink = $"http://localhost:5080/forgot-password.html?token={safeToken}&email={user.Email}";
+            var resetLink = $"http://localhost:5055/forgot-password.html?token={safeToken}&email={user.Email}";
             await _notificationService.SendPasswordResetEmailAsync(user.Email, resetLink);
 
             user.ResetAttempts++;
-            user.LastResetSentAt = DateTime.UtcNow;
+            user.LastResetSentAt = DateTime.UtcNow.AddHours(7);
             await _customerRepo.UpdateAsync(user);
 
-            return Ok(new { message = "Nếu tài khoản tồn tại trong hệ thống, hướng dẫn khôi phục sẽ được gửi đến bạn qua Email." });
+            return Ok(new { message = "Hướng dẫn khôi phục mật khẩu đã được gửi đến Email của bạn." });
         }
 
         [HttpPost("reset-password")]
@@ -230,7 +232,7 @@ namespace BatTrang.API.Controllers
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
             var user = await _customerRepo.GetByPhoneOrEmailAsync(request.EmailOrPhone, request.EmailOrPhone);
-            if (user == null || user.ResetTokenExpiresAt == null || user.ResetTokenExpiresAt < DateTime.UtcNow)
+            if (user == null || user.ResetTokenExpiresAt == null || user.ResetTokenExpiresAt < DateTime.UtcNow.AddHours(7))
             {
                 return BadRequest(new { message = "Yêu cầu khôi phục đã hết hạn. Vui lòng thử lại." });
             }

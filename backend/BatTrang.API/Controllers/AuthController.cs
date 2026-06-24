@@ -28,11 +28,33 @@ namespace BatTrang.API.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("LoginPolicy")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var user = await _adminUserRepo.GetByUsernameAsync(request.Username);
             
-            if (user == null || request.Password != user.Password)
+            if (user == null || string.IsNullOrEmpty(user.Password))
+            {
+                return Unauthorized(new { message = "Tài khoản hoặc mật khẩu không chính xác." });
+            }
+
+            bool isPasswordValid = false;
+            try 
+            {
+                isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.Password);
+            } 
+            catch 
+            {
+                // Fallback for plaintext passwords created before the fix
+                if (!user.Password.StartsWith("$2") && user.Password == request.Password)
+                {
+                    isPasswordValid = true;
+                    user.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
+                    await _adminUserRepo.UpdateAsync(user);
+                }
+            }
+
+            if (!isPasswordValid)
             {
                 return Unauthorized(new { message = "Tài khoản hoặc mật khẩu không chính xác." });
             }
@@ -52,14 +74,14 @@ namespace BatTrang.API.Controllers
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? ""));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.UtcNow.AddDays(7);
+            var expires = DateTime.UtcNow.AddHours(7).AddDays(7);
 
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim("username", user.Username),
-                new Claim(ClaimTypes.Role, user.Role),
-                new Claim(JwtRegisteredClaimNames.Name, user.Name),
+                new Claim("username", user.Username ?? ""),
+                new Claim(ClaimTypes.Role, user.Role ?? "admin"),
+                new Claim(JwtRegisteredClaimNames.Name, user.Name ?? "Admin"),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
@@ -74,7 +96,7 @@ namespace BatTrang.API.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        [Authorize]
+        [Authorize(Policy = "AdminOrStaff")]
         [HttpPost("update-profile")]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
         {
@@ -104,7 +126,7 @@ namespace BatTrang.API.Controllers
 
             if (!string.IsNullOrEmpty(request.NewPassword))
             {
-                user.Password = request.NewPassword;
+                user.Password = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
             }
 
             await _adminUserRepo.UpdateAsync(user);

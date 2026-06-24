@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.EntityFrameworkCore;
 
 namespace BatTrang.API.Controllers
 {
@@ -15,10 +16,12 @@ namespace BatTrang.API.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductRepository _productRepo;
+        private readonly BatTrang.Infrastructure.Data.AppDbContext _context;
 
-        public ProductsController(IProductRepository productRepo)
+        public ProductsController(IProductRepository productRepo, BatTrang.Infrastructure.Data.AppDbContext context)
         {
             _productRepo = productRepo;
+            _context = context;
         }
 
         [HttpGet]
@@ -28,7 +31,27 @@ namespace BatTrang.API.Controllers
         {
             var result = await _productRepo.GetProductsAsync(filter);
             
-            var dtos = result.Data.Select(p => MapToDto(p)).ToList();
+            var productIds = result.Data.Select(p => p.Id).ToList();
+            var productGifts = await _context.ProductGifts
+                .Include(pg => pg.Gift)
+                .Where(pg => productIds.Contains(pg.ProductId) && pg.Gift.Status == "active")
+                .ToListAsync();
+            var giftsGrouped = productGifts.GroupBy(pg => pg.ProductId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(pg => new GiftDto
+                    {
+                        Id = pg.Gift.Id,
+                        Name = pg.Gift.Name,
+                        ImageUrl = pg.Gift.ImageUrl,
+                        EstimatedValue = pg.Gift.EstimatedValue,
+                        Stock = pg.Gift.Stock,
+                        Status = pg.Gift.Status,
+                        Quantity = pg.Quantity
+                    }).ToList()
+                );
+
+            var dtos = result.Data.Select(p => MapToDto(p, giftsGrouped.ContainsKey(p.Id) ? giftsGrouped[p.Id] : null)).ToList();
 
             return Ok(new PaginatedResult<ProductDto>
             {
@@ -44,7 +67,28 @@ namespace BatTrang.API.Controllers
         public async Task<IActionResult> GetFeaturedProducts([FromQuery] int limit = 6)
         {
             var products = await _productRepo.GetFeaturedProductsAsync(limit);
-            var dtos = products.Select(p => MapToDto(p)).ToList();
+            
+            var productIds = products.Select(p => p.Id).ToList();
+            var productGifts = await _context.ProductGifts
+                .Include(pg => pg.Gift)
+                .Where(pg => productIds.Contains(pg.ProductId) && pg.Gift.Status == "active")
+                .ToListAsync();
+            var giftsGrouped = productGifts.GroupBy(pg => pg.ProductId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(pg => new GiftDto
+                    {
+                        Id = pg.Gift.Id,
+                        Name = pg.Gift.Name,
+                        ImageUrl = pg.Gift.ImageUrl,
+                        EstimatedValue = pg.Gift.EstimatedValue,
+                        Stock = pg.Gift.Stock,
+                        Status = pg.Gift.Status,
+                        Quantity = pg.Quantity
+                    }).ToList()
+                );
+
+            var dtos = products.Select(p => MapToDto(p, giftsGrouped.ContainsKey(p.Id) ? giftsGrouped[p.Id] : null)).ToList();
             return Ok(dtos);
         }
 
@@ -56,26 +100,51 @@ namespace BatTrang.API.Controllers
             var p = await _productRepo.GetProductBySlugAsync(slug);
             if (p == null) return NotFound();
 
-            var dto = MapToDto(p);
+            var gifts = await _context.ProductGifts
+                .Include(pg => pg.Gift)
+                .Where(pg => pg.ProductId == p.Id && pg.Gift.Status == "active")
+                .Select(pg => new GiftDto
+                {
+                    Id = pg.Gift.Id,
+                    Name = pg.Gift.Name,
+                    ImageUrl = pg.Gift.ImageUrl,
+                    EstimatedValue = pg.Gift.EstimatedValue,
+                    Stock = pg.Gift.Stock,
+                    Status = pg.Gift.Status,
+                    Quantity = pg.Quantity
+                })
+                .ToListAsync();
+
+            var dto = MapToDto(p, gifts);
             return Ok(dto);
         }
 
-        private ProductDto MapToDto(Product p)
+        private ProductDto MapToDto(Product p, List<GiftDto>? gifts = null)
         {
+            var cheapestVariant = p.Variants.OrderBy(v => v.CampaignPrice ?? v.Price).FirstOrDefault();
             return new ProductDto
             {
                 Id = p.Id,
                 Name = p.Name,
                 Slug = p.Slug,
-                BasePrice = p.Variants.Any() ? p.Variants.Min(v => v.Price) : 0,
-                BaseOriginalPrice = p.Variants.Any() ? p.Variants.Max(v => v.OriginalPrice) : null,
+                Sku = p.Sku,
+                BasePrice = cheapestVariant != null ? (cheapestVariant.CampaignPrice ?? cheapestVariant.Price) : 0,
+                BaseOriginalPrice = cheapestVariant != null ? (cheapestVariant.CampaignPrice.HasValue ? cheapestVariant.Price : cheapestVariant.OriginalPrice) : null,
                 Category = p.Category?.Slug ?? "",
                 Usage = p.Usage,
                 TotalStock = p.Variants.Sum(v => v.Stock),
                 Status = p.Status,
-                Badge = p.Badge,
+                Badge = p.MarketingBadges,
+                IsUnique = p.IsUnique,
                 ShortDescription = p.ShortDescription,
                 Description = p.Description,
+                Faqs = p.Faqs,
+                CategoryFaqs = p.Category?.Faqs,
+                TotalSold = p.TotalSold,
+                CommissionRate = p.CommissionRate,
+                CreatedAt = p.CreatedAt,
+                Gifts = gifts ?? new List<GiftDto>(),
+                GiftIds = gifts?.Select(g => g.Id).ToList() ?? new List<int>(),
                 Variants = p.Variants.Select(v => new ProductVariantDto
                 {
                     Id = v.Id,
@@ -92,8 +161,8 @@ namespace BatTrang.API.Controllers
                     GlazeLineId = v.GlazeLineId,
                     GlazeLineName = v.GlazeLine?.Name,
                     Images = v.Images?.OrderBy(i => i.SortOrder).Select(i => i.ImageUrl).ToList() ?? new List<string>(),
-                    Price = v.Price,
-                    OriginalPrice = v.OriginalPrice,
+                    Price = v.CampaignPrice ?? v.Price,
+                    OriginalPrice = v.CampaignPrice.HasValue ? v.Price : v.OriginalPrice,
                     Stock = v.Stock
                 }).ToList()
             };

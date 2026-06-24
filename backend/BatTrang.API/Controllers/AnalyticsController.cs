@@ -12,7 +12,7 @@ namespace BatTrang.API.Controllers
 {
     [ApiController]
     [Route("api/admin/analytics")]
-    [Authorize]
+    [Authorize(Policy = "AdminOrStaff")]
     public class AnalyticsController : ControllerBase
     {
         private readonly IOrderRepository _orderRepo;
@@ -34,6 +34,7 @@ namespace BatTrang.API.Controllers
 
         // GET /api/admin/analytics/revenue-by-range?startYear=2025&startMonth=1&endYear=2025&endMonth=6
         [HttpGet("revenue-by-range")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> GetRevenueByRange(
             [FromQuery] int startYear, [FromQuery] int startMonth,
             [FromQuery] int endYear,   [FromQuery] int endMonth)
@@ -84,11 +85,12 @@ namespace BatTrang.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDashboardData([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
+            var isAdmin = User.IsInRole("admin");
             var totalOrdersAllTime = await _orderRepo.CountAsync();
             var totalProductsAllTime = await _productRepo.CountAsync();
             var totalCustomersAllTime = await _customerRepo.CountAsync();
 
-            var now = DateTime.UtcNow;
+            var now = DateTime.UtcNow.AddHours(7);
             
             DateTime currentStart;
             DateTime currentEnd;
@@ -127,8 +129,8 @@ namespace BatTrang.API.Controllers
             var currentCompletedOrders = currentOrders.Where(o => o.Status == "completed").ToList();
             var previousCompletedOrders = previousOrders.Where(o => o.Status == "completed").ToList();
 
-            var currentRevenue = currentCompletedOrders.Sum(o => o.Total);
-            var previousRevenue = previousCompletedOrders.Sum(o => o.Total);
+            var currentRevenue = isAdmin ? currentCompletedOrders.Sum(o => o.Total) : 0;
+            var previousRevenue = isAdmin ? previousCompletedOrders.Sum(o => o.Total) : 0;
 
             var currentAov = currentCompletedOrders.Count > 0 ? currentRevenue / currentCompletedOrders.Count : 0;
             var previousAov = previousCompletedOrders.Count > 0 ? previousRevenue / previousCompletedOrders.Count : 0;
@@ -151,7 +153,7 @@ namespace BatTrang.API.Controllers
                 { "cancelled", currentOrders.Count(o => o.Status == "cancelled") }
             };
 
-            var products = await _productRepo.ListAllAsync();
+            var products = await _productRepo.GetAllProductsWithVariantsAsync();
             var categories = await _categoryRepo.ListAllAsync();
             
             var productIds = products.Select(p => p.Id).ToList();
@@ -177,7 +179,7 @@ namespace BatTrang.API.Controllers
                     ProductName = g.Key,
                     ProductId = g.First().ProductId,
                     SalesQty = g.Sum(i => i.Quantity),
-                    TotalRevenue = g.Sum(i => i.Quantity * i.UnitPrice)
+                    TotalRevenue = isAdmin ? g.Sum(i => i.Quantity * i.UnitPrice) : 0
                 }).ToList();
 
             foreach(var sold in soldItems)
@@ -188,6 +190,7 @@ namespace BatTrang.API.Controllers
                     Id = sold.ProductId,
                     Name = sold.ProductName,
                     Slug = p?.Slug,
+                    Sku = p?.Sku,
                     Category = categories.FirstOrDefault(c => c.Id == p?.CategoryId)?.Name ?? "Khác",
                     BasePrice = p?.Variants?.FirstOrDefault()?.Price ?? 0,
                     Stock = p?.Variants?.Sum(v => v.Stock) ?? 0,
@@ -206,6 +209,7 @@ namespace BatTrang.API.Controllers
                     Id = p.Id,
                     Name = p.Name,
                     Slug = p.Slug,
+                    Sku = p.Sku,
                     Category = categories.FirstOrDefault(c => c.Id == p.CategoryId)?.Name ?? "Khác",
                     BasePrice = p.Variants?.FirstOrDefault()?.Price ?? 0,
                     Stock = p.Variants?.Sum(v => v.Stock) ?? 0,
@@ -228,15 +232,36 @@ namespace BatTrang.API.Controllers
                 tp.FirstImage = tp.Images.FirstOrDefault();
             }
 
-            var customerPhoneGroups = allOrders
-                .Where(o => !string.IsNullOrEmpty(o.CustomerPhone))
-                .GroupBy(o => o.CustomerPhone)
-                .Select(g => g.Count())
-                .ToList();
+            List<string> periodCustomerPhones;
+            int totalUniqueCustomers;
+            int repeatCustomers;
 
-            var totalUniqueCustomers = customerPhoneGroups.Count;
-            var repeatCustomers = customerPhoneGroups.Count(c => c > 1);
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                periodCustomerPhones = currentOrders
+                    .Where(o => !string.IsNullOrEmpty(o.CustomerPhone))
+                    .Select(o => o.CustomerPhone)
+                    .Distinct()
+                    .ToList();
+                
+                totalUniqueCustomers = periodCustomerPhones.Count;
+                repeatCustomers = periodCustomerPhones
+                    .Count(phone => allOrders.Count(o => o.CustomerPhone == phone) > 1);
+            }
+            else
+            {
+                var customerPhoneGroups = allOrders
+                    .Where(o => !string.IsNullOrEmpty(o.CustomerPhone))
+                    .GroupBy(o => o.CustomerPhone)
+                    .Select(g => g.Count())
+                    .ToList();
+
+                totalUniqueCustomers = customerPhoneGroups.Count;
+                repeatCustomers = customerPhoneGroups.Count(c => c > 1);
+            }
+
             double returnCustomerRate = totalUniqueCustomers > 0 ? (double)repeatCustomers / totalUniqueCustomers * 100 : 0;
+
 
             var analytics = new AnalyticsDto
             {
@@ -256,6 +281,8 @@ namespace BatTrang.API.Controllers
                 PreviousMonthAov = previousAov,
                 AovPercentChange = System.Math.Round(aovPercentChange, 1),
                 ReturnCustomerRate = System.Math.Round(returnCustomerRate, 1),
+                UniqueOrderCustomers = totalUniqueCustomers,
+                RepeatOrderCustomers = repeatCustomers,
                 CurrentMonthLabel = currentLabel,
                 PreviousMonthLabel = previousLabel,
                 
@@ -272,9 +299,9 @@ namespace BatTrang.API.Controllers
                 // Group by Day
                 for (var day = currentStart; day < currentEnd; day = day.AddDays(1))
                 {
-                    var dayRev = allCompletedOrders
+                    var dayRev = isAdmin ? allCompletedOrders
                         .Where(o => o.CreatedAt >= day && o.CreatedAt < day.AddDays(1))
-                        .Sum(o => o.Total);
+                        .Sum(o => o.Total) : 0;
                     
                     chartDataList.Add(new RevenueDto
                     {
@@ -290,9 +317,9 @@ namespace BatTrang.API.Controllers
                 while (cursor < currentEnd)
                 {
                     var nextMonth = cursor.AddMonths(1);
-                    var monthRev = allCompletedOrders
+                    var monthRev = isAdmin ? allCompletedOrders
                         .Where(o => o.CreatedAt >= cursor && o.CreatedAt < nextMonth)
-                        .Sum(o => o.Total);
+                        .Sum(o => o.Total) : 0;
 
                     chartDataList.Add(new RevenueDto
                     {
@@ -329,7 +356,7 @@ namespace BatTrang.API.Controllers
             {
                 foreach (var item in order.Items)
                 {
-                    var revenue = item.UnitPrice * item.Quantity;
+                    var revenue = isAdmin ? item.UnitPrice * item.Quantity : 0;
                     totalCatRevenue += revenue;
 
                     if (productCategoryMap.TryGetValue(item.ProductId, out var catName))
@@ -353,29 +380,61 @@ namespace BatTrang.API.Controllers
                 { "Đồ Thờ", "#9B8B75" },
                 { "Tranh Gốm", "#3b82f6" },
                 { "Bình Hoa", "#16a34a" },
-                { "Chum – Vạt", "#1A0F05" },
+                { "Chum – Vạt", "#a855f7" },
                 { "Đĩa Gốm", "#6366f1" },
                 { "Khác", "#D5C8B5" }
             };
 
+            // Chỉ lấy các danh mục có doanh thu > 0
+            var nonZeroCategories = categoryRevenueMap
+                .Where(kvp => kvp.Value > 0)
+                .OrderByDescending(kvp => kvp.Value)
+                .ToList();
+
             var categoryRevenueList = new System.Collections.Generic.List<CategoryRevenueDto>();
-            foreach (var kvp in categoryRevenueMap)
+
+            if (totalCatRevenue > 0 && nonZeroCategories.Any())
             {
-                var value = totalCatRevenue > 0 ? System.Math.Round((kvp.Value / totalCatRevenue) * 100) : 0;
-                if (kvp.Value > 0 || totalCatRevenue == 0)
+                // Largest Remainder Method — đảm bảo tổng % luôn = 100
+                var exactValues = nonZeroCategories
+                    .Select(kvp => (kvp.Key, Exact: (double)kvp.Value / (double)totalCatRevenue * 100))
+                    .ToList();
+
+                var floored = exactValues.Select(x => (x.Key, Floor: (int)Math.Floor(x.Exact), Remainder: x.Exact - Math.Floor(x.Exact))).ToList();
+                var remainder = 100 - floored.Sum(x => x.Floor);
+
+                var sorted = floored.OrderByDescending(x => x.Remainder).ToList();
+                for (int i = 0; i < sorted.Count; i++)
                 {
-                    var color = categoryColors.TryGetValue(kvp.Key, out var c) ? c : "#999999";
+                    var extra = i < remainder ? 1 : 0;
+                    var color = categoryColors.TryGetValue(sorted[i].Key, out var c) ? c : "#999999";
                     categoryRevenueList.Add(new CategoryRevenueDto
                     {
-                        Name = kvp.Key,
-                        Value = value,
+                        Name = sorted[i].Key,
+                        Value = (decimal)(sorted[i].Floor + extra),
                         Color = color
                     });
                 }
+
+                // Sắp xếp lại theo doanh thu giảm dần để legend đẹp
+                categoryRevenueList = categoryRevenueList
+                    .OrderByDescending(x => x.Value)
+                    .ToList();
             }
+            else if (totalCatRevenue == 0)
+            {
+                // Không có doanh thu — hiển thị tất cả danh mục với 0%
+                foreach (var kvp in categoryRevenueMap)
+                {
+                    var color = categoryColors.TryGetValue(kvp.Key, out var c) ? c : "#999999";
+                    categoryRevenueList.Add(new CategoryRevenueDto { Name = kvp.Key, Value = 0, Color = color });
+                }
+            }
+
             analytics.CategoryRevenue = categoryRevenueList;
 
             return Ok(analytics);
         }
     }
 }
+

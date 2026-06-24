@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn Hàng - CTV Bát Tràng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <script src="js/api.js?v=5"></script>
+    <script>
+        let currentOrderPage = 1;
+        const ordersPerPage = 20;
+        let currentFilteredOrders = [];
+
+        function getTierIcon() {
+            const tier = window.affiliateTier || 'Thường';
+            if (tier === 'Kim Cương' || tier === 'VIP') return '💎';
+            if (tier === 'Vàng') return '🥇';
+            if (tier === 'Bạc') return '🥈';
+            return '🌱';
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            renderLayout('orders', 'Đơn Hàng Phát Sinh');
+
+            try {
+                const orders = await Api.request('/affiliates/orders');
+                window.allOrders = orders;
+
+                const html = `
+                    <!-- Summary Cards -->
+                    <div class="stats-summary-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                        <div class="stats-summary-card" style="background: #fff; border-radius: 8px; padding: 12px 16px; border-left: 4px solid #3b82f6; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px;">Đơn hàng hiển thị</div>
+                                <div id="summary-filtered-count" style="font-size: 1.3rem; font-weight: 800; color: #111827;">0</div>
+                            </div>
+                            <div style="width: 44px; height: 44px; border-radius: 10px; background: #eff6ff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">📦</div>
+                        </div>
+                        <div class="stats-summary-card" style="background: #fff; border-radius: 8px; padding: 12px 16px; border-left: 4px solid #8b5cf6; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px;">Doanh thu hợp lệ</div>
+                                <div id="summary-filtered-revenue" style="font-size: 1.3rem; font-weight: 800; color: #111827;">0đ</div>
+                            </div>
+                            <div style="width: 44px; height: 44px; border-radius: 10px; background: #f5f3ff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">💰</div>
+                        </div>
+                        <div class="stats-summary-card" style="background: #fff; border-radius: 8px; padding: 12px 16px; border-left: 4px solid #f59e0b; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px;">Hoa hồng hợp lệ</div>
+                                <div id="summary-filtered-commission" style="font-size: 1.3rem; font-weight: 800; color: #111827;">0đ</div>
+                            </div>
+                            <div style="width: 44px; height: 44px; border-radius: 10px; background: #fffbeb; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">💸</div>
+                        </div>
+                    </div>
+                    <div class="card" style="box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03);">
+                        <div class="card-header" style="padding: 14px 16px; flex-direction: column; align-items: stretch; gap: 0;">
+                            <h3 class="card-title" style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                                <span style="font-size: 1.2rem;">🛒</span> Danh sách đơn hàng
+                            </h3>
+                            <div class="page-filter-bar" style="padding: 0; background: transparent; border: none;">
+                                <style>
+                                    .custom-option:hover { background: #f3f4f6; color: #3b82f6 !important; }
+                                    .custom-option.selected { background: #eff6ff; color: #3b82f6; font-weight: 600; }
+                                </style>
+                                <input type="text" id="order-search" class="form-control filter-search" placeholder="🔍 Tìm mã đơn hàng..." oninput="filterOrders()" style="padding: 10px 14px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                <div class="filter-select-wrapper" style="z-index: 10;">
+                                    <div id="custom-select-trigger" style="width: 100%; box-sizing: border-box; padding: 10px 14px; border-radius: 8px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit; font-size: 0.95rem; color: #111827;" onclick="toggleCustomSelect()">
+                                        <span id="custom-select-label">Tất cả trạng thái</span>
+                                        <svg width="18" height="18" fill="none" stroke="#6b7280" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                                    </div>
+                                    <div id="custom-select-options" style="position: absolute; top: 100%; left: 0; right: 0; margin-top: 4px; background: #fff; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: none; flex-direction: column; overflow: hidden; z-index: 20;">
+                                        <div class="custom-option selected" data-value="" style="padding: 10px 14px; cursor: pointer; font-size: 0.95rem; color: #111827;" onclick="selectOption(this)">Tất cả trạng thái</div>
+                                        <div class="custom-option" data-value="completed" style="padding: 10px 14px; cursor: pointer; font-size: 0.95rem; color: #111827;" onclick="selectOption(this)">Hoàn thành</div>
+                                        <div class="custom-option" data-value="processing" style="padding: 10px 14px; cursor: pointer; font-size: 0.95rem; color: #111827;" onclick="selectOption(this)">Đang xử lý</div>
+                                        <div class="custom-option" data-value="cancelled" style="padding: 10px 14px; cursor: pointer; font-size: 0.95rem; color: #111827;" onclick="selectOption(this)">Đã hủy</div>
+                                        <div class="custom-option" data-value="returned" style="padding: 10px 14px; cursor: pointer; font-size: 0.95rem; color: #111827;" onclick="selectOption(this)">Đã trả hàng</div>
+                                    </div>
+                                    <input type="hidden" id="order-status" value="">
+                                </div>
+                                <div class="filter-date-group">
+                                    <span class="filter-date-label">Từ:</span>
+                                    <input type="date" id="order-date-from" onchange="filterOrders()">
+                                    <span class="filter-date-label">Đến:</span>
+                                    <input type="date" id="order-date-to" onchange="filterOrders()">
+                                </div>
+                                <button onclick="exportExcel()" class="filter-export-btn">
+                                    <span>📥</span> Xuất Excel
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Mã đơn</th>
+                                        <th class="table-hide-mobile">Sản phẩm</th>
+                                        <th style="text-align: right;">Giá trị đơn</th>
+                                        <th style="text-align: right;">Hoa hồng dự kiến</th>
+                                        <th style="text-align: center;">Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-tbody">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="pagination" style="display: flex; justify-content: center; align-items: center; gap: 8px; padding: 20px; border-top: 1px solid var(--border-color);"></div>
+                    </div>
+                `;
+                document.getElementById('pageContent').innerHTML = html;
+
+                // Set default dates to current month
+                const today = new Date();
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+                
+                const formatDate = (d) => {
+                    const yyyy = d.getFullYear();
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    return `${yyyy}-${mm}-${dd}`;
+                };
+                
+                document.getElementById('order-date-from').value = formatDate(firstDay);
+                document.getElementById('order-date-to').value = formatDate(today);
+
+                filterOrders();
+
+            } catch (err) {
+                document.getElementById('pageContent').innerHTML = `<div class="alert alert-error" style="display:block">Lỗi: ${err.message}</div>`;
+            }
+        });
+
+        window.renderOrdersList = function (data) {
+            currentFilteredOrders = data;
+            let tbody = '';
+            if (data.length === 0) {
+                tbody = `
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding: 40px 20px;">
+                            <div style="font-size: 3rem; color: #e5e7eb; margin-bottom: 10px;">📦</div>
+                            <div style="color: var(--text-muted); font-weight: 500;">Không tìm thấy đơn hàng nào.</div>
+                            <div style="font-size: 0.85rem; color: #9ca3af; margin-top: 5px;">Thử thay đổi bộ lọc hoặc điều kiện tìm kiếm.</div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                const totalPages = Math.ceil(data.length / ordersPerPage);
+                if (currentOrderPage > totalPages && totalPages > 0) currentOrderPage = totalPages;
+                const pagedData = data.slice((currentOrderPage - 1) * ordersPerPage, currentOrderPage * ordersPerPage);
+
+                pagedData.forEach(o => {
+                    const date = new Date(o.createdAt).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
+                    const s = (o.status || '').toLowerCase();
+                    let statusLabel = '';
+                    if (s === 'completed') statusLabel = '<span class="badge badge-completed">Hoàn thành</span>';
+                    else if (s === 'pending') statusLabel = '<span class="badge badge-pending">Chờ xác nhận</span>';
+                    else if (s === 'confirmed') statusLabel = '<span class="badge badge-active">Đã xác nhận</span>';
+                    else if (s === 'shipping') statusLabel = '<span class="badge badge-active">Đang giao</span>';
+                    else if (s === 'cancelled') statusLabel = '<span class="badge badge-cancelled">Đã huỷ</span>';
+                    else statusLabel = `<span class="badge">${o.status}</span>`;
+
+                    let itemsHtml = '';
+                    if (o.items && o.items.length > 0) {
+                        itemsHtml = '<div style="display: flex; flex-direction: column; gap: 8px;">';
+                        o.items.forEach(item => {
+                            let imgUrl = item.imageUrl || '';
+                            if (imgUrl.startsWith('/uploads/')) {
+                                const dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' ? 'http://localhost:5055' : '';
+                                imgUrl = dynamicBase + imgUrl;
+                            }
+
+                            let imgHtml = imgUrl
+                                ? `<img src="${imgUrl}" alt="Product" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #e5e7eb; flex-shrink: 0;" onerror="this.src='/assets/images/placeholder.png'">`
+                                : `<div style="width: 40px; height: 40px; background: #f3f4f6; border-radius: 6px; border: 1px solid #e5e7eb; flex-shrink: 0; display:flex; align-items:center; justify-content:center; color:#9ca3af; font-size:10px;">Trống</div>`;
+
+                            itemsHtml += `
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    ${imgHtml}
+                                    <div style="font-size: 0.85rem; color: var(--text-dark); line-height: 1.3; flex: 1;">
+                                        <div style="font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px;">${item.productName}</div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="font-size: 0.75rem; color: #4b5563; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; border: 1px solid #e5e7eb;">Mã SP: ${item.productCode || 'Chưa cập nhật'}</span>
+                                            <div style="color: var(--primary); font-weight: 600;">x${item.quantity}</div>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; padding-top: 6px; border-top: 1px dashed #e5e7eb;">
+                                            <div style="font-size: 0.8rem; color: var(--text-muted);">
+                                                Giá: <span style="color: var(--text-dark); font-weight: 500;">${item.unitPrice.toLocaleString('vi-VN')}đ</span>
+                                            </div>
+                                            <div style="font-size: 0.8rem; color: var(--text-muted);">
+                                                Hoa hồng (${item.commissionRate || 0}%): <span style="color: var(--success); font-weight: 600;">+${(item.unitPrice * ((item.commissionRate || 0) / 100) * item.quantity).toLocaleString('vi-VN')}đ</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        });
+                        itemsHtml += '</div>';
+                    } else {
+                        itemsHtml = '<span style="color: var(--text-muted); font-size: 0.85rem;">Không rõ sản phẩm</span>';
+                    }
+
+                    tbody += `
+                        <tr>
+                            <td>
+                                <strong style="color: var(--text-dark);">#${o.orderCode}</strong>
+                                <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">${date}</div>
+                            </td>
+                            <td style="max-width: 250px;" class="table-hide-mobile">${itemsHtml}</td>
+                            <td style="text-align: right; font-weight: 500; color: var(--text-dark);">${o.total.toLocaleString('vi-VN')}đ</td>
+                            <td style="text-align: right;">
+                                ${['cancelled', 'returned', 'refunded'].includes(s) ? `
+                                    <strong style="color: var(--text-muted); font-size: 1.05rem;">0đ</strong>
+                                    <div style="font-size: 0.75rem; color: #dc2626; margin-top: 2px;">Không được tính</div>
+                                ` : `
+                                    <strong style="color: var(--success); font-size: 1.05rem;">+${o.commissionAmount.toLocaleString('vi-VN')}đ</strong>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">Gốc: +${(o.baseCommissionAmount || 0).toLocaleString('vi-VN')}đ</div>
+                                    ${(o.tierBonusAmount || 0) > 0 ? `<div style="font-size: 0.75rem; color: #d97706; margin-top: 2px;">Thưởng hạng ${getTierIcon()}(+${Math.round((o.tierBonusAmount / o.total) * 100)}%): +${o.tierBonusAmount.toLocaleString('vi-VN')}đ</div>` : ''}
+                                `}
+                            </td>
+                            <td style="text-align: center;">${statusLabel}</td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('orders-tbody').innerHTML = tbody;
+            renderOrderPagination(data.length);
+        };
+
+        window.renderOrderPagination = function (totalItems) {
+            const paginationEl = document.getElementById('pagination');
+            if (!paginationEl) return;
+            const totalPages = Math.ceil(totalItems / ordersPerPage);
+
+            if (totalPages <= 1) {
+                paginationEl.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            if (currentOrderPage > 1) {
+                html += `<button onclick="goToOrderPage(${currentOrderPage - 1})" class="btn" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer;">&laquo; Trước</button>`;
+            } else {
+                html += `<button class="btn" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e5e7eb; background: #f3f4f6; color: #9ca3af; cursor: not-allowed;" disabled>&laquo; Trước</button>`;
+            }
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentOrderPage - 2 && i <= currentOrderPage + 2)) {
+                    if (i === currentOrderPage) {
+                        html += `<button class="btn btn-primary" style="padding: 6px 12px; border-radius: 6px; border: none; cursor: default;">${i}</button>`;
+                    } else {
+                        html += `<button onclick="goToOrderPage(${i})" class="btn" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer;">${i}</button>`;
+                    }
+                } else if (i === currentOrderPage - 3 || i === currentOrderPage + 3) {
+                    html += `<span style="padding: 6px 4px; color: #6b7280;">...</span>`;
+                }
+            }
+
+            if (currentOrderPage < totalPages) {
+                html += `<button onclick="goToOrderPage(${currentOrderPage + 1})" class="btn" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer;">Sau &raquo;</button>`;
+            } else {
+                html += `<button class="btn" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e5e7eb; background: #f3f4f6; color: #9ca3af; cursor: not-allowed;" disabled>Sau &raquo;</button>`;
+            }
+
+            paginationEl.innerHTML = html;
+        };
+
+        window.goToOrderPage = function (page) {
+            currentOrderPage = page;
+            renderOrdersList(currentFilteredOrders);
+        };
+
+        window.filterOrders = function () {
+            var q = (document.getElementById('order-search').value || '').toLowerCase();
+            var normQ = q.replace(/(^|\D)0+(?=\d)/g, "$1");
+            var fromDateStr = document.getElementById('order-date-from').value;
+            var toDateStr = document.getElementById('order-date-to').value;
+
+            var fromDate = fromDateStr ? new Date(fromDateStr) : null;
+            if (fromDate) fromDate.setHours(0, 0, 0, 0);
+
+            var toDate = toDateStr ? new Date(toDateStr) : null;
+            if (toDate) toDate.setHours(23, 59, 59, 999);
+
+            var statusVal = document.getElementById('order-status') ? document.getElementById('order-status').value : '';
+
+            var filtered = window.allOrders.filter(o => {
+                var orderCode = (o.orderCode || '').toLowerCase();
+                let cAt = o.createdAt || '';
+                if (cAt && !cAt.endsWith('Z')) cAt += 'Z';
+                var dateStr = new Date(cAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' }).toLowerCase();
+                var normDate = dateStr.replace(/(^|\D)0+(?=\d)/g, "$1");
+
+                var matchQ = !normQ ||
+                    orderCode.includes(normQ) ||
+                    normDate.includes(normQ);
+
+                var orderDate = new Date(cAt);
+                var matchFrom = fromDate ? orderDate >= fromDate : true;
+                var matchTo = toDate ? orderDate <= toDate : true;
+
+                var orderStatus = (o.status || '').toLowerCase();
+                var matchStatus = true;
+                if (statusVal === 'completed') matchStatus = orderStatus === 'completed';
+                else if (statusVal === 'cancelled') matchStatus = orderStatus === 'cancelled';
+                else if (statusVal === 'returned') matchStatus = orderStatus === 'returned' || orderStatus === 'refunded';
+                else if (statusVal === 'processing') matchStatus = ['pending', 'confirmed', 'shipping'].includes(orderStatus);
+
+                return matchQ && matchFrom && matchTo && matchStatus;
+            });
+
+            // Update Summary
+            var validOrders = filtered.filter(o => {
+                var s = (o.status || '').toLowerCase();
+                return !['cancelled', 'returned', 'refunded'].includes(s);
+            });
+            var totalRev = validOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+            var totalComm = validOrders.reduce((sum, o) => sum + (o.commissionAmount || 0), 0);
+            
+            if (document.getElementById('summary-filtered-count')) {
+                document.getElementById('summary-filtered-count').innerText = filtered.length.toLocaleString('vi-VN');
+                document.getElementById('summary-filtered-revenue').innerText = totalRev.toLocaleString('vi-VN') + 'đ';
+                document.getElementById('summary-filtered-commission').innerText = totalComm.toLocaleString('vi-VN') + 'đ';
+            }
+
+            currentOrderPage = 1;
+            renderOrdersList(filtered);
+        };
+
+        window.exportExcel = function() {
+            if (!currentFilteredOrders || currentFilteredOrders.length === 0) {
+                alert("Không có dữ liệu để xuất!");
+                return;
+            }
+
+            let csvContent = "\uFEFF"; // BOM for UTF-8 (Excel friendly)
+            csvContent += "Mã đơn,Ngày tạo,Trạng thái,Giá trị đơn (VND),Hoa hồng dự kiến (VND)\n";
+
+            currentFilteredOrders.forEach(o => {
+                let cAt = o.createdAt || '';
+                if (cAt && !cAt.endsWith('Z')) cAt += 'Z';
+                const date = new Date(cAt).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' }).replace(',', ' ');
+                
+                const s = (o.status || '').toLowerCase();
+                let statusText = s;
+                if(s === 'completed') statusText = 'Hoàn thành';
+                else if(s === 'pending') statusText = 'Chờ xác nhận';
+                else if(s === 'confirmed') statusText = 'Đã xác nhận';
+                else if(s === 'shipping') statusText = 'Đang giao';
+                else if(s === 'cancelled') statusText = 'Đã huỷ';
+                else if(s === 'returned' || s === 'refunded') statusText = 'Đã trả hàng';
+
+                const orderCode = `"${o.orderCode || ''}"`;
+                const dateStr = `"${date}"`;
+                const statusStr = `"${statusText}"`;
+                const totalStr = `"${o.total || 0}"`;
+                
+                const comm = ['cancelled', 'returned', 'refunded'].includes(s) ? 0 : (o.commissionAmount || 0);
+                const commStr = `"${comm}"`;
+
+                csvContent += `${orderCode},${dateStr},${statusStr},${totalStr},${commStr}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "Danh_sach_don_hang.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        window.toggleCustomSelect = function() {
+            const opts = document.getElementById('custom-select-options');
+            if(opts) opts.style.display = opts.style.display === 'flex' ? 'none' : 'flex';
+        };
+
+        window.selectOption = function(el) {
+            document.getElementById('custom-select-label').innerText = el.innerText;
+            document.getElementById('order-status').value = el.getAttribute('data-value');
+            document.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            window.toggleCustomSelect();
+            window.filterOrders();
+        };
+
+        document.addEventListener('click', function(e) {
+            if(!e.target.closest('.custom-select-wrapper')) {
+                const opts = document.getElementById('custom-select-options');
+                if(opts) opts.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

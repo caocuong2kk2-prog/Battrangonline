@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Tin Tài Khoản - CTV Bát Tràng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <script src="js/api.js?v=5"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            renderLayout('profile', 'Thông Tin Tài Khoản');
+
+            const pageContent = document.getElementById('pageContent');
+
+            pageContent.innerHTML = `
+                <div id="profileAlert"></div>
+                <div class="card" style="max-width: 800px; margin: 0 auto;">
+                    <div class="card-header">
+                        <h3 class="card-title">Cập nhật hồ sơ cá nhân</h3>
+                    </div>
+                    <div style="padding: 24px;">
+                        <form id="profileForm">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <!-- Thông tin cơ bản -->
+                                <div style="grid-column: 1 / -1; margin-bottom: 10px;">
+                                    <h4 style="color: var(--primary); font-size: 1.05rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">Thông Tin Cơ Bản</h4>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Email (Tên đăng nhập) <span style="color: #ef4444">*</span></label>
+                                    <input type="email" id="email" class="form-control" disabled style="background-color: #f3f4f6; cursor: not-allowed;">
+                                    <small style="color: var(--text-muted); margin-top: 4px; display: block;">Email không thể thay đổi sau khi đăng ký.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Mã Cộng Tác Viên</label>
+                                    <input type="text" id="affiliateCode" class="form-control" disabled style="background-color: #f3f4f6; cursor: not-allowed; font-weight: bold; color: var(--primary);">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Họ và Tên <span style="color: #ef4444">*</span></label>
+                                    <input type="text" id="name" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Số Điện Thoại <span style="color: #ef4444">*</span></label>
+                                    <input type="text" id="phone" class="form-control" required>
+                                </div>
+                                <div class="form-group" style="grid-column: 1 / -1;">
+                                    <label class="form-label">Số CCCD / CMND</label>
+                                    <input type="text" id="cccd" class="form-control" placeholder="Nhập số Căn cước công dân">
+                                </div>
+
+                                <!-- Thông tin ngân hàng -->
+                                <div style="grid-column: 1 / -1; margin-top: 20px; margin-bottom: 10px;">
+                                    <h4 style="color: var(--primary); font-size: 1.05rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">Thông Tin Thanh Toán (Ngân Hàng)</h4>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">Vui lòng nhập chính xác để hệ thống có thể chuyển hoa hồng cho bạn.</p>
+                                </div>
+
+                                <div class="form-group" style="grid-column: 1 / -1;">
+                                    <label class="form-label">Ngân Hàng <span style="color: #ef4444">*</span></label>
+                                    <div class="custom-select-wrapper" style="position: relative;">
+                                        <div id="bankSelectTrigger" class="form-control" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; background: white; min-height: 42px;">
+                                            <div id="selectedBankDisplay" style="display: flex; align-items: center; gap: 10px; width: 100%; overflow: hidden;">
+                                                <span style="color: #9ca3af;">-- Đang tải danh sách ngân hàng... --</span>
+                                            </div>
+                                            <span style="color: #6b7280; font-size: 0.8rem; flex-shrink: 0; margin-left: 10px;">▼</span>
+                                        </div>
+                                        <div id="bankDropdown" style="display: none; position: absolute; bottom: 100%; left: 0; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.1); z-index: 50; margin-bottom: 4px; overflow: hidden; flex-direction: column; max-height: 320px;">
+                                            <div style="padding: 10px; border-bottom: 1px solid #f3f4f6; position: sticky; top: 0; background: white;">
+                                                <input type="text" id="bankSearch" placeholder="Tìm kiếm tên ngân hàng..." style="width: 100%; padding: 10px 14px; border: 1px solid #e5e7eb; border-radius: 6px; outline: none; font-size: 0.95rem; box-sizing: border-box;">
+                                            </div>
+                                            <div id="bankListContainer" style="overflow-y: auto; flex: 1; max-height: 250px;">
+                                                <!-- Bank items injected here -->
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="bankName" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Số Tài Khoản <span style="color: #ef4444">*</span></label>
+                                    <input type="text" id="bankAccount" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tên Chủ Tài Khoản <span style="color: #ef4444">*</span></label>
+                                    <input type="text" id="bankOwner" class="form-control" placeholder="Viết Hoa Không Dấu" required style="text-transform: uppercase;">
+                                </div>
+                                
+                                <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-top: 20px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+                                    <button type="submit" id="btnSave" class="btn btn-primary" style="padding: 10px 24px; font-size: 1rem; box-shadow: 0 4px 10px rgba(140, 34, 34, 0.2);">
+                                        💾 Lưu Thay Đổi
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            // Load banks list
+            let bankDataList = [];
+            try {
+                const bankRes = await fetch('https://api.vietqr.io/v2/banks');
+                const bankData = await bankRes.json();
+                if (bankData && bankData.code === "00") {
+                    bankDataList = bankData.data;
+                    document.getElementById('selectedBankDisplay').innerHTML = '<span style="color: #9ca3af;">-- Chọn ngân hàng --</span>';
+                    renderBankList(bankDataList);
+                }
+            } catch (err) {
+                console.error("Lỗi tải danh sách ngân hàng:", err);
+                document.getElementById('selectedBankDisplay').innerHTML = '<span style="color: #ef4444;">-- Lỗi tải danh sách ngân hàng --</span>';
+            }
+
+            function renderBankList(banks) {
+                const container = document.getElementById('bankListContainer');
+                container.innerHTML = '';
+                if(banks.length === 0) {
+                    container.innerHTML = '<div style="padding: 16px; text-align: center; color: #6b7280; font-size: 0.9rem;">Không tìm thấy ngân hàng nào</div>';
+                    return;
+                }
+                banks.forEach(bank => {
+                    const item = document.createElement('div');
+                    item.className = 'bank-dropdown-item';
+                    item.style = 'padding: 12px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; border-bottom: 1px solid #f9fafb; transition: background 0.2s;';
+                    item.innerHTML = `
+                        <div style="width: 48px; height: 32px; flex-shrink: 0; background: white; border: 1px solid #f3f4f6; border-radius: 4px; display: flex; align-items: center; justify-content: center; padding: 2px;">
+                            <img src="${bank.logo}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                        </div>
+                        <div style="display: flex; flex-direction: column; min-width: 0; flex: 1;">
+                            <span style="font-weight: 600; font-size: 0.95rem; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${bank.shortName}</span>
+                            <span style="font-size: 0.8rem; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${bank.name}</span>
+                        </div>
+                    `;
+                    item.addEventListener('mouseover', () => item.style.background = '#f3f4f6');
+                    item.addEventListener('mouseout', () => item.style.background = 'transparent');
+                    item.addEventListener('click', () => {
+                        selectBank(bank);
+                    });
+                    container.appendChild(item);
+                });
+            }
+
+            function selectBank(bank) {
+                document.getElementById('bankName').value = bank.shortName;
+                document.getElementById('selectedBankDisplay').innerHTML = `
+                    <div style="width: 32px; height: 22px; flex-shrink: 0; background: white; border: 1px solid #f3f4f6; border-radius: 3px; display: flex; align-items: center; justify-content: center; padding: 1px;">
+                        <img src="${bank.logo}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    </div>
+                    <div style="display: flex; align-items: baseline; min-width: 0; flex: 1; overflow: hidden;">
+                        <span style="font-weight: 600; font-size: 0.95rem; color: #111827; margin-right: 6px; flex-shrink: 0;">${bank.shortName}</span>
+                        <span style="font-size: 0.85rem; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;">- ${bank.name}</span>
+                    </div>
+                `;
+                document.getElementById('bankDropdown').style.display = 'none';
+            }
+
+            // Search functionality
+            const bankSearch = document.getElementById('bankSearch');
+            if (bankSearch) {
+                bankSearch.addEventListener('input', (e) => {
+                    const term = e.target.value.toLowerCase().trim();
+                    const filtered = bankDataList.filter(b => 
+                        b.shortName.toLowerCase().includes(term) || 
+                        b.name.toLowerCase().includes(term) ||
+                        b.code.toLowerCase().includes(term)
+                    );
+                    renderBankList(filtered);
+                });
+                
+                bankSearch.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') e.preventDefault();
+                });
+            }
+
+            // Toggle dropdown
+            const trigger = document.getElementById('bankSelectTrigger');
+            if (trigger) {
+                trigger.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const dp = document.getElementById('bankDropdown');
+                    const isHidden = dp.style.display === 'none' || dp.style.display === '';
+                    dp.style.display = isHidden ? 'flex' : 'none';
+                    if(isHidden) {
+                        bankSearch.value = '';
+                        renderBankList(bankDataList);
+                        bankSearch.focus();
+                    }
+                });
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                const dp = document.getElementById('bankDropdown');
+                if (dp && dp.style.display === 'flex' && !e.target.closest('.custom-select-wrapper')) {
+                    dp.style.display = 'none';
+                }
+            });
+
+            // Load data
+            try {
+                const profile = await Api.request('/affiliates/profile');
+                if (profile) {
+                    document.getElementById('email').value = profile.email || '';
+                    document.getElementById('affiliateCode').value = profile.affiliateCode || '';
+                    document.getElementById('name').value = profile.name || '';
+                    document.getElementById('phone').value = profile.phone || '';
+                    document.getElementById('cccd').value = profile.cccd || '';
+                    if (profile.bankName) {
+                        document.getElementById('bankName').value = profile.bankName;
+                        const matchedBank = bankDataList.find(b => b.shortName === profile.bankName || b.name === profile.bankName || b.code === profile.bankName);
+                        if (matchedBank) {
+                            selectBank(matchedBank);
+                        } else {
+                            // Custom input not in API
+                            document.getElementById('selectedBankDisplay').innerHTML = `
+                                <span style="font-weight: 600; font-size: 0.95rem; color: #111827;">${profile.bankName}</span>
+                            `;
+                        }
+                    }
+                    
+                    document.getElementById('bankAccount').value = profile.bankAccount || '';
+                    document.getElementById('bankOwner').value = profile.bankOwner || '';
+                }
+            } catch (err) {
+                showAlert('profileAlert', `Không thể tải thông tin: ${err.message}`, 'error');
+            }
+
+            // Handle Submit
+            document.getElementById('profileForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btnSave = document.getElementById('btnSave');
+                const originalText = btnSave.innerHTML;
+                
+                try {
+                    btnSave.innerHTML = '⏳ Đang lưu...';
+                    btnSave.disabled = true;
+
+                    const data = {
+                        name: document.getElementById('name').value.trim(),
+                        phone: document.getElementById('phone').value.trim(),
+                        cccd: document.getElementById('cccd').value.trim() || null,
+                        bankName: document.getElementById('bankName').value.trim(),
+                        bankAccount: document.getElementById('bankAccount').value.trim(),
+                        bankOwner: document.getElementById('bankOwner').value.trim()
+                    };
+
+                    const response = await Api.request('/affiliates/profile', {
+                        method: 'PUT',
+                        body: JSON.stringify(data)
+                    });
+
+                    if (response && response.success) {
+                        showToast(response.message, 'success');
+                        
+                        // Update Topbar name if it was changed
+                        const topbarName = document.getElementById('topbarName');
+                        if (topbarName) {
+                            topbarName.textContent = data.name;
+                        }
+                        const topbarAvatar = document.getElementById('topbarAvatar');
+                        if (topbarAvatar && data.name) {
+                            topbarAvatar.textContent = data.name.charAt(0).toUpperCase();
+                        }
+                    } else {
+                        throw new Error(response?.message || 'Cập nhật thất bại');
+                    }
+                } catch (err) {
+                    showToast(err.message, 'error');
+                } finally {
+                    btnSave.innerHTML = originalText;
+                    btnSave.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

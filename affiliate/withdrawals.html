@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rút Tiền - CTV Bát Tràng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <script src="js/api.js?v=5"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            renderLayout('withdrawals', 'Quản Lý Rút Tiền');
+
+            try {
+                const stats = await Api.request('/affiliates/stats');
+                const history = await Api.request('/affiliates/withdrawals');
+                const profile = await Api.request('/affiliates/profile');
+                
+                // Pagination logic will be applied after the initial HTML is rendered
+
+                const html = `
+                    <div class="withdrawals-grid">
+                        <div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Yêu cầu rút tiền</h3>
+                                </div>
+                                <div style="padding: 24px;">
+                                    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                                        <div style="flex: 1; background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px;">
+                                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">Số dư khả dụng</div>
+                                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">${stats.availableBalance.toLocaleString('vi-VN')}đ</div>
+                                        </div>
+                                        <div style="flex: 1; background: rgba(139, 92, 246, 0.1); padding: 15px; border-radius: 8px;">
+                                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">Tổng tiền đã rút</div>
+                                            <div style="font-size: 1.5rem; font-weight: 700; color: #8b5cf6;">${stats.totalWithdrawn.toLocaleString('vi-VN')}đ</div>
+                                        </div>
+                                    </div>
+                                    
+                                    ${(!profile.bankName || !profile.bankAccount || !profile.bankOwner) 
+                                        ? `<div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                                               <div style="font-weight: 600; color: #ef4444; margin-bottom: 5px;">⚠️ Thiếu thông tin ngân hàng</div>
+                                               <div style="font-size: 0.9rem; color: #b91c1c; margin-bottom: 10px;">Vui lòng cập nhật đầy đủ Ngân hàng, Số tài khoản và Tên chủ tài khoản trước khi rút tiền.</div>
+                                               <a href="profile" class="btn btn-primary" style="display: inline-block; padding: 6px 12px; font-size: 0.85rem; text-decoration: none;">Cập nhật ngay</a>
+                                           </div>`
+                                        : `<div style="margin-bottom: 20px; font-size: 0.9rem; color: var(--text-muted); background: #f9fafb; padding: 12px; border-radius: 6px; border: 1px dashed #e5e7eb;">
+                                               <strong style="color: #111827;">Ngân hàng nhận:</strong> ${profile.bankName}<br>
+                                               <strong style="color: #111827;">STK:</strong> ${profile.bankAccount}<br>
+                                               <strong style="color: #111827;">Chủ thẻ:</strong> ${profile.bankOwner}
+                                           </div>`
+                                    }
+
+                                    <div id="withdrawAlert"></div>
+
+                                    <form id="withdrawForm">
+                                        <div class="form-group">
+                                            <label class="form-label">Số tiền cần rút (VND)</label>
+                                            <input type="number" id="amount" class="form-control" min="100000" max="${stats.availableBalance}" step="10000" required placeholder="Tối thiểu 100,000đ" ${(!profile.bankName || !profile.bankAccount || !profile.bankOwner) ? 'disabled' : ''}>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary" style="width: 100%;" ${(stats.availableBalance < 100000 || !profile.bankName || !profile.bankAccount || !profile.bankOwner) ? 'disabled' : ''}>
+                                            ${(!profile.bankName || !profile.bankAccount || !profile.bankOwner) 
+                                                ? 'Chưa cập nhật ngân hàng' 
+                                                : (stats.availableBalance < 100000 ? 'Chưa đủ hạn mức tối thiểu' : 'Gửi Yêu Cầu Rút')}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Lịch sử rút tiền</h3>
+                                </div>
+                                <div class="table-responsive">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th style="min-width: 130px;">Ngày yêu cầu</th>
+                                                <th style="min-width: 120px;">Số tiền</th>
+                                                <th style="min-width: 140px;">Trạng thái</th>
+                                                <th style="min-width: 200px;">Ghi chú Admin</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="withdrawals-tbody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="withdrawals-pagination"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('pageContent').innerHTML = html;
+
+                let currentPage = 1;
+                const pageSize = 20;
+
+                window.renderWithdrawalsTable = function() {
+                    let tbody = '';
+                    if (history.length === 0) {
+                        tbody = '<tr><td colspan="4" style="text-align:center; color: var(--text-muted); padding: 20px;">Chưa có yêu cầu rút tiền nào.</td></tr>';
+                    } else {
+                        const startIndex = (currentPage - 1) * pageSize;
+                        const endIndex = startIndex + pageSize;
+                        const pageData = history.slice(startIndex, endIndex);
+
+                        pageData.forEach(w => {
+                            let dateStr = w.requestedAt;
+                            if (typeof dateStr === 'string' && dateStr.endsWith('Z')) {
+                                dateStr = dateStr.slice(0, -1);
+                            }
+                            const date = new Date(dateStr).toLocaleString('vi-VN');
+                            const statusBadge = {
+                                'Pending': '<span class="badge badge-pending">Đang chờ xử lý</span>',
+                                'Paid': '<span class="badge badge-paid">Đã chuyển khoản</span>',
+                                'Rejected': '<span class="badge badge-rejected">Từ chối</span>'
+                            }[w.status] || `<span class="badge">${w.status}</span>`;
+
+                            tbody += `
+                                <tr>
+                                    <td>${date}</td>
+                                    <td><strong>${w.amount.toLocaleString('vi-VN')}đ</strong></td>
+                                    <td>${statusBadge}</td>
+                                    <td style="color:var(--text-muted);font-size:0.85rem">${w.note || ''}</td>
+                                </tr>
+                            `;
+                        });
+                    }
+
+                    document.getElementById('withdrawals-tbody').innerHTML = tbody;
+
+                    const totalPages = Math.ceil(history.length / pageSize);
+                    let paginationHTML = '';
+                    if (totalPages > 1) {
+                        paginationHTML = '<div class="pagination" style="display:flex; justify-content:center; gap: 8px; margin-top: 15px; padding-bottom: 20px;">';
+                        for (let i = 1; i <= totalPages; i++) {
+                            const isCurrent = i === currentPage;
+                            const btnStyle = isCurrent 
+                                ? 'background: var(--primary); color: white; border: 1px solid var(--primary); padding: 4px 12px; border-radius: 4px; cursor: default; font-weight: 600;' 
+                                : 'background: white; color: var(--text-dark); border: 1px solid var(--border); padding: 4px 12px; border-radius: 4px; cursor: pointer; transition: all 0.2s;';
+                            paginationHTML += `<button style="${btnStyle}" ${isCurrent ? 'disabled' : `onclick="goToPage(${i})"`}>${i}</button>`;
+                        }
+                        paginationHTML += '</div>';
+                    }
+                    document.getElementById('withdrawals-pagination').innerHTML = paginationHTML;
+                };
+
+                window.goToPage = function(page) {
+                    currentPage = page;
+                    window.renderWithdrawalsTable();
+                };
+
+                window.renderWithdrawalsTable();
+
+                document.getElementById('withdrawForm')?.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const btn = e.target.querySelector('button');
+                    btn.textContent = "Đang xử lý...";
+                    btn.disabled = true;
+
+                    try {
+                        const amount = parseInt(document.getElementById('amount').value);
+                        await Api.request('/affiliates/withdraw', {
+                            method: 'POST',
+                            body: JSON.stringify({ amount })
+                        });
+                        showToast('Gửi yêu cầu rút tiền thành công!', 'success');
+                        setTimeout(() => window.location.reload(), 1800);
+                    } catch (err) {
+                        showAlert('withdrawAlert', err.message, 'error');
+                        btn.textContent = "Gửi Yêu Cầu Rút";
+                        btn.disabled = false;
+                    }
+                });
+
+            } catch (err) {
+                document.getElementById('pageContent').innerHTML = `<div class="alert alert-error" style="display:block">Lỗi: ${err.message}</div>`;
+            }
+        });
+    </script>
+</body>
+</html>

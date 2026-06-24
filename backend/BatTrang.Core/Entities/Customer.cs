@@ -7,12 +7,14 @@ namespace BatTrang.Core.Entities
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
-        public string Email { get; set; } = null!;
+        public string? Email { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
         public string Status { get; set; } = "active";
-        public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
+        public DateTime JoinedAt { get; set; } = DateTime.UtcNow.AddHours(7);
         public string? PasswordHash { get; set; }
+
+
 
         // Password Recovery Fields
         public string? ResetToken { get; set; }

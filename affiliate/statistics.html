@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống Kê Chi Tiết - CTV Bát Tràng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .preset-btn {
+            background: white;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .preset-btn:hover {
+            border-color: #d1d5db;
+            background: #f9fafb;
+        }
+        .preset-btn.active {
+            background: linear-gradient(135deg,#fef9ec,#fdf3d0);
+            color: #92400e;
+            border-color: #f0e6c8;
+            font-weight: 700;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Summary mini cards — layout handled by style.css .stats-summary-grid */
+        .stats-summary-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            transition: all 0.25s ease;
+        }
+        .stats-summary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        }
+        .stats-summary-card .icon-wrap {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .stats-summary-card .icon-wrap.blue { background: rgba(59,130,246,0.1); color: #3b82f6; }
+        .stats-summary-card .icon-wrap.green { background: rgba(16,185,129,0.1); color: #10b981; }
+        .stats-summary-card .icon-wrap.orange { background: rgba(245,158,11,0.1); color: #f59e0b; }
+        .stats-summary-card .icon-wrap.purple { background: rgba(139,92,246,0.1); color: #8b5cf6; }
+
+        .stats-summary-card .card-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .stats-summary-card .card-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #111827;
+            line-height: 1;
+            letter-spacing: -0.5px;
+        }
+
+        /* Chart containers */
+        .chart-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            margin-bottom: 16px;
+        }
+        .chart-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .chart-card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chart-hint {
+            font-size: 0.72rem;
+            color: #9ca3af;
+            font-weight: 500;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="js/api.js"></script>
+    <script>
+        let activityChart = null;
+        let commissionChart = null;
+        let currentChartData = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderLayout('statistics', 'Thống Kê');
+
+            const html = `
+                <div style="max-width: 1100px; margin: 0 auto;">
+                    <!-- Date Filter -->
+                    <div id="dateFilterBlock" style="margin-bottom:20px;width:100%;">
+                      <div style="background:white;border:1px solid #f0e6c8;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                        <div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:linear-gradient(135deg,#fef9ec 0%,#fdf3d0 100%);border-bottom:1px solid #f0e6c8;">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a16207" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                          <span style="font-size:0.78rem;font-weight:700;color:#92400e;letter-spacing:0.04em;text-transform:uppercase;">Lọc theo thời gian</span>
+                          <span id="loadingSpinner" style="display:none;margin-left:auto;width:14px;height:14px;border:2px solid #f0e6c8;border-top-color:#a16207;border-radius:50%;animation:spin 0.7s linear infinite;"></span>
+                        </div>
+                        <div style="display:flex;align-items:stretch;flex-wrap:wrap;">
+                          <div style="flex:1;min-width:120px;padding:10px 14px;border-right:1px solid #f3f4f6;">
+                            <div style="font-size:0.68rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Từ ngày</div>
+                            <input type="date" id="startDate" class="date-range-input" style="width:100%;border:none;background:transparent;font-weight:600;font-family:inherit;color:#111827;outline:none;cursor:pointer;font-size:0.88rem;padding:0;box-sizing:border-box;" title="Từ ngày">
+                          </div>
+                          <div style="display:flex;align-items:center;padding:0 6px;color:#d1d5db;flex-shrink:0;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                          </div>
+                          <div style="flex:1;min-width:120px;padding:10px 14px;border-right:1px solid #f3f4f6;">
+                            <div style="font-size:0.68rem;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">Đến ngày</div>
+                            <input type="date" id="endDate" class="date-range-input" style="width:100%;border:none;background:transparent;font-weight:600;font-family:inherit;color:#111827;outline:none;cursor:pointer;font-size:0.88rem;padding:0;box-sizing:border-box;" title="Đến ngày">
+                          </div>
+                          <div style="display:flex;align-items:center;padding:8px 12px;flex-shrink:0;">
+                            <button id="applyFilterBtn" onclick="applyFilter()" style="padding:8px 18px;background:linear-gradient(135deg,#d97706,#b45309);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;font-family:inherit;letter-spacing:0.02em;transition:opacity 0.15s;white-space:nowrap;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+                              Áp dụng
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- Presets -->
+                      <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+                          <button id="preset-today" onclick="applyPreset('today')" class="preset-btn">Hôm nay</button>
+                          <button id="preset-week" onclick="applyPreset('week')" class="preset-btn">Tuần này</button>
+                          <button id="preset-month" onclick="applyPreset('month')" class="preset-btn">Tháng này</button>
+                          <button id="preset-last30" onclick="applyPreset('last30')" class="preset-btn">30 ngày qua</button>
+                      </div>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="stats-summary-grid">
+                        <div class="stats-summary-card" style="border-top: 3px solid #3b82f6; padding: 14px;">
+                            <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom: 8px;">
+                                <div class="card-label" style="padding-right: 4px;">Lượt Click</div>
+                                <div class="icon-wrap blue" style="width: 32px; height: 32px; font-size: 1rem; flex-shrink: 0;">🖱️</div>
+                            </div>
+                            <div id="summary-clicks" class="card-value" style="font-size:1.25rem; margin-bottom: 8px;">--</div>
+                            <div style="margin-top:auto; border-top:1px dashed #e2e8f0; padding-top:10px; font-size:0.75rem; color:#6b7280; font-weight:500;">
+                                Tổng click trong kỳ
+                            </div>
+                        </div>
+                        <div class="stats-summary-card" style="border-top: 3px solid #10b981; padding: 14px;">
+                            <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom: 8px;">
+                                <div class="card-label" style="padding-right: 4px;">Đơn hoàn thành</div>
+                                <div class="icon-wrap green" style="width: 32px; height: 32px; font-size: 1rem; flex-shrink: 0;">📦</div>
+                            </div>
+                            <div id="summary-orders" class="card-value" style="font-size:1.25rem; margin-bottom: 8px;">--</div>
+                            <div style="margin-top:auto; border-top:1px dashed #e2e8f0; padding-top:10px; font-size:0.75rem; color:#6b7280; font-weight:500;">
+                                Đơn giao thành công
+                            </div>
+                        </div>
+                        <div class="stats-summary-card" style="border-top: 3px solid #8b5cf6; padding: 14px;">
+                            <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom: 8px;">
+                                <div class="card-label" style="padding-right: 4px;">Giá trị đơn hàng</div>
+                                <div class="icon-wrap purple" style="width: 32px; height: 32px; font-size: 1rem; flex-shrink: 0;">🏷️</div>
+                            </div>
+                            <div id="summary-ordervalue" class="card-value" style="font-size:1.25rem; margin-bottom: 8px;">--</div>
+                            <div style="margin-top:auto; border-top:1px dashed #e2e8f0; padding-top:10px; font-size:0.75rem; color:#6b7280; font-weight:500;">
+                                Doanh thu mang lại
+                            </div>
+                        </div>
+                        <div class="stats-summary-card" style="border-top: 3px solid #f59e0b; padding: 14px;">
+                            <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom: 8px;">
+                                <div class="card-label" style="padding-right: 4px;">Hoa Hồng</div>
+                                <div class="icon-wrap orange" style="width: 32px; height: 32px; font-size: 1rem; flex-shrink: 0;">💰</div>
+                            </div>
+                            <div id="summary-commission" class="card-value" style="font-size:1.25rem; margin-bottom: 8px;">--</div>
+                            <div style="margin-top:auto; border-top:1px dashed #e2e8f0; padding-top:10px; font-size:0.75rem; color:#6b7280; font-weight:500;">
+                                Tổng hoa hồng ước tính
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart 1: Activity (Click + Orders) - Bar Chart -->
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <h3 class="chart-card-title">
+                                <span style="font-size:1.1rem;">📊</span> Hoạt động theo ngày
+                            </h3>
+                            <span class="chart-hint">Click vào chú thích để ẩn/hiện từng chỉ số</span>
+                        </div>
+                        <div id="activityChartWrapper" style="position: relative; height: 280px; width: 100%;">
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                        <div id="activityEmptyState" style="display:none; text-align:center; padding: 50px 20px; color:#9ca3af;">
+                            <div style="font-size:2rem; margin-bottom:10px;">📊</div>
+                            <div style="font-size:0.9rem; font-weight:600; color:#6b7280;">Chưa có dữ liệu hoạt động</div>
+                            <div style="font-size:0.8rem; margin-top:4px;">Hãy thử thay đổi khoảng thời gian lọc.</div>
+                        </div>
+                    </div>
+
+                    <!-- Chart 2: Commission - Line Chart (separate) -->
+                    <div class="chart-card">
+                        <div class="chart-card-header">
+                            <h3 class="chart-card-title">
+                                <span style="font-size:1.1rem;">💰</span> Doanh thu & Hoa hồng
+                            </h3>
+                            <span class="chart-hint">Đơn vị: VNĐ. Click vào chú thích để ẩn/hiện</span>
+                        </div>
+                        <div id="commissionChartWrapper" style="position: relative; height: 240px; width: 100%;">
+                            <canvas id="commissionChart"></canvas>
+                        </div>
+                        <div id="commissionEmptyState" style="display:none; text-align:center; padding: 50px 20px; color:#9ca3af;">
+                            <div style="font-size:2rem; margin-bottom:10px;">💰</div>
+                            <div style="font-size:0.9rem; font-weight:600; color:#6b7280;">Chưa có dữ liệu hoa hồng</div>
+                            <div style="font-size:0.8rem; margin-top:4px;">Hoa hồng sẽ xuất hiện khi có đơn hàng hoàn thành.</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('pageContent').innerHTML = html;
+
+            initDateFilter();
+        });
+
+        // ── Date filter logic ──
+        const formatYMD = (d) => {
+            const month = (d.getMonth() + 1).toString().padStart(2, '0');
+            const day = d.getDate().toString().padStart(2, '0');
+            return `${d.getFullYear()}-${month}-${day}`;
+        };
+
+        function initDateFilter() {
+            const now = new Date();
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+            
+            document.getElementById('startDate').value = formatYMD(firstDay);
+            document.getElementById('endDate').value = formatYMD(now);
+            
+            setActivePreset('month');
+            fetchChartData();
+        }
+
+        window.setActivePreset = function(id) {
+            ['today','week','month','last30'].forEach(pid => {
+                const btn = document.getElementById(`preset-${pid}`);
+                if (btn) {
+                    btn.classList.toggle('active', pid === id);
+                }
+            });
+        }
+
+        window.applyPreset = function(preset) {
+            const now = new Date();
+            let from, to;
+            if (preset === 'today') {
+                from = to = now;
+            } else if (preset === 'week') {
+                const day = now.getDay() || 7;
+                from = new Date(now); from.setDate(now.getDate() - day + 1);
+                to = new Date(from); to.setDate(from.getDate() + 6);
+            } else if (preset === 'month') {
+                from = new Date(now.getFullYear(), now.getMonth(), 1);
+                to = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            } else if (preset === 'last30') {
+                to = now;
+                from = new Date(now); from.setDate(now.getDate() - 29);
+            }
+            
+            document.getElementById('startDate').value = formatYMD(from);
+            document.getElementById('endDate').value = formatYMD(to);
+            setActivePreset(preset);
+            fetchChartData();
+        };
+
+        window.applyFilter = function() {
+            const sEl = document.getElementById('startDate');
+            const eEl = document.getElementById('endDate');
+            if (!sEl.value || !eEl.value) return;
+            if (sEl.value > eEl.value) {
+                showToast('Ngày bắt đầu phải nhỏ hơn ngày kết thúc', 'warning');
+                return;
+            }
+            setActivePreset('');
+            fetchChartData();
+        }
+
+        function formatDate(ymd) {
+            const parts = ymd.split('-');
+            if (parts.length !== 3) return ymd;
+            return `${parts[2]}/${parts[1]}`;
+        }
+
+        async function fetchChartData() {
+            const from = document.getElementById('startDate').value;
+            const to = document.getElementById('endDate').value;
+            const spinner = document.getElementById('loadingSpinner');
+            
+            if (!from || !to) return;
+            if (spinner) spinner.style.display = 'inline-block';
+
+            try {
+                const data = await Api.request(`/affiliates/chart?from=${from}&to=${to}`);
+                currentChartData = data || [];
+                
+                // Calculate Summaries
+                let sumClicks = 0, sumOrders = 0, sumComm = 0, sumOrderValue = 0;
+                currentChartData.forEach(d => {
+                    sumClicks += d.clicks;
+                    sumOrders += (d.completedOrders !== undefined ? d.completedOrders : d.orders);
+                    sumComm += d.commission;
+                    sumOrderValue += d.orderValue || 0;
+                });
+
+                document.getElementById('summary-clicks').textContent = sumClicks.toLocaleString('vi-VN');
+                document.getElementById('summary-orders').textContent = sumOrders.toLocaleString('vi-VN');
+                document.getElementById('summary-ordervalue').textContent = sumOrderValue.toLocaleString('vi-VN') + 'đ';
+                document.getElementById('summary-commission').textContent = sumComm.toLocaleString('vi-VN') + 'đ';
+
+                renderActivityChart();
+                renderCommissionChart();
+
+            } catch (err) {
+                console.error("Lỗi tải biểu đồ:", err);
+                showToast("Lỗi tải biểu đồ", "error");
+            } finally {
+                if (spinner) spinner.style.display = 'none';
+            }
+        }
+
+        // ── Chart 1: Activity (Bar chart — Click + Orders) ──
+        function renderActivityChart() {
+            const wrapper = document.getElementById('activityChartWrapper');
+            const empty = document.getElementById('activityEmptyState');
+            
+            const hasActivity = currentChartData.some(d => d.clicks > 0 || d.orders > 0);
+            if (!currentChartData.length || !hasActivity) {
+                wrapper.style.display = 'none';
+                empty.style.display = 'block';
+                if (activityChart) { activityChart.destroy(); activityChart = null; }
+                return;
+            }
+            wrapper.style.display = 'block';
+            empty.style.display = 'none';
+
+            const labels = currentChartData.map(d => formatDate(d.date));
+            const clicks = currentChartData.map(d => d.clicks);
+            const orders = currentChartData.map(d => (d.completedOrders !== undefined ? d.completedOrders : d.orders));
+
+            const ctx = document.getElementById('activityChart').getContext('2d');
+            if (activityChart) activityChart.destroy();
+
+            activityChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Lượt Click',
+                            data: clicks,
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                            hoverBackgroundColor: 'rgba(59, 130, 246, 0.9)',
+                            borderRadius: 4,
+                            borderSkipped: false,
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.7
+                        },
+                        {
+                            label: 'Đơn hoàn thành',
+                            data: orders,
+                            backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                            hoverBackgroundColor: 'rgba(16, 185, 129, 0.9)',
+                            borderRadius: 4,
+                            borderSkipped: false,
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.7
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'rectRounded',
+                                boxWidth: 10,
+                                boxHeight: 10,
+                                padding: 16,
+                                font: { size: 12, weight: '600' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255,255,255,0.96)',
+                            titleColor: '#1f2937',
+                            bodyColor: '#4b5563',
+                            borderColor: '#e5e7eb',
+                            borderWidth: 1,
+                            padding: 12,
+                            boxPadding: 6,
+                            usePointStyle: true,
+                            titleFont: { weight: '700' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 11, weight: '500' }, color: '#9ca3af' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                precision: 0,
+                                font: { size: 11 },
+                                color: '#9ca3af'
+                            },
+                            grid: { color: 'rgba(0,0,0,0.04)' },
+                            title: { display: true, text: 'Số lượng', font: { size: 11, weight: '600' }, color: '#6b7280' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ── Chart 2: Commission (Line chart — separate, single axis) ──
+        function renderCommissionChart() {
+            const wrapper = document.getElementById('commissionChartWrapper');
+            const empty = document.getElementById('commissionEmptyState');
+
+            const hasComm = currentChartData.some(d => d.commission > 0);
+            if (!currentChartData.length || !hasComm) {
+                wrapper.style.display = 'none';
+                empty.style.display = 'block';
+                if (commissionChart) { commissionChart.destroy(); commissionChart = null; }
+                return;
+            }
+            wrapper.style.display = 'block';
+            empty.style.display = 'none';
+
+            const labels = currentChartData.map(d => formatDate(d.date));
+            const commissions = currentChartData.map(d => d.commission);
+            const orderValues = currentChartData.map(d => d.orderValue || 0);
+
+            const ctx = document.getElementById('commissionChart').getContext('2d');
+            if (commissionChart) commissionChart.destroy();
+
+            commissionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Giá Trị Đơn Hàng',
+                            data: orderValues,
+                            backgroundColor: 'rgba(139, 92, 246, 0.7)',
+                            hoverBackgroundColor: 'rgba(139, 92, 246, 0.9)',
+                            borderRadius: 4,
+                            borderSkipped: false,
+                            yAxisID: 'y',
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.7
+                        },
+                        {
+                            label: 'Hoa Hồng',
+                            data: commissions,
+                            backgroundColor: 'rgba(245, 158, 11, 0.7)',
+                            hoverBackgroundColor: 'rgba(245, 158, 11, 0.9)',
+                            borderRadius: 4,
+                            borderSkipped: false,
+                            yAxisID: 'y',
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.7
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 8,
+                                padding: 16,
+                                font: { size: 12, weight: '600' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255,255,255,0.96)',
+                            titleColor: '#1f2937',
+                            bodyColor: '#4b5563',
+                            borderColor: '#e5e7eb',
+                            borderWidth: 1,
+                            padding: 12,
+                            boxPadding: 6,
+                            usePointStyle: true,
+                            titleFont: { weight: '700' },
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.parsed.y !== null) {
+                                        return context.dataset.label + ': ' + new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed.y);
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 11, weight: '500' }, color: '#9ca3af' }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.04)' },
+                            ticks: {
+                                font: { size: 11 },
+                                color: '#9ca3af',
+                                callback: function(value) {
+                                    if (value >= 1000000) return (value / 1000000).toFixed(1) + 'tr';
+                                    if (value >= 1000) return (value / 1000).toFixed(0) + 'k';
+                                    return value.toLocaleString('vi-VN');
+                                }
+                            },
+                            title: { display: true, text: 'Số tiền (VNĐ)', font: { size: 11, weight: '600' }, color: '#6b7280' }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

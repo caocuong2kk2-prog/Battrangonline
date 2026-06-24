@@ -24,6 +24,6 @@ namespace BatTrang.Core.Entities
         /// <summary>
         /// The time the notification was created
         /// </summary>
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
     }
 }

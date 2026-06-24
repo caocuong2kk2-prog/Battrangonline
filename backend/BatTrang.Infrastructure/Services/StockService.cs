@@ -22,7 +22,7 @@ namespace BatTrang.Infrastructure.Services
         /// <param name="variantId">ID của ProductVariant</param>
         /// <param name="delta">Số lượng thay đổi (Âm: Khách mua, Dương: Hoàn kho)</param>
         /// <returns>True nếu thành công, False nếu không đủ kho hoặc không tìm thấy.</returns>
-        public async Task<bool> AdjustStockAsync(int variantId, int delta)
+        public async Task<(bool Success, int RemainingTotalStock, string ProductName)> AdjustStockAsync(int variantId, int delta)
         {
             const int maxRetryCount = 3;
 
@@ -34,42 +34,47 @@ namespace BatTrang.Infrastructure.Services
                                                 .Include(v => v.Product)
                                                 .FirstOrDefaultAsync(v => v.Id == variantId);
                                                 
-                    if (variant == null) return false;
+                    if (variant == null) return (false, 0, null);
 
                     // Nếu là khách mua hàng (delta < 0), kiểm tra xem kho còn đủ không
                     if (delta < 0 && variant.Stock < Math.Abs(delta))
                     {
-                        return false; // Hết hàng hoặc không đủ hàng
+                        return (false, 0, null); // Hết hàng hoặc không đủ hàng
                     }
 
                     variant.Stock = Math.Max(0, variant.Stock + delta);
 
-                    // Logic tự động Ẩn/Hiện sản phẩm khi hết hàng
-                    var product = variant.Product;
-                    if (product != null)
-                    {
-                        if (delta < 0)
+                    int totalStock = 0;
+                    string productName = variant.Product?.Name;
+
+                        // Logic tự động Ẩn/Hiện sản phẩm khi hết hàng
+                        var product = variant.Product;
+                        if (product != null)
                         {
                             var allVariants = await _context.ProductVariants
                                                             .Where(v => v.ProductId == variant.ProductId)
                                                             .ToListAsync();
                             
-                            // Nếu tất cả các variant (bao gồm cả variant vừa bị trừ) đều <= 0
-                            if (allVariants.All(v => (v.Id == variantId ? variant.Stock : v.Stock) <= 0))
+                            totalStock = allVariants.Sum(v => v.Id == variantId ? variant.Stock : v.Stock);
+
+                            if (delta < 0)
                             {
-                                product.Status = "inactive";
+                                // Báo hết hàng
+                                if (totalStock <= 0)
+                                {
+                                    product.Status = "inactive";
+                                    _context.Products.Update(product);
+                                }
+                            }
+                            else if (delta > 0 && product.Status == "inactive")
+                            {
+                                product.Status = "active";
                                 _context.Products.Update(product);
                             }
                         }
-                        else if (delta > 0 && product.Status == "inactive")
-                        {
-                            product.Status = "active";
-                            _context.Products.Update(product);
-                        }
-                    }
 
                     await _context.SaveChangesAsync();
-                    return true;
+                    return (true, totalStock, productName);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -84,7 +89,7 @@ namespace BatTrang.Infrastructure.Services
                 }
             }
 
-            return false;
+            return (false, 0, null);
         }
     }
 }

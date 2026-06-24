@@ -14,6 +14,6 @@ namespace BatTrang.Core.Entities
         public string? Duration { get; set; }
         public int SortOrder { get; set; }
         
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
     }
 }

@@ -28,10 +28,34 @@ namespace BatTrang.Infrastructure.Data
         public DbSet<SiteConfig> SiteConfigs { get; set; }
         public DbSet<AdminUser> AdminUsers { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Gift> Gifts { get; set; }
+        public DbSet<ProductGift> ProductGifts { get; set; }
+        public DbSet<Campaign> Campaigns { get; set; }
+        public DbSet<CampaignProduct> CampaignProducts { get; set; }
+
+        // Affiliate Module
+        public DbSet<BatTrang.Core.Entities.Affiliate.Affiliate> Affiliates { get; set; }
+        public DbSet<Commission> Commissions { get; set; }
+        public DbSet<CommissionPolicy> CommissionPolicies { get; set; }
+        public DbSet<WithdrawalRequest> WithdrawalRequests { get; set; }
+        public DbSet<BatTrang.Core.Entities.Affiliate.AffiliateClick> AffiliateClicks { get; set; }
+        public DbSet<BatTrang.Core.Entities.AffiliateNotification> AffiliateNotifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<BatTrang.Core.Entities.Affiliate.AffiliateClick>()
+                .HasOne(ac => ac.Affiliate)
+                .WithMany()
+                .HasForeignKey(ac => ac.AffiliateId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            modelBuilder.Entity<BatTrang.Core.Entities.Affiliate.AffiliateClick>()
+                .HasIndex(ac => ac.ClickedAt);
+                
+            modelBuilder.Entity<BatTrang.Core.Entities.Affiliate.AffiliateClick>()
+                .HasIndex(ac => new { ac.AffiliateId, ac.IpAddress, ac.ClickedAt });
 
             modelBuilder.Entity<ProductVariant>()
                 .Property(pv => pv.Price)
@@ -113,9 +137,16 @@ namespace BatTrang.Infrastructure.Data
                 .HasIndex(c => c.Slug)
                 .IsUnique();
 
+            modelBuilder.Entity<Category>()
+                .HasOne(c => c.Parent)
+                .WithMany(c => c.SubCategories)
+                .HasForeignKey(c => c.ParentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Customer>()
                 .HasIndex(c => c.Email)
-                .IsUnique();
+                .IsUnique()
+                .HasFilter("[Email] IS NOT NULL");
 
             modelBuilder.Entity<Customer>()
                 .HasIndex(c => c.Phone);
@@ -140,6 +171,90 @@ namespace BatTrang.Infrastructure.Data
                 
             modelBuilder.Entity<Notification>()
                 .HasIndex(n => n.CreatedAt);
+
+            // Affiliate Module Configurations
+            modelBuilder.Entity<BatTrang.Core.Entities.Affiliate.Affiliate>()
+                .HasOne(a => a.Parent)
+                .WithMany(a => a.Children)
+                .HasForeignKey(a => a.ParentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<BatTrang.Core.Entities.Affiliate.Affiliate>()
+                .HasIndex(a => a.AffiliateCode)
+                .IsUnique();
+                
+            modelBuilder.Entity<BatTrang.Core.Entities.Affiliate.Affiliate>()
+                .HasIndex(a => a.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Affiliate)
+                .WithMany(a => a.ReferredOrders)
+                .HasForeignKey(o => o.AffiliateId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Commission>()
+                .Property(c => c.OrderTotalAmount)
+                .HasColumnType("decimal(18,2)");
+                
+            modelBuilder.Entity<Commission>()
+                .Property(c => c.CommissionAmount)
+                .HasColumnType("decimal(18,2)");
+                
+            modelBuilder.Entity<Commission>()
+                .Property(c => c.CommissionRate)
+                .HasColumnType("decimal(5,2)");
+
+            modelBuilder.Entity<CommissionPolicy>()
+                .Property(c => c.Percentage)
+                .HasColumnType("decimal(5,2)");
+
+            modelBuilder.Entity<WithdrawalRequest>()
+                .Property(w => w.Amount)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<BatTrang.Core.Entities.AffiliateNotification>()
+                .HasOne(n => n.Affiliate)
+                .WithMany()
+                .HasForeignKey(n => n.AffiliateId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ProductGift>()
+                .HasKey(pg => new { pg.ProductId, pg.GiftId });
+
+            modelBuilder.Entity<ProductGift>()
+                .HasOne(pg => pg.Product)
+                .WithMany()
+                .HasForeignKey(pg => pg.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ProductGift>()
+                .HasOne(pg => pg.Gift)
+                .WithMany()
+                .HasForeignKey(pg => pg.GiftId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Gift>()
+                .Property(g => g.EstimatedValue)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<OrderItem>()
+                .HasOne(oi => oi.Gift)
+                .WithMany()
+                .HasForeignKey(oi => oi.GiftId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<CampaignProduct>()
+                .HasOne(cp => cp.Campaign)
+                .WithMany(c => c.CampaignProducts)
+                .HasForeignKey(cp => cp.CampaignId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CampaignProduct>()
+                .HasOne(cp => cp.Product)
+                .WithMany()
+                .HasForeignKey(cp => cp.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

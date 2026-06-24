@@ -21,7 +21,7 @@ namespace BatTrang.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Submit([FromBody] ContactMessage message)
         {
-            message.CreatedAt = System.DateTime.UtcNow;
+            message.CreatedAt = System.DateTime.UtcNow.AddHours(7);
             await _contactRepo.AddAsync(message);
             return Ok(new { success = true });
         }

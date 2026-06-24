@@ -553,7 +553,7 @@ window.initCustomSelects=function(root){
     select.classList.add('custom-select-hidden');
     select.style.display='none';
     
-    var selectId = 'sel-' + Math.random().toString(36).substring(2, 9);
+    var selectId = select.id || 'sel-' + Math.random().toString(36).substring(2, 9);
     
     var wrapper=document.createElement('div');
     wrapper.className='custom-select-wrapper '+(select.classList.contains('filter-select')?'is-filter':'')+(select.classList.contains('btn-status-change')?' is-small':'');
@@ -763,6 +763,10 @@ function renderBranding(config) {
   // Resolve dynamic backend URL for standalone dev environments
   function resolveAdminImg(url) {
     if (!url) return '';
+    // Fix relative path if site-config accidentally stored it with ../
+    if (url.startsWith('../assets/')) {
+        url = url.substring(3); // removes '../' to make it 'assets/...'
+    }
     if (url.startsWith('/uploads/')) {
       var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080' : '';
       return dynamicBase + url;
@@ -870,6 +874,9 @@ document.addEventListener('DOMContentLoaded',function(){
 
   if (!isPublicPage() && window.AdminData && document.getElementById('sb-pending')) {
     AdminData.orders.updatePendingBadge();
+  }
+  if (!isPublicPage() && window.AdminData && window.AdminData.affiliates && document.getElementById('sb-affiliates')) {
+    AdminData.affiliates.updatePendingBadge();
   }
 
   document.querySelectorAll('.js-logout').forEach(function(el) {
@@ -1000,6 +1007,9 @@ document.addEventListener('DOMContentLoaded',function(){
       fallbackTimeout = setInterval(function() {
         if (window.AdminData) {
           AdminData.orders.updatePendingBadge();
+          if (window.AdminData.affiliates) {
+            AdminData.affiliates.updatePendingBadge();
+          }
         }
         if (typeof window.onAdminNotification === 'function') {
           window.onAdminNotification('FallbackPoll', 'Periodic sync');

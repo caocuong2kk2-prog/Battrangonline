@@ -8,31 +8,27 @@
   <title>Tài Khoản – Phúc Gia Tiên Admin</title>
   <link rel="stylesheet" href="css/admin.css">
   <link rel="stylesheet" href="css/components.css">
+<link rel="icon" href="assets/images/logo.png" type="image/png">
 </head>
 
 <body class="admin-layout">
   <aside class="admin-sidebar" id="adminSidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-brand">
-        <div class="sidebar-brand__icon">⚱️</div>
-        <div>
-          <div class="sidebar-brand__name">Phúc Gia Tiên</div>
-          <div class="sidebar-brand__sub">Quản trị hệ thống</div>
-        </div>
-      </div>
-    </div>
-    <nav class="sidebar-nav">
+      <div class="sidebar-header"><div class="sidebar-brand"><img src="assets/images/logo.png" alt="Logo" class="sidebar-brand__icon" style="width: 32px; height: 32px; object-fit: contain; background: #fff; border-radius: 50%; padding: 2px;"><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
+  <nav class="sidebar-nav">
     <span class="sidebar-section-label">Tổng quan</span>
     <ul class="sidebar-nav__list">
-      <li><a href="./" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li>
+      <li><a href="./" class="sidebar-nav__link" data-page="index"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li>
     </ul>
     
     <span class="sidebar-section-label">Kinh doanh</span>
     <ul class="sidebar-nav__list">
-      <li><a href="products" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
-      <li><a href="orders" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
-      <li><a href="customers" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
-      <li><a href="attributes" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><span class="sidebar-nav__text">Thuộc tính SP</span></a></li>
+      <li><a href="products" class="sidebar-nav__link" data-page="products"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
+      <li><a href="campaigns" class="sidebar-nav__link" data-page="campaigns"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg><span class="sidebar-nav__text">Khuyến mãi</span></a></li>
+      <li><a href="gifts" class="sidebar-nav__link" data-page="gifts"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M12 2v20M2 7h20v4H2zM12 7a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg><span class="sidebar-nav__text">Quà tặng</span></a></li>
+      <li><a href="orders" class="sidebar-nav__link" data-page="orders"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
+      <li><a href="customers" class="sidebar-nav__link" data-page="customers"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
+      <li><a href="attributes" class="sidebar-nav__link" data-page="attributes"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><span class="sidebar-nav__text">Thuộc tính SP</span></a></li>
+      <li><a href="affiliates" class="sidebar-nav__link" data-page="affiliates"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Cộng Tác Viên</span><span class="sidebar-nav__badge" id="sb-affiliates" style="display:none"></span></a></li>
     </ul>
 
     <span class="sidebar-section-label">Nội dung</span>
@@ -156,8 +152,8 @@
   </div>
 
   <div id="admin-toast-container"></div>
-  <script src="js/admin-data.js"></script>
-  <script src="js/admin-core.js"></script>
+  <script src="js/admin-data.js?v=15"></script>
+  <script src="js/admin-core.js?v=15"></script>
   <script src="js/accounts-admin.js"></script>
 </body>
 

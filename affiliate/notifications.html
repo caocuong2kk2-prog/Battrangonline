@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Báo - CTV Bát Tràng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .notifications-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid #f3f4f6;
+            max-width: 800px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        .notifications-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notifications-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-tabs {
+            display: flex;
+            gap: 16px;
+        }
+        .filter-tab {
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
+        }
+        .filter-tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+        .notification-item {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            gap: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .notification-item:hover {
+            background: #f9fafb;
+        }
+        .notification-item.unread {
+            background: #eff6ff;
+        }
+        .notification-icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .notification-content {
+            flex: 1;
+        }
+        .notification-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+        .notification-message {
+            font-size: 0.95rem;
+            color: #4b5563;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        .notification-time {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            gap: 8px;
+        }
+        .page-btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .page-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+    <script src="js/api.js?v=5"></script>
+    <script>
+        let currentPage = 1;
+        let currentFilter = 'all'; // 'all' or 'unread'
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            renderLayout('notifications', 'Thông Báo');
+
+            const initHtml = `
+                <div class="notifications-container">
+                    <div class="notifications-header">
+                        <div class="notifications-title">
+                            <span>🔔</span> Danh sách thông báo
+                        </div>
+                        <div class="filter-tabs">
+                            <button class="filter-tab active" onclick="setFilter('all', this)">Tất cả</button>
+                            <button class="filter-tab" onclick="setFilter('unread', this)">Chưa đọc</button>
+                        </div>
+                    </div>
+                    <div id="notifPageList">
+                        <div style="padding: 40px; text-align: center; color: #6b7280;">Đang tải...</div>
+                    </div>
+                    <div class="pagination" id="paginationControls"></div>
+                </div>
+            `;
+            document.getElementById('pageContent').innerHTML = initHtml;
+
+            await loadNotifications();
+        });
+
+        window.setFilter = function(filter, btn) {
+            document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = filter;
+            currentPage = 1;
+            loadNotifications();
+        }
+
+        async function loadNotifications() {
+            const listEl = document.getElementById('notifPageList');
+            listEl.innerHTML = '<div style="padding: 40px; text-align: center; color: #6b7280;">Đang tải...</div>';
+
+            try {
+                let url = `/affiliates/notifications?page=${currentPage}&limit=10`;
+                if (currentFilter === 'unread') {
+                    url += '&unreadOnly=true';
+                }
+
+                const res = await Api.request(url);
+                if (!res || !res.data) return;
+
+                if (res.data.length === 0) {
+                    listEl.innerHTML = `
+                        <div style="padding: 60px 20px; text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: 16px;">📭</div>
+                            <div style="color: #6b7280; font-size: 1.1rem;">Bạn chưa có thông báo nào.</div>
+                        </div>
+                    `;
+                    document.getElementById('paginationControls').innerHTML = '';
+                    return;
+                }
+
+                listEl.innerHTML = res.data.map(n => {
+                    let icon = '📢';
+                    if (n.type === 'commission') icon = '💰';
+                    if (n.type === 'tier') icon = '🏆';
+                    if (n.type === 'order') icon = '🛒';
+                    
+                    let safeTitle = n.title.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                    let safeMessage = n.message.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                    let safeDate = window.formatNotificationTime(n.createdAt);
+
+                    return `
+                        <div class="notification-item ${n.isRead ? '' : 'unread'}" onclick="viewNotificationDetail(${n.id}, '${safeTitle}', '${safeMessage}', '${safeDate}', this)">
+                            <div class="notification-icon">${icon}</div>
+                            <div class="notification-content">
+                                <div class="notification-title">${n.title}</div>
+                                <div class="notification-message">${n.message}</div>
+                                <div class="notification-time">${safeDate}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                renderPagination(res.total, 10);
+            } catch (err) {
+                listEl.innerHTML = `<div style="padding: 40px; text-align: center; color: #ef4444;">Lỗi tải dữ liệu.</div>`;
+            }
+        }
+
+        function renderPagination(total, limit) {
+            const totalPages = Math.ceil(total / limit);
+            const controls = document.getElementById('paginationControls');
+            
+            if (totalPages <= 1) {
+                controls.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            html += `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">«</button>`;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
+            }
+            
+            html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">»</button>`;
+            
+            controls.innerHTML = html;
+        }
+
+        window.changePage = function(page) {
+            currentPage = page;
+            loadNotifications();
+        }
+
+        // markReadAndReload is no longer needed since viewNotificationDetail handles everything in api.js
+    </script>
+</body>
+</html>

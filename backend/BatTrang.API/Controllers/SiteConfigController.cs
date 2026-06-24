@@ -9,7 +9,7 @@ namespace BatTrang.API.Controllers
 {
     [ApiController]
     [Route("api/site-config")]
-    [Authorize]
+    [Authorize(Policy = "AdminOnly")]
     public class SiteConfigController : ControllerBase
     {
         private readonly ISiteConfigRepository _configRepo;
@@ -56,3 +56,4 @@ namespace BatTrang.API.Controllers
         }
     }
 }
+

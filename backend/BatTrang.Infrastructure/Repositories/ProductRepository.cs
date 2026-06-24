@@ -37,13 +37,19 @@ namespace BatTrang.Infrastructure.Repositories
 
             if (!string.IsNullOrEmpty(filter.Category) && filter.Category != "all")
             {
-                query = query.Where(p => p.Category.Slug == filter.Category);
+                var categorySlugs = _context.Categories
+                    .Where(c => c.Slug == filter.Category || (c.Parent != null && c.Parent.Slug == filter.Category))
+                    .Select(c => c.Slug)
+                    .ToList();
+                query = query.Where(p => categorySlugs.Contains(p.Category.Slug));
             }
 
             if (!string.IsNullOrEmpty(filter.SearchQuery))
             {
                 var lowerSearch = filter.SearchQuery.ToLower();
-                query = query.Where(p => p.Name.ToLower().Contains(lowerSearch) || p.Category.Name.ToLower().Contains(lowerSearch));
+                query = query.Where(p => p.Name.ToLower().Contains(lowerSearch) 
+                                      || p.Category.Name.ToLower().Contains(lowerSearch)
+                                      || (p.Sku != null && p.Sku.ToLower().Contains(lowerSearch)));
             }
 
             if (!string.IsNullOrEmpty(filter.Quality) && filter.Quality != "all")
@@ -111,14 +117,35 @@ namespace BatTrang.Infrastructure.Repositories
                     query = query.Where(p => p.Variants.Any(v => v.ProductTypeId.HasValue && typeIds.Contains(v.ProductTypeId.Value)));
                 }
             }
+            if (filter.MinPrice.HasValue)
+            {
+                query = query.Where(p => p.Variants.Any() && p.Variants.Min(v => v.CampaignPrice ?? v.Price) >= filter.MinPrice.Value);
+            }
+
+            if (filter.MaxPrice.HasValue)
+            {
+                query = query.Where(p => p.Variants.Any() && p.Variants.Min(v => v.CampaignPrice ?? v.Price) <= filter.MaxPrice.Value);
+            }
+
+            if (!string.IsNullOrEmpty(filter.Status) && filter.Status != "all")
+            {
+                if (filter.Status == "in-stock")
+                {
+                    query = query.Where(p => p.Status != "inactive");
+                }
+                else if (filter.Status == "out-of-stock")
+                {
+                    query = query.Where(p => p.Status == "inactive");
+                }
+            }
 
             switch (filter.Sort)
             {
                 case "price-asc":
-                    query = query.OrderBy(p => p.Variants.Min(v => (decimal?)v.Price) ?? 0);
+                    query = query.OrderBy(p => p.Variants.Min(v => (decimal?)(v.CampaignPrice ?? v.Price)) ?? 0);
                     break;
                 case "price-desc":
-                    query = query.OrderByDescending(p => p.Variants.Min(v => (decimal?)v.Price) ?? 0);
+                    query = query.OrderByDescending(p => p.Variants.Min(v => (decimal?)(v.CampaignPrice ?? v.Price)) ?? 0);
                     break;
                 case "newest":
                 default:
@@ -141,6 +168,7 @@ namespace BatTrang.Infrastructure.Repositories
         {
             var query = _context.Products
                 .Include(p => p.Category)
+                    .ThenInclude(c => c.Parent)
                 .Include(p => p.Variants)
                     .ThenInclude(v => v.Images)
                 .Include(p => p.Variants)
@@ -165,6 +193,13 @@ namespace BatTrang.Infrastructure.Repositories
             return await query.FirstOrDefaultAsync(p => p.Slug == slug);
         }
 
+        public async Task<IReadOnlyList<Product>> GetAllProductsWithVariantsAsync()
+        {
+            return await _context.Products
+                .Include(p => p.Variants)
+                .ToListAsync();
+        }
+
         public async Task<IReadOnlyList<Product>> GetFeaturedProductsAsync(int limit)
         {
             return await _context.Products
@@ -183,7 +218,8 @@ namespace BatTrang.Infrastructure.Repositories
                     .ThenInclude(v => v.Color)
                 .Include(p => p.Variants)
                     .ThenInclude(v => v.Pattern)
-                .OrderByDescending(p => p.Id) // Or another logic for featured
+                .OrderByDescending(p => p.TotalSold) // Prioritize best-selling products
+                .ThenByDescending(p => p.Id)
                 .Take(limit)
                 .ToListAsync();
         }
@@ -191,6 +227,8 @@ namespace BatTrang.Infrastructure.Repositories
         public async Task<Product?> GetProductWithImagesAsync(int id)
         {
             return await _context.Products
+                .Include(p => p.Category)
+                    .ThenInclude(c => c.Parent)
                 .Include(p => p.Variants)
                     .ThenInclude(v => v.Images)
                 .Include(p => p.Variants)

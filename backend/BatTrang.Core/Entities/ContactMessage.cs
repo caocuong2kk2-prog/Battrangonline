@@ -9,7 +9,7 @@ namespace BatTrang.Core.Entities
         public string Phone { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string Message { get; set; } = null!;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
         public bool IsRead { get; set; }
     }
 }

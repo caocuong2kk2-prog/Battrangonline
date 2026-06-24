@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoa Hồng - CTV Bát Tràng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <script src="js/api.js?v=5"></script>
+    <script>
+        let currentCommPage = 1;
+        const commsPerPage = 20;
+        let currentFilteredComms = [];
+
+        function getTierIcon() {
+            const tier = window.affiliateTier || 'Thường';
+            if (tier === 'Kim Cương' || tier === 'VIP') return '💎';
+            if (tier === 'Vàng') return '🥇';
+            if (tier === 'Bạc') return '🥈';
+            return '🌱';
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            renderLayout('commissions', 'Lịch Sử Hoa Hồng');
+
+            try {
+                const commissions = await Api.request('/affiliates/commissions');
+                window.allCommissions = commissions;
+
+                const html = `
+                    <!-- Summary Cards -->
+                    <div class="stats-summary-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                        <div class="stats-summary-card" style="background: #fff; border-radius: 8px; padding: 12px 16px; border-left: 4px solid #3b82f6; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px;">Hoa hồng hiển thị</div>
+                                <div id="summary-filtered-count" style="font-size: 1.3rem; font-weight: 800; color: #111827;">0</div>
+                            </div>
+                            <div style="width: 44px; height: 44px; border-radius: 10px; background: #eff6ff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">💸</div>
+                        </div>
+                        <div class="stats-summary-card" style="background: #fff; border-radius: 8px; padding: 12px 16px; border-left: 4px solid #8b5cf6; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px;">Doanh thu hợp lệ</div>
+                                <div id="summary-filtered-revenue" style="font-size: 1.3rem; font-weight: 800; color: #111827;">0đ</div>
+                            </div>
+                            <div style="width: 44px; height: 44px; border-radius: 10px; background: #f5f3ff; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">💰</div>
+                        </div>
+                        <div class="stats-summary-card" style="background: #fff; border-radius: 8px; padding: 12px 16px; border-left: 4px solid #10b981; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <div style="font-size: 0.75rem; font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px;">Hoa hồng hợp lệ</div>
+                                <div id="summary-filtered-commission" style="font-size: 1.3rem; font-weight: 800; color: #111827;">0đ</div>
+                            </div>
+                            <div style="width: 44px; height: 44px; border-radius: 10px; background: #ecfdf5; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">🏆</div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03);">
+                        <div class="card-header" style="padding: 14px 16px; flex-direction: column; align-items: stretch; gap: 0;">
+                            <h3 class="card-title" style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                                <span style="font-size: 1.2rem;">💸</span> Chi tiết hoa hồng từ đơn hàng
+                            </h3>
+                            <div class="page-filter-bar" style="padding: 0; background: transparent; border: none;">
+                                <style>
+                                    .comm-option:hover { background: #f3f4f6; color: #3b82f6 !important; }
+                                    .comm-option.selected { background: #eff6ff; color: #3b82f6; font-weight: 600; }
+                                </style>
+                                <input type="text" id="comm-search" class="form-control filter-search" placeholder="🔍 Tìm mã đơn hàng..." oninput="filterCommissions()" style="padding: 10px 14px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                                <div class="filter-select-wrapper" style="z-index: 10;">
+                                    <div id="comm-select-trigger" style="width: 100%; box-sizing: border-box; padding: 10px 14px; border-radius: 8px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-family: inherit; font-size: 0.95rem; color: #111827;" onclick="toggleCommSelect()">
+                                        <span id="comm-select-label">Tất cả trạng thái</span>
+                                        <svg width="18" height="18" fill="none" stroke="#6b7280" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                                    </div>
+                                    <div id="comm-select-options" style="position: absolute; top: 100%; left: 0; right: 0; margin-top: 4px; background: #fff; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: none; flex-direction: column; overflow: hidden; z-index: 20;">
+                                        <div class="comm-option selected" data-value="" style="padding: 10px 14px; cursor: pointer; font-size: 0.95rem; color: #111827;" onclick="selectCommOption(this)">Tất cả trạng thái</div>
+                                        <div class="comm-option" data-value="Pending" style="padding: 10px 14px; cursor: pointer; font-size: 0.95rem; color: #111827;" onclick="selectCommOption(this)">Chờ duyệt</div>
+                                        <div class="comm-option" data-value="Approved" style="padding: 10px 14px; cursor: pointer; font-size: 0.95rem; color: #111827;" onclick="selectCommOption(this)">Đã duyệt</div>
+                                        <div class="comm-option" data-value="Refunded" style="padding: 10px 14px; cursor: pointer; font-size: 0.95rem; color: #111827;" onclick="selectCommOption(this)">Đã trả hàng</div>
+                                        <div class="comm-option" data-value="Rejected" style="padding: 10px 14px; cursor: pointer; font-size: 0.95rem; color: #111827;" onclick="selectCommOption(this)">Từ chối</div>
+                                    </div>
+                                    <input type="hidden" id="comm-status" value="">
+                                </div>
+                                <div class="filter-date-group">
+                                    <span class="filter-date-label">Từ:</span>
+                                    <input type="date" id="comm-date-from" onchange="filterCommissions()">
+                                    <span class="filter-date-label">Đến:</span>
+                                    <input type="date" id="comm-date-to" onchange="filterCommissions()">
+                                </div>
+                                <button onclick="exportCommExcel()" class="filter-export-btn">
+                                    <span>📥</span> Xuất Excel
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Mã đơn</th>
+                                        <th class="table-hide-mobile">Ngày ghi nhận</th>
+                                        <th class="table-hide-mobile" style="text-align: right;">Giá trị đơn</th>
+                                        <th style="text-align: right;">Hoa hồng</th>
+                                        <th style="text-align: center;">Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="commissions-tbody">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="pagination" style="display: flex; justify-content: center; align-items: center; gap: 8px; padding: 20px; border-top: 1px solid var(--border-color);"></div>
+                    </div>
+                `;
+                document.getElementById('pageContent').innerHTML = html;
+
+                // Set default dates to current month
+                const today = new Date();
+                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+                const formatDate = (d) => {
+                    const yyyy = d.getFullYear();
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    return `${yyyy}-${mm}-${dd}`;
+                };
+
+                document.getElementById('comm-date-from').value = formatDate(firstDay);
+                document.getElementById('comm-date-to').value = formatDate(today);
+
+                filterCommissions();
+
+            } catch (err) {
+                document.getElementById('pageContent').innerHTML = `<div class="alert alert-error" style="display:block">Lỗi: ${err.message}</div>`;
+            }
+        });
+
+        window.renderCommissionsList = function(data) {
+            currentFilteredComms = data;
+            let tbody = '';
+            if (data.length === 0) {
+                tbody = `
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding: 40px 20px;">
+                            <div style="font-size: 3rem; color: #e5e7eb; margin-bottom: 10px;">💰</div>
+                            <div style="color: var(--text-muted); font-weight: 500;">Không tìm thấy hoa hồng nào.</div>
+                            <div style="font-size: 0.85rem; color: #9ca3af; margin-top: 5px;">Thử thay đổi bộ lọc hoặc điều kiện tìm kiếm.</div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                const totalPages = Math.ceil(data.length / commsPerPage);
+                if (currentCommPage > totalPages && totalPages > 0) currentCommPage = totalPages;
+                const pagedData = data.slice((currentCommPage - 1) * commsPerPage, currentCommPage * commsPerPage);
+
+                pagedData.forEach(c => {
+                    const date = new Date(c.createdAt).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
+                    const statusBadge = {
+                        'Pending': '<span class="badge badge-pending">Chờ duyệt</span>',
+                        'Approved': '<span class="badge badge-approved">Đã duyệt</span>',
+                        'Paid': '<span class="badge badge-paid">Đã thanh toán</span>',
+                        'Refunded': '<span class="badge badge-rejected">Đã trả hàng</span>',
+                        'Rejected': '<span class="badge badge-rejected">Từ chối</span>'
+                    }[c.status] || `<span class="badge">${c.status}</span>`;
+
+                    let totalComm = c.commissionAmount || 0;
+                    let baseComm = c.baseCommissionAmount || 0;
+                    let tierBonus = c.tierBonusAmount || 0;
+
+                    const isInvalid = ['Refunded', 'Rejected'].includes(c.status);
+
+                    tbody += `
+                        <tr>
+                            <td>
+                                <a href="orders" style="color: var(--primary); font-weight: 600; text-decoration: none; border-bottom: 1px dashed var(--primary); padding-bottom: 2px;">
+                                    #${c.orderCode}
+                                </a>
+                            </td>
+                            <td><span style="color: var(--text-muted); font-size: 0.9rem;" class="table-hide-mobile">${date}</span></td>
+                            <td style="text-align: right; font-weight: 500;" class="table-hide-mobile">${c.orderTotalAmount.toLocaleString('vi-VN')}đ</td>
+                            <td style="text-align: right;">
+                                ${isInvalid ? `
+                                    <strong style="color: var(--text-muted); font-size: 1.05rem;">0đ</strong>
+                                    <div style="font-size: 0.75rem; color: #dc2626; margin-top: 2px;">Không được tính</div>
+                                ` : `
+                                    <strong style="color: var(--success); font-size: 1.05rem;">+${totalComm.toLocaleString('vi-VN')}đ</strong>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">Gốc: +${baseComm.toLocaleString('vi-VN')}đ</div>
+                                    ${tierBonus > 0 ? `<div style="font-size: 0.75rem; color: #d97706; margin-top: 2px;">Thưởng hạng ${getTierIcon()}(+${Math.round((tierBonus / c.orderTotalAmount) * 100)}%): +${tierBonus.toLocaleString('vi-VN')}đ</div>` : ''}
+                                `}
+                            </td>
+                            <td style="text-align: center;">${statusBadge}</td>
+                        </tr>
+                    `;
+                });
+            }
+            document.getElementById('commissions-tbody').innerHTML = tbody;
+            renderCommPagination(data.length);
+        };
+
+        window.renderCommPagination = function(totalItems) {
+            const paginationEl = document.getElementById('pagination');
+            if (!paginationEl) return;
+            const totalPages = Math.ceil(totalItems / commsPerPage);
+
+            if (totalPages <= 1) {
+                paginationEl.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            if (currentCommPage > 1) {
+                html += `<button onclick="goToCommPage(${currentCommPage - 1})" class="btn" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer;">&laquo; Trước</button>`;
+            } else {
+                html += `<button class="btn" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e5e7eb; background: #f3f4f6; color: #9ca3af; cursor: not-allowed;" disabled>&laquo; Trước</button>`;
+            }
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentCommPage - 2 && i <= currentCommPage + 2)) {
+                    if (i === currentCommPage) {
+                        html += `<button class="btn btn-primary" style="padding: 6px 12px; border-radius: 6px; border: none; cursor: default;">${i}</button>`;
+                    } else {
+                        html += `<button onclick="goToCommPage(${i})" class="btn" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer;">${i}</button>`;
+                    }
+                } else if (i === currentCommPage - 3 || i === currentCommPage + 3) {
+                    html += `<span style="padding: 6px 4px; color: #6b7280;">...</span>`;
+                }
+            }
+
+            if (currentCommPage < totalPages) {
+                html += `<button onclick="goToCommPage(${currentCommPage + 1})" class="btn" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer;">Sau &raquo;</button>`;
+            } else {
+                html += `<button class="btn" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e5e7eb; background: #f3f4f6; color: #9ca3af; cursor: not-allowed;" disabled>Sau &raquo;</button>`;
+            }
+
+            paginationEl.innerHTML = html;
+        };
+
+        window.goToCommPage = function(page) {
+            currentCommPage = page;
+            renderCommissionsList(currentFilteredComms);
+        };
+
+        window.filterCommissions = function() {
+            var q = (document.getElementById('comm-search').value || '').toLowerCase();
+            var normQ = q.replace(/(^|\D)0+(?=\d)/g, "$1");
+            var fromDateStr = document.getElementById('comm-date-from').value;
+            var toDateStr = document.getElementById('comm-date-to').value;
+            var statusVal = document.getElementById('comm-status') ? document.getElementById('comm-status').value : '';
+
+            var fromDate = fromDateStr ? new Date(fromDateStr) : null;
+            if (fromDate) fromDate.setHours(0, 0, 0, 0);
+
+            var toDate = toDateStr ? new Date(toDateStr) : null;
+            if (toDate) toDate.setHours(23, 59, 59, 999);
+
+            var filtered = window.allCommissions.filter(c => {
+                var orderCode = (c.orderCode || '').toLowerCase();
+                let cAt = c.createdAt || '';
+                if (cAt && !cAt.endsWith('Z')) cAt += 'Z';
+                var dateStr = new Date(cAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' }).toLowerCase();
+                var normDate = dateStr.replace(/(^|\D)0+(?=\d)/g, "$1");
+
+                var matchQ = !normQ ||
+                    orderCode.includes(normQ) ||
+                    normDate.includes(normQ);
+
+                var d = new Date(cAt);
+                var matchFrom = fromDate ? d >= fromDate : true;
+                var matchTo = toDate ? d <= toDate : true;
+
+                var matchStatus = !statusVal || c.status === statusVal;
+
+                return matchQ && matchFrom && matchTo && matchStatus;
+            });
+
+            // Update Summary Cards
+            var validComms = filtered.filter(c => !['Refunded', 'Rejected'].includes(c.status));
+            var totalRev = validComms.reduce((sum, c) => sum + (c.orderTotalAmount || 0), 0);
+            var totalComm = validComms.reduce((sum, c) => sum + (c.commissionAmount || 0), 0);
+
+            if (document.getElementById('summary-filtered-count')) {
+                document.getElementById('summary-filtered-count').innerText = filtered.length.toLocaleString('vi-VN');
+                document.getElementById('summary-filtered-revenue').innerText = totalRev.toLocaleString('vi-VN') + 'đ';
+                document.getElementById('summary-filtered-commission').innerText = totalComm.toLocaleString('vi-VN') + 'đ';
+            }
+
+            currentCommPage = 1;
+            renderCommissionsList(filtered);
+        };
+
+        window.exportCommExcel = function() {
+            if (!currentFilteredComms || currentFilteredComms.length === 0) {
+                alert("Không có dữ liệu để xuất!");
+                return;
+            }
+
+            let csvContent = "\uFEFF"; // BOM for UTF-8 (Excel friendly)
+            csvContent += "Mã đơn,Ngày ghi nhận,Trạng thái,Giá trị đơn (VND),Hoa hồng (VND),Hoa hồng gốc (VND),Thưởng hạng (VND)\n";
+
+            currentFilteredComms.forEach(c => {
+                let cAt = c.createdAt || '';
+                if (cAt && !cAt.endsWith('Z')) cAt += 'Z';
+                const date = new Date(cAt).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' }).replace(',', ' ');
+
+                const statusMap = {
+                    'Pending': 'Chờ duyệt',
+                    'Approved': 'Đã duyệt',
+                    'Paid': 'Đã thanh toán',
+                    'Refunded': 'Đã trả hàng',
+                    'Rejected': 'Từ chối'
+                };
+                const statusText = statusMap[c.status] || c.status;
+
+                const isInvalid = ['Refunded', 'Rejected'].includes(c.status);
+                const comm = isInvalid ? 0 : (c.commissionAmount || 0);
+                const baseComm = isInvalid ? 0 : (c.baseCommissionAmount || 0);
+                const tierBonus = isInvalid ? 0 : (c.tierBonusAmount || 0);
+
+                csvContent += `"${c.orderCode || ''}","${date}","${statusText}","${c.orderTotalAmount || 0}","${comm}","${baseComm}","${tierBonus}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "Lich_su_hoa_hong.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        window.toggleCommSelect = function() {
+            const opts = document.getElementById('comm-select-options');
+            if (opts) opts.style.display = opts.style.display === 'flex' ? 'none' : 'flex';
+        };
+
+        window.selectCommOption = function(el) {
+            document.getElementById('comm-select-label').innerText = el.innerText;
+            document.getElementById('comm-status').value = el.getAttribute('data-value');
+            document.querySelectorAll('.comm-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            window.toggleCommSelect();
+            window.filterCommissions();
+        };
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.custom-select-wrapper')) {
+                const opts = document.getElementById('comm-select-options');
+                if (opts) opts.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

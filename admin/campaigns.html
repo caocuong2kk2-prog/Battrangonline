@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="vi"><head>
+<script>if(localStorage.getItem('sidebar-collapsed')==='true')document.documentElement.classList.add('sidebar-collapsed');</script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Quản Lý Khuyến Mãi – Phúc Gia Tiên Admin</title>
+<link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/components.css">
+<style>
+.search-results-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 100;
+}
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background-color var(--t-fast);
+}
+.search-result-item:hover {
+    background-color: #f8fafc;
+}
+.search-result-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 12px;
+}
+.search-result-item .info strong {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 2px;
+}
+.search-result-item .info span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+</style>
+<link rel="icon" href="assets/images/logo.png" type="image/png">
+</head>
+<body class="admin-layout">
+<aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header"><div class="sidebar-brand"><img src="assets/images/logo.png" alt="Logo" class="sidebar-brand__icon" style="width: 32px; height: 32px; object-fit: contain; background: #fff; border-radius: 50%; padding: 2px;"><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
+  <nav class="sidebar-nav">
+    <span class="sidebar-section-label">Tổng quan</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="./" class="sidebar-nav__link" data-page="index"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li>
+    </ul>
+    
+    <span class="sidebar-section-label">Kinh doanh</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="products" class="sidebar-nav__link" data-page="products"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
+      <li><a href="campaigns" class="sidebar-nav__link active" data-page="campaigns"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg><span class="sidebar-nav__text">Khuyến mãi</span></a></li>
+      <li><a href="gifts" class="sidebar-nav__link" data-page="gifts"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M12 2v20M2 7h20v4H2zM12 7a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg><span class="sidebar-nav__text">Quà tặng</span></a></li>
+      <li><a href="orders" class="sidebar-nav__link" data-page="orders"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
+      <li><a href="customers" class="sidebar-nav__link" data-page="customers"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
+      <li><a href="attributes" class="sidebar-nav__link" data-page="attributes"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><span class="sidebar-nav__text">Thuộc tính SP</span></a></li>
+      <li><a href="affiliates" class="sidebar-nav__link" data-page="affiliates"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Cộng Tác Viên</span><span class="sidebar-nav__badge" id="sb-affiliates" style="display:none"></span></a></li>
+    </ul>
+
+    <span class="sidebar-section-label">Nội dung</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="journey" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
+    </ul>
+
+    <span class="sidebar-section-label">Báo cáo</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="analytics" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav__text">Thống kê</span></a></li>
+    </ul>
+
+    <span class="sidebar-section-label">Hệ thống</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="settings" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-nav__text">Cài đặt</span></a></li>
+      <li class="admin-only"><a href="accounts" class="sidebar-nav__link" id="nav-accounts-link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg><span class="sidebar-nav__text">Tài khoản</span></a></li>
+    </ul>
+  </nav>
+  <div class="sidebar-footer"><div class="sidebar-user js-logout"><div class="sidebar-user__avatar js-admin-initial">A</div><div class="sidebar-user__info"><div class="sidebar-user__name js-admin-name">Admin</div><div class="sidebar-user__role">Quản trị viên</div></div><button class="sidebar-user__logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="admin-main-wrapper">
+  <header class="admin-topbar">
+    <button class="topbar-toggle" id="sidebarToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="topbar-breadcrumb"><span class="topbar-breadcrumb__item">Kinh doanh</span><span class="topbar-breadcrumb__separator">›</span><span class="topbar-breadcrumb__current" id="breadcrumb-current">Khuyến mãi</span></div>
+    <div class="topbar-actions">
+      <button class="topbar-btn" title="Thông báo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2">
+          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+          <path d="M13.73 21a2 2 0 01-3.46 0" />
+        </svg><span class="topbar-btn__badge"></span></button>
+      <div class="topbar-user" id="topbarUser"><div class="topbar-user__avatar js-admin-initial">A</div><span class="topbar-user__name js-admin-name">Admin</span></div>
+    </div>
+  </header>
+
+  <main class="admin-content">
+    <div class="page-header">
+      <div><h1 class="page-title">Quản Lý Khuyến Mãi</h1><p class="page-subtitle">Quản lý các chương trình giảm giá và chiến dịch khuyến mãi</p></div>
+      <div class="page-header__actions">
+        <button class="btn btn--primary" id="btn-add-campaign">➕ Thêm chiến dịch</button>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table class="data-table" id="campaigns-table">
+        <thead>
+          <tr>
+            <th class="stt-cell">ID</th>
+            <th>Tên chiến dịch</th>
+            <th>Giảm giá</th>
+            <th>Thời gian</th>
+            <th>Trạng thái</th>
+            <th style="width: 150px">Hành động</th>
+          </tr>
+        </thead>
+        <tbody id="campaigns-table-body">
+          <tr><td colspan="6" style="text-align:center;padding:var(--sp-8);color:var(--text-muted)">Đang tải dữ liệu...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="campaignModal">
+  <div class="modal" style="width: 800px; max-width: 95%">
+    <div class="modal-header">
+          <h2 id="modal-title">Thêm chiến dịch mới</h2>
+          <button class="modal-close" id="btn-close-modal">✕</button>
+        </div>
+    <div class="modal-body">
+      <form id="campaign-form">
+        <input type="hidden" id="campaign-id">
+        
+        <div class="form-group">
+          <label class="form-label" for="campaign-name">Tên chiến dịch <span style="color:var(--danger)">*</span></label>
+          <input type="text" id="campaign-name" class="form-control" required placeholder="VD: Khuyến mãi Tết 2026">
+        </div>
+        
+        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="campaign-start">Thời gian bắt đầu <span style="color:var(--danger)">*</span></label>
+            <input type="datetime-local" id="campaign-start" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="campaign-end">Thời gian kết thúc <span style="color:var(--danger)">*</span></label>
+            <input type="datetime-local" id="campaign-end" class="form-control" required>
+          </div>
+        </div>
+        
+        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="campaign-discount">Mức giảm giá (%) <span style="color:var(--danger)">*</span></label>
+            <input type="number" id="campaign-discount" class="form-control" min="1" max="99" required placeholder="VD: 20">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="campaign-status">Trạng thái</label>
+            <select id="campaign-status" class="form-control">
+              <option value="active">Kích hoạt</option>
+              <option value="inactive">Tạm dừng</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="campaign-target-url">Đường dẫn Nút bấm (Target URL)</label>
+          <input type="text" id="campaign-target-url" class="form-control" placeholder="VD: /products?category=am-chen">
+          <small style="color:var(--text-muted)">Để trống sẽ mặc định trỏ về /products?sort=newest</small>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="campaign-desc">Mô tả hiển thị (Description)</label>
+          <textarea id="campaign-desc" class="form-control" rows="2" placeholder="VD: Ưu đãi độc quyền lên đến 30%..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="campaign-banner">Ảnh Banner / Huy hiệu (Tùy chọn)</label>
+          <div id="banner-upload-zone" style="display: flex; gap: 15px; align-items: flex-start; padding: 16px; border: 2px dashed #cbd5e1; border-radius: 12px; background: #f8fafc; transition: all 0.2s ease;">
+            <div id="campaign-banner-preview" style="width: 100px; height: 100px; background: #fff; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0;">
+              <span style="font-size: 24px; color: #cbd5e1;">🖼️</span>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
+              <div style="font-weight: 500; color: var(--text-main); margin-bottom: 4px;">Kéo thả ảnh vào đây hoặc bấm để tải lên</div>
+              <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Định dạng: JPG, PNG, GIF. Kích thước tối đa: 2MB.<br>Khuyến nghị: Ảnh vuông 100x100px. Nếu để trống sẽ dùng Logo mặc định.</div>
+              <div style="display: flex; gap: 8px;">
+                <input type="file" id="campaign-banner-file" class="form-control" accept="image/*" style="display: none;">
+                <input type="hidden" id="campaign-banner-url">
+                <button type="button" class="btn btn--secondary" onclick="document.getElementById('campaign-banner-file').click()" style="padding: 6px 16px; border-radius: 6px;">Tải ảnh lên</button>
+                <button type="button" class="btn btn--danger" id="btn-clear-banner" style="display:none; padding: 6px 12px; border-radius: 6px; background-color: #fee2e2; color: #ef4444; border-color: #fee2e2;" title="Xoá ảnh">🗑️ Xóa</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group" style="margin-top: var(--sp-6);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9;">
+            <label class="form-label" style="margin-bottom: 0; font-size: 1.1rem; color: var(--text-main);">
+              Sản phẩm áp dụng: <span id="selected-count" style="color: var(--accent); font-weight: 700; background: #fef3c7; padding: 2px 8px; border-radius: 12px; font-size: 0.95rem; margin-left: 4px;">0</span>
+            </label>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <div style="position: relative;">
+                <div id="bulk-cat-toggle" class="form-control" style="width: 260px; padding: 6px 12px; cursor: pointer; background: #fff; display: flex; justify-content: space-between; align-items: center; border-radius: 6px; border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05); height: 36px;">
+                  <span id="bulk-cat-label" style="font-size: 0.9rem; color: #475569;">Lọc theo danh mục</span>
+                  <span style="color: #94a3b8; font-size: 0.8rem;">▼</span>
+                </div>
+                <div id="bulk-cat-dropdown" style="display: none; position: absolute; top: calc(100% + 4px); right: 0; width: 300px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; max-height: 300px; overflow-y: auto; z-index: 100; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                  <div style="padding: 12px; border-bottom: 1px solid #f1f5f9; background: #f8fafc;">
+                    <label style="display:flex; align-items:center; gap: 8px; font-weight: 600; cursor: pointer; color: var(--accent); font-size: 0.95rem;">
+                      <input type="checkbox" id="bulk-cat-all" value="all" style="width:16px;height:16px;accent-color:var(--accent);"> 🌟 Toàn bộ cửa hàng
+                    </label>
+                  </div>
+                  <div id="bulk-cat-list" style="padding: 8px; display: flex; flex-direction: column; gap: 6px;">
+                    <!-- Categories will be injected here -->
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="btn btn--secondary" id="btn-bulk-apply" style="padding: 0 16px; height: 36px; border-radius: 6px; font-weight: 500; display: flex; align-items: center; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">⚡ Thêm</button>
+              <button type="button" class="btn btn--danger" id="btn-clear-all" style="padding: 0 16px; height: 36px; border-radius: 6px; font-weight: 500; display: flex; align-items: center; gap: 6px; background-color: #fee2e2; color: #ef4444; border-color: #fee2e2; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">🗑️ Xóa hết</button>
+            </div>
+          </div>
+          
+          <div style="position: relative; margin-bottom: 16px;">
+            <input type="text" id="product-search" class="form-control" placeholder="🔍 Gõ tên sản phẩm để tìm và thêm nhanh..." style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 16px; font-size: 0.95rem; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02); transition: all 0.2s;">
+            <div id="product-search-results" class="search-results-dropdown" style="display: none;"></div>
+          </div>
+          
+          <div class="table-wrap" style="max-height: 350px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+            <table class="data-table" style="margin: 0; border-collapse: separate; border-spacing: 0; width: 100%;">
+              <thead style="position: sticky; top: 0; z-index: 10; background: #f8fafc; box-shadow: 0 1px 0 #e2e8f0;">
+                <tr>
+                  <th style="width: 80px; padding: 12px 16px; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; border-bottom: none;">Ảnh</th>
+                  <th style="padding: 12px 16px; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; border-bottom: none;">Tên sản phẩm</th>
+                  <th style="width: 60px; text-align: center; padding: 12px 16px; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; border-bottom: none;">Xóa</th>
+                </tr>
+              </thead>
+              <tbody id="selected-products-body">
+                <tr id="empty-products-row">
+                  <td colspan="3" style="text-align: center; padding: 48px 16px; color: var(--text-muted); background: #fff;">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5;">📦</div>
+                    <div style="font-weight: 500; color: #64748b;">Chưa có sản phẩm nào được chọn</div>
+                    <div style="font-size: 0.85rem; margin-top: 4px;">Sử dụng công cụ chọn danh mục hoặc tìm kiếm để thêm</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn--secondary" id="btn-cancel">Hủy</button>
+      <button class="btn btn--primary" id="btn-save">💾 Lưu chiến dịch</button>
+    </div>
+  </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div class="modal-overlay" id="imagePreviewModal" style="z-index: 2000;" onclick="if(event.target === this) closeModal('imagePreviewModal')">
+  <div class="modal" style="max-width: 800px; background: transparent; box-shadow: none; display: flex; flex-direction: column; align-items: center;" onclick="if(event.target === this) closeModal('imagePreviewModal')">
+    <div style="width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px;">
+      <button type="button" class="btn btn--danger" onclick="closeModal('imagePreviewModal')" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">✕</button>
+    </div>
+    <img id="preview-large-img" src="" style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); cursor: default;">
+  </div>
+</div>
+
+<div id="admin-toast-container"></div>
+<script src="js/admin-data.js?v=15"></script>
+<script src="js/admin-core.js?v=15"></script>
+<script src="js/campaigns.js?v=8"></script>
+</body></html>

@@ -8,7 +8,7 @@
   function _fetch(endpoint, options) {
     options = options || {};
     options.headers = options.headers || {};
-    
+
     // Prevent browser caching for API GET requests (e.g. order tracking showing old status)
     if (!options.method || options.method === 'GET') {
       options.cache = 'no-store';

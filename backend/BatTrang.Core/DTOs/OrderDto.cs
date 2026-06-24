@@ -20,6 +20,9 @@ namespace BatTrang.Core.DTOs
         public string? CancelReason { get; set; }
         public DateTime? CancelRequestedAt { get; set; }
         public DateTime? CancelledAt { get; set; }
+        public DateTime? ConfirmedAt { get; set; }
+        public DateTime? ShippingAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
     }
 
     public class RejectCancelDto
@@ -35,6 +38,8 @@ namespace BatTrang.Core.DTOs
         public int Qty { get; set; }
         public decimal Price { get; set; }
         public string? ImageUrl { get; set; }
+        public string? Sku { get; set; }
+        public decimal? EstimatedValue { get; set; }
     }
 
     public class CreateOrderDto
@@ -44,6 +49,8 @@ namespace BatTrang.Core.DTOs
         public string Email { get; set; } = null!;
         public string Address { get; set; } = null!;
         public string? CustomerNote { get; set; }
+        public string? AffiliateCode { get; set; } // Added for affiliate tracking
+        public string? RecaptchaToken { get; set; }
         public List<CreateOrderItemDto> Items { get; set; } = new List<CreateOrderItemDto>();
     }
 

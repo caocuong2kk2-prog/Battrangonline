@@ -736,62 +736,30 @@
     }
   </style>
   <script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/super-build/ckeditor.js"></script>
+<link rel="icon" href="assets/images/logo.png" type="image/png">
 </head>
 
 <body class="admin-layout">
   <aside class="admin-sidebar" id="adminSidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-brand">
-        <div class="sidebar-brand__icon">⚱️</div>
-        <div>
-          <div class="sidebar-brand__name">Phúc Gia Tiên</div>
-          <div class="sidebar-brand__sub">Quản trị hệ thống</div>
-        </div>
-      </div>
-    </div>
-    <nav class="sidebar-nav">
-      <span class="sidebar-section-label">Tổng quan</span>
-      <ul class="sidebar-nav__list">
-        <li><a href="./" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7" />
-              <rect x="14" y="3" width="7" height="7" />
-              <rect x="14" y="14" width="7" height="7" />
-              <rect x="3" y="14" width="7" height="7" />
-            </svg><span class="sidebar-nav__text">Dashboard</span></a></li>
-      </ul>
+      <div class="sidebar-header"><div class="sidebar-brand"><img src="assets/images/logo.png" alt="Logo" class="sidebar-brand__icon" style="width: 32px; height: 32px; object-fit: contain; background: #fff; border-radius: 50%; padding: 2px;"><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
+  <nav class="sidebar-nav">
+    <span class="sidebar-section-label">Tổng quan</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="./" class="sidebar-nav__link" data-page="index"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li>
+    </ul>
+    
+    <span class="sidebar-section-label">Kinh doanh</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="products" class="sidebar-nav__link" data-page="products"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
+      <li><a href="campaigns" class="sidebar-nav__link" data-page="campaigns"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg><span class="sidebar-nav__text">Khuyến mãi</span></a></li>
+      <li><a href="gifts" class="sidebar-nav__link" data-page="gifts"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M12 2v20M2 7h20v4H2zM12 7a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg><span class="sidebar-nav__text">Quà tặng</span></a></li>
+      <li><a href="orders" class="sidebar-nav__link" data-page="orders"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
+      <li><a href="customers" class="sidebar-nav__link" data-page="customers"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
+      <li><a href="attributes" class="sidebar-nav__link" data-page="attributes"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><span class="sidebar-nav__text">Thuộc tính SP</span></a></li>
+      <li><a href="affiliates" class="sidebar-nav__link" data-page="affiliates"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Cộng Tác Viên</span><span class="sidebar-nav__badge" id="sb-affiliates" style="display:none"></span></a></li>
+    </ul>
 
-      <span class="sidebar-section-label">Kinh doanh</span>
-      <ul class="sidebar-nav__list">
-        <li><a href="products" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2">
-              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <path d="M16 10a4 4 0 01-8 0" />
-            </svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
-        <li><a href="orders" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2">
-              <path d="M9 11l3 3L22 4" />
-              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
-            </svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending"
-              style="display:none"></span></a></li>
-        <li><a href="customers" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 00-3-3.87" />
-              <path d="M16 3.13a4 4 0 010 7.75" />
-            </svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
-        <li><a href="attributes" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-              <polyline points="2 17 12 22 22 17"></polyline>
-              <polyline points="2 12 12 17 22 12"></polyline>
-            </svg><span class="sidebar-nav__text">Thuộc tính SP</span></a></li>
-      </ul>
-
-
-      <span class="sidebar-section-label">Nội dung</span>
+    <span class="sidebar-section-label">Nội dung</span>
       <ul class="sidebar-nav__list">
         <li><a href="journey" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2">
@@ -881,6 +849,7 @@
           <button class="settings-tab" data-tab="tab-home">🏠 Nội dung Trang chủ</button>
           <button class="settings-tab" data-tab="tab-about">📄 Nội dung Giới thiệu</button>
           <button class="settings-tab" data-tab="tab-policies">🛡️ Các chính sách</button>
+          <button class="settings-tab" data-tab="tab-notifications">🔔 Thông báo</button>
         </div>
 
         <!-- Tab 1: Store Info & Socials & Maps -->
@@ -923,6 +892,10 @@
                     id="store-tiktok" value=""></div>
                 <div class="form-group"><label class="form-label">Messenger Link</label><input class="form-control"
                     id="store-messenger" value=""></div>
+                <div class="form-group"><label class="form-label">Google Analytics ID (VD: G-XXXXXXXXXX)</label><input
+                    class="form-control" id="store-ga" value="" placeholder="Để trống nếu chưa cài"></div>
+                <div class="form-group"><label class="form-label">Facebook Pixel ID</label><input class="form-control"
+                    id="store-pixel" value="" placeholder="Để trống nếu chưa cài"></div>
               </div>
             </div>
           </div>
@@ -1430,11 +1403,90 @@
                     </div>
                   </div>
 
-                </div>
+                </div> <!-- End Settings Subtab Container -->
               </div>
             </div>
           </div>
+        </div> <!-- /tab-policies (added missing closing div) -->
+
+        <!-- Tab: Notifications -->
+        <div class="settings-tab-panel" id="tab-notifications">
+          <div class="settings-section">
+            <div class="settings-section__header">
+              <div class="settings-section__icon" style="background:rgba(59,130,246,0.12);color:#3b82f6">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+              </div>
+              <div class="settings-section__title">Cấu hình thông báo (Email / Zalo)</div>
+              <span class="settings-page-badge settings-page-badge--home" style="margin-left:auto;">🔔 Hệ thống</span>
+            </div>
+
+            <div class="settings-section__body">
+
+              <!-- Cấu hình Email -->
+              <div class="settings-group">
+                <div class="settings-group__title">Thông báo qua Email</div>
+                <div class="settings-group__list">
+
+                  <div class="toggle-item">
+                    <div class="toggle-item__content">
+                      <div class="toggle-item__title">Gửi Email Xác nhận Đặt hàng</div>
+                      <div class="toggle-item__desc">Hệ thống sẽ tự động gửi email xác nhận cho khách hàng ngay sau khi
+                        họ đặt hàng thành công trên website. (Yêu cầu khách hàng có nhập email)</div>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="notify-email-order-new">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="toggle-item">
+                    <div class="toggle-item__content">
+                      <div class="toggle-item__title">Gửi Email Hóa đơn Hoàn thành</div>
+                      <div class="toggle-item__desc">Tự động gửi email cảm ơn kèm hóa đơn mua hàng (PDF) khi đơn hàng
+                        được Admin chuyển sang trạng thái "Hoàn thành".</div>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="notify-email-order-done">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Cấu hình Zalo ZNS -->
+              <div class="settings-group" style="margin-top: 32px;">
+                <div class="settings-group__title">Thông báo qua Zalo ZNS (Sắp ra mắt)</div>
+                <div class="settings-group__list" style="opacity: 0.6; pointer-events: none;">
+
+                  <div class="toggle-item">
+                    <div class="toggle-item__content">
+                      <div class="toggle-item__title">Gửi Zalo ZNS khi Đặt hàng thành công</div>
+                      <div class="toggle-item__desc">Tự động gửi tin nhắn Zalo Notification Service qua số điện thoại
+                        của khách hàng. Hữu ích cho khách không dùng email.</div>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" disabled>
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="form-group" style="margin-top: 8px;">
+                    <label class="form-label">Zalo OA Access Token</label>
+                    <input class="form-control" type="text" placeholder="Chưa khả dụng" disabled>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
         </div>
+
+
       </div><!-- /settings-tabs-wrapper -->
     </main>
   </div>
@@ -1449,8 +1501,8 @@
     </div>
   </div>
 
-  <script src="js/admin-data.js"></script>
-  <script src="js/admin-core.js"></script>
+  <script src="js/admin-data.js?v=15"></script>
+  <script src="js/admin-core.js?v=15"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       var CONFIG_KEY = 'pgt_site_config';
@@ -1477,7 +1529,7 @@
 
       // ── Load config ───────────────────────────
       function loadConfig() {
-        var API_BASE = (window.AdminData && window.AdminData.apiBase) || ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api');
+        var API_BASE = (window.AdminData && window.AdminData.apiBase) || ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' ? 'http://localhost:5055/api' : '/api');
         fetch(API_BASE + '/site-config')
           .then(function (r) { return r.json(); })
           .then(function (apiConfig) {
@@ -1497,6 +1549,11 @@
             document.getElementById('store-yt').value = config.youtube || '';
             document.getElementById('store-tiktok').value = config.tiktok || '';
             document.getElementById('store-messenger').value = config.messenger || '';
+            if (document.getElementById('store-ga')) document.getElementById('store-ga').value = config.googleAnalyticsId || '';
+            if (document.getElementById('store-pixel')) document.getElementById('store-pixel').value = config.facebookPixelId || '';
+
+            if (document.getElementById('notify-email-order-new')) document.getElementById('notify-email-order-new').checked = config.notifyEmailOrderNew !== 'false';
+            if (document.getElementById('notify-email-order-done')) document.getElementById('notify-email-order-done').checked = config.notifyEmailOrderDone !== 'false';
 
             // Load Image Uploads
             // Chuyển đổi URL lưu trong DB → URL hiển thị trong admin
@@ -1596,8 +1653,13 @@
               if (document.getElementById('admin-name-input')) document.getElementById('admin-name-input').value = session.name || '';
               if (document.getElementById('admin-username-input')) document.getElementById('admin-username-input').value = session.username || '';
             }
+
+
+
           }).catch(function (e) { console.error(e); });
       }
+
+
 
       loadConfig();
 
@@ -1644,6 +1706,11 @@
           youtube: document.getElementById('store-yt').value.trim(),
           tiktok: document.getElementById('store-tiktok').value.trim(),
           messenger: document.getElementById('store-messenger').value.trim(),
+          googleAnalyticsId: document.getElementById('store-ga') ? document.getElementById('store-ga').value.trim() : '',
+          facebookPixelId: document.getElementById('store-pixel') ? document.getElementById('store-pixel').value.trim() : '',
+
+          notifyEmailOrderNew: document.getElementById('notify-email-order-new') && document.getElementById('notify-email-order-new').checked ? 'true' : 'false',
+          notifyEmailOrderDone: document.getElementById('notify-email-order-done') && document.getElementById('notify-email-order-done').checked ? 'true' : 'false',
 
           // Images: convert display URL → stored URL before saving
           // Display: '../user/assets/...' or '/uploads/...'
@@ -1723,11 +1790,12 @@
           process4Desc: document.getElementById('proc-4-desc').value,
           process5Title: document.getElementById('proc-5-title').value,
           process5Desc: document.getElementById('proc-5-desc').value,
-          product_materials: currentConfig.product_materials || 'Gốm sứ, Đất nung, Sành, Men rạn'
+          product_materials: currentConfig.product_materials || 'Gốm sứ, Đất nung, Sành, Men rạn',
+
         };
 
         // Gửi lưu cấu hình site
-        var API_BASE = (window.AdminData && window.AdminData.apiBase) || ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api');
+        var API_BASE = (window.AdminData && window.AdminData.apiBase) || ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' ? 'http://localhost:5055/api' : '/api');
         fetch(API_BASE + '/site-config', {
           method: 'POST',
           headers: {
@@ -2035,7 +2103,8 @@
         'media': 'tab-media',
         'home': 'tab-home',
         'about': 'tab-about',
-        'policies': 'tab-policies'
+        'policies': 'tab-policies',
+        'notifications': 'tab-notifications'
       };
 
       var SUBTAB_MAP = {

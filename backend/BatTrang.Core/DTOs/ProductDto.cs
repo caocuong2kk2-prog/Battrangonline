@@ -8,6 +8,7 @@ namespace BatTrang.Core.DTOs
         public int Id { get; set; }
         public string Name { get; set; } = null!;
         public string Slug { get; set; } = null!;
+        public string? Sku { get; set; }
         // Computed base price for display purposes
         public decimal BasePrice { get; set; }
         public decimal? BaseOriginalPrice { get; set; }
@@ -17,10 +18,19 @@ namespace BatTrang.Core.DTOs
         public int TotalStock { get; set; }
         public string Status { get; set; } = null!;
         public string? Badge { get; set; }
+        public bool IsUnique { get; set; }
         public string? ShortDescription { get; set; }
         public string? Description { get; set; }
         public string? Usage { get; set; }
+        public string? Faqs { get; set; }
+        public string? CategoryFaqs { get; set; }
+        public int TotalSold { get; set; }
+        public decimal? CommissionRate { get; set; }
+        public DateTime CreatedAt { get; set; }
         public List<ProductVariantDto> Variants { get; set; } = new List<ProductVariantDto>();
+        
+        public List<GiftDto>? Gifts { get; set; }
+        public List<int>? GiftIds { get; set; }
     }
 
     public class ProductVariantDto
@@ -63,6 +73,9 @@ namespace BatTrang.Core.DTOs
         public int Page { get; set; } = 1;
         public int Limit { get; set; } = 8;
         public string? SearchQuery { get; set; }
+        public decimal? MinPrice { get; set; }
+        public decimal? MaxPrice { get; set; }
+        public string? Status { get; set; }
     }
 
     public class BulkStatusDto

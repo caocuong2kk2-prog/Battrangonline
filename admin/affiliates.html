@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <script>
+    if (localStorage.getItem('sidebar-collapsed') === 'true') document.documentElement.classList.add('sidebar-collapsed');
+    try {
+      var sess = JSON.parse(localStorage.getItem('pgt_admin_session') || 'null');
+      if (sess && sess.role !== 'admin') {
+        document.documentElement.classList.add('not-admin');
+      }
+    } catch (e) { }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Quản Lý Cộng Tác Viên – Phúc Gia Tiên</title>
+  <link rel="stylesheet" href="css/admin.css?v=8">
+  <link rel="stylesheet" href="css/components.css?v=8">
+  <style>
+    /* Fixed Action Column */
+    .data-table th.sticky-action-col,
+    .data-table td.sticky-action-col {
+      position: sticky;
+      right: 0;
+      background: #fff;
+      z-index: 10;
+      box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .data-table th.sticky-action-col {
+      z-index: 11;
+      background: #f9fafb;
+    }
+
+    /* Fixed Name (First) Column */
+    .data-table th.sticky-name-col,
+    .data-table td.sticky-name-col {
+      position: sticky;
+      left: 0;
+      background: #fff;
+      z-index: 10;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .data-table th.sticky-name-col {
+      z-index: 11;
+      background: #f9fafb;
+    }
+
+    @media (max-width: 768px) {
+
+      .data-table th.sticky-action-col,
+      .data-table td.sticky-action-col,
+      .data-table th.sticky-name-col,
+      .data-table td.sticky-name-col {
+        position: static !important;
+        box-shadow: none !important;
+      }
+      /* Nút Lưu Cấu Hình nổi trên Mobile */
+      .settings-save-sticky {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 12px 16px;
+        background: rgba(255,255,255,0.96);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-top: 1px solid var(--border);
+        z-index: 500;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+      }
+      .settings-save-sticky .btn { width: 100%; padding: 14px; font-size: 1rem; }
+      /* Khoảng trống dưới để nội dung không bị che bởi nút nổi */
+      #tab-settings { padding-bottom: 80px; }
+      /* Ẩn nút save gốc trên mobile (thay bằng nút nổi) */
+      .settings-save-original { display: none !important; }
+    }
+  </style>
+<link rel="icon" href="assets/images/logo.png" type="image/png">
+</head>
+
+<body class="admin-layout">
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header"><div class="sidebar-brand"><img src="assets/images/logo.png" alt="Logo" class="sidebar-brand__icon" style="width: 32px; height: 32px; object-fit: contain; background: #fff; border-radius: 50%; padding: 2px;"><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
+  <nav class="sidebar-nav">
+    <span class="sidebar-section-label">Tổng quan</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="./" class="sidebar-nav__link" data-page="index"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="sidebar-nav__text">Dashboard</span></a></li>
+    </ul>
+    
+    <span class="sidebar-section-label">Kinh doanh</span>
+    <ul class="sidebar-nav__list">
+      <li><a href="products" class="sidebar-nav__link" data-page="products"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
+      <li><a href="campaigns" class="sidebar-nav__link" data-page="campaigns"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg><span class="sidebar-nav__text">Khuyến mãi</span></a></li>
+      <li><a href="gifts" class="sidebar-nav__link" data-page="gifts"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M12 2v20M2 7h20v4H2zM12 7a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg><span class="sidebar-nav__text">Quà tặng</span></a></li>
+      <li><a href="orders" class="sidebar-nav__link" data-page="orders"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
+      <li><a href="customers" class="sidebar-nav__link" data-page="customers"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
+      <li><a href="attributes" class="sidebar-nav__link" data-page="attributes"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><span class="sidebar-nav__text">Thuộc tính SP</span></a></li>
+      <li><a href="affiliates" class="sidebar-nav__link active" data-page="affiliates"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Cộng Tác Viên</span><span class="sidebar-nav__badge" id="sb-affiliates" style="display:none"></span></a></li>
+    </ul>
+
+    <span class="sidebar-section-label">Nội dung</span>
+      <ul class="sidebar-nav__list">
+        <li><a href="journey" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg><span class="sidebar-nav__text">Hành Trình</span></a></li>
+      </ul>
+
+      <span class="sidebar-section-label">Báo cáo</span>
+      <ul class="sidebar-nav__list">
+        <li><a href="analytics" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg><span class="sidebar-nav__text">Thống kê</span></a></li>
+      </ul>
+
+      <span class="sidebar-section-label">Hệ thống</span>
+      <ul class="sidebar-nav__list">
+        <li><a href="settings" class="sidebar-nav__link"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+            </svg><span class="sidebar-nav__text">Cài đặt</span></a></li>
+        <li class="admin-only"><a href="accounts" class="sidebar-nav__link" id="nav-accounts-link"><svg
+              class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg><span class="sidebar-nav__text">Tài khoản</span></a></li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user js-logout" title="Đăng xuất">
+        <div class="sidebar-user__avatar js-admin-initial">A</div>
+        <div class="sidebar-user__info">
+          <div class="sidebar-user__name js-admin-name">Admin</div>
+          <div class="sidebar-user__role">Quản trị viên</div>
+        </div>
+        <button class="sidebar-user__logout" title="Đăng xuất"><svg width="16" height="16" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg></button>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- MAIN -->
+  <div class="admin-main-wrapper">
+    <header class="admin-topbar">
+      <button class="topbar-toggle" id="sidebarToggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg></button>
+      <div class="topbar-breadcrumb"><span class="topbar-breadcrumb__item">Phúc Gia Tiên</span><span
+          class="topbar-breadcrumb__separator">›</span><span class="topbar-breadcrumb__current">Cộng Tác Viên</span>
+      </div>
+      <div class="topbar-actions">
+        <div class="topbar-user" id="topbarUser">
+          <div class="topbar-user__avatar js-admin-initial">A</div><span
+            class="topbar-user__name js-admin-name">Admin</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-content">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="page-header__left">
+          <h1 class="page-title">Quản Lý Cộng Tác Viên</h1>
+          <p class="page-subtitle">Quản lý duyệt CTV, hoa hồng và rút tiền</p>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-card__icon kpi-card__icon--blue">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87" />
+              <path d="M16 3.13a4 4 0 010 7.75" />
+            </svg>
+          </div>
+          <div class="kpi-card__body">
+            <div class="kpi-card__label">Tổng CTV</div>
+            <div class="kpi-card__value" id="kpi-total-ctv">—</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card__icon kpi-card__icon--green">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+          </div>
+          <div class="kpi-card__body">
+            <div class="kpi-card__label">Hoạt động</div>
+            <div class="kpi-card__value" id="kpi-active-ctv">—</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card__icon kpi-card__icon--orange">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          </div>
+          <div class="kpi-card__body">
+            <div class="kpi-card__label">Chờ duyệt</div>
+            <div class="kpi-card__value" id="kpi-pending-ctv">—</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card__icon kpi-card__icon--gold">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C8922A" stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23" />
+              <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+            </svg>
+          </div>
+          <div class="kpi-card__body">
+            <div class="kpi-card__label">Chờ rút tiền</div>
+            <div class="kpi-card__value" id="kpi-pending-withdrawals">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" style="border-bottom: 1px solid var(--border);">
+          <div
+            style="display:flex; gap:10px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; flex-wrap:nowrap;">
+            <button class="btn btn--secondary active" onclick="showTab('tab-ctv')"
+              style="white-space:nowrap; flex-shrink:0;">Danh sách CTV</button>
+            <button class="btn btn--secondary" onclick="showTab('tab-commissions')"
+              style="display:inline-flex; align-items:center; white-space:nowrap; flex-shrink:0;">
+              Quản lý Hoa hồng <span class="badge badge--warning" id="commissions-count-badge"
+                style="display:none; margin-left: 6px; padding: 2px 6px; font-size: 10px; border-radius: var(--r-full); height: 16px; min-width: 16px; line-height: 12px; justify-content: center;">0</span>
+            </button>
+            <button class="btn btn--secondary" onclick="showTab('tab-withdrawals')"
+              style="display:inline-flex; align-items:center; white-space:nowrap; flex-shrink:0;">
+              Yêu cầu rút tiền <span class="badge badge--danger" id="withdrawals-count-badge"
+                style="display:none; margin-left: 6px; padding: 2px 6px; font-size: 10px; border-radius: var(--r-full); height: 16px; min-width: 16px; line-height: 12px; justify-content: center;">0</span>
+            </button>
+            <button class="btn btn--secondary" onclick="showTab('tab-settings')"
+              style="white-space:nowrap; flex-shrink:0;">Cấu Hình Chung</button>
+          </div>
+        </div>
+        <div class="card-body">
+
+          <div id="tab-ctv" class="tab-pane active" style="display:block;">
+            <div class="toolbar"
+              style="display:flex; justify-content:space-between; margin-bottom:15px; gap: 12px; flex-wrap:wrap;">
+              <div class="search-box" style="flex:1; min-width:250px;">
+                <svg class="search-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input type="search" id="ctv-search" class="search-box__input" placeholder="Tìm tên, email, mã CTV...">
+              </div>
+              <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                <select id="ctv-tier-filter" class="filter-select">
+                  <option value="all">Tất cả cấp bậc</option>
+                  <option value="Thường">Thường</option>
+                  <option value="Vàng">Vàng</option>
+                  <option value="VIP">VIP</option>
+                  <option value="Kim Cương">Kim Cương</option>
+                </select>
+                <select id="ctv-status-filter" class="filter-select">
+                  <option value="all">Tất cả trạng thái</option>
+                  <option value="Pending">Chờ duyệt</option>
+                  <option value="Active">Đang hoạt động</option>
+                  <option value="Locked">Đã khoá</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th class="checkbox-cell"><input type="checkbox" id="check-all-ctv"></th>
+                    <th class="sticky-name-col">CTV</th>
+                    <th class="sortable" data-sort="tier" style="cursor:pointer;user-select:none;">Cấp Bậc <span
+                        class="sort-icon" style="font-size:10px;color:#aaa">↕</span></th>
+                    <th>Trạng Thái</th>
+                    <th>Thông Tin Thanh Toán</th>
+                    <th class="sortable" data-sort="sales" style="cursor:pointer;user-select:none;">Tổng Doanh Số <span
+                        class="sort-icon" style="font-size:10px;color:#aaa">↕</span></th>
+                    <th class="sortable" data-sort="orders" style="cursor:pointer;user-select:none;">Đơn Hàng (Đã bán)
+                      <span class="sort-icon" style="font-size:10px;color:#aaa">↕</span></th>
+                    <th class="sortable" data-sort="commission" style="cursor:pointer;user-select:none;">Hoa Hồng Tích
+                      Luỹ <span class="sort-icon" style="font-size:10px;color:#aaa">↕</span></th>
+                    <th>Đơn hàng gần nhất</th>
+                    <th>Ngày ĐK</th>
+                    <th class="sticky-action-col">Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="ctv-table-body">
+                  <tr>
+                    <td colspan="9" style="text-align:center;">Đang tải...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Floating Bulk Actions Bar -->
+            <div class="bulk-actions-bar" id="ctv-bulk-actions-bar">
+              <div class="bulk-actions-bar__left">
+                <span class="bulk-actions-bar__count" id="ctv-bulk-selected-count">Đã chọn 0 CTV</span>
+              </div>
+              <div class="bulk-actions-bar__right">
+                <span style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;">Đổi trạng thái →</span>
+                <button class="btn btn--sm btn--primary btn-ctv-bulk-status" data-status="Active">✅ Duyệt</button>
+                <button class="btn btn--sm btn--danger btn-ctv-bulk-status" data-status="Locked">🔒 Khóa</button>
+                <span style="width:1px;height:20px;background:rgba(255,255,255,0.15);flex-shrink:0;margin:0 4px;"></span>
+                <span style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;">Cấp bậc →</span>
+                <button class="btn btn--sm btn--secondary btn-ctv-bulk-tier" data-tier="Thường">Thường</button>
+                <button class="btn btn--sm btn--secondary btn-ctv-bulk-tier" data-tier="Vàng">Vàng</button>
+                <button class="btn btn--sm btn--secondary btn-ctv-bulk-tier" data-tier="VIP">VIP</button>
+                <button class="btn btn--sm btn--secondary btn-ctv-bulk-tier" data-tier="Kim Cương">Kim Cương</button>
+                <span style="width:1px;height:20px;background:rgba(255,255,255,0.15);flex-shrink:0;margin:0 4px;"></span>
+                <button class="btn btn--sm btn--secondary" id="btn-ctv-bulk-excel">⬇️ Excel</button>
+                <button class="btn btn--sm btn--danger admin-only" id="btn-ctv-bulk-delete">🗑️ Xóa</button>
+              </div>
+            </div>
+
+            <div id="ctv-pagination"
+              style="display: flex; justify-content: center; align-items: center; gap: 8px; padding: 20px; border-top: 1px solid var(--border-color);">
+            </div>
+          </div>
+
+          <div id="tab-commissions" class="tab-pane" style="display:none;">
+            <div class="toolbar"
+              style="display:flex; justify-content:space-between; margin-bottom:15px; gap: 12px; flex-wrap:wrap;">
+              <div class="search-box" style="flex:1; min-width:250px;">
+                <svg class="search-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input type="search" id="commissions-search" class="search-box__input"
+                  placeholder="Tìm tên CTV, mã CTV, mã đơn hàng...">
+              </div>
+              <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                <select id="commissions-status-filter" class="filter-select">
+                  <option value="all">Tất cả trạng thái</option>
+                  <option value="Pending">Chờ duyệt</option>
+                  <option value="Approved">Khả dụng (Đã duyệt)</option>
+                  <option value="Paid">Đã thanh toán</option>
+                  <option value="Refunded">Đã huỷ</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th class="sticky-name-col">Cộng Tác Viên</th>
+                    <th>Mã đơn hàng</th>
+                    <th>Giá trị đơn</th>
+                    <th>Hoa hồng gốc</th>
+                    <th>Thưởng cấp bậc</th>
+                    <th>Tổng hoa hồng</th>
+                    <th>Ngày ghi nhận</th>
+                    <th>Trạng thái</th>
+                    <th class="sticky-action-col">Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="all-commissions-table-body">
+                  <tr>
+                    <td colspan="7" style="text-align:center;">Đang tải...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="commissions-pagination"
+              style="display: flex; justify-content: center; align-items: center; gap: 8px; padding: 20px; border-top: 1px solid var(--border-color);">
+            </div>
+          </div>
+
+          <div id="tab-withdrawals" class="tab-pane" style="display:none;">
+            <div class="toolbar"
+              style="display:flex; justify-content:space-between; margin-bottom:15px; gap: 12px; flex-wrap:wrap;">
+              <div class="search-box" style="flex:1; min-width:250px;">
+                <svg class="search-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input type="search" id="withdrawals-search" class="search-box__input"
+                  placeholder="Tìm tên CTV, mã CTV...">
+              </div>
+              <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                <select id="withdrawals-status-filter" class="filter-select">
+                  <option value="all">Tất cả trạng thái</option>
+                  <option value="Pending">Chờ duyệt</option>
+                  <option value="Paid">Đã thanh toán</option>
+                  <option value="Rejected">Từ chối</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="min-width:140px;">Tên CTV</th>
+                    <th style="min-width:110px;">Mã Giới Thiệu</th>
+                    <th style="min-width:110px;">Số tiền</th>
+                    <th style="min-width:180px;">Thông tin NH</th>
+                    <th style="min-width:150px;">Ngày YC - Xử lý</th>
+                    <th style="min-width:110px;">Trạng thái</th>
+                    <th style="min-width:150px;">Ghi chú</th>
+                    <th style="min-width:100px;">Hành động</th>
+                  </tr>
+                </thead>
+                <tbody id="withdrawals-table-body">
+                  <tr>
+                    <td colspan="6" style="text-align:center;">Đang tải...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div id="withdrawals-pagination"
+              style="display: flex; justify-content: center; align-items: center; gap: 8px; padding: 20px; border-top: 1px solid var(--border-color);">
+            </div>
+          </div>
+
+          <div id="tab-settings" class="tab-pane" style="display:none;">
+            <div
+              style="max-width: 900px; margin: 0 auto; background: #fff; padding: 25px 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;">
+              <div class="settings-grid" style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+                <div class="form-group">
+                  <label class="form-label">Thời hạn lưu Cookie CTV (Ngày)</label>
+                  <input class="form-control" id="affiliate-cookie-days" type="number" min="1" max="365"
+                    placeholder="Ví dụ: 30" value="30">
+                  <div style="margin-top: 8px; font-size: 0.85rem; color: var(--text-muted);">Số ngày tối đa trình duyệt
+                    sẽ tự động lưu cookie giới thiệu. Nếu khách mua hàng trong khoảng thời gian này, CTV sẽ nhận được
+                    hoa hồng.</div>
+                </div>
+              </div>
+
+              <div
+                style="margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+                <h3 style="color: var(--text-dark); margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+                  🤖 Tự Động Duyệt Hoa Hồng
+                </h3>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">
+                  Hệ thống sẽ chạy lúc 01:00 AM mỗi đêm để tự động duyệt các khoản hoa hồng "Chờ duyệt" đã quá số ngày
+                  quy định.
+                </div>
+              </div>
+
+              <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px;">
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="commission-auto-approve"
+                      style="width: 18px; height: 18px; cursor: pointer;">
+                    <span>Bật Tự Động Duyệt</span>
+                  </label>
+                  <div style="margin-top: 5px; font-size: 0.8rem; color: var(--text-muted);">Tự động chuyển từ "Chờ
+                    duyệt" sang "Đã duyệt".</div>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label">Số ngày chờ đổi trả</label>
+                  <div style="position: relative;">
+                    <input class="form-control" id="commission-return-period-days" type="number" min="1" max="90"
+                      value="7" style="padding-right: 45px;">
+                    <span
+                      style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.85rem;">Ngày</span>
+                  </div>
+                  <div style="margin-top: 5px; font-size: 0.8rem; color: var(--text-muted);">Số ngày tính từ lúc có hoa
+                    hồng (đơn hoàn thành).</div>
+                </div>
+              </div>
+
+              <div
+                style="margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+                <h3 style="color: var(--text-dark); margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+                  ⚙️ Cấu Hình Cấp Bậc (Tính theo doanh thu tháng)
+                </h3>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">
+                  Hệ thống sẽ tự động quét tổng doanh thu của mỗi CTV vào lúc 00:00 ngày mùng 1 hàng tháng để xét lại
+                  hạng.
+                </div>
+              </div>
+
+              <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; background: #f9fafb; padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #9ca3af;"></div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="color: #4b5563; font-weight: 600;">🥈 Mốc lên hạng Bạc</label>
+                  <div style="position: relative;">
+                    <input class="form-control number-format-input" id="affiliate-tier-silver-min" type="text"
+                      value="15000000"
+                      style="padding-right: 45px; font-weight: 600; font-family: monospace; font-size: 1.05rem;"
+                      oninput="formatVNDInput(this)">
+                    <span
+                      style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 0.85rem; font-weight: 500; pointer-events: none;">VNĐ</span>
+                  </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="color: #4b5563; font-weight: 600;">Thưởng thêm Bạc</label>
+                  <div style="position: relative;">
+                    <input class="form-control" id="affiliate-tier-silver-bonus" type="number" step="0.1" value="2"
+                      style="padding-right: 35px; font-weight: 600; font-size: 1.05rem;">
+                    <span
+                      style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-weight: 600; pointer-events: none;">%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; background: #fffbeb; padding: 15px; border-radius: 8px; border: 1px solid #fde68a; margin-bottom: 15px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #f59e0b;"></div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="color: #b45309; font-weight: 600;">🥇 Mốc lên hạng Vàng</label>
+                  <div style="position: relative;">
+                    <input class="form-control number-format-input" id="affiliate-tier-gold-min" type="text"
+                      value="50000000"
+                      style="padding-right: 45px; font-weight: 600; font-family: monospace; font-size: 1.05rem;"
+                      oninput="formatVNDInput(this)">
+                    <span
+                      style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #d97706; font-size: 0.85rem; font-weight: 500; pointer-events: none;">VNĐ</span>
+                  </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="color: #b45309; font-weight: 600;">Thưởng thêm Vàng</label>
+                  <div style="position: relative;">
+                    <input class="form-control" id="affiliate-tier-gold-bonus" type="number" step="0.1" value="3"
+                      style="padding-right: 35px; font-weight: 600; font-size: 1.05rem;">
+                    <span
+                      style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #d97706; font-weight: 600; pointer-events: none;">%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; background: #eff6ff; padding: 15px; border-radius: 8px; border: 1px solid #bfdbfe; margin-bottom: 20px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #3b82f6;"></div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="color: #1d4ed8; font-weight: 600;">💎 Mốc lên hạng Kim Cương</label>
+                  <div style="position: relative;">
+                    <input class="form-control number-format-input" id="affiliate-tier-diamond-min" type="text"
+                      value="150000000"
+                      style="padding-right: 45px; font-weight: 600; font-family: monospace; font-size: 1.05rem;"
+                      oninput="formatVNDInput(this)">
+                    <span
+                      style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #2563eb; font-size: 0.85rem; font-weight: 500; pointer-events: none;">VNĐ</span>
+                  </div>
+                </div>
+                <div class="form-group" style="margin-bottom:0;">
+                  <label class="form-label" style="color: #1d4ed8; font-weight: 600;">Thưởng thêm Kim Cương</label>
+                  <div style="position: relative;">
+                    <input class="form-control" id="affiliate-tier-diamond-bonus" type="number" step="0.1" value="5"
+                      style="padding-right: 35px; font-weight: 600; font-size: 1.05rem;">
+                    <span
+                      style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #2563eb; font-weight: 600; pointer-events: none;">%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group settings-save-original">
+                <button class="btn btn--primary" onclick="saveAffiliateSettings()">💾 Lưu Cấu Hình</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="ctvDetailModal">
+    <div class="modal" style="max-width:1100px; width: 95%;">
+      <div class="modal-header">
+        <h3 id="ctv-detail-title">Chi tiết Cộng Tác Viên</h3>
+        <button class="modal-close" onclick="closeModal('ctvDetailModal')">✕</button>
+      </div>
+      <div class="modal-body" id="ctv-detail-body">
+        <!-- Content populated via JS -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn--secondary" onclick="closeModal('ctvDetailModal')">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nút Lưu Cấu Hình nổi (chỉ hiện trên Mobile khi ở tab Cấu hình chung) -->
+  <div class="settings-save-sticky" id="settings-save-bar" style="display:none;">
+    <button class="btn btn--primary" onclick="saveAffiliateSettings()">💾 Lưu Cấu Hình</button>
+  </div>
+
+  <div id="admin-toast-container"></div>
+  <script src="js/admin-data.js?v=15"></script>
+  <script src="js/admin-core.js?v=15"></script>
+  <script src="js/affiliates-admin.js?v=9"></script>
+  <script>
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.card-header .btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      var tabPane = document.getElementById(tabId);
+      if (tabPane) tabPane.style.display = 'block';
+
+      var btn = document.querySelector(`.card-header .btn[onclick*="${tabId}"]`);
+      if (btn) {
+        btn.classList.add('active');
+      }
+
+      if (window.loadTab) window.loadTab(tabId);
+
+      // Hiện/ẩn nút Lưu sticky khi ở tab Cấu hình chung trên Mobile
+      var saveBar = document.getElementById('settings-save-bar');
+      if (saveBar) {
+        saveBar.style.display = (tabId === 'tab-settings' && window.innerWidth <= 768) ? 'block' : 'none';
+      }
+
+      const url = new URL(window.location);
+      url.searchParams.set('tab', tabId);
+      window.history.pushState({}, '', url);
+    }
+  </script>
+</body>
+
+</html>

@@ -95,7 +95,7 @@ namespace BatTrang.API.Controllers
             }
         }
 
-        private string ExtractFacebookVideoId(string url)
+        private string? ExtractFacebookVideoId(string url)
         {
             // Patterns:
             // /watch/?v=123456789
@@ -119,7 +119,7 @@ namespace BatTrang.API.Controllers
             return null;
         }
 
-        private async Task<string> ScrapeOgImage(string url)
+        private async Task<string?> ScrapeOgImage(string url)
         {
             try
             {

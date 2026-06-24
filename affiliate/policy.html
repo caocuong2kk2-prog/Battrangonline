@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chính Sách Hoa Hồng - CTV Bát Tràng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .policy-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid #f3f4f6;
+        }
+        .policy-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 12px;
+        }
+        .tier-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .tier-card {
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+        .tier-card.thuong { background: #f9fafb; border-color: #e5e7eb; }
+        .tier-card.bac { background: #f8fafc; border-color: #cbd5e1; }
+        .tier-card.vang { background: #fefce8; border-color: #fef08a; }
+        .tier-card.kim-cuong { background: #f0fdfa; border-color: #5eead4; }
+        
+        .tier-icon { font-size: 2rem; margin-bottom: 8px; }
+        .tier-name { font-weight: 700; font-size: 1.1rem; margin-bottom: 4px; }
+        .tier-req { font-size: 0.85rem; color: #4b5563; margin-bottom: 8px; }
+        .tier-bonus { display: inline-block; padding: 4px 10px; background: rgba(0,0,0,0.05); border-radius: 20px; font-weight: 600; font-size: 0.85rem; }
+        
+        .tier-card.thuong .tier-name { color: #4b5563; }
+        .tier-card.bac .tier-name { color: #64748b; }
+        .tier-card.vang .tier-name { color: #ca8a04; }
+        .tier-card.kim-cuong .tier-name { color: #0d9488; }
+        
+        ul.policy-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        ul.policy-list li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 12px;
+            line-height: 1.6;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+        ul.policy-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <script src="js/api.js?v=5"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            renderLayout('policy', 'Chính Sách & Quyền Lợi');
+
+            try {
+                const stats = await Api.request('/affiliates/stats');
+                const tConf = (stats && stats.tierConfig) ? stats.tierConfig : {
+                    silverMinRevenue: 15000000,
+                    silverBonus: 2,
+                    goldMinRevenue: 50000000,
+                    goldBonus: 3,
+                    diamondMinRevenue: 150000000,
+                    diamondBonus: 5
+                };
+                
+                const formatMoney = (val) => (val || 0).toLocaleString('vi-VN') + 'đ';
+
+                const html = `
+                    <div class="policy-section">
+                        <div class="policy-title"><span>🌟</span> Cơ Chế Xếp Hạng & Thưởng Doanh Số</div>
+                        <p style="color: #4b5563; font-size: 0.95rem; line-height: 1.6; margin-bottom: 16px;">
+                            Hệ thống có 4 cấp bậc Cộng Tác Viên. Bạn càng bán được nhiều, cấp bậc càng cao và tỷ lệ hoa hồng thưởng thêm càng lớn. Tổng hoa hồng nhận được bằng <b>Hoa hồng gốc của sản phẩm + Phần trăm thưởng thêm theo cấp bậc.</b>
+                        </p>
+                        
+                        <div class="tier-cards">
+                            <div class="tier-card thuong">
+                                <div class="tier-icon">🌱</div>
+                                <div class="tier-name">Hạng Thường</div>
+                                <div class="tier-req">Mặc định khi đăng ký</div>
+                                <div class="tier-bonus" style="color: #4b5563;">Hưởng hoa hồng gốc</div>
+                            </div>
+                            <div class="tier-card bac">
+                                <div class="tier-icon">🥈</div>
+                                <div class="tier-name">Hạng Bạc</div>
+                                <div class="tier-req">Doanh thu đạt ${formatMoney(tConf.silverMinRevenue)}/tháng</div>
+                                <div class="tier-bonus" style="color: #334155; background: #e2e8f0;">Thưởng thêm +${tConf.silverBonus}%</div>
+                            </div>
+                            <div class="tier-card vang">
+                                <div class="tier-icon">🥇</div>
+                                <div class="tier-name">Hạng Vàng</div>
+                                <div class="tier-req">Doanh thu đạt ${formatMoney(tConf.goldMinRevenue)}/tháng</div>
+                                <div class="tier-bonus" style="color: #854d0e; background: #fef08a;">Thưởng thêm +${tConf.goldBonus}%</div>
+                            </div>
+                            <div class="tier-card kim-cuong">
+                                <div class="tier-icon">💎</div>
+                                <div class="tier-name">Kim Cương</div>
+                                <div class="tier-req">Doanh thu đạt ${formatMoney(tConf.diamondMinRevenue)}/tháng</div>
+                                <div class="tier-bonus" style="color: #0f766e; background: #ccfbf1;">Thưởng thêm +${tConf.diamondBonus}%</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px; background: #eff6ff; padding: 16px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                            <h4 style="margin: 0 0 8px 0; color: #1e3a8a; font-size: 0.95rem;">💡 Quy tắc xét duyệt Cấp bậc:</h4>
+                            <ul class="policy-list" style="margin-bottom: 12px;">
+                                <li><strong>Thăng hạng tức thời:</strong> Trong tháng, nếu tổng doanh thu các đơn hàng thành công của bạn đạt mốc mới, bạn sẽ được <b>thăng hạng ngay lập tức</b>. Đặc biệt, chính đơn hàng giúp bạn vượt mốc cũng sẽ được áp dụng ngay mức % thưởng của hạng mới!</li>
+                                <li><strong>Duy trì & Giáng hạng (Bảo lưu 1 tháng):</strong> Cấp bậc bạn đạt được sẽ được <b>kế thừa và bảo lưu trong trọn vẹn 1 tháng tiếp theo</b>. Tuy nhiên, vào ngày <b>Mùng 1 hàng tháng</b>, hệ thống sẽ chốt doanh thu thực tế của tháng trước đó. Nếu tháng trước bạn bán kém và không đạt đủ doanh thu duy trì, cấp bậc của bạn trong tháng này sẽ bị điều chỉnh (giáng hạng) xuống mức tương ứng. Tức là, mỗi tháng bạn đều cần "bảo vệ" cấp bậc của mình để tiếp tục hưởng đặc quyền cho tháng sau!</li>
+                            </ul>
+                            <div style="background: #e0e7ff; padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; color: #1e40af; border: 1px dashed #93c5fd;">
+                                <strong>⚠️ Lưu ý quan trọng:</strong> Hệ thống chỉ cộng dồn doanh thu để xét duyệt cấp bậc dựa trên các đơn hàng có trạng thái <b>Đã hoàn thành</b> (Khách đã nhận hàng và thanh toán thành công). Các đơn hàng đang giao hoặc chờ xử lý sẽ chưa được tính vào tổng doanh thu xét hạng.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="policy-section">
+                        <div class="policy-title"><span>💰</span> Cách Tính Hoa Hồng</div>
+                        <ul class="policy-list">
+                            <li><strong>Hoa hồng cơ bản:</strong> Mỗi sản phẩm có một mức phần trăm (%) hoa hồng khác nhau. Bạn có thể xem chi tiết tại mục <a href="product-commissions" style="color: #3b82f6; text-decoration: none; font-weight: 500;">Hoa Hồng Sản Phẩm</a>.</li>
+                            <li><strong>Thưởng hạng:</strong> Được tính bằng tổng giá trị đơn hàng nhân với % thưởng thêm của hạng hiện tại.</li>
+                            <li><strong>Ví dụ minh họa:</strong> Bạn đang ở <b>Hạng Vàng (+3%)</b> và bán được 1 bình gốm giá 1,000,000đ (sản phẩm này có hoa hồng gốc 10%).
+                                <br>→ Hoa hồng gốc = 100,000đ
+                                <br>→ Thưởng hạng Vàng = 3% x 1,000,000đ = 30,000đ
+                                <br>→ <b>Tổng thực nhận = 130,000đ</b>
+                            </li>
+                            <li>Hoa hồng chỉ được ghi nhận chính thức khi đơn hàng được giao thành công và khách hàng đã thanh toán (trạng thái "Hoàn thành").</li>
+                            <li>Nếu đơn hàng bị hoàn trả, hủy bỏ, hoa hồng tương ứng sẽ bị hủy.</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <div class="policy-title"><span>💳</span> Quy Định Rút Tiền</div>
+                        <ul class="policy-list">
+                            <li>Hạn mức rút tiền tối thiểu cho mỗi lần là <b>100,000 VNĐ</b>.</li>
+                            <li>Bạn cần cập nhật chính xác <b>Thông tin tài khoản ngân hàng</b> (Tên ngân hàng, Số tài khoản, Chủ tài khoản) trong mục Hồ Sơ trước khi tạo lệnh rút.</li>
+                            <li>Thời gian xử lý yêu cầu rút tiền thường từ 1-2 ngày làm việc (không tính Thứ 7, Chủ Nhật và ngày lễ).</li>
+                            <li>Mọi thắc mắc trong quá trình thanh toán, vui lòng liên hệ Hotline/Zalo hỗ trợ của cửa hàng.</li>
+                        </ul>
+                    </div>
+                `;
+                document.getElementById('pageContent').innerHTML = html;
+
+            } catch (err) {
+                document.getElementById('pageContent').innerHTML = `<div class="alert alert-error" style="display:block">Lỗi: ${err.message}</div>`;
+            }
+        });
+    </script>
+</body>
+</html>

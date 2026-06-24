@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập CTV - Bát Tràng Online</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body class="auth-layout">
+    <div class="auth-card">
+        <div class="auth-header">
+            <img src="images/logo.png" alt="Gốm Phúc Gia Tiên" class="auth-logo-img js-config-logo">
+            <h1 class="auth-title">Đăng nhập CTV</h1>
+            <p class="auth-subtitle">Hệ thống Quản lý Đối tác Bán hàng</p>
+        </div>
+
+        <form id="loginForm">
+            <div id="loginAlert" class="alert alert-error" style="display:none;"></div>
+            <div class="form-group">
+                <label class="form-label required-star">Email</label>
+                <input type="email" id="email" class="form-control" required placeholder="Nhập email của bạn">
+                <div class="error-text" id="err-email">Vui lòng nhập đúng định dạng email</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label required-star">Mật khẩu</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" class="form-control" required placeholder="Nhập mật khẩu">
+                    <button type="button" class="toggle-password" id="togglePasswordBtn" tabindex="-1"
+                        aria-label="Hiện/Ẩn mật khẩu">
+                        <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                        <svg class="eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="error-text" id="err-password">Mật khẩu không được để trống</div>
+            </div>
+            <div style="text-align: right; margin-bottom: 15px; margin-top: -5px;">
+                <a href="forgot-password" class="auth-link" style="font-size: 0.9rem;">Quên mật khẩu?</a>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Đăng Nhập</button>
+        </form>
+
+        <div style="display: flex; align-items: center; margin: 20px 0;">
+            <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
+            <div style="padding: 0 10px; color: #6b7280; font-size: 0.85rem; font-weight: 500;">HOẶC</div>
+            <div style="flex: 1; height: 1px; background: #e5e7eb;"></div>
+        </div>
+        
+        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+            <div id="g_id_onload"
+                data-client_id="239589807227-al90mli1iupk7ni6lc2s88tba2dbjh4j.apps.googleusercontent.com"
+                data-context="signin"
+                data-ux_mode="popup"
+                data-callback="handleGoogleLogin"
+                data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="signin_with" data-size="large" data-logo_alignment="left"></div>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px; font-size: 0.9rem;">
+            Chưa có tài khoản? <a href="register" class="auth-link">Tạo tài khoản CTV mới</a>
+        </div>
+    </div>
+
+    <script src="js/api.js?v=5"></script>
+    <script>
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const touched = {};
+
+        // Password visibility toggle logic
+        const passwordInput = document.getElementById('password');
+        const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+        if (togglePasswordBtn && passwordInput) {
+            togglePasswordBtn.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                togglePasswordBtn.querySelector('.eye-open').style.display = isPassword ? 'none' : 'block';
+                togglePasswordBtn.querySelector('.eye-closed').style.display = isPassword ? 'block' : 'none';
+            });
+        }
+
+        function validateField(id, condition) {
+            const input = document.getElementById(id);
+            const err = document.getElementById('err-' + id);
+            if (condition) {
+                input.classList.remove('is-invalid');
+                if (err) err.style.display = 'none';
+                return true;
+            } else {
+                input.classList.add('is-invalid');
+                if (err) err.style.display = 'block';
+                return false;
+            }
+        }
+
+        ['email', 'password'].forEach(id => {
+            // Chỉ validate khi field đã được blur (rời khỏi ô)
+            document.getElementById(id).addEventListener('blur', () => {
+                touched[id] = true;
+                validateInput(id);
+            });
+            // Validate khi đang gõ — nhưng CHỈ nếu đã từng bị lỗi (để clear lỗi ngay)
+            document.getElementById(id).addEventListener('input', () => {
+                if (touched[id]) validateInput(id);
+            });
+        });
+
+        function validateInput(id) {
+            const val = document.getElementById(id).value.trim();
+            if (id === 'email') return validateField(id, emailRegex.test(val));
+            if (id === 'password') return validateField(id, val.length > 0);
+            return true;
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Ẩn thông báo lỗi cũ khi bắt đầu gửi lại
+            document.getElementById('loginAlert').style.display = 'none';
+
+            let isValid = true;
+            isValid = validateInput('email') && isValid;
+            isValid = validateInput('password') && isValid;
+
+            if (!isValid) return;
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.textContent = "Đang kiểm tra...";
+            btn.disabled = true;
+
+            try {
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+
+                // Call directly bypassing token interceptor
+                const res = await fetch('/api/affiliates/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json().catch(() => ({}));
+
+                if (res.ok && data.token) {
+                    Api.setToken(data.token);
+                    showToast('Đăng nhập thành công', 'success');
+                    setTimeout(() => { window.location.href = 'index'; }, 1200);
+                } else if (res.status === 429) {
+                    const msg = 'Bạn đã nhập sai quá nhiều lần. Vui lòng thử lại sau 1 phút!';
+                    const alertEl = document.getElementById('loginAlert');
+                    alertEl.textContent = '⏳ ' + msg;
+                    alertEl.style.display = 'block';
+                    ['email', 'password'].forEach(id => {
+                        const el = document.getElementById(id);
+                        el.classList.add('is-invalid');
+                        el.style.animation = 'none';
+                        el.offsetHeight;
+                        el.style.animation = 'shake 0.4s ease';
+                    });
+                    showToast(msg, 'error');
+                } else {
+                    const msg = data.message || 'Email hoặc mật khẩu không chính xác';
+                    // Inline alert
+                    const alertEl = document.getElementById('loginAlert');
+                    alertEl.textContent = '⚠️ ' + msg;
+                    alertEl.style.display = 'block';
+                    // Highlight both fields
+                    ['email', 'password'].forEach(id => {
+                        const el = document.getElementById(id);
+                        el.classList.add('is-invalid');
+                        // Shake animation
+                        el.style.animation = 'none';
+                        el.offsetHeight; // reflow
+                        el.style.animation = 'shake 0.4s ease';
+                    });
+                    showToast(msg, 'error');
+                }
+            } catch (err) {
+                showToast('Lỗi kết nối đến máy chủ. Vui lòng thử lại.', 'error');
+            } finally {
+                btn.textContent = "Đăng Nhập";
+                btn.disabled = false;
+            }
+        });
+
+        async function handleGoogleLogin(response) {
+            try {
+                const res = await fetch('/api/affiliates/google-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ credential: response.credential })
+                });
+
+                const data = await res.json().catch(() => ({}));
+
+                if (res.ok && data.token) {
+                    if (typeof Api !== 'undefined') Api.setToken(data.token);
+                    else localStorage.setItem('affiliate_token', data.token);
+                    showToast('Đăng nhập bằng Google thành công', 'success');
+                    setTimeout(() => { window.location.href = 'index'; }, 1200);
+                } else {
+                    showToast(data.message || 'Đăng nhập Google thất bại', 'error');
+                }
+            } catch (err) {
+                showToast('Lỗi kết nối đến máy chủ. Vui lòng thử lại.', 'error');
+            }
+        }
+    </script>
+</body>
+
+</html>

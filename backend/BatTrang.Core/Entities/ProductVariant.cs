@@ -32,6 +32,7 @@ namespace BatTrang.Core.Entities
         public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();
 
         public decimal Price { get; set; }
+        public decimal? CampaignPrice { get; set; }
         public decimal? OriginalPrice { get; set; }
         [System.ComponentModel.DataAnnotations.ConcurrencyCheck]
         public int Stock { get; set; }

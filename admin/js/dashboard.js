@@ -43,6 +43,90 @@ document.addEventListener('DOMContentLoaded',function(){
 
   var timeFilterGroup = document.getElementById('dashboard-time-filter');
   var currentFilterVal = 'month';
+  var cachedAnalyticsData = null;
+
+  function renderRevenueChart() {
+    var chartEl = document.getElementById('revenue-chart');
+    if (!chartEl) return;
+    if (!cachedAnalyticsData || !cachedAnalyticsData.weeklyRevenue || cachedAnalyticsData.weeklyRevenue.length === 0) {
+      chartEl.innerHTML = '<div style="text-align:center;padding:50px;color:var(--text-muted)">Không có dữ liệu</div>';
+      return;
+    }
+
+    var data = cachedAnalyticsData.weeklyRevenue; // Re-using weeklyRevenue field for chartData
+    // Update chart title if needed
+    var chartTitleEl = chartEl.parentElement.previousElementSibling;
+    if (chartTitleEl) {
+      var spanLabel = chartTitleEl.querySelector('span:last-child');
+      if (spanLabel) {
+        var labelText = 'Tất cả';
+        if (currentFilterVal === 'today') labelText = 'Hôm nay';
+        if (currentFilterVal === 'week') labelText = 'Tuần này';
+        if (currentFilterVal === 'month') labelText = 'Tháng này';
+        if (currentFilterVal === 'year') labelText = 'Năm nay';
+        if (currentFilterVal === 'custom') labelText = 'Tuỳ chọn';
+        spanLabel.textContent = labelText;
+      }
+    }
+
+    var W = chartEl.clientWidth || 600, H = 220;
+    var pad = { top: 20, right: 20, bottom: 36, left: 60 };
+    var cW = W - pad.left - pad.right, cH = H - pad.top - pad.bottom;
+    var maxV = Math.max.apply(null, data.map(function(d) { return d.revenue; }));
+    if (maxV === 0) maxV = 1;
+    var minV = 0;
+    function xPos(i) { return data.length > 1 ? pad.left + i * (cW / (data.length - 1)) : pad.left + cW/2; }
+    function yPos(v) { return pad.top + cH - (((v - minV) / (maxV - minV)) * cH); }
+    // Build path
+    var pts = data.map(function(d, i) { return { x: xPos(i), y: yPos(d.revenue) }; });
+    function smooth(pts) {
+      if (pts.length === 1) return 'M ' + pts[0].x + ' ' + pts[0].y;
+      var d = 'M ' + pts[0].x + ' ' + pts[0].y;
+      for (var i = 0; i < pts.length - 1; i++) {
+        var cx = (pts[i].x + pts[i + 1].x) / 2;
+        d += ' C ' + cx + ' ' + pts[i].y + ', ' + cx + ' ' + pts[i + 1].y + ', ' + pts[i + 1].x + ' ' + pts[i + 1].y;
+      }
+      return d;
+    }
+    var path = smooth(pts);
+    // Area path
+    var areaPath = '';
+    if (pts.length > 1) {
+        areaPath = path + ' L ' + pts[pts.length - 1].x + ' ' + (pad.top + cH) + ' L ' + pts[0].x + ' ' + (pad.top + cH) + ' Z';
+    } else if (pts.length === 1) {
+        areaPath = path + ' L ' + pts[0].x + ' ' + (pad.top + cH) + ' Z';
+    }
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">';
+    // Gridlines
+    for (var g = 0; g <= 4; g++) {
+      var gy = pad.top + cH - (g / 4) * cH;
+      var gv = Math.round((maxV * g / 4) / 1e6) + 'tr';
+      if (maxV <= 1) gv = '0';
+      svg += '<line x1="' + pad.left + '" y1="' + gy + '" x2="' + (pad.left + cW) + '" y2="' + gy + '" stroke="rgba(0,0,0,.06)" stroke-dasharray="4,4"/>';
+      svg += '<text x="' + (pad.left - 8) + '" y="' + (gy + 4) + '" text-anchor="end" font-size="11" fill="#9B8B75">' + gv + '</text>';
+    }
+    // X labels
+    data.forEach(function(d, i) {
+      // Only show some labels if there are too many
+      if (data.length <= 15 || i % Math.ceil(data.length / 7) === 0 || i === data.length - 1) {
+          svg += '<text x="' + xPos(i) + '" y="' + (pad.top + cH + 20) + '" text-anchor="middle" font-size="11" fill="#9B8B75">' + d.label + '</text>';
+      }
+    });
+    // Gradient
+    svg += '<defs><linearGradient id="rg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C8922A" stop-opacity=".18"/><stop offset="100%" stop-color="#C8922A" stop-opacity="0"/></linearGradient></defs>';
+    // Area
+    if (areaPath) svg += '<path d="' + areaPath + '" fill="url(#rg)"/>';
+    // Line
+    svg += '<path d="' + path + '" fill="none" stroke="#C8922A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
+    // Dots
+    pts.forEach(function(p, i) {
+      if (data.length <= 15 || i % Math.ceil(data.length / 7) === 0 || i === data.length - 1) {
+          svg += '<circle cx="' + p.x + '" cy="' + p.y + '" r="4" fill="#C8922A" stroke="#fff" stroke-width="2"/>';
+      }
+    });
+    svg += '</svg>';
+    chartEl.innerHTML = svg;
+  }
 
   function getDatesFromFilter(val) {
       var now = new Date();
@@ -63,9 +147,25 @@ document.addEventListener('DOMContentLoaded',function(){
       } else if (val === 'month') {
           startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
           endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
+      } else if (val === 'year') {
+          startDate = new Date(now.getFullYear(), 0, 1).toISOString();
+          endDate = new Date(now.getFullYear(), 11, 31, 23, 59, 59).toISOString();
       } else if (val === 'all') {
           startDate = new Date(2000, 0, 1).toISOString();
           endDate = new Date(2100, 0, 1).toISOString();
+      } else if (val === 'custom') {
+          var fromEl = document.getElementById('date-from');
+          var toEl = document.getElementById('date-to');
+          if (fromEl && toEl && fromEl.value && toEl.value) {
+              var parts1 = fromEl.value.split('-');
+              var parts2 = toEl.value.split('-');
+              startDate = new Date(+parts1[0], +parts1[1]-1, +parts1[2]).toISOString();
+              endDate = new Date(+parts2[0], +parts2[1]-1, +parts2[2], 23, 59, 59).toISOString();
+          } else {
+              // Fallback to all if dates not set
+              startDate = new Date(2000, 0, 1).toISOString();
+              endDate = new Date(2100, 0, 1).toISOString();
+          }
       }
 
       return { startDate: startDate, endDate: endDate };
@@ -105,7 +205,10 @@ document.addEventListener('DOMContentLoaded',function(){
       // ── Recent Orders Table ──
       var tbody = document.getElementById('recent-orders-body');
       if (tbody) {
-        var recent = orders.slice(0, 7);
+        var sess = window.getAdminSession ? window.getAdminSession() : null;
+        var isAdmin = sess ? sess.role === 'admin' : false;
+        var limit = isAdmin ? 8 : 14;
+        var recent = orders.slice(0, limit);
         tbody.innerHTML = recent.map(function(o) {
             return '<tr>' +
               '<td><strong>' + o.id + '</strong></td>' +
@@ -133,10 +236,10 @@ document.addEventListener('DOMContentLoaded',function(){
           var imgHtml = '';
           if (p.firstImage) {
             var isVid = !!p.firstImage.match(/\.(mp4|mov|avi|webm|ogg)$/i);
-            var imagesJson = JSON.stringify(p.images || []).replace(/'/g, '&#39;');
+            var imagesJson = JSON.stringify(p.images || []).replace(/"/g, '&quot;');
             imgHtml = isVid 
-              ? '<video src="' + p.firstImage + '" data-images=\'' + imagesJson + '\' class="zoomable" style="width:48px;height:48px;border-radius:6px;object-fit:cover;margin-right:12px;cursor:pointer;" muted></video>'
-              : '<img src="' + p.firstImage + '" data-images=\'' + imagesJson + '\' class="zoomable" style="width:48px;height:48px;border-radius:6px;object-fit:cover;margin-right:12px;cursor:pointer;"/>';
+              ? '<video src="' + p.firstImage + '" data-images="' + imagesJson + '" class="zoomable" style="width:48px;height:48px;border-radius:6px;object-fit:cover;margin-right:12px;cursor:pointer;" muted></video>'
+              : '<img src="' + p.firstImage + '" data-images="' + imagesJson + '" class="zoomable" style="width:48px;height:48px;border-radius:6px;object-fit:cover;margin-right:12px;cursor:pointer;"/>';
           } else {
             imgHtml = '<div style="width:48px;height:48px;border-radius:6px;background:#f5f5f5;margin-right:12px;display:flex;align-items:center;justify-content:center;font-size:20px;">🏺</div>';
           }
@@ -144,14 +247,20 @@ document.addEventListener('DOMContentLoaded',function(){
           var qtyHtml = qtyVal > 0 ? '<span style="color:var(--success);font-size:var(--fs-sm);font-weight:600">' + qtyVal + ' đã bán</span>' : '<span style="color:var(--text-muted);font-size:var(--fs-sm)">Chưa bán được</span>';
           var revHtml = revVal > 0 ? '<div style="font-weight:700;color:var(--accent);font-size:var(--fs-md);">' + AdminData.fmt(revVal) + '</div>' : '<div style="font-weight:600;color:var(--text-main);font-size:var(--fs-md);">' + AdminData.fmt(p.basePrice) + '</div>';
           var stockHtml = stockVal > 0 ? '<span style="color:var(--text-muted);font-size:var(--fs-xs)">Kho: ' + stockVal + '</span>' : '<span style="color:var(--danger);font-size:var(--fs-xs);font-weight:600">Hết hàng</span>';
-          var nameHtml = p.slug ? '<a href="../product-detail.html?slug=' + p.slug + '" target="_blank" style="color:inherit;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color=\'var(--accent)\'" onmouseout="this.style.color=\'inherit\'" title="Xem chi tiết sản phẩm trên website">' + p.name + '</a>' : p.name;
+          var nameHtml = escapeHTML(p.name);
+          var targetSlugOrId = p.slug || p.id || null;
+          if (targetSlugOrId) {
+            nameHtml = '<a href="../product-detail.html?slug=' + targetSlugOrId + '" target="_blank" style="color:inherit;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color=\'var(--accent)\'" onmouseout="this.style.color=\'inherit\'" title="Xem chi tiết sản phẩm trên website">' + escapeHTML(p.name) + '</a>';
+          }
+
+          var skuHtml = p.sku ? ' &bull; <span style="color:var(--text-main); font-weight: 500;">Mã SP: ' + p.sku + '</span>' : '';
 
           return '<div class="top-product-item" style="align-items:center;padding:var(--sp-3);border-bottom:1px solid var(--border-color);">' +
           '<div class="top-product-item__rank" style="font-size:18px;font-weight:700;color:var(--text-muted);width:24px;text-align:center;">' + (i + 1) + '</div>' +
           imgHtml +
             '<div class="top-product-item__info" style="flex:1">' +
             '<div class="top-product-item__name" style="font-weight:600;margin-bottom:2px;">' + nameHtml + '</div>' +
-            '<div class="top-product-item__cat" style="font-size:var(--fs-xs);color:var(--text-muted);margin-bottom:6px;">' + p.category + ' &bull; ' + stockHtml + '</div>' +
+            '<div class="top-product-item__cat" style="font-size:var(--fs-xs);color:var(--text-muted);margin-bottom:6px;">' + p.category + skuHtml + ' &bull; ' + stockHtml + '</div>' +
             '<div class="progress-bar" style="height:4px;background:var(--border-color);border-radius:2px;overflow:hidden;"><div class="progress-bar__fill" style="width:' + pct + '%;background:var(--primary);height:100%;"></div></div>' +
             '</div>' +
             '<div class="top-product-item__revenue" style="text-align:right;padding-left:var(--sp-4);">' + revHtml + '<div style="margin-top:2px;">' + qtyHtml + '</div></div>' +
@@ -263,82 +372,8 @@ document.addEventListener('DOMContentLoaded',function(){
       }
 
       // ── SVG Line Chart (Dynamic Revenue) ──
-      var chartEl = document.getElementById('revenue-chart');
-      if (chartEl && analytics.weeklyRevenue && analytics.weeklyRevenue.length > 0) {
-        var data = analytics.weeklyRevenue; // Re-using weeklyRevenue field for chartData
-        // Update chart title if needed
-        var chartTitleEl = chartEl.parentElement.previousElementSibling;
-        if (chartTitleEl) {
-          var spanLabel = chartTitleEl.querySelector('span:last-child');
-          if (spanLabel) {
-            var labelText = 'Tất cả';
-            if (currentFilterVal === 'today') labelText = 'Hôm nay';
-            if (currentFilterVal === 'week') labelText = 'Tuần này';
-            if (currentFilterVal === 'month') labelText = 'Tháng này';
-            spanLabel.textContent = labelText;
-          }
-        }
-
-        var W = chartEl.clientWidth || 600, H = 220;
-        var pad = { top: 20, right: 20, bottom: 36, left: 60 };
-        var cW = W - pad.left - pad.right, cH = H - pad.top - pad.bottom;
-        var maxV = Math.max.apply(null, data.map(function(d) { return d.revenue; }));
-        if (maxV === 0) maxV = 1;
-        var minV = 0;
-        function xPos(i) { return data.length > 1 ? pad.left + i * (cW / (data.length - 1)) : pad.left + cW/2; }
-        function yPos(v) { return pad.top + cH - (((v - minV) / (maxV - minV)) * cH); }
-        // Build path
-        var pts = data.map(function(d, i) { return { x: xPos(i), y: yPos(d.revenue) }; });
-        function smooth(pts) {
-          if (pts.length === 1) return 'M ' + pts[0].x + ' ' + pts[0].y;
-          var d = 'M ' + pts[0].x + ' ' + pts[0].y;
-          for (var i = 0; i < pts.length - 1; i++) {
-            var cx = (pts[i].x + pts[i + 1].x) / 2;
-            d += ' C ' + cx + ' ' + pts[i].y + ', ' + cx + ' ' + pts[i + 1].y + ', ' + pts[i + 1].x + ' ' + pts[i + 1].y;
-          }
-          return d;
-        }
-        var path = smooth(pts);
-        // Area path
-        var areaPath = '';
-        if (pts.length > 1) {
-            areaPath = path + ' L ' + pts[pts.length - 1].x + ' ' + (pad.top + cH) + ' L ' + pts[0].x + ' ' + (pad.top + cH) + ' Z';
-        } else if (pts.length === 1) {
-            areaPath = path + ' L ' + pts[0].x + ' ' + (pad.top + cH) + ' Z';
-        }
-        var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">';
-        // Gridlines
-        for (var g = 0; g <= 4; g++) {
-          var gy = pad.top + cH - (g / 4) * cH;
-          var gv = Math.round((maxV * g / 4) / 1e6) + 'tr';
-          if (maxV <= 1) gv = '0';
-          svg += '<line x1="' + pad.left + '" y1="' + gy + '" x2="' + (pad.left + cW) + '" y2="' + gy + '" stroke="rgba(0,0,0,.06)" stroke-dasharray="4,4"/>';
-          svg += '<text x="' + (pad.left - 8) + '" y="' + (gy + 4) + '" text-anchor="end" font-size="11" fill="#9B8B75">' + gv + '</text>';
-        }
-        // X labels
-        data.forEach(function(d, i) {
-          // Only show some labels if there are too many
-          if (data.length <= 15 || i % Math.ceil(data.length / 7) === 0 || i === data.length - 1) {
-              svg += '<text x="' + xPos(i) + '" y="' + (pad.top + cH + 20) + '" text-anchor="middle" font-size="11" fill="#9B8B75">' + d.label + '</text>';
-          }
-        });
-        // Gradient
-        svg += '<defs><linearGradient id="rg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C8922A" stop-opacity=".18"/><stop offset="100%" stop-color="#C8922A" stop-opacity="0"/></linearGradient></defs>';
-        // Area
-        if (areaPath) svg += '<path d="' + areaPath + '" fill="url(#rg)"/>';
-        // Line
-        svg += '<path d="' + path + '" fill="none" stroke="#C8922A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>';
-        // Dots
-        pts.forEach(function(p, i) {
-          if (data.length <= 15 || i % Math.ceil(data.length / 7) === 0 || i === data.length - 1) {
-              svg += '<circle cx="' + p.x + '" cy="' + p.y + '" r="4" fill="#C8922A" stroke="#fff" stroke-width="2"/>';
-          }
-        });
-        svg += '</svg>';
-        chartEl.innerHTML = svg;
-      } else if (chartEl) {
-        chartEl.innerHTML = '<div style="text-align:center;padding:50px;color:var(--text-muted)">Không có dữ liệu</div>';
-      }
+      cachedAnalyticsData = analytics;
+      renderRevenueChart();
 
       AdminData.orders.updatePendingBadge(orders);
     }).catch(function(err) {
@@ -354,8 +389,61 @@ document.addEventListener('DOMContentLoaded',function(){
               btns.forEach(function(b) { b.classList.remove('active'); });
               btn.classList.add('active');
               currentFilterVal = btn.getAttribute('data-val');
+
+              // Clear custom date range state
+              var clearBtn = document.getElementById('date-range-clear');
+              if (clearBtn) clearBtn.style.display = 'none';
+
               refreshDashboard();
           });
+      });
+  }
+
+  // ── Custom Date Range Picker ──
+  var dateRangeApply = document.getElementById('date-range-apply');
+  var dateRangeClear = document.getElementById('date-range-clear');
+  var dateFrom = document.getElementById('date-from');
+  var dateTo = document.getElementById('date-to');
+
+  if (dateRangeApply && dateFrom && dateTo) {
+      // Set default value to today
+      var todayStr = new Date().toISOString().split('T')[0];
+      var monthAgoDate = new Date();
+      monthAgoDate.setMonth(monthAgoDate.getMonth() - 1);
+      var monthAgoStr = monthAgoDate.toISOString().split('T')[0];
+      dateFrom.value = monthAgoStr;
+      dateTo.value = todayStr;
+
+      dateRangeApply.addEventListener('click', function() {
+          if (!dateFrom.value || !dateTo.value) {
+              adminToast('Vui lòng chọn đầy đủ ngày bắt đầu và kết thúc', 'error');
+              return;
+          }
+          if (dateFrom.value > dateTo.value) {
+              adminToast('Ngày bắt đầu phải trước ngày kết thúc', 'error');
+              return;
+          }
+
+          // Deactivate preset filter buttons
+          var btns = timeFilterGroup.querySelectorAll('.time-filter-btn');
+          btns.forEach(function(b) { b.classList.remove('active'); });
+
+          currentFilterVal = 'custom';
+          if (dateRangeClear) dateRangeClear.style.display = '';
+          refreshDashboard();
+      });
+  }
+
+  if (dateRangeClear) {
+      dateRangeClear.addEventListener('click', function() {
+          dateRangeClear.style.display = 'none';
+          // Revert to month default
+          currentFilterVal = 'month';
+          var btns = timeFilterGroup.querySelectorAll('.time-filter-btn');
+          btns.forEach(function(b) {
+              b.classList.toggle('active', b.getAttribute('data-val') === 'month');
+          });
+          refreshDashboard();
       });
   }
 
@@ -366,6 +454,15 @@ document.addEventListener('DOMContentLoaded',function(){
   window.onAdminNotification = function(eventType, message) {
     refreshDashboard();
   };
+
+  // Debounced window resize event listener to redraw the chart responsively
+  var resizeTimeout;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
+      renderRevenueChart();
+    }, 150);
+  });
 
   // Fallback sync: Refresh dashboard data every 5 minutes in case connection drops
   setInterval(refreshDashboard, 300000);

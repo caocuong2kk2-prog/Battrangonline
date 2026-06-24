@@ -62,6 +62,7 @@
       document.getElementById('topic-modal-title').textContent = 'Thêm Chủ Đề Mới';
       var f = document.getElementById('topic-form');
       f.reset();
+      clearInlineErrors('topic-form');
       openModal('topicModal');
     });
 
@@ -74,6 +75,7 @@
       document.getElementById('video-modal-title').textContent = 'Thêm Video Mới';
       var f = document.getElementById('video-form');
       f.reset();
+      clearInlineErrors('video-form');
 
       // Make sure we have topics first
       if (topics.length === 0) {
@@ -109,6 +111,154 @@
     if (vSearch) vSearch.addEventListener('input', renderVideos);
     if (vFilter) vFilter.addEventListener('change', renderVideos);
     if (tSearch) tSearch.addEventListener('input', renderTopics);
+
+    // Bulk Actions Listeners
+    var checkAllVideos = document.getElementById('check-all-videos');
+    if (checkAllVideos) {
+      checkAllVideos.addEventListener('change', function() {
+        var isChecked = this.checked;
+        document.querySelectorAll('.video-item-checkbox').forEach(function(cb) { cb.checked = isChecked; });
+        if (typeof updateBulkActionsUI === 'function') updateBulkActionsUI();
+      });
+    }
+    var tbodyVideos = document.getElementById('video-table-body');
+    if (tbodyVideos) {
+      tbodyVideos.addEventListener('change', function(e) {
+        if (e.target.classList.contains('video-item-checkbox')) {
+          if (typeof updateBulkActionsUI === 'function') updateBulkActionsUI();
+        }
+      });
+    }
+    var btnBulkClose = document.getElementById('btn-bulk-close');
+    if (btnBulkClose) {
+      btnBulkClose.addEventListener('click', function() {
+        if (checkAllVideos) { checkAllVideos.checked = false; checkAllVideos.dispatchEvent(new Event('change')); }
+      });
+    }
+    var btnBulkDelete = document.getElementById('btn-bulk-delete');
+    if (btnBulkDelete) {
+      btnBulkDelete.addEventListener('click', executeBulkDelete);
+    }
+
+    // 8. Real-time Active Validation
+    var fTopic = document.getElementById('topic-form');
+    if (fTopic) {
+      var validateTopicField = function (el) {
+        if (!el.classList.contains('is-invalid')) return;
+        var name = el.name;
+        var val = el.value.trim();
+        var isValid = true;
+        var errorMsg = '';
+
+        if (name === 'name') {
+          if (!val) {
+            errorMsg = 'Vui lòng nhập tên chủ đề!';
+            isValid = false;
+          } else {
+            var nameLower = val.toLowerCase();
+            var duplicate = topics.find(function(x) {
+              if (editTopicId && x.id === editTopicId) return false;
+              return x.name.toLowerCase() === nameLower;
+            });
+            if (duplicate) {
+              errorMsg = 'Chủ đề "' + val + '" đã tồn tại!';
+              isValid = false;
+            }
+          }
+        }
+
+        if (isValid) {
+          el.classList.remove('is-invalid');
+          var sibling = el.nextElementSibling;
+          if (sibling && sibling.classList.contains('form-error')) sibling.remove();
+        } else {
+          var sibling = el.nextElementSibling;
+          if (sibling && sibling.classList.contains('form-error')) {
+            sibling.textContent = errorMsg;
+          }
+        }
+      };
+
+      fTopic.addEventListener('input', function (e) { validateTopicField(e.target); });
+      fTopic.addEventListener('change', function (e) { validateTopicField(e.target); });
+    }
+
+    var fVideo = document.getElementById('video-form');
+    if (fVideo) {
+      var validateVideoField = function (el) {
+        if (!el.classList.contains('is-invalid') && !el.closest('.custom-select-wrapper')?.classList.contains('is-invalid')) return;
+        var name = el.name;
+        var val = el.value.trim();
+        var isValid = true;
+        var errorMsg = '';
+
+        if (name === 'title') {
+          if (!val) {
+            errorMsg = 'Vui lòng nhập tiêu đề video!';
+            isValid = false;
+          } else if (val.length < 3) {
+            errorMsg = 'Tiêu đề video phải từ 3 ký tự trở lên!';
+            isValid = false;
+          }
+        } else if (name === 'topicId') {
+          if (!val) {
+            errorMsg = 'Vui lòng chọn chủ đề!';
+            isValid = false;
+          }
+        } else if (name === 'url') {
+          if (!val) {
+            errorMsg = 'Vui lòng nhập đường dẫn video!';
+            isValid = false;
+          } else {
+            var isValidUrl = false;
+            try {
+              var parsedUrl = new URL(val);
+              if (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:') {
+                isValidUrl = true;
+              }
+            } catch (e) {}
+
+            if (!isValidUrl) {
+              errorMsg = 'Định dạng URL video không hợp lệ! Vui lòng nhập link bắt đầu bằng http:// hoặc https://';
+              isValid = false;
+            } else {
+              var platform = getPlatform(val);
+              if (platform === 'other' || platform === 'unknown') {
+                errorMsg = 'Hệ thống chỉ hỗ trợ video từ YouTube, TikTok hoặc Facebook!';
+                isValid = false;
+              } else {
+                var duplicate = videos.find(function (v) {
+                  return v.url === val && v.id !== editVideoId;
+                });
+                if (duplicate) {
+                  errorMsg = 'URL video này đã tồn tại trong danh sách ("' + (duplicate.title || 'video đã có') + '")!';
+                  isValid = false;
+                }
+              }
+            }
+          }
+        }
+
+        var target = el;
+        var wrapper = el.closest('.custom-select-wrapper');
+        if (wrapper) target = wrapper;
+
+        if (isValid) {
+          el.classList.remove('is-invalid');
+          if (wrapper) wrapper.classList.remove('is-invalid');
+          var sibling = target.nextElementSibling;
+          if (sibling && sibling.classList.contains('form-error')) sibling.remove();
+        } else {
+          var sibling = target.nextElementSibling;
+          if (sibling && sibling.classList.contains('form-error')) {
+            sibling.textContent = errorMsg;
+          }
+        }
+      };
+
+      fVideo.addEventListener('input', function (e) { validateVideoField(e.target); });
+      fVideo.addEventListener('change', function (e) { validateVideoField(e.target); });
+    }
   });
 
   // Helper: Extract YouTube Video ID & build HQ thumbnail
@@ -205,10 +355,14 @@
     if (!tbody) return;
 
     var searchInput = document.getElementById('topic-search');
-    var searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    var ns = window.normalizeSearch || function(s){ return (s||'').toLowerCase(); };
+    var searchQuery = searchInput ? ns(searchInput.value.trim()) : '';
+    var terms = searchQuery ? searchQuery.split(/\s+/).filter(Boolean) : [];
 
     var filteredTopics = topics.filter(function (t) {
-      return t.name.toLowerCase().includes(searchQuery) || t.id.toLowerCase().includes(searchQuery);
+      if (!terms.length) return true;
+      var hay = ns(t.name) + ' ' + ns(t.id);
+      return terms.every(function(term){ return hay.includes(term); });
     });
 
     var countEl = document.getElementById('topic-count');
@@ -306,25 +460,34 @@
     var f = document.getElementById('topic-form');
     var name = f.querySelector('[name="name"]').value.trim();
 
+    clearInlineErrors(f);
+    var hasError = false;
+
     if (!name) {
-      adminToast('Vui lòng nhập tên chủ đề!', 'error');
-      return;
+      setInlineError(f.querySelector('[name="name"]'), 'Vui lòng nhập tên chủ đề!');
+      hasError = true;
+    } else {
+      var nameLower = name.toLowerCase();
+      var duplicate = topics.find(function(x) {
+        if (editTopicId && x.id === editTopicId) return false;
+        return x.name.toLowerCase() === nameLower;
+      });
+      if (duplicate) {
+        setInlineError(f.querySelector('[name="name"]'), 'Chủ đề "' + name + '" đã tồn tại!');
+        adminToast('Chủ đề "' + name + '" đã tồn tại!', 'error');
+        hasError = true;
+      }
     }
 
-    // ── Check trùng tên chủ đề ──
-    var nameLower = name.toLowerCase();
-    var duplicate = topics.find(function(x) {
-      if (editTopicId && x.id === editTopicId) return false;
-      return x.name.toLowerCase() === nameLower;
-    });
-    if (duplicate) {
-      adminToast('Chủ đề "' + name + '" đã tồn tại!', 'error');
+    if (hasError) {
+      var firstErr = f.querySelector('.is-invalid');
+      if (firstErr) firstErr.focus();
       return;
     }
 
     var id = editTopicId || toSlug(name);
     if (!id) {
-      adminToast('Không thể tạo ID từ tên này, vui lòng thử tên khác!', 'error');
+      setInlineError(f.querySelector('[name="name"]'), 'Không thể tạo ID từ tên này, vui lòng thử tên khác!');
       return;
     }
 
@@ -352,7 +515,15 @@
       renderTopics();
       populateTopicSelect();
     }).catch(function (err) {
-      adminToast('Lỗi khi lưu chủ đề: ' + err.message, 'error');
+      var msg = err.message || 'Lỗi khi lưu chủ đề';
+      adminToast('Lỗi khi lưu chủ đề: ' + msg, 'error');
+      if (msg.indexOf('tồn tại') !== -1 || msg.indexOf('chủ đề') !== -1) {
+        var nameInp = f.querySelector('[name="name"]');
+        if (nameInp) {
+          setInlineError(nameInp, msg);
+          nameInp.focus();
+        }
+      }
     });
   }
 
@@ -363,6 +534,7 @@
 
     document.getElementById('topic-modal-title').textContent = 'Chỉnh Sửa Chủ Đề';
     var f = document.getElementById('topic-form');
+    clearInlineErrors(f);
     f.querySelector('[name="name"]').value = t.name;
 
     openModal('topicModal');
@@ -373,11 +545,14 @@
     if (!t) return;
 
     adminConfirm('Xóa chủ đề "' + t.name + '"?', function () {
-      topics = topics.filter(function (x) { return x.id !== id; });
       AdminData.journey.deleteTopic(id).then(function () {
+        topics = topics.filter(function (x) { return x.id !== id; });
         adminToast('Đã xóa chủ đề.', 'warning');
         renderTopics();
         populateTopicSelect();
+      }).catch(function (err) {
+        var msg = err.message || 'Lỗi khi xóa chủ đề';
+        adminToast(msg, 'error');
       });
     });
   }
@@ -389,11 +564,16 @@
 
     var searchInput = document.getElementById('video-search');
     var filterSelect = document.getElementById('video-topic-filter');
-    var searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    var ns = window.normalizeSearch || function(s){ return (s||'').toLowerCase(); };
+    var rawSearch = searchInput ? searchInput.value.trim() : '';
+    var terms = rawSearch ? ns(rawSearch).split(/\s+/).filter(Boolean) : [];
     var topicFilter = filterSelect ? filterSelect.value : 'all';
 
     var filteredVideos = videos.filter(function (v) {
-      var matchSearch = v.title.toLowerCase().includes(searchQuery);
+      var matchSearch = !terms.length || (function(){
+        var hay = ns(v.title) + ' ' + ns(v.url);
+        return terms.every(function(t){ return hay.includes(t); });
+      })();
       var matchTopic = topicFilter === 'all' || v.topicId === topicFilter;
       return matchSearch && matchTopic;
     });
@@ -409,11 +589,12 @@
     tbody.innerHTML = filteredVideos.map(function (v) {
       var t = topics.find(function (x) { return x.id === v.topicId; });
       var topicName = t ? t.name : v.topicId;
-      return '<tr>' +
+      return '<tr style="transition: background-color 0.2s;" onmouseover="this.style.backgroundColor=\'var(--surface-100)\'" onmouseout="this.style.backgroundColor=\'\'">' +
+        '<td class="checkbox-cell" style="vertical-align:middle" onclick="event.stopPropagation()"><input type="checkbox" class="video-item-checkbox" data-id="' + v.id + '"></td>' +
         '<td>' + renderVideoPreview(v) + '</td>' +
         '<td><strong>' + v.title + '</strong></td>' +
         '<td><span class="topic-badge">' + topicName + '</span></td>' +
-        '<td><a href="' + v.url + '" target="_blank" style="color:var(--primary);text-decoration:underline;font-size:var(--fs-sm);word-break:break-all;">' + v.url + '</a></td>' +
+        '<td class="url-cell" title="' + v.url + '"><a href="' + v.url + '" target="_blank" style="color:var(--primary);text-decoration:underline;font-size:var(--fs-sm);display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom;">' + v.url + '</a></td>' +
         '<td style="text-align:right;">' +
         '<button class="btn btn--sm btn--secondary btn-edit-video" style="margin-right:var(--sp-2);" data-id="' + v.id + '" title="Sửa"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>' +
         '<button class="btn btn--sm btn--danger btn-del-video" data-id="' + v.id + '" title="Xóa"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>' +
@@ -433,16 +614,65 @@
         document.body.appendChild(tkScript);
       }, 300);
     }
-  }
 
+    if (typeof updateBulkActionsUI === 'function') updateBulkActionsUI();
+  }
   function saveVideo() {
     var f = document.getElementById('video-form');
     var title = f.querySelector('[name="title"]').value.trim();
     var topicId = f.querySelector('[name="topicId"]').value;
     var url = f.querySelector('[name="url"]').value.trim();
 
-    if (!title || !topicId || !url) {
-      adminToast('Vui lòng nhập đầy đủ thông tin bắt buộc!', 'error');
+    clearInlineErrors(f);
+    var hasError = false;
+
+    if (!title) {
+      setInlineError(f.querySelector('[name="title"]'), 'Vui lòng nhập tiêu đề video!');
+      hasError = true;
+    } else if (title.length < 3) {
+      setInlineError(f.querySelector('[name="title"]'), 'Tiêu đề video phải từ 3 ký tự trở lên!');
+      hasError = true;
+    }
+    if (!topicId) {
+      setInlineError(f.querySelector('[name="topicId"]'), 'Vui lòng chọn chủ đề!');
+      hasError = true;
+    }
+    if (!url) {
+      setInlineError(f.querySelector('[name="url"]'), 'Vui lòng nhập đường dẫn video!');
+      hasError = true;
+    } else {
+      var isValidUrl = false;
+      try {
+        var parsedUrl = new URL(url);
+        if (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:') {
+          isValidUrl = true;
+        }
+      } catch (e) {}
+
+      if (!isValidUrl) {
+        setInlineError(f.querySelector('[name="url"]'), 'Định dạng URL video không hợp lệ! Vui lòng nhập link bắt đầu bằng http:// hoặc https://');
+        hasError = true;
+      } else {
+        var platform = getPlatform(url);
+        if (platform === 'other' || platform === 'unknown') {
+          setInlineError(f.querySelector('[name="url"]'), 'Hệ thống chỉ hỗ trợ video từ YouTube, TikTok hoặc Facebook!');
+          hasError = true;
+        } else {
+          // Kiểm tra URL trùng lặp (bỏ qua video đang sửa)
+          var duplicate = videos.find(function (v) {
+            return v.url === url && v.id !== editVideoId;
+          });
+          if (duplicate) {
+            setInlineError(f.querySelector('[name="url"]'), 'URL video này đã tồn tại trong danh sách ("' + (duplicate.title || 'video đã có') + '")!');
+            hasError = true;
+          }
+        }
+      }
+    }
+
+    if (hasError) {
+      var firstErr = f.querySelector('.is-invalid');
+      if (firstErr) firstErr.focus();
       return;
     }
 
@@ -482,7 +712,15 @@
       // Auto sync back to UI
       renderTopics(); // refresh counts
     }).catch(function (err) {
-      adminToast('Lỗi khi lưu video: ' + err.message, 'error');
+      var msg = err.message || 'Lỗi khi lưu video';
+      adminToast('Lỗi khi lưu video: ' + msg, 'error');
+      if (msg.indexOf('tồn tại') !== -1 || msg.indexOf('URL video') !== -1 || msg.indexOf('đường dẫn') !== -1) {
+        var urlInp = f.querySelector('[name="url"]');
+        if (urlInp) {
+          setInlineError(urlInp, msg);
+          urlInp.focus();
+        }
+      }
     });
   }
 
@@ -493,6 +731,7 @@
 
     document.getElementById('video-modal-title').textContent = 'Chỉnh Sửa Video';
     var f = document.getElementById('video-form');
+    clearInlineErrors(f);
     f.querySelector('[name="title"]').value = v.title;
     f.querySelector('[name="topicId"]').value = v.topicId;
     f.querySelector('[name="url"]').value = v.url;
@@ -502,13 +741,65 @@
 
   function deleteVideo(id) {
     adminConfirm('Xóa video này khỏi danh sách?', function () {
-      videos = videos.filter(function (x) { return x.id !== id; });
       AdminData.journey.deleteVideo(id).then(function () {
+        videos = videos.filter(function (x) { return x.id !== id; });
         adminToast('Đã xóa video.', 'warning');
         renderVideos();
         renderTopics(); // refresh counts
+      }).catch(function (err) {
+        var msg = err.message || 'Lỗi khi xóa video';
+        adminToast(msg, 'error');
       });
     });
+  }
+
+  // --- Bulk Actions UI Logic ---
+  window.updateBulkActionsUI = function() {
+    var checkboxes = document.querySelectorAll('.video-item-checkbox');
+    var checkedBoxes = document.querySelectorAll('.video-item-checkbox:checked');
+    var bar = document.getElementById('bulk-actions-bar');
+    var countSpan = document.getElementById('bulk-selected-count');
+    var checkAll = document.getElementById('check-all-videos');
+    
+    if (checkedBoxes.length > 0) {
+      if (bar) bar.classList.add('show');
+      if (countSpan) countSpan.textContent = 'Đã chọn ' + checkedBoxes.length + ' video';
+    } else {
+      if (bar) bar.classList.remove('show');
+    }
+    
+    if (checkAll) {
+      checkAll.checked = (checkboxes.length > 0 && checkedBoxes.length === checkboxes.length);
+      checkAll.indeterminate = (checkedBoxes.length > 0 && checkedBoxes.length < checkboxes.length);
+    }
+  };
+
+  function getSelectedVideoIds() {
+    var ids = [];
+    document.querySelectorAll('.video-item-checkbox:checked').forEach(function(cb) {
+      ids.push(+cb.dataset.id);
+    });
+    return ids;
+  }
+
+  function executeBulkDelete() {
+    var ids = getSelectedVideoIds();
+    if (!ids.length) return;
+    
+    adminConfirm('Bạn có chắc chắn muốn XÓA ' + ids.length + ' video không?\\nHành động này không thể hoàn tác!', function() {
+      Promise.all(ids.map(function(id) { return AdminData.journey.deleteVideo(id); }))
+        .then(function() {
+          videos = videos.filter(function(x) { return ids.indexOf(x.id) === -1; });
+          adminToast('Đã xóa ' + ids.length + ' video', 'success');
+          var checkAll = document.getElementById('check-all-videos');
+          if (checkAll) { checkAll.checked = false; checkAll.dispatchEvent(new Event('change')); }
+          renderVideos();
+          renderTopics(); // refresh counts
+        })
+        .catch(function(err) {
+          adminToast('Lỗi khi xóa: ' + (err.message || 'thất bại'), 'error');
+        });
+    }, { title: 'Xóa hàng loạt', type: 'danger', okText: 'Xóa' });
   }
 
 })();
