@@ -236,6 +236,7 @@
   <div id="footer-placeholder"></div>
 
   <script src="js/api.js"></script>
+  <script src="js/promo.js?v=8"></script>
   <script src="js/common.js"></script>
   <script src="js/cart.js"></script>
   
@@ -381,12 +382,26 @@
         // Render item rows
         if (listEl) {
           listEl.innerHTML = items.map(function(item) {
+            var giftHtml = '';
+            if (item.gifts && item.gifts.length > 0) {
+              giftHtml = '<div style="margin-top:8px; padding:6px 8px; border-radius:4px; background:rgba(200,146,42,0.05); border:1px dashed rgba(200,146,42,0.3);">';
+              item.gifts.forEach(function(g) {
+                var gQty = g.quantity ? (g.quantity * item.qty) : item.qty;
+                giftHtml += '<div style="font-size:11px; color:#8b5a2b; display:flex; align-items:center; gap:6px; margin-bottom:4px;">';
+                giftHtml += '<img src="' + (g.imageUrl || 'assets/images/placeholder.png') + '" style="width:20px; height:20px; object-fit:cover; border-radius:3px; border:1px solid rgba(200,146,42,0.2); cursor:zoom-in;" onclick="if(window.showImageModal) window.showImageModal(\'' + (g.imageUrl || 'assets/images/placeholder.png') + '\', \'' + g.name.replace(/'/g, "\\'") + '\')">';
+                giftHtml += '<span style="line-height:1.2; flex-grow:1;">Quà tặng: <strong>' + g.name + '</strong> <b style="color:#d32f2f; margin-left:2px;">x' + gQty + '</b></span>';
+                giftHtml += '</div>';
+              });
+              giftHtml += '</div>';
+            }
+
             return [
               '<div class="checkout-item-row">',
                 buildThumb(item.image, item.name),
                 '<div class="checkout-item-row__info">',
                   '<a href="product-detail.html?id=' + item.id + '" target="_blank" class="checkout-item-row__name" style="text-decoration: none; display: block; transition: color 0.2s;" onmouseover="this.style.color=\'var(--color-accent)\'" onmouseout="this.style.color=\'\'">' + (item.size ? item.name + ' - ' + item.size : item.name) + '</a>',
                   '<p class="checkout-item-row__qty">Số lượng: <strong>' + item.qty + '</strong></p>',
+                  giftHtml,
                 '</div>',
                 '<span class="checkout-item-row__price">' + window.formatVND(item.price * item.qty) + '</span>',
               '</div>'
@@ -487,7 +502,7 @@
                   customerNote: notes,
                   paymentMethod: 'Thanh toán khi nhận hàng (COD)',
                   items: items.map(function(i) {
-                    return { productId: i.id, name: i.name, qty: i.qty, price: i.price, image: i.image, size: i.size };
+                    return { productId: i.id, name: i.name, qty: i.qty, price: i.price, image: i.image, size: i.size, gifts: i.gifts };
                   }),
                   subtotal: subtotal,
                   total: total,
@@ -550,7 +565,7 @@
               customerNote: notes,
               paymentMethod: 'Thanh toán khi nhận hàng (COD)',
               items: items.map(function(i) {
-                return { name: i.name, qty: i.qty, price: i.price, image: i.image, size: i.size };
+                return { name: i.name, qty: i.qty, price: i.price, image: i.image, size: i.size, gifts: i.gifts };
               }),
               subtotal: subtotal,
               total: total,

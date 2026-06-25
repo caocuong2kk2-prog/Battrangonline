@@ -169,6 +169,256 @@
   box-shadow: 0 8px 24px rgba(200, 146, 42, 0.45);
 }
 
+/* ===== SIDEBAR & LAYOUT (MODERN PREMIUM) ===== */
+.products-layout-container {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .products-layout-container {
+    grid-template-columns: 1fr;
+  }
+  .products-sidebar {
+    display: none;
+  }
+}
+
+/* Minimalist container */
+.products-sidebar {
+  position: sticky;
+  top: 100px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+/* Modern Clean Title */
+.products-sidebar__title {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid rgba(59, 38, 18, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* List Structure */
+.category-tree {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  padding-right: 12px;
+}
+
+.category-tree::-webkit-scrollbar {
+  width: 6px; /* slightly wider for visibility */
+}
+
+.category-tree::-webkit-scrollbar-track {
+  background-color: rgba(59, 38, 18, 0.04); /* Visible track */
+  border-radius: 6px;
+}
+
+.category-tree::-webkit-scrollbar-thumb {
+  background-color: rgba(200, 146, 42, 0.4);
+  border-radius: 6px;
+}
+
+.category-tree::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(200, 146, 42, 0.7);
+}
+
+.category-tree li {
+  margin-bottom: 4px;
+  /* Removed bottom border to make it cleaner with full-row highlights */
+}
+
+/* Header wrapper (Contains the link AND the toggle button) */
+.cat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.cat-header:hover {
+  background-color: rgba(200, 146, 42, 0.05);
+}
+
+.cat-header:has(a.active) {
+  background-color: rgba(200, 146, 42, 0.08);
+}
+
+/* Active Left Border for entire row */
+.cat-header::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 0;
+  background-color: var(--color-accent);
+  border-radius: 0 4px 4px 0;
+  transition: height 0.3s ease;
+}
+
+.cat-header:has(a.active)::before {
+  height: 60%;
+}
+
+/* Links */
+.category-tree a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  padding: 12px 12px 12px 16px;
+  color: #1a0f05;
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  background: transparent !important; /* Let parent cat-header handle background */
+  border-radius: 0;
+}
+
+.category-tree a .cat-count {
+  font-size: 13px;
+  color: #8c765f;
+  background: transparent;
+  padding: 0;
+  font-weight: 500;
+  font-style: normal;
+  font-family: var(--font-body);
+  transition: color 0.3s ease;
+}
+
+/* Hover & Active text colors */
+.cat-header:hover a {
+  color: var(--color-accent);
+}
+
+.cat-header:hover a .cat-count {
+  color: var(--color-accent);
+}
+
+.cat-header:has(a.active) a {
+  color: var(--color-primary-dark);
+  font-weight: 700;
+}
+
+.cat-header:has(a.active) a .cat-count {
+  color: var(--color-primary-dark);
+  font-weight: 700;
+}
+
+/* Remove old specific hover/active on 'a' to prevent conflicts */
+.category-tree a:hover,
+.category-tree a.active,
+.cat-header a.active::before {
+  /* Resetting previous rules */
+}
+
+/* Toggle button */
+.cat-toggle-btn {
+  background: transparent !important;
+  border: none;
+  color: #8c765f;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  margin-right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+}
+
+.cat-toggle-btn:hover {
+  background-color: rgba(200, 146, 42, 0.15) !important;
+  color: var(--color-accent);
+}
+
+.cat-toggle-btn.open {
+  transform: rotate(180deg);
+  color: var(--color-primary-dark);
+}
+
+/* Parent categories specifically */
+.category-tree > li > .cat-header > a {
+  font-size: 15px;
+}
+
+/* Child categories list (Accordion content) */
+.category-tree ul {
+  list-style: none;
+  padding-left: 16px;
+  margin-left: 16px;
+  border-left: 1.5px solid rgba(59, 38, 18, 0.1);
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.category-tree ul.open {
+  max-height: 1000px;
+  opacity: 1;
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+/* Sub-items */
+.category-tree ul li {
+  border-bottom: none;
+  margin-bottom: 2px;
+}
+
+.category-tree ul a {
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #4a3b2c;
+  border-radius: 6px;
+  background: transparent !important;
+}
+
+.category-tree ul a:hover {
+  color: var(--color-accent) !important;
+  background-color: rgba(200, 146, 42, 0.05) !important;
+  transform: translateX(4px);
+}
+
+.category-tree ul a.active {
+  color: var(--color-primary-dark) !important;
+  font-weight: 600;
+  background-color: rgba(200, 146, 42, 0.08) !important;
+}
+
+.category-tree ul a.active::before {
+  display: none;
+}
+
 /* ===== MAIN UI FILTER LAYOUT ===== */
 .filter-top-row {
   display: flex;
@@ -770,7 +1020,9 @@
 }
 
 .status-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 4px 10px;
   border-radius: 4px;
   font-size: 13px;
@@ -780,6 +1032,31 @@
 .status-badge.active {
   background: #e8f5e9;
   color: #2e7d32;
+}
+
+.status-badge.active::before {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 8px;
+  background-color: #4caf50;
+  border-radius: 50%;
+  animation: pulse-dot 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 4px rgba(76, 175, 80, 0);
+  }
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
 }
 
 .status-badge.inactive {
@@ -1556,3 +1833,81 @@
   color: #a09080;
   font-size: 12.5px;
 }
+.product-card__ribbon {
+  position: absolute;
+  top: 12px;
+  left: -4px;
+  padding: 4px 18px 4px 10px;
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  z-index: 2;
+  filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.2));
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 50%, 100% 100%, 4px 100%, 4px calc(100% + 4px), 0 100%);
+}
+.product-card__ribbon::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  border-top: 4px solid #555;
+  border-left: 4px solid transparent;
+}
+.product-card__ribbon--new {
+  background: linear-gradient(135deg, #d4a853, #b8862f);
+}
+.product-card__ribbon--new::after {
+  border-top-color: #8c6239;
+}
+.product-card__ribbon--out {
+  background: #666;
+}
+.product-card__ribbon--out::after {
+  border-top-color: #333;
+}
+.product-card__discount {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #d32f2f;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 6px;
+  border-radius: 4px;
+  z-index: 2;
+}
+.product-card__price-row {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  gap: 8px;
+  white-space: nowrap;
+}
+.product-card__original-price {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 0.85em;
+}
+.product-card__gift {
+  background: #fff9e6;
+  border: 1px solid #faebd7;
+  padding: 8px 10px;
+  border-radius: 4px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #825300;
+  line-height: 1.4;
+  text-align: left;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.product-card__gift .gift-icon {
+  color: #825300;
+  margin-right: 4px;
+}
+

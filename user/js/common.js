@@ -49,6 +49,7 @@
             }
           }
           headerPh.remove();
+          if (typeof populateHeaderMegaMenu === 'function') populateHeaderMegaMenu();
           document.dispatchEvent(new Event('search-ready'));
         }
       } catch (err) {
@@ -91,6 +92,67 @@
   }
 
   // ======================================================
+function populateHeaderMegaMenu() {
+    var container = document.getElementById('header-mega-menu');
+    if (!container) return;
+    if (!window.PhucGiaTienAPI) return;
+
+    window.PhucGiaTienAPI.getFilters().then(function(filters) {
+      if (!filters || !filters.categories) return;
+
+      var parents = (filters.categories || [])
+        .filter(function(c) { return !c.parentId || c.parentId === null; })
+        .sort(function(a, b) { 
+          var aSubs = a.subCategories && a.subCategories.length ? a.subCategories.length : 0;
+          var bSubs = b.subCategories && b.subCategories.length ? b.subCategories.length : 0;
+          if (bSubs !== aSubs) return bSubs - aSubs;
+          return b.productCount - a.productCount; 
+        });
+
+      // Distribute into 5 columns to balance height
+      var cols = [[], [], [], [], []];
+      var colHeights = [0, 0, 0, 0, 0];
+      
+      parents.forEach(function(p) {
+        var height = 2 + (p.subCategories && p.subCategories.length ? p.subCategories.length : 0);
+        var minCol = 0;
+        for (var i = 1; i < 5; i++) {
+          if (colHeights[i] < colHeights[minCol]) minCol = i;
+        }
+        cols[minCol].push(p);
+        colHeights[minCol] += height;
+      });
+
+      var html = '<div class="mm-masonry">';
+      
+      cols.forEach(function(col) {
+        html += '<div class="mm-column">';
+        col.forEach(function(p) {
+          var icon = p.icon || '🏺';
+          html += '<div class="mm-group">';
+          html += '  <h3 class="mm-group-title">';
+          html += '    <a href="products?category=' + p.id + '">';
+          html += '      <span class="mm-text">' + p.name + '</span>';
+          html += '    </a>';
+          html += '  </h3>';
+          if (p.subCategories && p.subCategories.length > 0) {
+            html += '  <ul class="mm-sub-list">';
+            p.subCategories.forEach(function(sub) {
+              html += '    <li><a href="products?category=' + sub.id + '">' + sub.name + '</a></li>';
+            });
+            html += '  </ul>';
+          }
+          html += '</div>';
+        });
+        html += '</div>';
+      });
+
+      html += '</div>';
+      container.innerHTML = html;
+    }).catch(function(err) {
+      console.error('Mega menu error:', err);
+    });
+  }
   // 1. HEADER: sticky scroll effect + mobile nav toggle
   // ======================================================
   function initHeader() {
@@ -568,7 +630,7 @@
 
     // 2. Nếu chưa có, gọi API
     try {
-      var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api';
+      var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' ? 'http://localhost:5055/api' : '/api';
       var res = await fetch(dynamicBase + '/site-config');
       if (!res.ok) throw new Error('API ' + res.status);
       var apiConfig = await res.json();
@@ -589,7 +651,7 @@
     if (!html || typeof html !== 'string') return '';
 
     // Prefix /uploads/ with API base if needed
-    var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080' : '';
+    var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' ? 'http://localhost:5055' : '';
     html = html.replace(/src=["'](\/uploads\/[^"']+)["']/gi, 'src="' + dynamicBase + '$1"');
 
     return html
@@ -600,7 +662,7 @@
   function resolveImgUrl(url, defaultUrl) {
     if (!url) return defaultUrl;
     if (url.startsWith('/uploads/')) {
-      var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080' : '';
+      var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' ? 'http://localhost:5055' : '';
       return dynamicBase + url;
     }
     return url;
@@ -624,7 +686,7 @@
 
     // 2. Phone display text updates
     document.querySelectorAll('.js-config-phone-text').forEach(function (el) {
-      el.textContent = config.phone;
+      el.textContent = config.phone || el.textContent;
     });
 
     // 3. Email link updates
@@ -634,12 +696,12 @@
 
     // 4. Email display text updates
     document.querySelectorAll('.js-config-email-text').forEach(function (el) {
-      el.textContent = config.email;
+      el.textContent = config.email || el.textContent;
     });
 
     // 5. Address display text updates
     document.querySelectorAll('.js-config-address-text').forEach(function (el) {
-      el.innerHTML = config.address.replace(/\n/g, '<br>');
+      if(config.address) el.innerHTML = config.address.replace(/\n/g, '<br>');
     });
 
     // 6. Social link updates
@@ -665,23 +727,27 @@
 
     // 7. Store title/slogan updates
     document.querySelectorAll('.js-config-store-name').forEach(function (el) {
-      el.textContent = config.storeName;
+      if (config.storeName) el.textContent = config.storeName;
     });
     document.querySelectorAll('.js-config-slogan').forEach(function (el) {
-      el.textContent = config.slogan;
+      if (config.slogan) el.textContent = config.slogan;
     });
     document.querySelectorAll('.js-config-slogan-text').forEach(function (el) {
-      el.textContent = config.slogan;
+      if (config.slogan) el.textContent = config.slogan;
     });
 
     // 8. Working hours updates
     document.querySelectorAll('.js-config-working-hours').forEach(function (el) {
-      el.textContent = config.workingHours;
+      if (config.workingHours) el.textContent = config.workingHours;
     });
 
     // 9. Map iframe updates
     document.querySelectorAll('.js-config-map-iframe').forEach(function (el) {
-      el.innerHTML = config.mapIframe;
+      if(config.mapIframe) {
+        var txt = document.createElement("textarea");
+        txt.innerHTML = config.mapIframe;
+        el.innerHTML = txt.value;
+      }
     });
 
     document.querySelectorAll('.js-config-map-link').forEach(function (el) {
@@ -711,11 +777,13 @@
 
     // 10. Image/Banner updates
     document.querySelectorAll('.js-config-logo').forEach(function (el) {
-      var logoUrl = resolveImgUrl(config.logoUrl, '');
-      if (logoUrl && !logoUrl.startsWith('data:')) {
-        logoUrl += '?v=' + Date.now();
+      if (config.logoUrl) {
+        var logoUrl = resolveImgUrl(config.logoUrl, '');
+        if (logoUrl && !logoUrl.startsWith('data:')) {
+          logoUrl += '?v=' + Date.now();
+        }
+        el.src = logoUrl;
       }
-      el.src = logoUrl;
     });
     // Cập nhật favicon từ logoUrl trong DB
     if (config.logoUrl) {
@@ -755,7 +823,7 @@
       if (oldShortcut) oldShortcut.remove();
     }
     document.querySelectorAll('.js-config-home-banner-img').forEach(function (el) {
-      el.src = resolveImgUrl(config.homeBanner, '');
+      if (config.homeBanner) el.src = resolveImgUrl(config.homeBanner, '');
     });
     document.querySelectorAll('.js-config-cta-banner-img').forEach(function (el) {
       if (config.ctaBanner === '') {
@@ -1180,5 +1248,99 @@
   document.addEventListener('DOMContentLoaded', function () {
     setTimeout(initSearch, 600);
   });
+
+  window.showImageModal = function (imgSrc, titleText) {
+    if (!imgSrc) return;
+    
+    var overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+    overlay.style.zIndex = '999999';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity 0.3s ease';
+    overlay.style.cursor = 'zoom-out';
+    
+    var closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '✕';
+    closeBtn.style.position = 'absolute';
+    closeBtn.style.top = '20px';
+    closeBtn.style.right = '20px';
+    closeBtn.style.background = 'none';
+    closeBtn.style.border = 'none';
+    closeBtn.style.color = '#fff';
+    closeBtn.style.fontSize = '32px';
+    closeBtn.style.cursor = 'pointer';
+    closeBtn.style.zIndex = '10';
+    
+    var imgContainer = document.createElement('div');
+    imgContainer.style.position = 'relative';
+    imgContainer.style.maxWidth = '90%';
+    imgContainer.style.maxHeight = '80%';
+    imgContainer.style.display = 'flex';
+    imgContainer.style.flexDirection = 'column';
+    imgContainer.style.alignItems = 'center';
+    
+    var img = document.createElement('img');
+    img.src = imgSrc;
+    img.style.maxWidth = '100%';
+    img.style.maxHeight = '70vh';
+    img.style.objectFit = 'contain';
+    img.style.borderRadius = '8px';
+    img.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+    img.style.cursor = 'default';
+    
+    imgContainer.appendChild(img);
+    
+    if (titleText) {
+      var title = document.createElement('div');
+      title.textContent = titleText;
+      title.style.color = '#fff';
+      title.style.marginTop = '16px';
+      title.style.fontSize = '18px';
+      title.style.fontWeight = '500';
+      title.style.textAlign = 'center';
+      imgContainer.appendChild(title);
+    }
+    
+    overlay.appendChild(closeBtn);
+    overlay.appendChild(imgContainer);
+    
+    document.body.appendChild(overlay);
+    
+    // Trigger animation
+    requestAnimationFrame(function() {
+      overlay.style.opacity = '1';
+    });
+    
+    var removeModal = function() {
+      overlay.style.opacity = '0';
+      setTimeout(function() {
+        if (overlay.parentNode) {
+          overlay.parentNode.removeChild(overlay);
+        }
+      }, 300);
+    };
+    
+    overlay.addEventListener('click', function(e) {
+      if (e.target !== img) {
+        removeModal();
+      }
+    });
+    
+    document.addEventListener('keydown', function escListener(e) {
+      if (e.key === 'Escape') {
+        removeModal();
+        document.removeEventListener('keydown', escListener);
+      }
+    });
+  };
 
 })();

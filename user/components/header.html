@@ -21,8 +21,16 @@
           <li class="nav-list__item">
             <a class="nav-list__link" href="/">Trang Chủ</a>
           </li>
-          <li class="nav-list__item">
-            <a class="nav-list__link" href="products">Sản Phẩm</a>
+          <!-- Sản Phẩm with Mega Menu -->
+          <li class="nav-list__item has-dropdown">
+            <a class="nav-list__link" href="products" aria-haspopup="true" aria-expanded="false">Sản Phẩm <svg class="nav-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px; transition: transform 0.3s ease;"><polyline points="6 9 12 15 18 9"></polyline></svg></a>
+            
+            <!-- MEGA MENU DROPDOWN -->
+            <div class="nav-dropdown mega-menu">
+              <div class="mega-menu__container" id="header-mega-menu">
+                <!-- Data will be populated by common.js via PhucGiaTienAPI.getFilters() -->
+              </div>
+            </div>
           </li>
           <li class="nav-list__item">
             <a class="nav-list__link" href="journey">Hành Trình</a>

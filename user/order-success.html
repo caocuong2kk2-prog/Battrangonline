@@ -111,6 +111,7 @@
   <div id="footer-placeholder"></div>
 
   <script src="js/api.js"></script>
+  <script src="js/promo.js?v=8"></script>
   <script src="js/common.js"></script>
   <script src="js/cart.js"></script>
 
@@ -253,7 +254,7 @@
               else if (cleanName.indexOf('chum ngâm rượu') >= 0 || cleanName.indexOf('chum rượu') >= 0) imgUrl = 'assets/images/product-7-1.jpg';
               else if (cleanName.indexOf('đĩa gốm') >= 0 || cleanName.indexOf('đĩa cảnh') >= 0) imgUrl = 'assets/images/product-8-1.jpg';
               else if (cleanName.indexOf('tượng gốm di lặc') >= 0) imgUrl = 'assets/images/product-3-1.jpg';
-              else imgUrl = 'assets/images/placeholder.jpg';
+              else imgUrl = 'assets/images/placeholder.png';
             }
 
             var isVideo = /\.(mp4|mov|avi|webm|ogg)$/i.test(imgUrl);
@@ -262,6 +263,20 @@
               : '<img src="' + imgUrl + '" alt="' + item.name + '" style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.15); flex-shrink: 0;">';
 
             var displayName = item.size ? item.name + ' - ' + item.size : item.name;
+
+            var giftHtml = '';
+            if (item.gifts && item.gifts.length > 0) {
+              giftHtml = '<div style="margin-top:8px; padding:6px 8px; border-radius:4px; background:rgba(255,152,0,0.05); border:1px dashed rgba(255,152,0,0.2);">';
+              item.gifts.forEach(function(g) {
+                var gQty = g.quantity ? (g.quantity * item.qty) : item.qty;
+                giftHtml += '<div style="font-size:11px; color:#ffb74d; display:flex; align-items:center; gap:6px; margin-bottom:4px;">';
+                giftHtml += '<img src="' + (g.imageUrl || 'assets/images/placeholder.png') + '" style="width:20px; height:20px; object-fit:cover; border-radius:3px; border:1px solid rgba(255,152,0,0.3); cursor:zoom-in;" onclick="if(window.showImageModal) window.showImageModal(\'' + (g.imageUrl || 'assets/images/placeholder.png') + '\', \'' + g.name.replace(/'/g, "\\'") + '\')">';
+                giftHtml += '<span style="line-height:1.2; flex-grow:1;">Quà tặng: <strong style="color:#fff;">' + g.name + '</strong> <b style="color:#ff9800; margin-left:2px;">x' + gQty + '</b></span>';
+                giftHtml += '</div>';
+              });
+              giftHtml += '</div>';
+            }
+
             return [
               '<div class="success-item-row" style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-3); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: var(--space-2);">',
                 '<div style="display: flex; align-items: center; gap: var(--space-3);">',
@@ -269,6 +284,7 @@
                   '<div style="display: flex; flex-direction: column; text-align: left;">',
                     (item.productId ? '<a href="product-detail.html?id=' + item.productId + '" target="_blank" class="success-item-row__name" style="color: #ffffff; font-weight: 500; font-size: var(--fs-sm); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color=\'var(--color-accent)\'" onmouseout="this.style.color=\'#ffffff\'">' + displayName + '</a>' : '<span class="success-item-row__name" style="color: #ffffff; font-weight: 500; font-size: var(--fs-sm);">' + displayName + '</span>'),
                     '<span style="font-size: var(--fs-xs); color: rgba(255,255,255,0.5); margin-top: 2px;">Số lượng: ' + item.qty + '</span>',
+                    giftHtml,
                   '</div>',
                 '</div>',
                 '<span class="success-item-row__price" style="color: var(--color-accent); font-weight: 600; font-size: var(--fs-sm);">' + priceVal + '</span>',

@@ -291,7 +291,7 @@ namespace BatTrang.Infrastructure.Seed
                 ["policyPrivacy"] = """
 <h2>CHÍNH SÁCH BẢO MẬT THÔNG TIN</h2>
 <p><em>Cập nhật lần cuối: tháng 6 năm 2026</em></p>
-<p>Phúc Gia Tiên – Gốm Sứ Thủ Công Bát Tràng (<strong>"chúng tôi"</strong>) cam kết bảo vệ quyền riêng tư và thông tin cá nhân của Quý khách hàng (<strong>"bạn"</strong>) theo đúng quy định của pháp luật Việt Nam, bao gồm Luật An toàn Thông tin Mạng 2015 và Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân.</p>
+<p>Phúc Gia Tiên – Gốm Sứ Thủ Công Bát Tràng (<strong>"chúng tôi"</strong>) cam kết bảo vệ quyền riêng tư và thông tin cá nhân của Quý khách hàng (<strong>"bạn"</strong>) theo đúng quy định của pháp luật Việt Nam, bao gồm Luật An toàn Thông tin Mạng 2015, Nghị định 13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân và Luật Bảo vệ quyền lợi người tiêu dùng 2023.</p>
 
 <h3>1. THÔNG TIN CHÚNG TÔI THU THẬP</h3>
 <p>Khi bạn mua hàng hoặc tương tác với website, chúng tôi có thể thu thập các thông tin sau:</p>
@@ -302,7 +302,16 @@ namespace BatTrang.Infrastructure.Seed
   <li><strong>Thông tin kỹ thuật:</strong> Địa chỉ IP, loại trình duyệt, thiết bị sử dụng (thu thập ẩn danh qua cookie để cải thiện trải nghiệm).</li>
 </ul>
 
-<h3>2. MỤC ĐÍCH SỬ DỤNG THÔNG TIN</h3>
+<h3>2. CƠ SỞ PHÁP LÝ XỬ LÝ DỮ LIỆU</h3>
+<p>Theo Nghị định 13/2023/NĐ-CP, chúng tôi xử lý dữ liệu cá nhân của bạn dựa trên các cơ sở pháp lý sau:</p>
+<ul>
+  <li><strong>Thực hiện hợp đồng:</strong> Thu thập thông tin giao hàng và thanh toán để thực hiện hợp đồng mua bán hàng hóa giữa bạn và Phúc Gia Tiên.</li>
+  <li><strong>Sự đồng ý của chủ thể dữ liệu:</strong> Gửi thông tin khuyến mãi, sản phẩm mới chỉ khi bạn chủ động đồng ý nhận.</li>
+  <li><strong>Nghĩa vụ pháp lý:</strong> Lưu trữ hóa đơn và thông tin giao dịch theo quy định của Luật Kế toán và các văn bản pháp luật liên quan.</li>
+  <li><strong>Lợi ích hợp pháp:</strong> Cải thiện chất lượng dịch vụ, phòng chống gian lận và bảo vệ an ninh hệ thống.</li>
+</ul>
+
+<h3>3. MỤC ĐÍCH SỬ DỤNG THÔNG TIN</h3>
 <p>Thông tin của bạn được sử dụng cho các mục đích sau:</p>
 <ul>
   <li>Xử lý và giao đơn hàng đến địa chỉ bạn cung cấp.</li>
@@ -312,7 +321,7 @@ namespace BatTrang.Infrastructure.Seed
   <li>Tuân thủ các nghĩa vụ pháp lý khi cần thiết.</li>
 </ul>
 
-<h3>3. BẢO MẬT VÀ LƯU TRỮ DỮ LIỆU</h3>
+<h3>4. BẢO MẬT VÀ LƯU TRỮ DỮ LIỆU</h3>
 <p>Chúng tôi áp dụng các biện pháp kỹ thuật và tổ chức phù hợp để bảo vệ dữ liệu cá nhân của bạn:</p>
 <ul>
   <li>Dữ liệu được mã hoá bằng giao thức HTTPS (TLS) trong quá trình truyền tải.</li>
@@ -321,29 +330,32 @@ namespace BatTrang.Infrastructure.Seed
   <li>Dữ liệu được lưu giữ trong thời gian cần thiết để cung cấp dịch vụ và tuân thủ quy định pháp luật (tối thiểu 5 năm theo quy định về lưu trữ hóa đơn thương mại).</li>
 </ul>
 
-<h3>4. QUYỀN CỦA BẠN ĐỐI VỚI DỮ LIỆU CÁ NHÂN</h3>
-<p>Theo Nghị định 13/2023/NĐ-CP, bạn có các quyền sau liên quan đến dữ liệu cá nhân:</p>
+<h3>5. QUYỀN CỦA BẠN ĐỐI VỚI DỮ LIỆU CÁ NHÂN</h3>
+<p>Theo Nghị định 13/2023/NĐ-CP (Điều 9), bạn có các quyền sau liên quan đến dữ liệu cá nhân:</p>
 <ul>
   <li><strong>Quyền biết:</strong> Được thông báo về việc thu thập và xử lý dữ liệu cá nhân của mình.</li>
-  <li><strong>Quyền đồng ý/rút đồng ý:</strong> Đồng ý hoặc không đồng ý cho phép xử lý dữ liệu.</li>
+  <li><strong>Quyền đồng ý/rút đồng ý:</strong> Đồng ý hoặc không đồng ý cho phép xử lý dữ liệu. Bạn có quyền rút lại sự đồng ý bất kỳ lúc nào.</li>
   <li><strong>Quyền truy cập:</strong> Yêu cầu chúng tôi cung cấp bản sao dữ liệu cá nhân chúng tôi đang lưu giữ.</li>
+  <li><strong>Quyền chỉnh sửa:</strong> Yêu cầu cập nhật, sửa đổi thông tin cá nhân không chính xác.</li>
   <li><strong>Quyền xóa:</strong> Yêu cầu xóa dữ liệu cá nhân trong các trường hợp pháp luật cho phép.</li>
   <li><strong>Quyền hạn chế xử lý:</strong> Yêu cầu tạm dừng xử lý dữ liệu trong khi giải quyết khiếu nại.</li>
+  <li><strong>Quyền khiếu nại:</strong> Nếu quyền bảo vệ dữ liệu cá nhân của bạn bị vi phạm, bạn có quyền khiếu nại lên <strong>Cục An ninh mạng và Phòng, chống tội phạm sử dụng công nghệ cao – Bộ Công an</strong> theo quy định tại Nghị định 13/2023/NĐ-CP.</li>
 </ul>
-<p>Để thực hiện các quyền trên, vui lòng liên hệ qua email <strong>phucgatien@gmail.com</strong> hoặc gọi <strong>0986 123 456</strong>.</p>
+<p>Để thực hiện các quyền trên, vui lòng liên hệ qua email <strong>phucgatien@gmail.com</strong> hoặc gọi <strong>0986 123 456</strong>. Chúng tôi cam kết phản hồi yêu cầu của bạn trong vòng <strong>72 giờ</strong> kể từ khi nhận được yêu cầu hợp lệ, theo đúng quy định tại Nghị định 13/2023/NĐ-CP.</p>
 
-<h3>5. COOKIE VÀ CÔNG NGHỆ THEO DÕI</h3>
+<h3>6. COOKIE VÀ CÔNG NGHỆ THEO DÕI</h3>
 <p>Website sử dụng cookie phiên (session cookie) để duy trì giỏ hàng và trạng thái đăng nhập của bạn. Chúng tôi không sử dụng cookie theo dõi hành vi quảng cáo từ bên thứ ba. Bạn có thể tắt cookie trong cài đặt trình duyệt, tuy nhiên một số tính năng của website có thể bị ảnh hưởng.</p>
 
-<h3>6. LIÊN KẾT BÊN THỨ BA</h3>
+<h3>7. LIÊN KẾT BÊN THỨ BA</h3>
 <p>Website có thể chứa liên kết đến các trang mạng xã hội (Facebook, Zalo, TikTok). Khi bạn truy cập các trang này, chính sách bảo mật của họ sẽ áp dụng, không phải chính sách của chúng tôi.</p>
 
-<h3>7. THAY ĐỔI CHÍNH SÁCH</h3>
+<h3>8. THAY ĐỔI CHÍNH SÁCH</h3>
 <p>Chúng tôi có quyền cập nhật chính sách này để phù hợp với thay đổi của pháp luật hoặc hoạt động kinh doanh. Phiên bản mới sẽ được đăng tải trên website và có hiệu lực từ ngày đăng.</p>
 
-<h3>8. LIÊN HỆ</h3>
+<h3>9. LIÊN HỆ</h3>
 <p>Nếu bạn có bất kỳ thắc mắc nào về chính sách bảo mật, vui lòng liên hệ:</p>
 <ul>
+  <li><strong>Đơn vị quản lý:</strong> Hộ Kinh Doanh Phúc Gia Tiên</li>
   <li><strong>Email:</strong> phucgatien@gmail.com</li>
   <li><strong>Điện thoại:</strong> 0986 123 456</li>
   <li><strong>Địa chỉ:</strong> Thôn Bát Tràng, Xã Bát Tràng, Huyện Gia Lâm, Hà Nội</li>
@@ -356,7 +368,27 @@ namespace BatTrang.Infrastructure.Seed
 <p><em>Cập nhật lần cuối: tháng 6 năm 2026</em></p>
 <p>Chào mừng Quý khách đến với website chính thức của <strong>Phúc Gia Tiên — Gốm Sứ Thủ Công Bát Tràng</strong>. Khi truy cập và sử dụng dịch vụ mua sắm tại hệ thống của chúng tôi, Quý khách đồng ý tuân thủ các điều khoản và điều kiện được quy định dưới đây. Vui lòng đọc kỹ trước khi thực hiện giao dịch.</p>
 
-<h3>1. ĐẶC THÙ SẢN PHẨM GỐM SỨ THỦ CÔNG</h3>
+<h3>THÔNG TIN DOANH NGHIỆP</h3>
+<div style="background:var(--bg-secondary,#f8f4ef);padding:16px;border-radius:8px;margin-bottom:1.5rem;border:1px solid rgba(200,146,42,0.2);">
+<ul style="margin:0;">
+  <li><strong>Tên đơn vị:</strong> Hộ Kinh Doanh Phúc Gia Tiên</li>
+  <li><strong>Người đại diện:</strong> Nguyễn Văn Phúc</li>
+  <li><strong>Địa chỉ trụ sở:</strong> Thôn Bát Tràng, Xã Bát Tràng, Huyện Gia Lâm, Thành phố Hà Nội</li>
+  <li><strong>Mã số thuế / Mã ĐKKD:</strong> (Cập nhật khi có)</li>
+  <li><strong>Điện thoại:</strong> 0986 123 456</li>
+  <li><strong>Email:</strong> phucgatien@gmail.com</li>
+  <li><strong>Website:</strong> phucgatien.com</li>
+</ul>
+</div>
+<p><em>Thông tin trên được công khai theo quy định tại Nghị định 52/2013/NĐ-CP (sửa đổi bởi Nghị định 85/2021/NĐ-CP) về Thương mại điện tử.</em></p>
+
+<h3>1. ĐIỀU KIỆN SỬ DỤNG DỊCH VỤ</h3>
+<ul>
+  <li>Người sử dụng dịch vụ mua hàng tại website phải từ <strong>đủ 18 tuổi trở lên</strong> và có đầy đủ năng lực hành vi dân sự theo quy định tại Bộ luật Dân sự 2015. Trường hợp người mua từ 15 đến dưới 18 tuổi cần có sự đồng ý của người đại diện hợp pháp.</li>
+  <li>Khi đặt hàng trên website, Quý khách xác nhận rằng mình đủ điều kiện pháp lý để tham gia giao dịch mua bán.</li>
+</ul>
+
+<h3>2. ĐẶC THÙ SẢN PHẨM GỐM SỨ THỦ CÔNG</h3>
 <p>Phúc Gia Tiên tự hào cung cấp các tác phẩm gốm sứ được chế tác <strong>100% thủ công</strong> bởi nghệ nhân làng cổ Bát Tràng. Quý khách vui lòng lưu ý các đặc tính tự nhiên của dòng sản phẩm này:</p>
 <ul>
   <li><strong>Sai khác nhỏ về hoa văn &amp; sắc độ:</strong> Do được vẽ tay thủ công và nung bằng lò gạch truyền thống ở nhiệt độ cao (1.200°C – 1.280°C), mỗi mẻ gốm ra lò sẽ có sắc độ men, độ dày và nét vẽ có thể sai lệch nhẹ (dưới 5%) so với ảnh mẫu.</li>
@@ -364,7 +396,7 @@ namespace BatTrang.Infrastructure.Seed
   <li><strong>Kích thước:</strong> Do co ngót trong lò nung, đường kính hoặc chiều cao sản phẩm có thể sai số từ vài milimet đến dưới 2cm tùy dòng sản phẩm.</li>
 </ul>
 
-<h3>2. VẬN CHUYỂN, GIAO NHẬN &amp; ĐỒNG KIỂM AN TOÀN</h3>
+<h3>3. VẬN CHUYỂN, GIAO NHẬN &amp; ĐỒNG KIỂM AN TOÀN</h3>
 <p>Gốm sứ là mặt hàng dễ hư hỏng khi va đập mạnh. Để bảo vệ tối đa quyền lợi của khách hàng, Phúc Gia Tiên áp dụng chính sách vận chuyển đặc biệt:</p>
 <ul>
   <li><strong>Đóng gói chuyên dụng:</strong> Mọi đơn hàng đều được bọc lót chống sốc 5 lớp chuyên dụng, đóng thùng gỗ kiên cố đối với các sản phẩm kích thước lớn như lộc bình, chum ngâm rượu.</li>
@@ -372,7 +404,7 @@ namespace BatTrang.Infrastructure.Seed
   <li><strong>Xử lý bể vỡ do vận chuyển:</strong> Nếu phát hiện sản phẩm bị sứt mẻ, rạn nứt hay bể vỡ, Quý khách vui lòng <strong>từ chối nhận hàng</strong>, yêu cầu shipper ký xác nhận biên bản và chụp hình gửi ngay cho bộ phận CSKH. Chúng tôi sẽ gửi bù sản phẩm mới miễn phí 100% trong vòng 3–7 ngày làm việc.</li>
 </ul>
 
-<h3>3. GIÁ CẢ &amp; THANH TOÁN</h3>
+<h3>4. GIÁ CẢ &amp; THANH TOÁN</h3>
 <p>Mọi mức giá niêm yết trên website đều là giá bán trực tiếp chưa bao gồm phí vận chuyển (trừ khi có chương trình khuyến mãi cụ thể). Chúng tôi hỗ trợ các phương thức thanh toán linh hoạt:</p>
 <ul>
   <li>Thanh toán trực tiếp bằng tiền mặt khi nhận hàng (COD – có áp dụng đồng kiểm).</li>
@@ -380,7 +412,17 @@ namespace BatTrang.Infrastructure.Seed
   <li>Ví điện tử (Momo, ZaloPay, VNPay) khi có thông báo kích hoạt trên website.</li>
 </ul>
 
-<h3>4. ĐỔI TRẢ &amp; BẢO HÀNH</h3>
+<h3>5. QUYỀN TỪ CHỐI VÀ HỦY ĐƠN HÀNG</h3>
+<p>Phúc Gia Tiên có quyền từ chối hoặc hủy đơn hàng trong các trường hợp sau:</p>
+<ul>
+  <li>Sản phẩm đã hết hàng hoặc ngừng sản xuất mà chưa kịp cập nhật trên website.</li>
+  <li>Thông tin đặt hàng không chính xác, không thể liên lạc được với khách hàng sau 3 lần thử trong vòng 48 giờ.</li>
+  <li>Phát hiện dấu hiệu gian lận, đặt hàng ảo hoặc sử dụng thông tin giả mạo.</li>
+  <li>Đơn hàng vi phạm các điều khoản sử dụng dịch vụ.</li>
+</ul>
+<p>Trong mọi trường hợp hủy đơn từ phía Phúc Gia Tiên, nếu khách hàng đã thanh toán trước, chúng tôi cam kết hoàn tiền <strong>100%</strong> trong vòng 3–5 ngày làm việc.</p>
+
+<h3>6. ĐỔI TRẢ &amp; BẢO HÀNH</h3>
 <p>Chính sách đổi trả sản phẩm tuân thủ các quy định được đề ra trong <a href="return-policy">Chính sách đổi trả</a> và <a href="warranty-policy">Chính sách bảo hành</a> của Phúc Gia Tiên:</p>
 <ul>
   <li>Hỗ trợ đổi mẫu, đổi size trong vòng <strong>7 ngày</strong> kể từ khi nhận hàng đối với sản phẩm chưa qua sử dụng và còn nguyên vẹn.</li>
@@ -388,16 +430,27 @@ namespace BatTrang.Infrastructure.Seed
   <li>Phúc Gia Tiên chịu toàn bộ chi phí nếu sản phẩm bị lỗi do sản xuất hoặc vận chuyển.</li>
 </ul>
 
-<h3>5. TRÁCH NHIỆM CỦA KHÁCH HÀNG</h3>
+<h3>7. TRÁCH NHIỆM CỦA KHÁCH HÀNG</h3>
 <p>Quý khách cam kết cung cấp chính xác, đầy đủ thông tin giao hàng bao gồm: Họ tên, số điện thoại chính xác, địa chỉ cụ thể và ghi chú (nếu có). Phúc Gia Tiên không chịu trách nhiệm đối với các đơn hàng bị thất lạc hoặc chậm trễ do khách hàng cung cấp sai thông tin.</p>
 
-<h3>6. SỞ HỮU TRÍ TUỆ</h3>
+<h3>8. SỞ HỮU TRÍ TUỆ</h3>
 <p>Toàn bộ nội dung trên website bao gồm hình ảnh sản phẩm, mô tả, video và nhận diện thương hiệu đều thuộc quyền sở hữu của Phúc Gia Tiên. Nghiêm cấm sao chép, phân phối hoặc sử dụng thương mại khi chưa được sự đồng ý bằng văn bản.</p>
 
-<h3>7. GIẢI QUYẾT TRANH CHẤP</h3>
+<h3>9. BẤT KHẢ KHÁNG (FORCE MAJEURE)</h3>
+<p>Phúc Gia Tiên không chịu trách nhiệm về việc chậm trễ hoặc không thể thực hiện nghĩa vụ giao hàng trong các trường hợp bất khả kháng, bao gồm nhưng không giới hạn:</p>
+<ul>
+  <li>Thiên tai (bão, lũ lụt, động đất, sạt lở).</li>
+  <li>Dịch bệnh, đại dịch, lệnh phong tỏa của cơ quan chức năng.</li>
+  <li>Chiến tranh, bạo loạn, đình công, biểu tình.</li>
+  <li>Sự cố hạ tầng giao thông, mất điện diện rộng, sự cố hệ thống công nghệ thông tin.</li>
+  <li>Các quyết định, lệnh cấm hoặc hạn chế của cơ quan nhà nước có thẩm quyền.</li>
+</ul>
+<p>Trong trường hợp bất khả kháng, Phúc Gia Tiên sẽ thông báo ngay cho khách hàng và cùng thỏa thuận phương án xử lý phù hợp (hoãn giao hàng, đổi phương thức vận chuyển hoặc hoàn tiền).</p>
+
+<h3>10. GIẢI QUYẾT TRANH CHẤP</h3>
 <p>Mọi tranh chấp phát sinh từ giao dịch mua bán tại Phúc Gia Tiên sẽ được giải quyết theo tinh thần hợp tác, thiện chí. Trong trường hợp không thể thỏa thuận, tranh chấp sẽ được đưa ra Tòa án nhân dân có thẩm quyền tại Hà Nội để giải quyết theo quy định pháp luật Việt Nam.</p>
 
-<h3>8. ĐIỀU KHOẢN ÁP DỤNG</h3>
+<h3>11. ĐIỀU KHOẢN ÁP DỤNG</h3>
 <p>Phúc Gia Tiên có quyền sửa đổi, bổ sung các điều khoản này bất kỳ lúc nào để phù hợp với quy định của pháp luật và tình hình kinh doanh thực tế. Quy định sửa đổi sẽ có hiệu lực ngay khi được đăng tải trên website chính thức.</p>
 <p style="margin-top: 2rem; font-style: italic; color: var(--color-accent);">Cảm ơn Quý khách đã tin tưởng chọn lựa tác phẩm gốm sứ nghệ thuật từ Phúc Gia Tiên!</p>
 """,
@@ -405,7 +458,7 @@ namespace BatTrang.Infrastructure.Seed
                 ["policyWarranty"] = """
 <h2>CHÍNH SÁCH BẢO HÀNH SẢN PHẨM</h2>
 <p><em>Cập nhật lần cuối: tháng 6 năm 2026</em></p>
-<p>Phúc Gia Tiên cam kết cung cấp sản phẩm gốm sứ chất lượng cao và hỗ trợ bảo hành chu đáo để Quý khách hoàn toàn yên tâm sau mỗi lần mua sắm.</p>
+<p>Phúc Gia Tiên cam kết cung cấp sản phẩm gốm sứ chất lượng cao và hỗ trợ bảo hành chu đáo để Quý khách hoàn toàn yên tâm sau mỗi lần mua sắm. Chính sách bảo hành này tuân thủ quy định tại <strong>Luật Bảo vệ quyền lợi người tiêu dùng 2023</strong> (có hiệu lực từ 01/07/2024).</p>
 
 <h3>1. PHẠM VI BẢO HÀNH</h3>
 <p>Chính sách bảo hành áp dụng cho các sản phẩm gốm sứ do Phúc Gia Tiên sản xuất và phân phối chính hãng:</p>
@@ -421,6 +474,7 @@ namespace BatTrang.Infrastructure.Seed
   <li><strong>Đổi sản phẩm lỗi không đúng mô tả:</strong> Trong vòng <strong>7 ngày</strong> kể từ ngày nhận hàng.</li>
   <li><strong>Hỗ trợ kỹ thuật sử dụng:</strong> Tư vấn cách vệ sinh, bảo quản và phục hồi gốm sứ trong suốt vòng đời sản phẩm (miễn phí qua hotline).</li>
 </ul>
+<p><em>Theo Luật BVQLNTD 2023, người bán có trách nhiệm bảo hành sản phẩm theo đúng nội dung đã cam kết. Phúc Gia Tiên cam kết thực hiện đầy đủ và nghiêm túc các cam kết bảo hành nêu trên.</em></p>
 
 <h3>3. ĐIỀU KIỆN ĐỂ ĐƯỢC BẢO HÀNH</h3>
 <p>Để được hưởng chính sách bảo hành, Quý khách cần đảm bảo:</p>
@@ -444,7 +498,7 @@ namespace BatTrang.Infrastructure.Seed
 <ol>
   <li><strong>Liên hệ CSKH:</strong> Gọi <strong>0986 123 456</strong> hoặc nhắn tin qua Zalo/Facebook trong giờ hành chính (08:00–18:00).</li>
   <li><strong>Gửi thông tin:</strong> Cung cấp mã đơn hàng và hình ảnh/video sản phẩm lỗi.</li>
-  <li><strong>Xác nhận và xử lý:</strong> Chúng tôi xác nhận và phản hồi trong vòng 4 giờ làm việc.</li>
+  <li><strong>Xác nhận và xử lý:</strong> Chúng tôi xác nhận và phản hồi trong vòng <strong>4 giờ làm việc</strong> (tối đa không quá 24 giờ làm việc trong trường hợp quá tải).</li>
   <li><strong>Giao sản phẩm thay thế:</strong> Sản phẩm mới được giao trong vòng 3–7 ngày làm việc sau khi xác nhận bảo hành.</li>
 </ol>
 
@@ -485,7 +539,25 @@ namespace BatTrang.Infrastructure.Seed
   <li>Đối với sản phẩm kích thước lớn (lộc bình &gt;1m, chum vại lớn): Phí vận chuyển được báo giá riêng sau khi xác nhận đơn hàng.</li>
 </ul>
 
-<h3>3. QUY TRÌNH ĐÓNG GÓI ĐẶC BIỆT</h3>
+<h3>3. ĐỐI TÁC VẬN CHUYỂN</h3>
+<p>Phúc Gia Tiên hợp tác với các đơn vị vận chuyển uy tín để đảm bảo hàng hóa được giao an toàn:</p>
+<ul>
+  <li><strong>Giao Hàng Nhanh (GHN)</strong> – Giao hàng toàn quốc, có hỗ trợ đồng kiểm.</li>
+  <li><strong>Giao Hàng Tiết Kiệm (GHTK)</strong> – Giao hàng nhanh, phủ rộng tỉnh thành.</li>
+  <li><strong>Viettel Post</strong> – Phủ sóng vùng sâu, vùng xa, hải đảo.</li>
+  <li><strong>Nhà xe / Xe tải chuyên dụng</strong> – Dành cho sản phẩm kích thước lớn, siêu nặng (lộc bình &gt;1.2m, chum vại lớn).</li>
+</ul>
+<p><em>Đơn vị vận chuyển cụ thể sẽ được chọn phù hợp với kích thước sản phẩm, địa chỉ giao hàng và yêu cầu của khách hàng.</em></p>
+
+<h3>4. BẢO HIỂM HÀNG HÓA</h3>
+<p>Do gốm sứ là mặt hàng dễ vỡ có giá trị cao, Phúc Gia Tiên áp dụng chính sách bảo hiểm vận chuyển:</p>
+<ul>
+  <li><strong>Đơn hàng từ 5.000.000đ trở lên:</strong> Được <strong>mua bảo hiểm vận chuyển 100%</strong> giá trị đơn hàng (miễn phí, do Phúc Gia Tiên chi trả).</li>
+  <li><strong>Đơn hàng dưới 5.000.000đ:</strong> Phúc Gia Tiên vẫn cam kết <strong>đền bù 100%</strong> nếu sản phẩm bị hư hỏng do vận chuyển (có bằng chứng đồng kiểm hoặc video mở hộp).</li>
+  <li>Trong mọi trường hợp, Phúc Gia Tiên chịu trách nhiệm hoàn toàn đối với hàng hóa cho đến khi sản phẩm được giao thành công và khách hàng xác nhận tình trạng tốt.</li>
+</ul>
+
+<h3>5. QUY TRÌNH ĐÓNG GÓI ĐẶC BIỆT</h3>
 <p>Gốm sứ đòi hỏi đóng gói chuyên biệt để tránh va đập trong quá trình vận chuyển. Phúc Gia Tiên áp dụng quy trình 5 lớp bảo vệ:</p>
 <ol>
   <li><strong>Lớp 1 – Bọc nhung mềm:</strong> Quấn sản phẩm bằng vải nhung hoặc mút xốp mỏng để bảo vệ men.</li>
@@ -495,7 +567,7 @@ namespace BatTrang.Infrastructure.Seed
   <li><strong>Lớp 5 – Niêm phong và dán nhãn dễ vỡ:</strong> Dán nhãn "FRAGILE – DỄ VỠ" và "THIS SIDE UP" để đơn vị vận chuyển cẩn thận hơn.</li>
 </ol>
 
-<h3>4. QUY ĐỊNH ĐỒNG KIỂM BẮT BUỘC</h3>
+<h3>6. QUY ĐỊNH ĐỒNG KIỂM BẮT BUỘC</h3>
 <p>Để bảo vệ quyền lợi của Quý khách, Phúc Gia Tiên áp dụng <strong>quy định đồng kiểm bắt buộc</strong> khi nhận hàng:</p>
 <ul>
   <li>Yêu cầu shipper cho phép mở thùng kiểm tra sản phẩm trước khi thanh toán (COD) hoặc ký nhận.</li>
@@ -504,17 +576,17 @@ namespace BatTrang.Infrastructure.Seed
   <li>Trường hợp đã ký nhận mà phát hiện lỗi sau đó: Cần có video quay lại toàn bộ quá trình mở hộp (unboxing) làm bằng chứng.</li>
 </ul>
 
-<h3>5. THEO DÕI ĐƠN HÀNG</h3>
+<h3>7. THEO DÕI ĐƠN HÀNG</h3>
 <p>Sau khi đơn hàng được xuất kho, Quý khách sẽ nhận được thông tin mã vận đơn qua số điện thoại đã đăng ký. Bạn có thể theo dõi tình trạng đơn hàng trực tiếp tại <a href="order-tracking">trang theo dõi đơn hàng</a> của chúng tôi.</p>
 
-<h3>6. TRƯỜNG HỢP GIAO HÀNG KHÔNG THÀNH CÔNG</h3>
+<h3>8. TRƯỜNG HỢP GIAO HÀNG KHÔNG THÀNH CÔNG</h3>
 <ul>
   <li>Shipper sẽ thử giao hàng tối đa <strong>3 lần</strong>. Nếu không liên lạc được, đơn hàng sẽ được hoàn về kho.</li>
   <li>Phí hoàn hàng do đơn vị vận chuyển thu (khách hàng chịu nếu không có lý do từ phía Phúc Gia Tiên).</li>
   <li>Vui lòng đảm bảo số điện thoại giao hàng luôn liên lạc được trong ngày dự kiến giao.</li>
 </ul>
 
-<h3>7. LIÊN HỆ HỖ TRỢ VẬN CHUYỂN</h3>
+<h3>9. LIÊN HỆ HỖ TRỢ VẬN CHUYỂN</h3>
 <ul>
   <li><strong>Hotline:</strong> 0986 123 456 (08:00 – 18:00, Thứ 2 – Chủ Nhật)</li>
   <li><strong>Zalo:</strong> zalo.me/0986123456</li>
@@ -525,10 +597,22 @@ namespace BatTrang.Infrastructure.Seed
                 ["policyReturn"] = """
 <h2>CHÍNH SÁCH ĐỔI TRẢ HÀNG</h2>
 <p><em>Cập nhật lần cuối: tháng 6 năm 2026</em></p>
-<p>Phúc Gia Tiên cam kết mang đến trải nghiệm mua sắm an tâm và minh bạch. Chính sách đổi trả được xây dựng để bảo vệ quyền lợi chính đáng của Quý khách hàng.</p>
+<p>Phúc Gia Tiên cam kết mang đến trải nghiệm mua sắm an tâm và minh bạch. Chính sách đổi trả được xây dựng để bảo vệ quyền lợi chính đáng của Quý khách hàng, tuân thủ <strong>Luật Bảo vệ quyền lợi người tiêu dùng 2023</strong>.</p>
 
-<h3>1. ĐIỀU KIỆN ĐỔI/TRẢ HÀNG</h3>
-<p>Phúc Gia Tiên chấp nhận yêu cầu đổi/trả hàng trong các trường hợp sau:</p>
+<h3>1. QUYỀN ĐƠN PHƯƠNG CHẤM DỨT HỢP ĐỒNG (THEO LUẬT BVQLNTD 2023)</h3>
+<div style="background:#fffbeb;padding:16px;border-radius:8px;margin-bottom:1.5rem;border:1px solid #fcd34d;">
+<p style="margin-top:0;"><strong>⚖️ Theo Điều 51 Luật Bảo vệ quyền lợi người tiêu dùng 2023:</strong></p>
+<p>Trong giao dịch thương mại điện tử, người tiêu dùng có quyền <strong>đơn phương chấm dứt hợp đồng trong vòng 15 ngày</strong> kể từ ngày nhận hàng mà không cần nêu lý do, với các điều kiện:</p>
+<ul>
+  <li>Sản phẩm còn nguyên vẹn, chưa qua sử dụng, còn nguyên bao bì và tem nhãn.</li>
+  <li>Khách hàng chịu chi phí vận chuyển hoàn trả.</li>
+  <li>Hoàn tiền được thực hiện trong vòng <strong>15 ngày</strong> kể từ ngày nhận lại sản phẩm.</li>
+</ul>
+<p style="margin-bottom:0;"><em><strong>Ngoại lệ:</strong> Quyền này không áp dụng cho sản phẩm đặt riêng theo yêu cầu (custom order) mà Phúc Gia Tiên đã sản xuất theo đặc tả của khách hàng, do tính chất đặc thù của sản phẩm gốm sứ thủ công được tạo hình theo mẫu riêng.</em></p>
+</div>
+
+<h3>2. ĐIỀU KIỆN ĐỔI/TRẢ HÀNG</h3>
+<p>Ngoài quyền 15 ngày nêu trên, Phúc Gia Tiên chấp nhận yêu cầu đổi/trả hàng ưu tiên trong các trường hợp sau:</p>
 <ul>
   <li>✅ Sản phẩm bị lỗi, bể vỡ, sứt mẻ do quá trình vận chuyển (có xác nhận từ shipper hoặc video unboxing).</li>
   <li>✅ Sản phẩm nhận được khác với mô tả, hình ảnh trên website một cách rõ ràng (không phải do đặc tính tự nhiên của gốm thủ công).</li>
@@ -536,7 +620,7 @@ namespace BatTrang.Infrastructure.Seed
   <li>✅ Đổi size/mẫu theo nhu cầu cá nhân trong vòng 7 ngày (áp dụng điều kiện dưới đây).</li>
 </ul>
 
-<h3>2. THỜI GIAN VÀ ĐIỀU KIỆN ĐỔI TRẢ</h3>
+<h3>3. THỜI GIAN VÀ ĐIỀU KIỆN ĐỔI TRẢ</h3>
 <table style="width:100%;border-collapse:collapse;margin:1rem 0;">
   <thead>
     <tr style="background:var(--bg-secondary,#f8f4ef);">
@@ -562,14 +646,19 @@ namespace BatTrang.Infrastructure.Seed
       <td style="padding:10px;border:1px solid #ddd;color:#c85e00;"><strong>Khách hàng</strong></td>
     </tr>
     <tr>
-      <td style="padding:10px;border:1px solid #ddd;">Trả hàng để hoàn tiền</td>
+      <td style="padding:10px;border:1px solid #ddd;">Trả hàng không lý do (Điều 51 BVQLNTD)</td>
+      <td style="padding:10px;border:1px solid #ddd;"><strong>15 ngày</strong> sau nhận hàng</td>
+      <td style="padding:10px;border:1px solid #ddd;color:#c85e00;"><strong>Khách hàng</strong></td>
+    </tr>
+    <tr>
+      <td style="padding:10px;border:1px solid #ddd;">Trả hàng để hoàn tiền (lỗi từ shop)</td>
       <td style="padding:10px;border:1px solid #ddd;">7 ngày (lỗi từ shop)</td>
       <td style="padding:10px;border:1px solid #ddd;color:green;"><strong>Phúc Gia Tiên</strong></td>
     </tr>
   </tbody>
 </table>
 
-<h3>3. ĐIỀU KIỆN SẢN PHẨM KHI ĐỔI TRẢ</h3>
+<h3>4. ĐIỀU KIỆN SẢN PHẨM KHI ĐỔI TRẢ</h3>
 <p>Sản phẩm đổi trả phải đáp ứng các điều kiện sau (trừ trường hợp lỗi từ shop):</p>
 <ul>
   <li>Sản phẩm còn nguyên vẹn, chưa qua sử dụng, không có thêm vết xước hay hư hại so với khi nhận.</li>
@@ -577,31 +666,31 @@ namespace BatTrang.Infrastructure.Seed
   <li>Kèm theo hóa đơn hoặc mã đơn hàng gốc từ Phúc Gia Tiên.</li>
 </ul>
 
-<h3>4. TRƯỜNG HỢP KHÔNG ĐƯỢC ĐỔI/TRẢ</h3>
+<h3>5. TRƯỜNG HỢP KHÔNG ĐƯỢC ĐỔI/TRẢ</h3>
 <ul>
   <li>❌ Sản phẩm bị hư hỏng do sử dụng sai cách sau khi nhận (rơi, va đập, sốc nhiệt).</li>
   <li>❌ Sản phẩm đã qua sử dụng, có dấu hiệu tiếp xúc với nước, đất, thực phẩm.</li>
   <li>❌ Các sai lệch nhỏ về màu sắc men, đường rạn tự nhiên, đốm quặng — đây là đặc tính vốn có của gốm thủ công, không phải lỗi sản phẩm.</li>
-  <li>❌ Sản phẩm đặt theo yêu cầu riêng (custom order) khi khách hàng đã xác nhận mẫu thiết kế.</li>
-  <li>❌ Yêu cầu đổi trả sau thời hạn quy định.</li>
+  <li>❌ Sản phẩm đặt theo yêu cầu riêng (custom order) khi khách hàng đã xác nhận mẫu thiết kế — do tính chất đặc thù không thể bán lại cho người khác.</li>
+  <li>❌ Yêu cầu đổi trả sau thời hạn quy định (quá 15 ngày kể từ ngày nhận hàng).</li>
 </ul>
 
-<h3>5. QUY TRÌNH ĐỔI TRẢ</h3>
+<h3>6. QUY TRÌNH ĐỔI TRẢ</h3>
 <ol>
   <li><strong>Bước 1 – Liên hệ CSKH:</strong> Gọi <strong>0986 123 456</strong> hoặc nhắn Zalo trong giờ hành chính (08:00–18:00) để thông báo yêu cầu đổi/trả.</li>
-  <li><strong>Bước 2 – Gửi bằng chứng:</strong> Chụp ảnh/quay video sản phẩm lỗi và gửi cho nhân viên CSKH để xác minh.</li>
-  <li><strong>Bước 3 – Xác nhận phương án:</strong> CSKH xác nhận phương án xử lý trong vòng 4–8 giờ làm việc.</li>
+  <li><strong>Bước 2 – Gửi bằng chứng:</strong> Chụp ảnh/quay video sản phẩm và gửi cho nhân viên CSKH để xác minh.</li>
+  <li><strong>Bước 3 – Xác nhận phương án:</strong> CSKH xác nhận phương án xử lý trong vòng 4–8 giờ làm việc (tối đa 24 giờ làm việc).</li>
   <li><strong>Bước 4 – Hoàn tất:</strong> Sản phẩm mới được giao hoặc hoàn tiền được thực hiện trong 3–7 ngày làm việc.</li>
 </ol>
 
-<h3>6. HÌNH THỨC HOÀN TIỀN</h3>
+<h3>7. HÌNH THỨC HOÀN TIỀN</h3>
 <ul>
-  <li>Hoàn tiền về tài khoản ngân hàng trong vòng 3–5 ngày làm việc.</li>
+  <li>Hoàn tiền về tài khoản ngân hàng trong vòng <strong>3–5 ngày làm việc</strong> (tối đa không quá 15 ngày kể từ ngày Phúc Gia Tiên nhận lại sản phẩm, tuân thủ Điều 51 Luật BVQLNTD 2023, thời hạn tối đa 30 ngày theo luật).</li>
   <li>Hoàn tiền mặt trực tiếp tại xưởng (áp dụng khi khách đến nhận hàng trực tiếp).</li>
   <li>Tích điểm đổi thưởng cho đơn hàng tiếp theo (tùy thỏa thuận).</li>
 </ul>
 
-<h3>7. LIÊN HỆ HỖ TRỢ ĐỔI TRẢ</h3>
+<h3>8. LIÊN HỆ HỖ TRỢ ĐỔI TRẢ</h3>
 <ul>
   <li><strong>Hotline:</strong> 0986 123 456 (08:00 – 18:00, Thứ 2 – Chủ Nhật)</li>
   <li><strong>Email:</strong> phucgatien@gmail.com</li>

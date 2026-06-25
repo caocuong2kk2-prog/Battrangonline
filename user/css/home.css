@@ -369,6 +369,32 @@
   width: max-content;
 }
 
+/* Override product-card sizing inside conveyor track */
+.products-track .product-card {
+  width: 310px;
+  flex-shrink: 0;
+  height: auto;
+}
+
+
+.products-track .product-card__hover-actions {
+  position: absolute;
+  bottom: var(--space-4);
+  left: var(--space-4);
+  right: var(--space-4);
+  display: flex;
+  gap: var(--space-2);
+  transform: translateY(120%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+  opacity: 0;
+  z-index: 3;
+}
+
+.products-track .product-card:hover .product-card__hover-actions {
+  transform: translateY(0);
+  opacity: 1;
+}
+
 /* ── Cụm nút điều hướng đưa lên góc phải tiêu đề ── */
 .conveyor-arrow-top {
   width: 44px;

@@ -97,9 +97,10 @@
           slug: product.slug,
           price: price,
           size: size || null,
-          image: (product.images && product.images[0]) ? product.images[0] : 'assets/images/placeholder.jpg',
+          image: (product.images && product.images[0]) ? product.images[0] : 'assets/images/placeholder.png',
           qty: qty,
-          selected: true
+          selected: true,
+          gifts: product.gifts || []
         });
       }
       saveCart(cart);
@@ -277,6 +278,14 @@
               }
             }
           }
+          
+          // Sync gifts with the latest API data
+          var currentGiftsStr = JSON.stringify(item.gifts || []);
+          var newGiftsStr = JSON.stringify(pData.gifts || []);
+          if (currentGiftsStr !== newGiftsStr) {
+            item.gifts = pData.gifts || [];
+            changed = true;
+          }
         }
       });
 
@@ -291,17 +300,20 @@
   function runCartPageInitAndRender() {
     var cart = loadCart();
     var needsHeal = cart.some(function (item) {
-      return item.price === undefined || item.price === null || isNaN(item.price);
+      return item.price === undefined || item.price === null || isNaN(item.price) || !item.gifts;
     });
 
     if (needsHeal && window.PhucGiaTienAPI) {
       var healPromises = cart.map(function (item) {
-        if (item.price === undefined || item.price === null || isNaN(item.price)) {
+        if (item.price === undefined || item.price === null || isNaN(item.price) || !item.gifts) {
           return window.PhucGiaTienAPI.getProductBySlug(item.slug)
             .then(function (p) {
               item.price = p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0);
               if (!item.size && p.variants && p.variants.length) {
                 item.size = p.variants[0].size;
+              }
+              if (!item.gifts) {
+                item.gifts = p.gifts || [];
               }
             })
             .catch(function (err) {
@@ -496,6 +508,7 @@
     
     var stockStatusHtml = '';
     var maxStock = 99;
+    var giftHtml = '';
     if (window.cartProductsMap && window.cartProductsMap[item.slug]) {
       var pData = window.cartProductsMap[item.slug];
       var liveStock = findMatchingStock(item, pData);
@@ -509,6 +522,24 @@
         stockStatusHtml = '<span class="cart-item__stock-status in-stock" style="color:#2e7d32; font-size:11px; font-weight:600; margin-left:12px;">Còn hàng (' + liveStock + ')</span>';
       }
     }
+    
+    var itemGifts = item.gifts;
+    if (!itemGifts && window.cartProductsMap && window.cartProductsMap[item.slug]) {
+      itemGifts = window.cartProductsMap[item.slug].gifts;
+    }
+
+    if (itemGifts && itemGifts.length > 0) {
+      giftHtml = '<div class="cart-item__gifts" style="margin-top:8px; padding:8px 12px; background:#fffcf5; border-radius:6px; border:1px dashed #e5c385;">';
+      giftHtml += '<div style="font-size:11px; font-weight:700; color:#d32f2f; margin-bottom:6px; text-transform:uppercase; display:flex; align-items:center; gap:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="22"></line><path d="M12 8H8a2 2 0 0 1-2-2 2 2 0 0 1 2-2h0c1.1 0 2 .9 2 2v2"></path><path d="M12 8h4a2 2 0 0 0 2-2 2 2 0 0 0-2-2h0c-1.1 0-2 .9-2 2v2"></path></svg> Quà tặng kèm:</div>';
+      itemGifts.forEach(function(g) {
+        var gQty = g.quantity ? (g.quantity * item.qty) : item.qty;
+        giftHtml += '<div style="font-size:12px; color:#5c3a1e; display:flex; align-items:center; gap:8px; margin-bottom:4px;">';
+        giftHtml += '<img src="' + (g.imageUrl || 'assets/images/placeholder.png') + '" style="width:24px; height:24px; object-fit:cover; border-radius:4px; border:1px solid #faebd7; cursor:zoom-in;" onclick="if(window.showImageModal) window.showImageModal(\'' + (g.imageUrl || 'assets/images/placeholder.png') + '\', \'' + g.name.replace(/'/g, "\\'") + '\')">';
+        giftHtml += '<span style="line-height:1.2;">' + g.name + ' <b style="color:#d32f2f; font-size:11px; margin-left:2px;">x' + gQty + '</b></span>';
+        giftHtml += '</div>';
+      });
+      giftHtml += '</div>';
+    }
 
     return [
       '<div class="cart-item" role="listitem" data-id="' + item.id + '" data-size="' + item.size + '">',
@@ -518,13 +549,14 @@
       '<a class="cart-item__img-link" href="product-detail.html?slug=' + item.slug + '">',
       (item.image && item.image.match(/\.(mp4|mov|avi|webm|ogg)$/i)
         ? '<video class="cart-item__img" src="' + item.image + '" autoplay loop muted playsinline style="object-fit:cover;"></video>'
-        : '<img class="cart-item__img" src="' + (item.image || 'assets/images/placeholder.jpg') + '" alt="' + item.name + '" loading="lazy">'),
+        : '<img class="cart-item__img" src="' + (item.image || 'assets/images/placeholder.png') + '" alt="' + item.name + '" loading="lazy">'),
       '</a>',
       '<div class="cart-item__details">',
       '<h3 class="cart-item__title"><a href="product-detail.html?slug=' + item.slug + '" style="color:var(--color-bg-mid);text-decoration:none">' + displayName + '</a></h3>',
       '<div class="cart-item__meta">',
       '<span>Đơn giá: <span class="cart-item__price-unit">' + window.formatVND(item.price) + '</span></span>' + stockStatusHtml,
       '</div>',
+      giftHtml,
       '<div class="cart-item__qty">',
       '<button class="cart-item__qty-btn" data-id="' + item.id + '" data-size="' + item.size + '" data-delta="-1" aria-label="Giảm">−</button>',
       '<input class="cart-item__qty-input" type="number" value="' + item.qty + '" min="1" max="' + maxStock + '" data-id="' + item.id + '" data-size="' + item.size + '" aria-label="Số lượng">',

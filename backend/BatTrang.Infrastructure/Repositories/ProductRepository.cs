@@ -147,7 +147,7 @@ namespace BatTrang.Infrastructure.Repositories
                 case "price-desc":
                     query = query.OrderByDescending(p => p.Variants.Min(v => (decimal?)(v.CampaignPrice ?? v.Price)) ?? 0);
                     break;
-                case "newest":
+                case "bestselling": query = query.OrderByDescending(p => p.TotalSold).ThenByDescending(p => p.Id); break; case "newest":
                 default:
                     query = query.OrderByDescending(p => p.Id);
                     break;
@@ -289,3 +289,4 @@ namespace BatTrang.Infrastructure.Repositories
         }
     }
 }
+

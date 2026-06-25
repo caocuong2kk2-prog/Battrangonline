@@ -2,7 +2,7 @@
 (function (global) {
   'use strict';
 
-  var API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api';
+  var API_BASE = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && (window.location.port !== '5055' && window.location.port !== '7275') ? 'http://localhost:5055/api' : '/api';
 
   // Base helper
   function _fetch(endpoint, options) {
@@ -200,6 +200,11 @@
     // --- Team ---
     getPublicTeam: function () {
       return _fetch('/adminaccounts/public-team');
+    },
+
+    // --- Campaigns ---
+    getActiveCampaign: function () {
+      return _fetch('/campaigns/active');
     }
   };
 

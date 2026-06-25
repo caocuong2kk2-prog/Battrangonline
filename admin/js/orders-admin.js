@@ -598,9 +598,32 @@
       '<div class="stat-row"><div class="stat-row__label">Ghi chú nội bộ</div><div class="stat-row__value"><input class="table-note-input" style="width:100%;margin:0;" type="text" value="' + escapeHTML(o.adminNote || '') + '" placeholder="Nhập ghi chú nội bộ..." data-id="' + o.id + '" onchange="saveInlineNote(\'' + o.id + '\', this.value, this)"></div></div>';
 
     var itemsHtml = '<div class="order-lines">';
-    o.items.forEach(function (i) {
+    // Preprocess items: group gifts into their main products
+    var structuredItems = [];
+    var currentProduct = null;
+    
+    (o.items || []).forEach(function(i) {
+      if (i.name && i.name.indexOf('[Quà Tặng]') === 0) {
+        if (currentProduct) {
+          currentProduct.gifts = currentProduct.gifts || [];
+          currentProduct.gifts.push({
+             name: i.name.replace('[Quà Tặng]', '').trim(),
+             qty: i.qty / (currentProduct.qty || 1), // restore per-unit gift quantity
+             imageUrl: i.image || i.imageUrl,
+             estimatedValue: i.estimatedValue
+          });
+        } else {
+          structuredItems.push(i);
+        }
+      } else {
+        currentProduct = Object.assign({}, i);
+        structuredItems.push(currentProduct);
+      }
+    });
+
+    structuredItems.forEach(function (i) {
       var p = i.productId ? getProductById(i.productId) : null;
-      var productImages = (p && p.images && p.images.length > 0) ? p.images : (i.imageUrl ? [i.imageUrl] : []);
+      var productImages = (p && p.images && p.images.length > 0) ? p.images : (i.imageUrl ? [i.imageUrl] : (i.image ? [i.image] : []));
 
       var imgHtml = '';
       if (productImages.length > 0) {
@@ -636,12 +659,31 @@
         totalDisplay = AdminData.fmt(i.price * i.qty);
       }
 
+      var giftHtml = '';
+      if (i.gifts && i.gifts.length > 0) {
+        giftHtml = '<div style="margin-top:8px; padding:6px 8px; border-radius:4px; background:rgba(255,152,0,0.05); border:1px dashed rgba(255,152,0,0.2);">';
+        i.gifts.forEach(function(g) {
+          var gQty = g.qty * i.qty;
+          var displayValue = '';
+          if (g.estimatedValue) {
+            displayValue = ' - <span style="text-decoration:line-through;color:var(--text-muted);font-size:11px;margin-left:4px;">' + AdminData.fmt(g.estimatedValue * g.qty) + '</span>';
+          }
+          giftHtml += '<div style="font-size:12px; color:#d97706; display:flex; align-items:center; gap:6px; margin-bottom:4px;">';
+          var imgUrl = g.imageUrl || '../assets/images/placeholder.png';
+          giftHtml += '<img src="' + imgUrl + '" class="zoomable" data-images=\'["' + imgUrl + '"]\' style="width:20px; height:20px; object-fit:cover; border-radius:3px; border:1px solid rgba(255,152,0,0.3); cursor:zoom-in;">';
+          giftHtml += '<span style="line-height:1.2; flex-grow:1; color: var(--text-primary);">Quà tặng: <strong>' + escapeHTML(g.name) + '</strong> <b style="color:#f59e0b; margin-left:2px;">x' + gQty + '</b>' + displayValue + '</span>';
+          giftHtml += '</div>';
+        });
+        giftHtml += '</div>';
+      }
+
       itemsHtml += '<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px dashed var(--border);">' +
         imgHtml +
         '<div style="flex:1;min-width:0;">' +
         '<div style="font-weight:600;font-size:13.5px;line-height:1.4;margin-bottom:5px;">' + nameHtml + '</div>' +
         '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:5px;">' + productCode + sizeHtml + '</div>' +
         '<div style="font-size:12px;color:var(--text-muted);">Số lượng: <strong>' + i.qty + '</strong> &times; ' + priceDisplay + '</div>' +
+        giftHtml +
         '</div>' +
         '<div style="font-weight:700;font-size:14px;color:var(--accent);text-align:right;white-space:nowrap;margin-left:8px;flex-shrink:0;">' + totalDisplay + '</div>' +
         '</div>';
