@@ -22,7 +22,7 @@ namespace BatTrang.Infrastructure.Services
         /// <param name="variantId">ID của ProductVariant</param>
         /// <param name="delta">Số lượng thay đổi (Âm: Khách mua, Dương: Hoàn kho)</param>
         /// <returns>True nếu thành công, False nếu không đủ kho hoặc không tìm thấy.</returns>
-        public async Task<(bool Success, int RemainingTotalStock, string ProductName)> AdjustStockAsync(int variantId, int delta)
+        public async Task<(bool Success, int RemainingTotalStock, string? ProductName)> AdjustStockAsync(int variantId, int delta)
         {
             const int maxRetryCount = 3;
 
@@ -45,7 +45,7 @@ namespace BatTrang.Infrastructure.Services
                     variant.Stock = Math.Max(0, variant.Stock + delta);
 
                     int totalStock = 0;
-                    string productName = variant.Product?.Name;
+                    string? productName = variant.Product?.Name;
 
                         // Logic tự động Ẩn/Hiện sản phẩm khi hết hàng
                         var product = variant.Product;

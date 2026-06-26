@@ -129,6 +129,7 @@
   <div id="footer-placeholder"></div>
 
   <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/promo.js?v=8"></script>
   <script src="js/common.js"></script>
   <script src="js/cart.js"></script>
@@ -391,27 +392,30 @@
         var addrPayload = JSON.parse(addrStr);
         sessionStorage.removeItem('pgt_temp_address');
 
+        // Show modal
         var modal = document.getElementById('save-address-modal');
+        var inputLabel = document.getElementById('save-address-label');
         var btnCancel = document.getElementById('btn-cancel-save-addr');
         var btnConfirm = document.getElementById('btn-confirm-save-addr');
-        var labelInput = document.getElementById('save-address-label');
+        
+        if (!modal) return;
         
         modal.style.display = 'flex';
-
+        if (inputLabel) inputLabel.focus();
+        
         btnCancel.onclick = function() {
-          modal.style.display = 'none';
+            modal.style.display = 'none';
         };
-
+        
         btnConfirm.onclick = function() {
-          addrPayload.label = labelInput.value.trim() || 'Địa chỉ';
-          
-          if (window.AuthService && window.AuthService.getCurrentUser()) {
-            // Save to DB
-            var token = localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+            modal.style.display = 'none';
+            var customLabel = inputLabel ? inputLabel.value.trim() : '';
+            addrPayload.label = customLabel || 'Địa chỉ';
+
+            var token = localStorage.getItem('customer_token') || sessionStorage.getItem('customer_token');
             if (token) {
-              btnConfirm.textContent = 'Đang lưu...';
-              btnConfirm.disabled = true;
-              fetch(window.PhucGiaTienAPI.API_BASE_URL + '/Address/saved', {
+              // Save to DB
+              fetch((window.PhucGiaTienAPI.apiBase || 'http://localhost:5055/api') + '/Address/saved', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -420,28 +424,16 @@
                 body: JSON.stringify(addrPayload)
               })
               .then(function(res) {
-                if (res.ok) {
-                  if (typeof window.showToast === 'function') window.showToast('Lưu địa chỉ thành công', 'success');
-                } else {
-                  return res.json().then(function(err) { throw err; });
-                }
+                  if (res.ok && window.showToast) window.showToast('Đã lưu địa chỉ thành công!', 'success');
               })
               .catch(function(err) {
-                console.error(err);
-                if (typeof window.showToast === 'function') window.showToast(err.message || 'Lỗi khi lưu địa chỉ', 'error');
-              })
-              .finally(function() {
-                modal.style.display = 'none';
+                console.error('Lỗi khi lưu địa chỉ:', err);
               });
             } else {
-               modal.style.display = 'none';
+              // Guest mode - Save to LocalStorage
+              localStorage.setItem('pgt_last_address', JSON.stringify(addrPayload));
+              if (window.showToast) window.showToast('Đã lưu địa chỉ trên trình duyệt!', 'success');
             }
-          } else {
-            // Guest mode - Save to LocalStorage
-            localStorage.setItem('pgt_last_address', JSON.stringify(addrPayload));
-            if (typeof window.showToast === 'function') window.showToast('Lưu địa chỉ tạm thời thành công', 'success');
-            modal.style.display = 'none';
-          }
         };
       }
 

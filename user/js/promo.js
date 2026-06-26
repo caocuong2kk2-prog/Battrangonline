@@ -143,7 +143,7 @@
         position: relative;
         z-index: 1;
         width: 100%;
-        max-width: 800px;
+        max-width: 600px;
         background: #110904;
         border-radius: 16px;
         overflow: hidden;
@@ -153,32 +153,32 @@
           0 0 0 1px rgba(212,168,83,0.3),
           0 40px 80px rgba(0,0,0,0.8);
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
       }
       .promo-popup__image {
-        width: 42%;
-        background: url('assets/images/products-banner.webp') center/cover no-repeat;
-        position: relative;
-      }
-      .promo-popup__image::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to right, rgba(17,9,4,0) 0%, rgba(17,9,4,1) 100%);
+        width: 100%;
+        height: auto;
+        max-height: 350px;
+        object-fit: contain;
+        display: block;
+        background: #1a0f05;
+        border-bottom: 1px solid rgba(212,168,83,0.2);
       }
       .promo-popup__content-wrapper {
-        width: 58%;
+        width: 100%;
         position: relative;
         background: linear-gradient(155deg, #1e1008 0%, #110904 100%);
       }
       .promo-popup__close {
         position: absolute;
-        top: 16px;
-        right: 16px;
-        z-index: 10;
-        background: rgba(255,255,255,0.08);
-        border: 1px solid rgba(255,255,255,0.3);
-        color: rgba(255,255,255,0.9);
+        top: 12px;
+        right: 12px;
+        z-index: 20;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: #fff;
         width: 32px;
         height: 32px;
         border-radius: 50%;
@@ -199,7 +199,7 @@
       .promo-popup__body {
         position: relative;
         z-index: 1;
-        padding: 48px 40px 40px;
+        padding: 32px 40px 36px;
         text-align: center;
       }
       .promo-popup__eyebrow {
@@ -300,11 +300,9 @@
         font-family: var(--font-body, sans-serif);
       }
       @media (max-width: 768px) {
-        #promo-popup-card { flex-direction: column; width: 92%; max-width: 440px; }
-        .promo-popup__image { width: 100%; height: 160px; }
-        .promo-popup__image::after { background: linear-gradient(to bottom, rgba(17,9,4,0) 0%, rgba(17,9,4,1) 100%); }
-        .promo-popup__content-wrapper { width: 100%; }
-        .promo-popup__body { padding: 32px 24px 36px; }
+        #promo-popup-card { width: 92%; max-width: 440px; }
+        .promo-popup__image { max-height: 220px; }
+        .promo-popup__body { padding: 28px 20px 30px; }
         .promo-popup__title { font-size: 28px; }
         .promo-cd-block { min-width: 50px; padding: 8px; }
         .promo-cd-block__num { font-size: 20px; }
@@ -328,11 +326,18 @@
       });
 
     function initPromo(campaign) {
+      const START_DATE = new Date(campaign.startDate);
       const END_DATE = new Date(campaign.endDate);
+      const now = new Date();
+      const isUpcoming = now < START_DATE;
+
       const campaignName = campaign.name || 'Sự Kiện Đặc Biệt';
       const discount = campaign.discountPercent || 10;
       const desc = campaign.description || `Gốm Phúc Gia Tiên giảm ngay <strong>${discount}%</strong> toàn bộ sản phẩm gốm sứ chế tác thủ công cao cấp. Hệ thống sẽ tự động áp dụng ưu đãi khi thanh toán.`;
       const targetUrl = campaign.targetUrl || 'products.html';
+
+      const bannerLabel = isUpcoming ? 'Sắp diễn ra — Bắt đầu sau:' : `Giảm đến <strong style="color:#d4a853;">${discount}%</strong> — Kết thúc sau:`;
+      const bannerCta = isUpcoming ? 'XEM TRƯỚC' : 'MUA NGAY';
 
       // ══════════════════════════════════════════════
       // 1. TOP PROMO BANNER
@@ -342,7 +347,7 @@
       banner.innerHTML = `
         <div id="promo-banner-inner">
           <div class="promo-banner__sparks">✦ ${campaignName.toUpperCase()} ✦</div>
-          <div class="promo-banner__label">Giảm đến <strong style="color:#d4a853;">${discount}%</strong> — Kết thúc sau:</div>
+          <div class="promo-banner__label" id="promo-banner-label">${bannerLabel}</div>
           <div id="promo-countdown">
           <span class="promo-cd-unit"><span id="promo-days" class="promo-cd-num">00</span><span class="promo-cd-lbl">Ngày</span></span>
           <span class="promo-cd-unit"><span id="promo-hours" class="promo-cd-num">00</span><span class="promo-cd-lbl">Giờ</span></span>
@@ -351,7 +356,7 @@
         </div>
           <a href="${targetUrl}" class="promo-banner__cta">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            MUA NGAY
+            <span id="promo-banner-btn-text">${bannerCta}</span>
           </a>
         </div>
       `;
@@ -412,7 +417,21 @@
 
     // Countdown for banner
     function updateBannerCountdown() {
-      const diff = END_DATE - new Date();
+      const now = new Date();
+      let isUpcoming = now < START_DATE;
+      let targetDate = isUpcoming ? START_DATE : END_DATE;
+      let diff = targetDate - now;
+
+      if (diff <= 0 && isUpcoming) {
+        isUpcoming = false;
+        targetDate = END_DATE;
+        diff = targetDate - now;
+        const lbl = document.getElementById('promo-banner-label');
+        if (lbl) lbl.innerHTML = `Giảm đến <strong style="color:#d4a853;">${discount}%</strong> — Kết thúc sau:`;
+        const btnText = document.getElementById('promo-banner-btn-text');
+        if (btnText) btnText.innerText = 'MUA NGAY';
+      }
+
       if (diff <= 0) return;
       const d = Math.floor(diff / 864e5);
       const h = Math.floor((diff / 36e5) % 24);
@@ -436,24 +455,50 @@
       const overlay = document.createElement('div');
       overlay.id = 'promo-popup-overlay';
 
-      let bgStyle = '';
-      if (activeCampaign.bannerImage) {
-        let imgUrl = activeCampaign.bannerImage;
+      let bannerHtml = '';
+      if (campaign.bannerImage) {
+        let imgUrl = campaign.bannerImage;
+
+        // Ensure imgUrl starts with /uploads/ if it contains it
+        if (imgUrl.indexOf('/uploads/') !== -1) {
+             imgUrl = imgUrl.substring(imgUrl.indexOf('/uploads/'));
+        }
+
         if (imgUrl.startsWith('/uploads/')) {
-          const dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' ? 'http://localhost:5055' : '';
+          let dynamicBase = '';
+          
+          // Original logic that worked perfectly on localhost
+          if ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055') {
+              dynamicBase = 'http://localhost:5055';
+          } 
+          // If on Cloudflare but backend is on 5055 and uploads are not proxied
+          else if (window.location.hostname.includes('trycloudflare.com')) {
+              // If API is relative, try to load from the same domain. If the user uses a split tunnel, they might need the absolute backend URL.
+              // We'll use the API base to determine if we should prefix.
+              if (window.PhucGiaTienAPI && window.PhucGiaTienAPI.apiBase) {
+                  let apiBase = window.PhucGiaTienAPI.apiBase;
+                  if (apiBase.startsWith('http')) {
+                      dynamicBase = apiBase.replace('/api', '');
+                  }
+              }
+          }
+          
           imgUrl = dynamicBase + imgUrl;
         }
-        bgStyle = `style="background-image: url('${imgUrl}');"`;
+        bannerHtml = `<img src="${imgUrl}" class="promo-popup__image" alt="Promo">`;
       }
+
+      const popupTitle = isUpcoming ? `Sắp diễn ra<span> ${campaignName}</span>` : `Ưu đãi<span> ${campaignName}</span>`;
+      const popupCta = isUpcoming ? 'Xem trước ưu đãi' : 'Mua Sắm Ngay';
 
       overlay.innerHTML = `
         <div id="promo-popup-card">
-          <div class="promo-popup__image" ${bgStyle}></div>
+          <button class="promo-popup__close" id="close-promo-popup" aria-label="Đóng">&times;</button>
+          ${bannerHtml}
           <div class="promo-popup__content-wrapper">
-            <button class="promo-popup__close" id="close-promo-popup" aria-label="Đóng">&times;</button>
             <div class="promo-popup__body">
               <div class="promo-popup__eyebrow">✦ Sự kiện đặc biệt ✦</div>
-              <h2 class="promo-popup__title">Ưu đãi<span> ${campaignName}</span></h2>
+              <h2 class="promo-popup__title" id="popup-title">${popupTitle}</h2>
               
               <p class="promo-popup__desc">
                 ${desc}
@@ -467,7 +512,7 @@
               </div>
               
               <a href="${targetUrl}" id="btn-explore-promo" class="promo-popup__cta">
-                Mua Sắm Ngay
+                <span id="popup-btn-text">${popupCta}</span>
               </a>
               <div class="promo-popup__fine-print">* Áp dụng cho mọi đơn hàng trong thời gian sự kiện</div>
             </div>
@@ -487,8 +532,25 @@
 
       // Popup countdown
       function updatePopupCountdown() {
-        const diff = END_DATE - new Date();
-        if (diff <= 0) return;
+        const now = new Date();
+        let isUpcomingPopup = now < START_DATE;
+        let targetDate = isUpcomingPopup ? START_DATE : END_DATE;
+        let diff = targetDate - now;
+
+        if (diff <= 0 && isUpcomingPopup) {
+            isUpcomingPopup = false;
+            targetDate = END_DATE;
+            diff = targetDate - now;
+            const pTitle = document.getElementById('popup-title');
+            if (pTitle) pTitle.innerHTML = `Ưu đãi<span> ${campaignName}</span>`;
+            const pBtn = document.getElementById('popup-btn-text');
+            if (pBtn) pBtn.innerText = 'Mua Sắm Ngay';
+        }
+
+        if (diff <= 0) {
+            clearInterval(popupTimer);
+            return;
+        }
         const d = Math.floor(diff / 864e5);
         const h = Math.floor((diff / 36e5) % 24);
         const m = Math.floor((diff / 6e4) % 60);

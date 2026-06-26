@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "OGOvTTsN4ZU=",
+  "dgSpecHash": "XG/AaiAxaBw=",
   "success": true,
   "projectFilePath": "H:\\WORK\\Battrangonline\\backend\\BatTrang.Infrastructure\\BatTrang.Infrastructure.csproj",
   "expectedPackageFiles": [
@@ -85,16 +85,5 @@
     "C:\\Users\\CCKSoftware\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
     "C:\\Users\\CCKSoftware\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1603",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "BatTrang.Infrastructure depends on QuestPDF (>= 2025.6.1) but QuestPDF 2025.6.1 was not found. An approximate best match of QuestPDF 2025.7.0 was resolved.",
-      "libraryId": "QuestPDF",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    }
-  ]
+  "logs": []
 }

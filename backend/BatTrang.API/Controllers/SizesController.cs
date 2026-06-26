@@ -26,6 +26,7 @@ namespace BatTrang.API.Controllers
         public async Task<IActionResult> GetAll()
         {
             var items = await _context.Sizes
+                .OrderByDescending(s => s.ValueInCm)
                 .Select(s => new SizeDto
                 {
                     Id = s.Id,
@@ -38,4 +39,3 @@ namespace BatTrang.API.Controllers
         }
     }
 }
-

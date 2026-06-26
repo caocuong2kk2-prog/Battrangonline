@@ -62,7 +62,7 @@
         <svg class="search-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input class="search-box__input" id="cust-search" type="search" placeholder="Tìm tên, email, số điện thoại...">
       </div>
-      <select class="filter-select" id="cust-status-filter"><option value="all">Tất cả</option><option value="active">Đang hoạt động</option><option value="inactive">Không hoạt động</option></select>
+      <select class="filter-select" id="cust-status-filter"><option value="all">Tất cả</option><option value="active">Đang hoạt động</option><option value="inactive">Không hoạt động</option><option value="new">Khách mới</option><option value="notable">Rủi ro (Hủy > 50%)</option></select>
       <div class="toolbar__spacer"></div>
       <span style="font-size:var(--fs-xs);color:var(--text-muted)" id="cust-count"></span>
     </div>
@@ -166,7 +166,16 @@
     if(!slice.length){tbody.innerHTML='<tr><td colspan="8"><div class="empty-state"><div class="empty-state__icon">👥</div><div class="empty-state__title">Không có khách hàng</div></div></td></tr>';return;}
     tbody.innerHTML=slice.map(function(c){
       var init=c.name.charAt(0).toUpperCase();
-      var statusBadge=c.status==='active'?'<span class="badge badge--success">Hoạt động</span>':'<span class="badge badge--muted">Không HĐ</span>';
+      var statusBadge = '';
+      if (c.status === 'active') {
+          statusBadge = '<span class="badge badge--success" title="Khách hàng có mua hàng trong vòng 1 năm qua." style="cursor:help;">Hoạt động</span>';
+      } else if (c.status === 'new') {
+          statusBadge = '<span class="badge" style="background-color:#e0f2fe;color:#0284c7;cursor:help;" title="Khách hàng vừa tạo tài khoản, chưa phát sinh đơn hàng nào.">Khách mới</span>';
+      } else if (c.status === 'notable') {
+          statusBadge = '<span class="badge" style="background-color:#fef2f2;color:#dc2626;border:1px solid #fecaca;cursor:help;" title="CẢNH BÁO: Khách hàng này có tỷ lệ hủy đơn cao (trên 50%).">Rủi ro</span>';
+      } else {
+          statusBadge = '<span class="badge badge--muted" title="Khách hàng đã không mua bất kỳ đơn hàng nào trong hơn 1 năm qua." style="cursor:help;">Không HĐ</span>';
+      }
       var joinedDate = c.joined || c.joinedAt ? new Date(c.joined || c.joinedAt).toLocaleDateString("vi-VN") : "";
       var ordersNum = c.ordersCount !== undefined ? c.ordersCount : (c.orders || 0);
       return '<tr style="transition: background-color 0.2s;" onmouseover="this.style.backgroundColor=\'var(--surface-100)\'" onmouseout="this.style.backgroundColor=\'\'">'+
@@ -224,6 +233,12 @@
     var orders=allOrders.filter(function(o){return o.customer===c.name;});
     var joinedDate = c.joined || c.joinedAt ? new Date(c.joined || c.joinedAt).toLocaleDateString("vi-VN") : "";
     var ordersNum = c.ordersCount !== undefined ? c.ordersCount : (c.orders || 0);
+    var modalStatusIcon = '✗';
+    if (c.status === 'active') modalStatusIcon = '<span title="Đang hoạt động">✓</span>';
+    else if (c.status === 'new') modalStatusIcon = '<span title="Khách mới">✨</span>';
+    else if (c.status === 'notable') modalStatusIcon = '<span title="Rủi ro cao (Hủy nhiều)">⚠️</span>';
+    else modalStatusIcon = '<span title="Không hoạt động (>1 năm không mua)">⏸️</span>';
+
     var html='<div class="customer-profile">'+
       '<div class="customer-profile__avatar">'+c.name.charAt(0)+'</div>'+
       '<div><div class="customer-profile__name">'+c.name+'</div>'+
@@ -231,7 +246,7 @@
       '<div class="customer-stats">'+
         '<div class="customer-stat"><div class="customer-stat__value">'+ordersNum+'</div><div class="customer-stat__label">Đơn hàng</div></div>'+
         '<div class="customer-stat"><div class="customer-stat__value">'+AdminData.fmtShort(c.totalSpent)+'</div><div class="customer-stat__label">Chi tiêu</div></div>'+
-        '<div class="customer-stat"><div class="customer-stat__value">'+(c.status==='active'?'✓':'✗')+'</div><div class="customer-stat__label">Trạng thái</div></div>'+
+        '<div class="customer-stat"><div class="customer-stat__value" style="cursor:help;">'+modalStatusIcon+'</div><div class="customer-stat__label">Trạng thái</div></div>'+
       '</div></div></div>';
     html+='<div class="order-detail-box" style="margin-bottom:var(--sp-4)"><div class="order-detail-box__title">📍 Thông tin liên hệ</div>'+
       '<div class="order-detail-line"><span>Địa chỉ</span><strong>'+(c.address||'')+'</strong></div>'+
@@ -239,7 +254,28 @@
     if(orders.length){
       html+='<div class="order-detail-box"><div class="order-detail-box__title">🛒 Lịch sử đơn hàng ('+orders.length+' đơn)</div>'+
         orders.map(function(o){
-          var itemHtml = (o.items || []).map(function(i){
+          var structuredItems = [];
+          var currentProduct = null;
+          (o.items || []).forEach(function(i) {
+            if (i.name && i.name.indexOf('[Quà Tặng]') === 0) {
+              if (currentProduct) {
+                currentProduct.gifts = currentProduct.gifts || [];
+                currentProduct.gifts.push({
+                   name: i.name.replace('[Quà Tặng]', '').trim(),
+                   qty: i.qty / (currentProduct.qty || 1),
+                   imageUrl: i.image || i.imageUrl,
+                   estimatedValue: i.estimatedValue || 0
+                });
+              } else {
+                structuredItems.push(i);
+              }
+            } else {
+              currentProduct = Object.assign({}, i);
+              structuredItems.push(currentProduct);
+            }
+          });
+
+          var itemHtml = structuredItems.map(function(i){
              var p = i.productId ? getProductById(i.productId) : null;
              var productImages = (p && p.images && p.images.length > 0) ? p.images : (i.imageUrl ? [i.imageUrl] : []);
              
@@ -253,7 +289,9 @@
                      imgStr = '<img src="'+productImages[0]+'" class="zoomable" data-images=\'' + JSON.stringify(productImages).replace(/'/g, '&#39;') + '\' alt="" style="width:72px;height:72px;object-fit:cover;border-radius:10px;flex-shrink:0;border:1px solid var(--border);">';
                  }
              } else {
-                 imgStr = '<div style="width:72px;height:72px;background:var(--surface-100);border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;">🏺</div>';
+                 var isGiftOnly = i.name && i.name.indexOf('[Quà Tặng]') === 0;
+                 var fallbackIcon = isGiftOnly ? '🎁' : '🏺';
+                 imgStr = '<div style="width:72px;height:72px;background:var(--surface-100);border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;">' + fallbackIcon + '</div>';
              }
 
              var productCode = i.productId ? ('<span style="display:inline-block;font-size:10.5px;font-weight:700;color:var(--accent);background:rgba(200,146,42,0.1);border:1px solid rgba(200,146,42,0.25);border-radius:4px;padding:1px 7px;letter-spacing:.04em;">#SP' + String(i.productId).padStart(4,'0') + '</span>') : '';
@@ -263,12 +301,41 @@
                  nameHtml = '<a href="../product-detail.html?slug=' + p.slug + '" target="_blank" style="color:inherit; text-decoration:none; transition: color 0.2s;" onmouseover="this.style.color=\'var(--accent)\'" onmouseout="this.style.color=\'inherit\'" title="Xem chi tiết sản phẩm trên website">' + escapeHTML(i.name) + '</a>';
              }
              
+             var isGiftOnly = i.name && i.name.indexOf('[Quà Tặng]') === 0;
+             if (isGiftOnly) {
+                 var giftImgUrl = (productImages && productImages.length > 0) ? productImages[0] : (i.imageUrl || 'assets/images/placeholder.webp');
+                 var giftImg = '<img src="' + giftImgUrl + '" style="width:40px;height:40px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,152,0,0.3);flex-shrink:0;">';
+                 return '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;margin-top:4px;border-radius:6px;background:rgba(255,152,0,0.05);border:1px dashed rgba(255,152,0,0.2);">' +
+                   giftImg +
+                   '<div style="flex:1;min-width:0;">' +
+                     '<div style="font-size:12.5px;color:#d97706;font-weight:600;margin-bottom:2px;">' + escapeHTML(i.name) + '</div>' +
+                     '<div style="font-size:11.5px;color:rgba(217,119,6,0.8);">Số lượng: <strong>'+i.qty+'</strong> &times; '+AdminData.fmt(i.price)+'</div>' +
+                   '</div>' +
+                   '<div style="font-weight:700;font-size:13px;color:#d97706;text-align:right;margin-left:8px;flex-shrink:0;">'+AdminData.fmt(i.price*i.qty)+'</div>' +
+                   '</div>';
+             }
+
+             var giftHtml = '';
+             if (i.gifts && i.gifts.length > 0) {
+               giftHtml = '<div style="margin-top:8px; padding:6px 8px; border-radius:4px; background:rgba(255,152,0,0.05); border:1px dashed rgba(255,152,0,0.2);">';
+               i.gifts.forEach(function(g) {
+                 var gQty = g.qty * i.qty;
+                 giftHtml += '<div style="font-size:12px; color:#d97706; display:flex; align-items:center; gap:6px; margin-bottom:4px;">';
+                 var imgUrl = g.imageUrl || '../assets/images/placeholder.png';
+                 giftHtml += '<img src="' + imgUrl + '" style="width:20px; height:20px; object-fit:cover; border-radius:3px; border:1px solid rgba(255,152,0,0.3);">';
+                 giftHtml += '<span style="line-height:1.2; flex-grow:1; color: var(--text-primary);">Quà tặng: <strong>' + escapeHTML(g.name) + '</strong> <b style="color:#f59e0b; margin-left:2px;">x' + gQty + '</b></span>';
+                 giftHtml += '</div>';
+               });
+               giftHtml += '</div>';
+             }
+
              return '<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px dashed var(--border);">' +
                imgStr +
                '<div style="flex:1;min-width:0;">' +
                  '<div style="font-weight:600;font-size:13.5px;line-height:1.4;margin-bottom:5px;">' + nameHtml + '</div>' +
                  '<div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin-bottom:5px;">' + productCode + sizeHtml + '</div>' +
                  '<div style="font-size:12px;color:var(--text-muted);">Số lượng: <strong>'+i.qty+'</strong> &times; '+AdminData.fmt(i.price)+'</div>' +
+                 giftHtml +
                '</div>' +
                '<div style="font-weight:700;font-size:14px;color:var(--accent);text-align:right;white-space:nowrap;margin-left:8px;flex-shrink:0;">'+AdminData.fmt(i.price*i.qty)+'</div>' +
                '</div>';

@@ -1,10 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Thanh toán đơn hàng của bạn – Phúc Gia Tiên. Nhập thông tin giao nhận hàng thủ công Bát Tràng cao cấp.">
+  <meta name="description"
+    content="Thanh toán đơn hàng của bạn – Phúc Gia Tiên. Nhập thông tin giao nhận hàng thủ công Bát Tràng cao cấp.">
   <title>Thanh Toán Đơn Hàng – Phúc Gia Tiên</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,8 +18,13 @@
   <link rel="icon" href="assets/images/logo.png" type="image/png">
   <style>
     /* Đặt nền body khớp với section kem, ẩn đường kẻ header */
-    body.page-body { background-color: #f8f2ec; }
-    #site-header { border-bottom-color: transparent !important; }
+    body.page-body {
+      background-color: #f8f2ec;
+    }
+
+    #site-header {
+      border-bottom-color: transparent !important;
+    }
   </style>
 </head>
 
@@ -43,7 +49,9 @@
         <div class="checkout-steps" aria-label="Các bước thanh toán">
           <div class="checkout-step done" aria-current="false">
             <div class="checkout-step__bubble">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
             </div>
             <span class="checkout-step__label">Giỏ Hàng</span>
           </div>
@@ -64,16 +72,17 @@
     <!-- CHECKOUT CONTENT -->
     <section class="section section--dark" aria-label="Tiến hành thanh toán">
       <div class="container">
-        
+
         <form class="checkout-layout" id="checkout-form" novalidate>
-          
+
           <!-- LEFT SIDE - FORMS -->
           <div class="checkout-forms-col">
-            
+
             <!-- Shipping Info Card -->
             <div class="checkout-card checkout-card--shipping">
               <h2 class="checkout-card__title">
-                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <rect x="1" y="3" width="15" height="13" rx="1"></rect>
                   <path d="M16 8h4l3 5v3h-7V8z"></path>
                   <circle cx="5.5" cy="18.5" r="2.5"></circle>
@@ -81,29 +90,34 @@
                 </svg>
                 Thông Tin Giao Hàng
               </h2>
-              
+
               <div class="form-row">
                 <div class="form-group" id="group-name">
                   <label for="shipping-name">Họ và tên <span class="required">*</span></label>
-                  <input class="form-control" type="text" id="shipping-name" placeholder="Nguyễn Văn A" required autocomplete="name">
+                  <input class="form-control" type="text" id="shipping-name" placeholder="Nguyễn Văn A" required
+                    autocomplete="name">
                   <span class="field-error-msg" id="err-name">Vui lòng nhập họ và tên.</span>
                 </div>
                 <div class="form-group" id="group-phone">
                   <label for="shipping-phone">Số điện thoại <span class="required">*</span></label>
-                  <input class="form-control" type="tel" id="shipping-phone" placeholder="0989 123 456" required autocomplete="tel">
+                  <input class="form-control" type="tel" id="shipping-phone" placeholder="0989 123 456" required
+                    autocomplete="tel">
                   <span class="field-error-msg" id="err-phone">Số điện thoại không hợp lệ (9–12 số).</span>
                 </div>
               </div>
-              
+
               <div class="form-group" id="group-email">
                 <label for="shipping-email">
                   Email (Nhận hóa đơn)
-                  <span style="font-weight:400; font-size:0.75em; color:rgba(44,26,12,0.4); text-transform:none; letter-spacing:0; margin-left:4px;">(Tùy chọn)</span>
+                  <span
+                    style="font-weight:400; font-size:0.75em; color:rgba(44,26,12,0.4); text-transform:none; letter-spacing:0; margin-left:4px;">(Tùy
+                    chọn)</span>
                 </label>
-                <input class="form-control" type="email" id="shipping-email" placeholder="example@gmail.com" autocomplete="email">
+                <input class="form-control" type="email" id="shipping-email" placeholder="example@gmail.com"
+                  autocomplete="email">
                 <span class="field-error-msg" id="err-email">Email không đúng định dạng (VD: ten@gmail.com).</span>
               </div>
-              
+
               <div class="form-group" id="group-saved-address" style="display: none; margin-bottom: 24px;">
                 <label for="saved-address-select">Chọn từ địa chỉ đã lưu</label>
                 <select class="form-control address-select" id="saved-address-select">
@@ -127,38 +141,42 @@
                   <span class="field-error-msg" id="err-ward">Vui lòng chọn Xã / Phường.</span>
                 </div>
               </div>
-              
+
               <div class="form-group" id="group-address">
                 <label for="shipping-address">Địa chỉ chi tiết <span class="required">*</span></label>
-                <input class="form-control" type="text" id="shipping-address" placeholder="Số nhà, ngõ/đường..." required autocomplete="street-address">
+                <input class="form-control" type="text" id="shipping-address" placeholder="Số nhà, ngõ/đường..."
+                  required autocomplete="street-address">
                 <span class="field-error-msg" id="err-address">Vui lòng nhập địa chỉ chi tiết.</span>
               </div>
-              
+
               <div class="form-group">
                 <label for="shipping-notes">Ghi chú đơn hàng (Tùy chọn)</label>
-                <textarea class="form-control" id="shipping-notes" placeholder="Ghi chú về thời gian giao hàng, yêu cầu đóng gói quà tặng..."></textarea>
+                <textarea class="form-control" id="shipping-notes"
+                  placeholder="Ghi chú về thời gian giao hàng, yêu cầu đóng gói quà tặng..."></textarea>
               </div>
             </div>
 
             <!-- Payment Methods Card -->
             <div class="checkout-card checkout-card--payment">
               <h2 class="checkout-card__title">
-                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
                   <line x1="1" y1="10" x2="23" y2="10"></line>
                 </svg>
                 Phương Thức Thanh Toán
               </h2>
-              
+
               <div class="payment-methods">
-                
+
                 <!-- COD Method -->
                 <label class="payment-method-item active" id="method-cod-label">
                   <input type="radio" name="payment_method" value="COD" checked>
                   <div class="payment-method-item__icon">🚚</div>
                   <div class="payment-method-item__info">
                     <span class="payment-method-item__name">Thanh toán khi nhận hàng (COD)</span>
-                    <span class="payment-method-item__desc">Thanh toán bằng tiền mặt khi shipper giao hàng tận nơi. An toàn, không cần tài khoản ngân hàng.</span>
+                    <span class="payment-method-item__desc">Thanh toán bằng tiền mặt khi shipper giao hàng tận nơi. An
+                      toàn, không cần tài khoản ngân hàng.</span>
                   </div>
                 </label>
               </div>
@@ -169,19 +187,20 @@
           <aside class="checkout-summary-col" aria-label="Đơn hàng của bạn">
             <div class="checkout-card checkout-summary-card">
               <h2 class="checkout-card__title" style="border-bottom: none; margin-bottom: var(--space-4);">
-                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="9" cy="21" r="1"></circle>
                   <circle cx="20" cy="21" r="1"></circle>
                   <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                 </svg>
                 Đơn Hàng Của Bạn
               </h2>
-              
+
               <!-- Items Summary Grid -->
               <div class="checkout-summary-items" id="summary-items-list">
                 <!-- populated dynamically -->
               </div>
-              
+
               <!-- Subtotals -->
               <div class="checkout-summary-pricing">
                 <div class="checkout-summary-pricing__row">
@@ -193,13 +212,16 @@
                   <span style="color: var(--color-accent);">Miễn phí</span>
                 </div>
               </div>
-              
+
               <!-- Grand Total -->
               <div class="checkout-summary-total">
                 <span class="checkout-summary-total__label">Tổng thanh toán</span>
                 <span class="checkout-summary-total__val" id="summary-total">0₫</span>
               </div>
-              
+
+              <!-- Custom reCAPTCHA v2 (Checkbox) System -->
+              <div id="recaptcha-container" style="margin-bottom: 20px; display: flex; justify-content: center; min-height: 0;"></div>
+
               <button type="submit" class="btn-place-order" id="btn-submit-order">
                 <div class="btn-spinner"></div>
                 <span class="btn-text">XÁC NHẬN ĐẶT HÀNG</span>
@@ -209,25 +231,40 @@
               </button>
 
               <p class="checkout-privacy-policy-text">
-                Dữ liệu cá nhân của bạn sẽ được sử dụng để xử lý đơn đặt hàng, hỗ trợ trải nghiệm của bạn trên trang web này và cho các mục đích khác được mô tả trong <a href="privacy-policy" target="_blank" class="privacy-link">chính sách riêng tư</a> của chúng tôi.
+                Dữ liệu cá nhân của bạn sẽ được sử dụng để xử lý đơn đặt hàng, hỗ trợ trải nghiệm của bạn trên trang web
+                này và cho các mục đích khác được mô tả trong <a href="privacy-policy" target="_blank"
+                  class="privacy-link">chính sách riêng tư</a> của chúng tôi.
               </p>
 
               <!-- Trust Badges -->
               <div class="checkout-trust-badges">
                 <div class="checkout-trust-badge">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
                   <span>Thanh toán an toàn & bảo mật 100%</span>
                 </div>
                 <div class="checkout-trust-badge">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"></rect><path d="M16 8h4l3 5v3h-7V8z"></path><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <rect x="1" y="3" width="15" height="13" rx="1"></rect>
+                    <path d="M16 8h4l3 5v3h-7V8z"></path>
+                    <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                    <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                  </svg>
                   <span>Giao hàng COD toàn quốc, miễn phí</span>
                 </div>
                 <div class="checkout-trust-badge">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-4.5"></path></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 .49-4.5"></path>
+                  </svg>
                   <span>Đổi trả miễn phí trong 7 ngày</span>
                 </div>
               </div>
-              
+
             </div>
           </aside>
 
@@ -239,20 +276,31 @@
   </main>
 
   <!-- Lightbox Modal (Checkout) -->
-  <div id="co-lb" style="position:fixed;inset:0;z-index:99999;display:none;background:rgba(0,0,0,0.92);flex-direction:column;align-items:center;justify-content:center;overflow:hidden;">
+  <div id="co-lb"
+    style="position:fixed;inset:0;z-index:99999;display:none;background:rgba(0,0,0,0.92);flex-direction:column;align-items:center;justify-content:center;overflow:hidden;">
     <!-- Toolbar -->
-    <div style="position:absolute;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:2;background:linear-gradient(to bottom,rgba(0,0,0,0.65),transparent);pointer-events:none;">
-      <span id="co-lb-counter" style="color:rgba(255,255,255,0.7);font-size:14px;font-family:sans-serif;pointer-events:auto;"></span>
-      <button id="co-lb-close" style="pointer-events:auto;background:rgba(255,255,255,0.12);color:#fff;border:none;width:36px;height:36px;font-size:22px;cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;">×</button>
+    <div
+      style="position:absolute;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:2;background:linear-gradient(to bottom,rgba(0,0,0,0.65),transparent);pointer-events:none;">
+      <span id="co-lb-counter"
+        style="color:rgba(255,255,255,0.7);font-size:14px;font-family:sans-serif;pointer-events:auto;"></span>
+      <button id="co-lb-close"
+        style="pointer-events:auto;background:rgba(255,255,255,0.12);color:#fff;border:none;width:36px;height:36px;font-size:22px;cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;">×</button>
     </div>
     <!-- Arrows -->
-    <button id="co-lb-prev" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:#fff;border:none;width:46px;height:46px;font-size:22px;border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:2;">❮</button>
-    <button id="co-lb-next" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:#fff;border:none;width:46px;height:46px;font-size:22px;border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:2;">❯</button>
+    <button id="co-lb-prev"
+      style="position:absolute;left:12px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:#fff;border:none;width:46px;height:46px;font-size:22px;border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:2;">❮</button>
+    <button id="co-lb-next"
+      style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:#fff;border:none;width:46px;height:46px;font-size:22px;border-radius:50%;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:2;">❯</button>
     <!-- Hint -->
-    <div style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.4);font-size:11px;font-family:sans-serif;pointer-events:none;white-space:nowrap;">Lăn chuột để zoom • Nhấp đôi để reset</div>
+    <div
+      style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.4);font-size:11px;font-family:sans-serif;pointer-events:none;white-space:nowrap;">
+      Lăn chuột để zoom • Nhấp đôi để reset</div>
     <!-- Viewport -->
-    <div id="co-lb-vp" style="position:relative;width:90vw;height:88vh;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-      <div id="co-lb-media" style="display:flex;align-items:center;justify-content:center;transform-origin:center center;transition:opacity 0.18s;will-change:transform;"></div>
+    <div id="co-lb-vp"
+      style="position:relative;width:90vw;height:88vh;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+      <div id="co-lb-media"
+        style="display:flex;align-items:center;justify-content:center;transform-origin:center center;transition:opacity 0.18s;will-change:transform;">
+      </div>
     </div>
   </div>
 
@@ -264,12 +312,12 @@
   <script src="js/promo.js?v=8"></script>
   <script src="js/common.js"></script>
   <script src="js/cart.js"></script>
-  
+
   <script>
     // ============================================
     // CHECKOUT PAGE CONTROLLER
     // ============================================
-    (function() {
+    (function () {
       'use strict';
 
       var isSubmitting = false;
@@ -286,7 +334,7 @@
       }
 
       function clearErrors() {
-        document.querySelectorAll('.form-group.has-error').forEach(function(g) {
+        document.querySelectorAll('.form-group.has-error').forEach(function (g) {
           g.classList.remove('has-error');
         });
       }
@@ -302,14 +350,14 @@
         var wrapper = document.createElement('div');
         wrapper.className = 'custom-select-wrapper';
         if (selectEl.disabled) wrapper.classList.add('disabled');
-        
+
         selectEl.parentNode.insertBefore(wrapper, selectEl);
         wrapper.appendChild(selectEl);
 
         var trigger = document.createElement('div');
         trigger.className = 'custom-select-trigger';
         trigger.innerHTML = '<span class=\"custom-select-text\">' + (selectEl.options[selectEl.selectedIndex]?.textContent || '') + '</span><div class=\"arrow\"></div>';
-        
+
         var optionsContainer = document.createElement('div');
         optionsContainer.className = 'custom-select-options';
 
@@ -328,23 +376,23 @@
         function renderOptions(filter) {
           optionsList.innerHTML = '';
           var hasVisible = false;
-          Array.from(selectEl.options).forEach(function(opt, index) {
-            if (index === 0 && !opt.value) return; 
+          Array.from(selectEl.options).forEach(function (opt, index) {
+            if (index === 0 && !opt.value) return;
             if (filter && opt.textContent.toLowerCase().indexOf(filter.toLowerCase()) === -1) return;
             hasVisible = true;
-            
+
             var optionEl = document.createElement('div');
             optionEl.className = 'custom-select-option' + (selectEl.selectedIndex === index ? ' selected' : '');
             optionEl.textContent = opt.textContent;
             optionEl.dataset.value = opt.value;
-            
-            optionEl.addEventListener('click', function(e) {
+
+            optionEl.addEventListener('click', function (e) {
               e.stopPropagation();
               selectEl.value = opt.value;
               selectEl.dispatchEvent(new Event('change'));
               trigger.querySelector('.custom-select-text').textContent = opt.textContent;
               wrapper.classList.remove('open');
-              
+
               var formGroup = wrapper.closest('.form-group');
               if (formGroup) formGroup.classList.remove('has-error');
             });
@@ -361,28 +409,28 @@
 
         renderOptions();
 
-        trigger.addEventListener('click', function(e) {
+        trigger.addEventListener('click', function (e) {
           e.stopPropagation();
           if (selectEl.disabled) return;
-          
+
           var isOpen = wrapper.classList.contains('open');
-          document.querySelectorAll('.custom-select-wrapper').forEach(function(w) { w.classList.remove('open'); });
-          
+          document.querySelectorAll('.custom-select-wrapper').forEach(function (w) { w.classList.remove('open'); });
+
           if (!isOpen) {
             wrapper.classList.add('open');
             var input = searchBox.querySelector('input');
             input.value = '';
             renderOptions();
-            setTimeout(function() { input.focus(); }, 50);
+            setTimeout(function () { input.focus(); }, 50);
           }
         });
 
-        searchBox.querySelector('input').addEventListener('input', function(e) {
+        searchBox.querySelector('input').addEventListener('input', function (e) {
           renderOptions(e.target.value);
         });
-        searchBox.addEventListener('click', function(e) { e.stopPropagation(); });
+        searchBox.addEventListener('click', function (e) { e.stopPropagation(); });
 
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
           if (!wrapper.contains(e.target)) {
             wrapper.classList.remove('open');
           }
@@ -393,20 +441,20 @@
         if (!selectEl) return;
         var wrapper = selectEl.closest('.custom-select-wrapper');
         if (!wrapper) {
-            initCustomSelect(selectEl);
-            return;
+          initCustomSelect(selectEl);
+          return;
         }
-        
+
         if (selectEl.disabled) wrapper.classList.add('disabled');
         else wrapper.classList.remove('disabled');
-        
+
         var trigger = wrapper.querySelector('.custom-select-trigger .custom-select-text');
         if (trigger) trigger.textContent = selectEl.options[selectEl.selectedIndex]?.textContent || '';
       }
 
       // ── Address System ────────────────────────
       var savedAddresses = [];
-      
+
       function initAddressSystem() {
         var provinceSelect = document.getElementById('shipping-province');
         var wardSelect = document.getElementById('shipping-ward');
@@ -419,9 +467,9 @@
         // Load provinces
         if (window.PhucGiaTienAPI) {
           fetch(window.PhucGiaTienAPI.apiBase + '/Address/provinces')
-            .then(function(res) { return res.json(); })
-            .then(function(provinces) {
-              provinces.forEach(function(p) {
+            .then(function (res) { return res.json(); })
+            .then(function (provinces) {
+              provinces.forEach(function (p) {
                 var opt = document.createElement('option');
                 opt.value = p.code;
                 opt.textContent = p.name;
@@ -431,65 +479,66 @@
 
               // After loading provinces, try to load saved address for guest
               var guestAddress = localStorage.getItem('pgt_last_address');
-              if (guestAddress && !window.AuthService?.getCurrentUser()) {
+              if (guestAddress && !(localStorage.getItem('customer_token') || sessionStorage.getItem('customer_token'))) {
                 try {
                   var data = JSON.parse(guestAddress);
+                  if (data.recipientName && nameInput) nameInput.value = data.recipientName;
+                  if (data.phone && phoneInput) phoneInput.value = data.phone;
+                  if (data.email && emailInput) emailInput.value = data.email;
                   provinceSelect.value = data.provinceCode;
                   updateCustomSelect(provinceSelect);
                   loadWards(data.provinceCode, data.wardCode);
                   detailInput.value = data.detailAddress;
-                } catch(e) {}
+                } catch (e) { }
               }
-            })
-            .catch(function(err) { console.error('Error loading provinces', err); });
-        }
+              
+              // Load saved addresses if logged in (AFTER provinces are loaded)
+              var token = localStorage.getItem('customer_token') || sessionStorage.getItem('customer_token');
+              if (token) {
+                  fetch((window.PhucGiaTienAPI ? window.PhucGiaTienAPI.apiBase : 'http://localhost:5055/api') + '/Address/saved', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                  })
+                    .then(function (res) { return res.json(); })
+                    .then(function (addresses) {
+                      if (addresses && addresses.length > 0) {
+                        savedAddresses = addresses;
+                        savedGroup.style.display = 'block';
+                        addresses.forEach(function (a) {
+                          var opt = document.createElement('option');
+                          opt.value = a.id;
+                          opt.textContent = (a.label ? '[' + a.label + '] ' : '') + a.fullAddress;
+                          savedSelect.appendChild(opt);
 
-        // Load saved addresses if logged in
-        if (window.AuthService && window.AuthService.getCurrentUser()) {
-          var token = localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
-          if (token) {
-            fetch(window.PhucGiaTienAPI.apiBase + '/Address/saved', {
-              headers: { 'Authorization': 'Bearer ' + token }
-            })
-            .then(function(res) { return res.json(); })
-            .then(function(addresses) {
-              if (addresses && addresses.length > 0) {
-                savedAddresses = addresses;
-                savedGroup.style.display = 'block';
-                addresses.forEach(function(a) {
-                  var opt = document.createElement('option');
-                  opt.value = a.id;
-                  opt.textContent = (a.label ? '[' + a.label + '] ' : '') + a.fullAddress;
-                  savedSelect.appendChild(opt);
-                  
-                  if (a.isDefault) {
-                    savedSelect.value = a.id;
-                    applySavedAddress(a);
-                  }
-                });
-                initCustomSelect(savedSelect);
+                          if (a.isDefault) {
+                            savedSelect.value = a.id;
+                            applySavedAddress(a);
+                          }
+                        });
+                        initCustomSelect(savedSelect);
+                      }
+                    })
+                    .catch(function (err) { console.error('Error loading saved addresses', err); });
               }
             })
-            .catch(function(err) { console.error('Error loading saved addresses', err); });
-          }
+            .catch(function (err) { console.error('Error loading provinces', err); });
         }
 
         // Event listeners
-        provinceSelect.addEventListener('change', function() {
+        provinceSelect.addEventListener('change', function () {
           var provinceCode = this.value;
           wardSelect.innerHTML = '<option value="">-- Chọn Xã / Phường --</option>';
           wardSelect.disabled = true;
           updateCustomSelect(wardSelect);
-          
+
           if (provinceCode) {
             loadWards(provinceCode);
           }
         });
 
-        savedSelect.addEventListener('change', function() {
+        savedSelect.addEventListener('change', function () {
           var id = parseInt(this.value, 10);
           if (id) {
-            var addr = savedAddresses.find(function(a) { return a.id === id; });
+            var addr = savedAddresses.find(function (a) { return a.id === id; });
             if (addr) applySavedAddress(addr);
           } else {
             // Reset fields
@@ -504,10 +553,10 @@
 
         function loadWards(provinceCode, selectedWardCode) {
           fetch(window.PhucGiaTienAPI.apiBase + '/Address/wards/' + provinceCode)
-            .then(function(res) { return res.json(); })
-            .then(function(wards) {
+            .then(function (res) { return res.json(); })
+            .then(function (wards) {
               wardSelect.innerHTML = '<option value="">-- Chọn Xã / Phường --</option>';
-              wards.forEach(function(w) {
+              wards.forEach(function (w) {
                 var opt = document.createElement('option');
                 opt.value = w.code;
                 opt.textContent = w.name;
@@ -519,7 +568,7 @@
               }
               initCustomSelect(wardSelect);
             })
-            .catch(function(err) { console.error('Error loading wards', err); });
+            .catch(function (err) { console.error('Error loading wards', err); });
         }
 
         function applySavedAddress(addr) {
@@ -535,27 +584,23 @@
       // ── Init ─────────────────────────────────
       function initCheckout() {
         if (!window.CartAPI) return;
-        
+
         var cart = window.CartAPI.getCart();
-        var selectedItems = cart.filter(function(i) { return i.selected; });
+        var selectedItems = cart.filter(function (i) { return i.selected; });
 
         if (selectedItems.length === 0) {
           if (typeof window.showToast === 'function') {
             window.showToast('Giỏ hàng trống hoặc chưa chọn sản phẩm để thanh toán.', 'error');
           }
-          setTimeout(function() { window.location.href = "cart"; }, 1500);
+          setTimeout(function () { window.location.href = "cart"; }, 1500);
           return;
         }
 
         // Prefill logged in user info if available
         var user = null;
-        if (window.AuthService && typeof window.AuthService.getCurrentUser === 'function') {
-          user = window.AuthService.getCurrentUser();
-        } else {
-          try {
-            user = JSON.parse(localStorage.getItem('current_user') || 'null');
-          } catch(e) {}
-        }
+        try {
+          user = JSON.parse(localStorage.getItem('current_user') || sessionStorage.getItem('current_user') || 'null');
+        } catch (e) { }
 
         if (user) {
           var fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.name || '';
@@ -610,10 +655,10 @@
         }
 
         // Real-time clear error on input
-        ['shipping-name', 'shipping-phone', 'shipping-email', 'shipping-address', 'shipping-province', 'shipping-ward'].forEach(function(id) {
+        ['shipping-name', 'shipping-phone', 'shipping-email', 'shipping-address', 'shipping-province', 'shipping-ward'].forEach(function (id) {
           var el = document.getElementById(id);
           if (el) {
-            el.addEventListener('input', function() {
+            el.addEventListener('input', function () {
               var groupMap = {
                 'shipping-name': 'group-name',
                 'shipping-phone': 'group-phone',
@@ -631,8 +676,8 @@
       // ── Render summary ───────────────────────
       function renderSummary(items) {
         var listEl = document.getElementById('summary-items-list');
-        var subtotal = items.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
-        
+        var subtotal = items.reduce(function (s, i) { return s + i.price * i.qty; }, 0);
+
         var total = subtotal;
 
         // Helper: build thumbnail HTML – handles image and video sources
@@ -651,11 +696,11 @@
 
         // Render item rows
         if (listEl) {
-          listEl.innerHTML = items.map(function(item) {
+          listEl.innerHTML = items.map(function (item) {
             var giftHtml = '';
             if (item.gifts && item.gifts.length > 0) {
               giftHtml = '<div style="margin-top:8px; padding:6px 8px; border-radius:4px; background:rgba(200,146,42,0.05); border:1px dashed rgba(200,146,42,0.3);">';
-              item.gifts.forEach(function(g) {
+              item.gifts.forEach(function (g) {
                 var gQty = g.quantity ? (g.quantity * item.qty) : item.qty;
                 giftHtml += '<div style="font-size:11px; color:#8b5a2b; display:flex; align-items:center; gap:6px; margin-bottom:4px;">';
                 giftHtml += '<img src="' + (g.imageUrl || 'assets/images/placeholder.webp') + '" style="width:20px; height:20px; object-fit:cover; border-radius:3px; border:1px solid rgba(200,146,42,0.2); cursor:zoom-in;" onclick="if(window.showImageModal) window.showImageModal(\'' + (g.imageUrl || 'assets/images/placeholder.webp') + '\', \'' + g.name.replace(/'/g, "\\'") + '\')">';
@@ -667,13 +712,13 @@
 
             return [
               '<div class="checkout-item-row">',
-                buildThumb(item.image, item.name),
-                '<div class="checkout-item-row__info">',
-                  '<a href="product-detail.html?id=' + item.id + '" target="_blank" class="checkout-item-row__name" style="text-decoration: none; display: block; transition: color 0.2s;" onmouseover="this.style.color=\'var(--color-accent)\'" onmouseout="this.style.color=\'\'">' + (item.size ? item.name + ' - ' + item.size : item.name) + '</a>',
-                  '<p class="checkout-item-row__qty">Số lượng: <strong>' + item.qty + '</strong></p>',
-                  giftHtml,
-                '</div>',
-                '<span class="checkout-item-row__price">' + window.formatVND(item.price * item.qty) + '</span>',
+              buildThumb(item.image, item.name),
+              '<div class="checkout-item-row__info">',
+              '<a href="product-detail.html?id=' + item.id + '" target="_blank" class="checkout-item-row__name" style="text-decoration: none; display: block; transition: color 0.2s;" onmouseover="this.style.color=\'var(--color-accent)\'" onmouseout="this.style.color=\'\'">' + (item.size ? item.name + ' - ' + item.size : item.name) + '</a>',
+              '<p class="checkout-item-row__qty">Số lượng: <strong>' + item.qty + '</strong></p>',
+              giftHtml,
+              '</div>',
+              '<span class="checkout-item-row__price">' + window.formatVND(item.price * item.qty) + '</span>',
               '</div>'
             ].join('');
           }).join('');
@@ -692,7 +737,7 @@
         var form = document.getElementById('checkout-form');
         var submitBtn = document.getElementById('btn-submit-order');
 
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
           e.preventDefault();
 
           if (isSubmitting) return;
@@ -702,11 +747,11 @@
           var email = document.getElementById('shipping-email').value.trim();
           var notes = document.getElementById('shipping-notes').value.trim();
           var method = 'COD'; // Forced to COD only
-          
+
           var provinceSelect = document.getElementById('shipping-province');
           var wardSelect = document.getElementById('shipping-ward');
           var detailInput = document.getElementById('shipping-address');
-          
+
           var provinceCode = provinceSelect.value;
           var provinceName = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
           var wardCode = wardSelect.value;
@@ -738,7 +783,7 @@
             }
             return;
           }
-          
+
           var fullAddress = detailAddress + ', ' + wardName + ', ' + provinceName;
 
           // Loading state
@@ -749,7 +794,7 @@
           }
 
           // Build order data
-          var subtotal = items.reduce(function(s, i) { return s + i.price * i.qty; }, 0);
+          var subtotal = items.reduce(function (s, i) { return s + i.price * i.qty; }, 0);
           var total = subtotal;
 
           // Prepare payload for backend API
@@ -759,7 +804,7 @@
             email: email || '',
             address: fullAddress,
             customerNote: notes || null,
-            items: items.map(function(i) {
+            items: items.map(function (i) {
               return {
                 id: parseInt(i.id, 10),
                 size: i.size || null,
@@ -772,6 +817,7 @@
           var addrPayload = {
             recipientName: name,
             phone: phone.replace(/\D/g, ''),
+            email: email || '',
             provinceCode: parseInt(provinceCode),
             provinceName: provinceName,
             wardCode: parseInt(wardCode),
@@ -779,152 +825,184 @@
             detailAddress: detailAddress,
             fullAddress: fullAddress
           };
-          sessionStorage.setItem('pgt_temp_address', JSON.stringify(addrPayload));
+
+          var isExistingAddress = false;
+          if (typeof savedAddresses !== 'undefined' && savedAddresses.length > 0) {
+            isExistingAddress = savedAddresses.some(function (a) {
+              return a.provinceCode == addrPayload.provinceCode &&
+                a.wardCode == addrPayload.wardCode &&
+                a.detailAddress.toLowerCase().trim() === addrPayload.detailAddress.toLowerCase().trim() &&
+                a.phone === addrPayload.phone &&
+                a.recipientName.toLowerCase().trim() === addrPayload.recipientName.toLowerCase().trim();
+            });
+          }
+
+          if (!isExistingAddress) {
+            sessionStorage.setItem('pgt_temp_address', JSON.stringify(addrPayload));
+          } else {
+            sessionStorage.removeItem('pgt_temp_address');
+          }
 
           // Send to backend API
-          if (window.PhucGiaTienAPI && typeof window.PhucGiaTienAPI.createOrder === 'function') {
-            window.PhucGiaTienAPI.createOrder(apiPayload)
-              .then(function(response) {
-                var finalOrderCode = response.orderCode || ('PGT' + Math.floor(100000 + Math.random() * 900000));
-                
-                var orderData = {
-                  orderCode: finalOrderCode,
-                  date: new Date().toISOString(),
-                  timestamp: Date.now(),
-                  name: name,
-                  phone: phone.replace(/\D/g, ''), // chuẩn hóa SĐT chỉ số
-                  email: email,
-                  address: fullAddress,
-                  customerNote: notes,
-                  paymentMethod: 'Thanh toán khi nhận hàng (COD)',
-                  items: items.map(function(i) {
-                    return { productId: i.id, name: i.name, qty: i.qty, price: i.price, image: i.image, size: i.size, gifts: i.gifts };
-                  }),
-                  subtotal: subtotal,
-                  total: total,
-                  status: 'pending',                              // Trạng thái ban đầu
-                  statusHistory: [
-                    { status: 'pending', time: new Date().toISOString(), note: 'Đơn hàng đã được tiếp nhận thành công.' }
-                  ]
-                };
+          function executeOrderApi(payload) {
+            if (window.PhucGiaTienAPI && typeof window.PhucGiaTienAPI.createOrder === 'function') {
+              window.PhucGiaTienAPI.createOrder(payload)
+                .then(function (response) {
+                  var finalOrderCode = response.orderCode || ('PGT' + Math.floor(100000 + Math.random() * 900000));
 
-                // Lưu đơn mới nhất (cho order-success.html)
-                localStorage.setItem('pgt_last_order', JSON.stringify(orderData));
+                  var orderData = {
+                    orderCode: finalOrderCode,
+                    date: new Date().toISOString(),
+                    timestamp: Date.now(),
+                    name: name,
+                    phone: phone.replace(/\D/g, ''), // chuẩn hóa SĐT chỉ số
+                    email: email,
+                    address: fullAddress,
+                    customerNote: notes,
+                    paymentMethod: 'Thanh toán khi nhận hàng (COD)',
+                    items: items.map(function (i) {
+                      return { productId: i.id, name: i.name, qty: i.qty, price: i.price, image: i.image, size: i.size, gifts: i.gifts };
+                    }),
+                    subtotal: subtotal,
+                    total: total,
+                    status: 'pending',                              // Trạng thái ban đầu
+                    statusHistory: [
+                      { status: 'pending', time: new Date().toISOString(), note: 'Đơn hàng đã được tiếp nhận thành công.' }
+                    ]
+                  };
 
-                // Lưu vào mảng tất cả đơn (cho tra cứu)
+                  // Lưu đơn mới nhất (cho order-success.html)
+                  localStorage.setItem('pgt_last_order', JSON.stringify(orderData));
+
+                  // Lưu vào mảng tất cả đơn (cho tra cứu) NẾU LÀ KHÁCH
+                  if (!(localStorage.getItem('customer_token') || sessionStorage.getItem('customer_token'))) {
+                    var allOrders = [];
+                    try { allOrders = JSON.parse(localStorage.getItem('pgt_orders') || '[]'); } catch (e) { }
+                    allOrders.unshift(orderData); // đơn mới nhất lên đầu
+                    if (allOrders.length > 50) allOrders = allOrders.slice(0, 50); // giới hạn 50 đơn
+                    localStorage.setItem('pgt_orders', JSON.stringify(allOrders));
+                  }
+
+                  // Clear purchased items from cart
+                  if (window.CartAPI) {
+                    var cart = window.CartAPI.getCart();
+                    var remaining = cart.filter(function (i) { return !i.selected; });
+                    localStorage.setItem('pgt_cart', JSON.stringify(remaining));
+                    document.dispatchEvent(new CustomEvent('cart-updated'));
+                  }
+
+                  // Clear applied promo
+                  sessionStorage.removeItem('applied_promo_percent');
+
+                  // Redirect to success page
+                  setTimeout(function () {
+                    window.location.href = "order-success";
+                  }, 600);
+                })
+                .catch(function (err) {
+                  console.error('Order creation error:', err);
+
+                  // Handle recaptcha
+                  if (err && err.code === 'REQUIRE_RECAPTCHA') {
+                    if (typeof window.triggerReCaptcha === 'function') {
+                      window.triggerReCaptcha(payload, executeOrderApi);
+                      return; // wait for callback
+                    }
+                  }
+
+                  isSubmitting = false;
+                  if (submitBtn) {
+                    submitBtn.classList.remove('loading');
+                    submitBtn.disabled = false;
+                  }
+
+                  var errorMsg = 'Không thể kết nối đến máy chủ hoặc xử lý đơn hàng. Vui lòng thử lại!';
+                  if (err && err.message) {
+                    errorMsg = err.message;
+                  }
+
+                  if (typeof window.showToast === 'function') {
+                    window.showToast(errorMsg, 'error');
+                  } else {
+                    alert(errorMsg);
+                  }
+                });
+            } else {
+              // Fallback for standalone frontend mock mode
+              var orderCode = sessionStorage.getItem('temp_memo_code') || ('PGT' + Math.floor(100000 + Math.random() * 900000));
+              var orderData = {
+                orderCode: orderCode,
+                date: new Date().toISOString(),
+                timestamp: Date.now(),
+                name: name,
+                phone: phone.replace(/\D/g, ''),
+                email: email,
+                address: fullAddress,
+                customerNote: notes,
+                paymentMethod: 'Thanh toán khi nhận hàng (COD)',
+                items: items.map(function (i) {
+                  return { name: i.name, qty: i.qty, price: i.price, image: i.image, size: i.size, gifts: i.gifts };
+                }),
+                subtotal: subtotal,
+                total: total,
+                status: 'pending',
+                statusHistory: [
+                  { status: 'pending', time: new Date().toISOString(), note: 'Đơn hàng đã được tiếp nhận thành công.' }
+                ]
+              };
+
+              localStorage.setItem('pgt_last_order', JSON.stringify(orderData));
+              if (!(localStorage.getItem('customer_token') || sessionStorage.getItem('customer_token'))) {
                 var allOrders = [];
-                try { allOrders = JSON.parse(localStorage.getItem('pgt_orders') || '[]'); } catch(e) {}
-                allOrders.unshift(orderData); // đơn mới nhất lên đầu
-                if (allOrders.length > 50) allOrders = allOrders.slice(0, 50); // giới hạn 50 đơn
+                try { allOrders = JSON.parse(localStorage.getItem('pgt_orders') || '[]'); } catch (e) { }
+                allOrders.unshift(orderData);
+                if (allOrders.length > 50) allOrders = allOrders.slice(0, 50);
                 localStorage.setItem('pgt_orders', JSON.stringify(allOrders));
+              }
 
-                // Clear purchased items from cart
-                if (window.CartAPI) {
-                  var cart = window.CartAPI.getCart();
-                  var remaining = cart.filter(function(i) { return !i.selected; });
-                  localStorage.setItem('pgt_cart', JSON.stringify(remaining));
-                  document.dispatchEvent(new CustomEvent('cart-updated'));
-                }
+              if (window.CartAPI) {
+                var cart = window.CartAPI.getCart();
+                var remaining = cart.filter(function (i) { return !i.selected; });
+                localStorage.setItem('pgt_cart', JSON.stringify(remaining));
+                document.dispatchEvent(new CustomEvent('cart-updated'));
+              }
+              sessionStorage.removeItem('applied_promo_percent');
 
-                // Clear applied promo
-                sessionStorage.removeItem('applied_promo_percent');
-
-                // Redirect to success page
-                setTimeout(function() {
-                  window.location.href = "order-success";
-                }, 600);
-              })
-              .catch(function(err) {
-                console.error('Order creation error:', err);
-                isSubmitting = false;
-                if (submitBtn) {
-                  submitBtn.classList.remove('loading');
-                  submitBtn.disabled = false;
-                }
-                
-                var errorMsg = 'Không thể kết nối đến máy chủ hoặc xử lý đơn hàng. Vui lòng thử lại!';
-                if (err && err.message) {
-                  errorMsg = err.message;
-                }
-                
-                if (typeof window.showToast === 'function') {
-                  window.showToast(errorMsg, 'error');
-                } else {
-                  alert(errorMsg);
-                }
-              });
-          } else {
-            // Fallback for standalone frontend mock mode
-            var orderCode = sessionStorage.getItem('temp_memo_code') || ('PGT' + Math.floor(100000 + Math.random() * 900000));
-            var orderData = {
-              orderCode: orderCode,
-              date: new Date().toISOString(),
-              timestamp: Date.now(),
-              name: name,
-              phone: phone.replace(/\D/g, ''),
-              email: email,
-              address: fullAddress,
-              customerNote: notes,
-              paymentMethod: 'Thanh toán khi nhận hàng (COD)',
-              items: items.map(function(i) {
-                return { name: i.name, qty: i.qty, price: i.price, image: i.image, size: i.size, gifts: i.gifts };
-              }),
-              subtotal: subtotal,
-              total: total,
-              status: 'pending',
-              statusHistory: [
-                { status: 'pending', time: new Date().toISOString(), note: 'Đơn hàng đã được tiếp nhận thành công.' }
-              ]
-            };
-
-            localStorage.setItem('pgt_last_order', JSON.stringify(orderData));
-            var allOrders = [];
-            try { allOrders = JSON.parse(localStorage.getItem('pgt_orders') || '[]'); } catch(e) {}
-            allOrders.unshift(orderData);
-            if (allOrders.length > 50) allOrders = allOrders.slice(0, 50);
-            localStorage.setItem('pgt_orders', JSON.stringify(allOrders));
-
-            if (window.CartAPI) {
-              var cart = window.CartAPI.getCart();
-              var remaining = cart.filter(function(i) { return !i.selected; });
-              localStorage.setItem('pgt_cart', JSON.stringify(remaining));
-              document.dispatchEvent(new CustomEvent('cart-updated'));
+              setTimeout(function () {
+                window.location.href = "order-success";
+              }, 600);
             }
-            sessionStorage.removeItem('applied_promo_percent');
-
-            setTimeout(function() {
-              window.location.href = "order-success";
-            }, 600);
           }
+          executeOrderApi(apiPayload);
         });
       }
 
       // ── Checkout Lightbox ───────────────────────
       function initCheckoutLightbox() {
-        var lb       = document.getElementById('co-lb');
-        var lbMedia  = document.getElementById('co-lb-media');
-        var lbVp     = document.getElementById('co-lb-vp');
-        var lbClose  = document.getElementById('co-lb-close');
-        var lbPrev   = document.getElementById('co-lb-prev');
-        var lbNext   = document.getElementById('co-lb-next');
-        var lbCnt    = document.getElementById('co-lb-counter');
+        var lb = document.getElementById('co-lb');
+        var lbMedia = document.getElementById('co-lb-media');
+        var lbVp = document.getElementById('co-lb-vp');
+        var lbClose = document.getElementById('co-lb-close');
+        var lbPrev = document.getElementById('co-lb-prev');
+        var lbNext = document.getElementById('co-lb-next');
+        var lbCnt = document.getElementById('co-lb-counter');
         if (!lb) return;
 
-        var srcs   = [];
+        var srcs = [];
         var curIdx = 0;
         var zs = 1, px = 0, py = 0;
         var MIN_Z = 1, MAX_Z = 5, STEP = 0.4;
 
         function clamp() {
           if (zs <= 1) { px = 0; py = 0; return; }
-          var maxX = Math.max(0, (lbVp.clientWidth  * zs - lbVp.clientWidth)  / 2);
+          var maxX = Math.max(0, (lbVp.clientWidth * zs - lbVp.clientWidth) / 2);
           var maxY = Math.max(0, (lbVp.clientHeight * zs - lbVp.clientHeight) / 2);
           px = Math.max(-maxX, Math.min(maxX, px));
           py = Math.max(-maxY, Math.min(maxY, py));
         }
         function applyT(anim) {
           lbMedia.style.transition = anim ? 'transform 0.2s ease' : 'none';
-          lbMedia.style.transform  = 'translate(' + px + 'px,' + py + 'px) scale(' + zs + ')';
+          lbMedia.style.transform = 'translate(' + px + 'px,' + py + 'px) scale(' + zs + ')';
           lbVp.style.cursor = zs > 1 ? 'grab' : 'zoom-in';
         }
         function resetZ(anim) { zs = 1; px = 0; py = 0; applyT(anim); }
@@ -940,7 +1018,7 @@
           var isVid = /\.(mp4|webm|mov|avi|ogg)$/i.test(src);
           lbMedia.style.opacity = '0';
           resetZ(false);
-          setTimeout(function() {
+          setTimeout(function () {
             if (isVid) {
               lbMedia.innerHTML = '<video src="' + src + '" autoplay loop controls style="max-width:85vw;max-height:85vh;border-radius:8px;box-shadow:0 4px 30px rgba(0,0,0,0.7);object-fit:contain;display:block;"></video>';
             } else {
@@ -969,13 +1047,13 @@
         // Delegate click on summary list thumbnails
         var summaryList = document.getElementById('summary-items-list');
         if (summaryList) {
-          summaryList.addEventListener('click', function(e) {
+          summaryList.addEventListener('click', function (e) {
             var thumb = e.target.closest('[data-co-lb-src]');
             if (!thumb) return;
             // Rebuild src list from all visible thumbnails
             srcs = Array.from(summaryList.querySelectorAll('[data-co-lb-src]'))
-                        .map(function(el) { return el.getAttribute('data-co-lb-src'); })
-                        .filter(Boolean);
+              .map(function (el) { return el.getAttribute('data-co-lb-src'); })
+              .filter(Boolean);
             var clicked = thumb.getAttribute('data-co-lb-src');
             curIdx = Math.max(0, srcs.indexOf(clicked));
             openLb(curIdx);
@@ -983,29 +1061,29 @@
         }
 
         lbClose.addEventListener('click', closeLb);
-        lb.addEventListener('click', function(e) { if (e.target === lb) closeLb(); });
-        if (lbPrev) lbPrev.addEventListener('click', function(e) { e.stopPropagation(); curIdx = (curIdx - 1 + srcs.length) % srcs.length; renderLb(); });
-        if (lbNext) lbNext.addEventListener('click', function(e) { e.stopPropagation(); curIdx = (curIdx + 1) % srcs.length; renderLb(); });
+        lb.addEventListener('click', function (e) { if (e.target === lb) closeLb(); });
+        if (lbPrev) lbPrev.addEventListener('click', function (e) { e.stopPropagation(); curIdx = (curIdx - 1 + srcs.length) % srcs.length; renderLb(); });
+        if (lbNext) lbNext.addEventListener('click', function (e) { e.stopPropagation(); curIdx = (curIdx + 1) % srcs.length; renderLb(); });
 
         // Keyboard
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
           if (lb.style.display === 'none') return;
           if (e.key === 'Escape') closeLb();
-          if (e.key === 'ArrowLeft')  { curIdx = (curIdx - 1 + srcs.length) % srcs.length; renderLb(); }
+          if (e.key === 'ArrowLeft') { curIdx = (curIdx - 1 + srcs.length) % srcs.length; renderLb(); }
           if (e.key === 'ArrowRight') { curIdx = (curIdx + 1) % srcs.length; renderLb(); }
         });
 
         // Scroll-wheel zoom
-        lbVp.addEventListener('wheel', function(e) {
+        lbVp.addEventListener('wheel', function (e) {
           e.preventDefault();
           var rect = lbVp.getBoundingClientRect();
-          var ox = e.clientX - rect.left - rect.width  / 2;
-          var oy = e.clientY - rect.top  - rect.height / 2;
+          var ox = e.clientX - rect.left - rect.width / 2;
+          var oy = e.clientY - rect.top - rect.height / 2;
           zoomTo(zs + (e.deltaY < 0 ? STEP * 0.6 : -STEP * 0.6), ox, oy, false);
         }, { passive: false });
 
         // Double-click zoom
-        lbVp.addEventListener('dblclick', function(e) {
+        lbVp.addEventListener('dblclick', function (e) {
           if (zs > 1) { resetZ(true); } else {
             var rect = lbVp.getBoundingClientRect();
             zoomTo(2, e.clientX - rect.left - rect.width / 2, e.clientY - rect.top - rect.height / 2, true);
@@ -1014,17 +1092,17 @@
 
         // Drag/pan
         var drag = false, dx, dy, px0, py0;
-        lbVp.addEventListener('mousedown', function(e) {
+        lbVp.addEventListener('mousedown', function (e) {
           if (zs <= 1 || e.button !== 0) return;
           drag = true; dx = e.clientX; dy = e.clientY; px0 = px; py0 = py;
           lbVp.style.cursor = 'grabbing'; e.preventDefault();
         });
-        window.addEventListener('mousemove', function(e) {
+        window.addEventListener('mousemove', function (e) {
           if (!drag) return;
           px = px0 + (e.clientX - dx); py = py0 + (e.clientY - dy);
           clamp(); applyT(false);
         });
-        window.addEventListener('mouseup', function() {
+        window.addEventListener('mouseup', function () {
           if (!drag) return; drag = false;
           lbVp.style.cursor = zs > 1 ? 'grab' : 'zoom-in';
         });
@@ -1032,7 +1110,7 @@
 
       // Run on load (wait for cart.js + common.js to init)
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
           initCheckoutLightbox();
           setTimeout(initCheckout, 650);
         });
@@ -1041,6 +1119,100 @@
         setTimeout(initCheckout, 650);
       }
     })();
+  </script>
+
+  <script>
+    var RECAPTCHA_SITE_KEY = '6LfPcjUtAAAAACTcvan0xAEFn_vGO1zsHcb9OQ7F';
+    var pendingOrderPayload = null;
+    var recaptchaWidgetId = null;
+    var executeCallback = null;
+
+    window.onReCaptchaSolved = function(token) {
+        if (pendingOrderPayload && executeCallback) {
+            // Hiển thị lại trạng thái loading khi tự động gửi đơn
+            var btn = document.getElementById('btn-submit-order');
+            if (btn) {
+                btn.classList.add('loading');
+                btn.disabled = true;
+            }
+
+            pendingOrderPayload.recaptchaToken = token;
+            executeCallback(pendingOrderPayload); // retry API call with token
+            
+            // Reset recaptcha so it can be used again if needed
+            if (recaptchaWidgetId !== null && typeof grecaptcha !== 'undefined') {
+                grecaptcha.reset(recaptchaWidgetId);
+            }
+        }
+    };
+
+    window.triggerReCaptcha = function(payload, retryCallback) {
+        pendingOrderPayload = payload;
+        executeCallback = retryCallback;
+        
+        function handleCaptchaError(err) {
+            var btn = document.getElementById('btn-submit-order');
+            if (btn) {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+            var msg = 'Không thể kết nối reCAPTCHA.';
+            if (err) msg += ' Lỗi: ' + (err.message || err);
+            if (typeof window.showToast === 'function') {
+                window.showToast(msg, 'error');
+            }
+        }
+        
+        // Dừng trạng thái loading của nút để người dùng có thể thao tác tích vào Checkbox
+        var btn = document.getElementById('btn-submit-order');
+        if (btn) {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }
+
+        // Báo cho người dùng biết cần phải tích vào ô
+        if (typeof window.showToast === 'function') {
+            window.showToast('Vui lòng đánh dấu vào ô "Tôi không phải người máy" ở ngay phía trên nút Đặt Hàng để tiếp tục!', 'warning');
+        }
+        
+        if (typeof grecaptcha === 'undefined' || typeof grecaptcha.render === 'undefined') {
+            // Load script dynamically
+            var script = document.createElement('script');
+            script.onerror = function(e) { handleCaptchaError("Script load failed"); };
+            window.onRecaptchaLoad = function() {
+                try {
+                    recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
+                        'sitekey': RECAPTCHA_SITE_KEY,
+                        'callback': window.onReCaptchaSolved,
+                        'error-callback': function() { handleCaptchaError("Google error-callback triggered"); }
+                    });
+                } catch(e) {
+                    console.error('reCAPTCHA render error:', e);
+                    handleCaptchaError(e);
+                }
+            };
+            script.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit';
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        } else {
+            if (recaptchaWidgetId === null) {
+                try {
+                    recaptchaWidgetId = grecaptcha.render('recaptcha-container', {
+                        'sitekey': RECAPTCHA_SITE_KEY,
+                        'callback': window.onReCaptchaSolved,
+                        'error-callback': function() { handleCaptchaError("Google error-callback triggered"); }
+                    });
+                } catch(e) {
+                    console.error('reCAPTCHA render error:', e);
+                    handleCaptchaError(e);
+                }
+            } else {
+               // Đã render rồi, reset lại để khách tích lại
+               grecaptcha.reset(recaptchaWidgetId);
+            }
+        }
+    };
   </script>
 </body>
 

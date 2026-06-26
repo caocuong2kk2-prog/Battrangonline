@@ -139,7 +139,7 @@
             },
             "QuestPDF": {
               "target": "Package",
-              "version": "[2025.6.1, )"
+              "version": "[2025.7.0, )"
             }
           },
           "imports": [

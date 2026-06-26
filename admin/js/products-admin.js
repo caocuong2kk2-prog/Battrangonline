@@ -172,7 +172,7 @@
             
             <!-- Primary attributes (Kích thước, Giá, Tồn kho, Dòng men) -->
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px;">
-                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: var(--text-secondary); font-size: 13px;">Kích thước <span style="color:red">*</span></label>
+                <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: var(--text-secondary); font-size: 13px;">Kích thước</label>
                     <select class="form-control v-size" style="background: #fff; padding: 8px 12px;">${makeSelect(sizes, 'Chọn kích thước...', v ? v.sizeId : null)}</select>
                 </div>
                 <div class="form-group" style="margin-bottom:0;"><label class="form-label" style="color: var(--text-secondary); font-size: 13px;">Giá bán (VNĐ) <span style="color:red">*</span></label>
@@ -1200,7 +1200,7 @@
         var originalPriceVal = originalPriceInp ? originalPriceInp.value.replace(/\./g, '') : '';
         var originalPrice = originalPriceVal ? parseInt(originalPriceVal) : null;
         
-        if (!sizeId || price <= 0 || price > 1000000000 || stock > 1000 || stock < 0 || (originalPrice !== null && (originalPrice > 1000000000 || originalPrice < price))) {
+        if (price <= 0 || price > 1000000000 || stock > 1000 || stock < 0 || (originalPrice !== null && (originalPrice > 1000000000 || originalPrice < price))) {
           if (!firstInvalidCard) {
             firstInvalidCard = card;
             var tabBtn = document.querySelector('.modal-tab-btn[data-target="tab-variants"]');
@@ -1208,17 +1208,7 @@
             
             expandVariantCard(card);
             
-            if (!sizeId) {
-              setInlineError(sizeSel, 'Vui lòng chọn kích thước cho loại sản phẩm này!');
-              var wrapper = sizeSel.closest('.custom-select-wrapper');
-              var trigger = wrapper ? wrapper.querySelector('.custom-select__trigger') : null;
-              if (trigger) {
-                trigger.setAttribute('tabindex', '0');
-                trigger.focus();
-              } else {
-                sizeSel.focus();
-              }
-            } else if (price <= 0) {
+            if (price <= 0) {
               setInlineError(priceInp, 'Vui lòng nhập giá bán hợp lệ!');
               priceInp.focus();
             } else if (price > 1000000000) {
@@ -1244,7 +1234,7 @@
     }
 
     if (hasError) {
-      adminToast('Vui lòng điền đủ Tên và ít nhất 1 Phiên bản có giá hoặc kích thước!', 'error');
+      adminToast('Vui lòng điền đủ Tên và ít nhất 1 Phiên bản có giá bán hợp lệ!', 'error');
       return;
     }
 

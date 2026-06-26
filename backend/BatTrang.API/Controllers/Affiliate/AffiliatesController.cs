@@ -989,14 +989,14 @@ namespace BatTrang.API.Controllers.Affiliate
 
     public class ResetPasswordDto
     {
-        public string Email { get; set; }
-        public string Code { get; set; }
-        public string NewPassword { get; set; }
+        public string Email { get; set; } = null!;
+        public string Code { get; set; } = null!;
+        public string NewPassword { get; set; } = null!;
     }
 
     public class GoogleLoginDto
     {
-        public string Credential { get; set; }
+        public string Credential { get; set; } = null!;
     }
 
     public class TrackClickDto

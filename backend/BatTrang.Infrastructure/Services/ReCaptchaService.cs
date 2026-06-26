@@ -39,6 +39,7 @@ namespace BatTrang.Infrastructure.Services
             }
 
             var jsonResult = await response.Content.ReadAsStringAsync();
+            System.Console.WriteLine($"[ReCaptcha] Verify Result: {jsonResult}");
             var result = JsonSerializer.Deserialize<ReCaptchaResponse>(jsonResult);
 
             return result != null && result.Success;

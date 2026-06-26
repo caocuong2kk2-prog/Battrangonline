@@ -893,7 +893,7 @@
             closeCancelModal();
             window.showToast(res.data.message, 'success');
             var searchInput = document.getElementById('search-query-input');
-            var token = localStorage.getItem('customer_token');
+            var token = localStorage.getItem('customer_token') || sessionStorage.getItem('customer_token');
             if (token && window.PhucGiaTienAPI && typeof window.PhucGiaTienAPI.getCustomerOrders === 'function') {
                 window.PhucGiaTienAPI.getCustomerOrders().then(function(userOrders) {
                     if (userOrders) renderOrdersList(userOrders);
@@ -1086,10 +1086,10 @@
       function initTrackingPage() {
         var currentUser = null;
         try {
-          currentUser = JSON.parse(localStorage.getItem('current_user'));
+          currentUser = JSON.parse(localStorage.getItem('current_user') || sessionStorage.getItem('current_user'));
         } catch(e) {}
         
-        var token = localStorage.getItem('customer_token');
+        var token = localStorage.getItem('customer_token') || sessionStorage.getItem('customer_token');
         var searchCardContainer = document.getElementById('search-card-container');
         var resultsContainer = document.getElementById('tracking-results-container');
         
@@ -1199,12 +1199,12 @@
                   needsRefresh = true;
                 }
                 
-                if (window.localStorage.getItem('customer_token')) {
+                if (window.localStorage.getItem('customer_token') || window.sessionStorage.getItem('customer_token')) {
                   needsRefresh = true;
                 }
                 
                 if (needsRefresh) {
-                   if (window.localStorage.getItem('customer_token') && typeof window.PhucGiaTienAPI.getCustomerOrders === 'function') {
+                   if ((window.localStorage.getItem('customer_token') || window.sessionStorage.getItem('customer_token')) && typeof window.PhucGiaTienAPI.getCustomerOrders === 'function') {
                       window.PhucGiaTienAPI.getCustomerOrders().then(function(userOrders) {
                         if (userOrders) renderOrdersList(userOrders);
                       }).catch(function(){});

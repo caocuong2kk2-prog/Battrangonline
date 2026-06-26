@@ -117,7 +117,7 @@
         <thead>
           <tr>
             <th class="stt-cell">ID</th>
-            <th style="width: 70px; text-align: center;">Ảnh</th>
+            <th style="width: 140px; text-align: center;">Ảnh</th>
             <th>Tên chiến dịch</th>
             <th>Giảm giá</th>
             <th>Thời gian</th>
@@ -188,12 +188,12 @@
         <div class="form-group">
           <label class="form-label" for="campaign-banner">Ảnh Banner / Huy hiệu (Tùy chọn)</label>
           <div id="banner-upload-zone" style="display: flex; gap: 15px; align-items: flex-start; padding: 16px; border: 2px dashed #cbd5e1; border-radius: 12px; background: #f8fafc; transition: all 0.2s ease;">
-            <div id="campaign-banner-preview" style="width: 100px; height: 100px; background: #fff; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0;">
+            <div id="campaign-banner-preview" style="width: 250px; height: 100px; background: #fff; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0;">
               <span style="font-size: 24px; color: #cbd5e1;">🖼️</span>
             </div>
             <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 100px;">
               <div style="font-weight: 500; color: var(--text-main); margin-bottom: 4px;">Kéo thả ảnh vào đây hoặc bấm để tải lên</div>
-              <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Định dạng: JPG, PNG, GIF. Kích thước tối đa: 2MB.<br>Khuyến nghị: Ảnh vuông 100x100px. Nếu để trống sẽ dùng Logo mặc định.</div>
+              <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Định dạng: JPG, PNG, GIF, WEBP. Kích thước tối đa: 5MB.<br>Khuyến nghị: Ảnh ngang tỷ lệ 3:1 (VD: 1200x400px). Nếu để trống sẽ dùng Logo mặc định.</div>
               <div style="display: flex; gap: 8px;">
                 <input type="file" id="campaign-banner-file" class="form-control" accept="image/*" style="display: none;">
                 <input type="hidden" id="campaign-banner-url">
@@ -270,7 +270,7 @@
 <div class="modal-overlay" id="imagePreviewModal" style="z-index: 2000;" onclick="if(event.target === this) closeModal('imagePreviewModal')">
   <div class="modal" style="max-width: 800px; background: transparent; box-shadow: none; display: flex; flex-direction: column; align-items: center;" onclick="if(event.target === this) closeModal('imagePreviewModal')">
     <div style="width: 100%; display: flex; justify-content: flex-end; margin-bottom: 10px;">
-      <button type="button" class="btn btn--danger" onclick="closeModal('imagePreviewModal')" style="border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">✕</button>
+      <div onclick="closeModal('imagePreviewModal')" style="color: #cbd5e1; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; cursor: pointer; transition: color 0.2s; user-select: none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#cbd5e1'">✕</div>
     </div>
     <img id="preview-large-img" src="" style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); cursor: default;">
   </div>

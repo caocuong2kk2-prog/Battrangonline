@@ -4445,7 +4445,7 @@
       "Microsoft.EntityFrameworkCore.SqlServer >= 8.0.0",
       "Microsoft.EntityFrameworkCore.Tools >= 8.0.0",
       "Microsoft.Extensions.Hosting.Abstractions >= 8.0.0",
-      "QuestPDF >= 2025.6.1"
+      "QuestPDF >= 2025.7.0"
     ]
   },
   "packageFolders": {
@@ -4522,7 +4522,7 @@
           },
           "QuestPDF": {
             "target": "Package",
-            "version": "[2025.6.1, )"
+            "version": "[2025.7.0, )"
           }
         },
         "imports": [
@@ -4544,17 +4544,5 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.419/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1603",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "BatTrang.Infrastructure depends on QuestPDF (>= 2025.6.1) but QuestPDF 2025.6.1 was not found. An approximate best match of QuestPDF 2025.7.0 was resolved.",
-      "libraryId": "QuestPDF",
-      "targetGraphs": [
-        "net8.0"
-      ]
-    }
-  ]
+  }
 }

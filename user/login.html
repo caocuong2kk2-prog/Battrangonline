@@ -372,7 +372,7 @@
 
               <div class="auth-extra-row">
                 <label class="auth-checkbox-label">
-                  <input type="checkbox" id="mod-login-remember">
+                  <input type="checkbox" id="mod-login-remember" checked>
                   <span>Ghi nhớ đăng nhập</span>
                 </label>
                 <a href="forgot-password" class="auth-link">Quên mật khẩu?</a>
@@ -468,6 +468,7 @@
   <!-- LOAD COMMON SCRIPT -->
   <script src="js/api.js"></script>
   <script src="js/cart.js"></script>
+  <script src="js/promo.js?v=8"></script>
   <script src="js/common.js"></script>
 
   <!-- SCRIPT XỬ LÝ FORM LOCAL CỦA LOGIN PAGE -->
@@ -526,14 +527,20 @@
 
         window.PhucGiaTienAPI.loginCustomer({ emailOrPhone: email, password: pass })
           .then(function (res) {
-            localStorage.setItem('customer_token', res.token);
-            localStorage.setItem('current_user', JSON.stringify(res.user));
+            var rememberBox = document.getElementById('mod-login-remember');
+            var storage = (rememberBox && rememberBox.checked) ? localStorage : sessionStorage;
+            storage.setItem('customer_token', res.token);
+            storage.setItem('current_user', JSON.stringify(res.user));
             window.showToast('Đăng nhập thành công!', 'success');
             setTimeout(function () { window.location.href = "index"; }, 800);
           })
           .catch(function (err) {
             console.error('Login error:', err);
-            window.showToast('Tài khoản hoặc mật khẩu không chính xác.', 'error');
+            if (err.status === 429) {
+              window.showToast('Bạn thao tác quá nhanh, vui lòng thử lại sau 1 phút.', 'error');
+            } else {
+              window.showToast('Tài khoản hoặc mật khẩu không chính xác.', 'error');
+            }
             btn.innerHTML = originalText;
             btn.disabled = false;
           });

@@ -82,7 +82,7 @@ namespace BatTrang.Infrastructure.Services
                     }
                 }
 
-                string newBadgeStr = newBadges.Any() ? string.Join(", ", newBadges.Distinct()) : null;
+                string? newBadgeStr = newBadges.Any() ? string.Join(", ", newBadges.Distinct()) : null;
 
                 if (product.MarketingBadges != newBadgeStr)
                 {

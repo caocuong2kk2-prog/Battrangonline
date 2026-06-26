@@ -276,7 +276,7 @@ function populateHeaderMegaMenu() {
     if (userBtn) {
       let user = null;
       try {
-        user = JSON.parse(localStorage.getItem('current_user'));
+        user = JSON.parse(localStorage.getItem('current_user') || sessionStorage.getItem('current_user'));
       } catch (e) { }
 
       if (user) {
@@ -469,6 +469,11 @@ function populateHeaderMegaMenu() {
   window.logoutCustomer = function () {
     localStorage.removeItem('current_user');
     localStorage.removeItem('customer_token');
+    sessionStorage.removeItem('current_user');
+    sessionStorage.removeItem('customer_token');
+    // Clear guest traces for privacy when logging out of a shared device
+    localStorage.removeItem('pgt_last_address');
+    localStorage.removeItem('pgt_orders');
     window.showToast('Đã đăng xuất thành công!', 'success');
     setTimeout(() => window.location.reload(), 1000);
   };
@@ -651,7 +656,17 @@ function populateHeaderMegaMenu() {
   function resolveImgUrl(url, defaultUrl) {
     if (!url) return defaultUrl;
     if (url.startsWith('/uploads/')) {
-      var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' ? 'http://localhost:5055' : '';
+      var dynamicBase = '';
+      if ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055') {
+          dynamicBase = 'http://localhost:5055';
+      } else if (window.location.hostname.includes('trycloudflare.com')) {
+          if (window.PhucGiaTienAPI && window.PhucGiaTienAPI.apiBase) {
+              var apiBase = window.PhucGiaTienAPI.apiBase;
+              if (apiBase.startsWith('http')) {
+                  dynamicBase = apiBase.replace('/api', '');
+              }
+          }
+      }
       return dynamicBase + url;
     }
     return url;

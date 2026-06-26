@@ -145,6 +145,11 @@
           <label class="form-label">Mô tả</label>
           <textarea class="form-control" name="description" rows="3" placeholder="Mô tả ngắn..."></textarea>
         </div>
+        <div class="form-group" id="field-valuecm-group" style="display:none;">
+          <label class="form-label">Giá trị (cm)</label>
+          <input class="form-control" name="valueInCm" type="number" step="0.01" min="0" placeholder="VD: 160">
+          <div class="form-hint">Giá trị quy đổi ra cm để sắp xếp. VD: 1.6m = 160</div>
+        </div>
         <div class="form-group" id="field-faq-group" style="display:none; grid-column:1/-1;">
           <label class="form-label">Hỏi đáp (FAQs)</label>
           <div id="attr-faq-list" style="margin-bottom:10px"></div>
@@ -276,7 +281,7 @@
       label: 'Kích thước',
       nameLabel: 'Tên kích thước',
       namePlaceholder: 'VD: 1.6m, 60x90cm, Bộ 5 món...',
-      hasDesc: false, hasCatDesc: false, hasSlugId: false,
+      hasDesc: false, hasCatDesc: false, hasSlugId: false, hasValueInCm: true,
       api: 'sizes', productField: 'sizeId', idIsString: false,
       thead: '<tr><th class="chk-cell" style="width:40px"><input type="checkbox" class="check-all-attr"></th><th class="stt-cell">STT</th><th>Tên kích thước</th><th style="width:150px">Số sản phẩm</th><th style="width:130px">Hành động</th></tr>',
       renderRow: function(item, idx, cnt) {
@@ -451,6 +456,14 @@
 
     return products.filter(function(p) {
       if (cfg.idIsString) return p[field] === item.id;
+      
+      // Check if field is a variant attribute
+      if (p.variants && Array.isArray(p.variants)) {
+         return p.variants.some(function(v) {
+             return v[field] === item.id;
+         });
+      }
+
       return p[field] === item.id;
     }).length;
   }
@@ -477,6 +490,7 @@
     // Show/hide fields
     document.getElementById('field-id-group').style.display = cfg.hasSlugId ? '' : 'none';
     document.getElementById('field-desc-group').style.display = (cfg.hasDesc || cfg.hasCatDesc) ? '' : 'none';
+    document.getElementById('field-valuecm-group').style.display = cfg.hasValueInCm ? '' : 'none';
     var faqGroup = document.getElementById('field-faq-group');
     if (faqGroup) faqGroup.style.display = cfg.hasFaq ? '' : 'none';
     document.getElementById('field-name-label').innerHTML = cfg.nameLabel + ' <span style="color:var(--danger)">*</span>';
@@ -516,6 +530,7 @@
     document.getElementById('attr-modal-title').textContent = 'Chỉnh Sửa ' + cfg.label;
     document.getElementById('field-id-group').style.display = cfg.hasSlugId ? '' : 'none';
     document.getElementById('field-desc-group').style.display = (cfg.hasDesc || cfg.hasCatDesc) ? '' : 'none';
+    document.getElementById('field-valuecm-group').style.display = cfg.hasValueInCm ? '' : 'none';
     document.getElementById('field-name-label').innerHTML = cfg.nameLabel + ' <span style="color:var(--danger)">*</span>';
     document.getElementById('field-name-input').placeholder = cfg.namePlaceholder;
 
@@ -530,6 +545,9 @@
     }
     if (cfg.hasCatDesc) {
       document.querySelector('[name="description"]').value = item.desc || '';
+    }
+    if (cfg.hasValueInCm) {
+      document.querySelector('[name="valueInCm"]').value = item.valueInCm || '';
     }
     
     var faqGroup = document.getElementById('field-faq-group');
@@ -587,6 +605,13 @@
       if (cfg.hasDesc && f.querySelector('[name="description"]')) {
         data.description = f.querySelector('[name="description"]').value.trim();
       }
+    }
+
+    // Sizes: include valueInCm
+    if (cfg.hasValueInCm) {
+      var cmInput = f.querySelector('[name="valueInCm"]');
+      var cmVal = cmInput ? parseFloat(cmInput.value) : 0;
+      data.valueInCm = isNaN(cmVal) ? 0 : cmVal;
     }
 
     var api = AdminData[cfg.api];

@@ -74,6 +74,7 @@ namespace BatTrang.API.Controllers
             var ipOrderCacheKey = $"OrdersToday_{ipAddress}";
             _cache.TryGetValue(ipOrderCacheKey, out int ipOrdersToday);
 
+            // Giới hạn đặt hàng: Nếu cùng số điện thoại đặt >= 1 đơn hoặc cùng IP đặt >= 1 đơn trong ngày thì yêu cầu captcha
             if (phoneOrdersToday >= 1 || ipOrdersToday >= 1)
             {
                 if (string.IsNullOrEmpty(dto.RecaptchaToken))
@@ -84,7 +85,7 @@ namespace BatTrang.API.Controllers
                 var isCaptchaValid = await _reCaptchaService.VerifyTokenAsync(dto.RecaptchaToken);
                 if (!isCaptchaValid)
                 {
-                    return BadRequest(new { message = "Xác thực reCAPTCHA thất bại. Vui lòng thử lại." });
+                    return BadRequest(new { message = "Hệ thống Google nhận diện bạn là người máy (Hoặc lỗi chưa thêm localhost vào Domain). Vui lòng cấu hình lại Key." });
                 }
             }
 
@@ -95,7 +96,7 @@ namespace BatTrang.API.Controllers
                 try
                 {
                     // 1. Quản lý khách hàng
-                    Customer customer = null;
+                    Customer? customer = null;
                     
                     // Thử lấy CustomerId từ JWT token (nếu người dùng đã đăng nhập)
                     var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value 
@@ -110,7 +111,7 @@ namespace BatTrang.API.Controllers
                         var normalizedEmail = string.IsNullOrWhiteSpace(dto.Email) ? null : dto.Email.Trim();
 
                         // Nếu chưa đăng nhập hoặc không tìm thấy tài khoản tương ứng, tìm theo SĐT hoặc Email (Guest)
-                        customer = await _customerRepo.GetByPhoneOrEmailAsync(dto.Phone, normalizedEmail);
+                        customer = await _customerRepo.GetByPhoneOrEmailAsync(dto.Phone, normalizedEmail ?? string.Empty);
                         if (customer == null)
                         {
                             customer = new Customer

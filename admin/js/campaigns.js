@@ -118,8 +118,8 @@
             var productCount = c.productIds ? c.productIds.length : 0;
 
             var imgHtml = c.bannerImage 
-                ? '<img src="' + getImgUrl(c.bannerImage) + '" onclick="showImagePreview(\'' + getImgUrl(c.bannerImage) + '\')" style="width:50px;height:50px;object-fit:cover;border-radius:6px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.1);">'
-                : '<div style="width:50px;height:50px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#cbd5e1;font-size:1.2rem;margin: 0 auto;">🖼️</div>';
+                ? '<img src="' + getImgUrl(c.bannerImage) + '" onclick="showImagePreview(\'' + getImgUrl(c.bannerImage) + '\')" style="width:120px;height:auto;object-fit:contain;border-radius:6px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.1);">'
+                : '<div style="width:120px;height:50px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#cbd5e1;font-size:1.2rem;margin: 0 auto;">🖼️</div>';
 
             html += '<tr>' +
                 '<td class="stt-cell">' + c.id + '</td>' +
@@ -220,6 +220,15 @@
         if (!f.checkValidity()) {
             f.reportValidity();
             return;
+        }
+
+        var newStatus = document.getElementById('campaign-status').value;
+        if (newStatus === 'active') {
+            var activeCampaign = campaigns.find(function(x) { return x.status === 'active' && x.id !== editId; });
+            if (activeCampaign) {
+                if (window.adminToast) adminToast('Đã có một chiến dịch đang diễn ra ("' + escapeHTML(activeCampaign.name) + '"). Vui lòng tắt chiến dịch đó trước!', 'warning');
+                return;
+            }
         }
 
         var payload = {
@@ -391,7 +400,7 @@
                 formData.append('file', file);
 
                 var sess = window.getAdminSession();
-                fetch(API_BASE + '/upload', {
+                fetch(PUBLIC_API_BASE + '/upload', {
                     method: 'POST',
                     headers: { 'Authorization': 'Bearer ' + (sess ? sess.token : '') },
                     body: formData
@@ -588,6 +597,14 @@
                 var newStatus = isCurrentlyActive ? 'inactive' : 'active';
                 var actionText = isCurrentlyActive ? 'tạm dừng' : 'kích hoạt';
                 
+                if (newStatus === 'active') {
+                    var activeCampaign = campaigns.find(function(x) { return x.status === 'active' && x.id !== id; });
+                    if (activeCampaign) {
+                        if (window.adminToast) adminToast('Đã có một chiến dịch đang diễn ra ("' + escapeHTML(activeCampaign.name) + '"). Vui lòng tắt chiến dịch đó trước khi bật!', 'warning');
+                        return;
+                    }
+                }
+
                 if (window.adminConfirm) {
                     adminConfirm('Bạn có chắc muốn ' + actionText + ' chiến dịch "' + escapeHTML(c.name) + '"?', function() {
                         _fetch('/campaigns/' + id + '/status', {

@@ -131,11 +131,13 @@ namespace BatTrang.Infrastructure.Repositories
             {
                 if (filter.Status == "in-stock")
                 {
-                    query = query.Where(p => p.Status != "inactive");
+                    // In-stock: Has any variant with Stock > 0, OR Product status is explicitly "active" but no variants exist
+                    query = query.Where(p => p.Variants.Any(v => v.Stock > 0));
                 }
                 else if (filter.Status == "out-of-stock")
                 {
-                    query = query.Where(p => p.Status == "inactive");
+                    // Out-of-stock: All variants have Stock <= 0
+                    query = query.Where(p => p.Variants.Count == 0 || p.Variants.All(v => v.Stock <= 0));
                 }
             }
 

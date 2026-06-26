@@ -17,7 +17,7 @@
     }
 
     // Inject customer token if available
-    var token = localStorage.getItem('customer_token');
+    var token = localStorage.getItem('customer_token') || sessionStorage.getItem('customer_token');
     if (token) {
       options.headers['Authorization'] = 'Bearer ' + token;
     }

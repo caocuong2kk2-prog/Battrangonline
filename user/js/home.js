@@ -106,8 +106,6 @@
       if (!isAnimating && !isDown) {
         if (conveyor.scrollLeft >= trackHalfW) {
           conveyor.scrollLeft -= trackHalfW;
-        } else if (conveyor.scrollLeft <= 0) {
-          conveyor.scrollLeft += trackHalfW;
         }
       }
 
@@ -222,8 +220,11 @@
     article.dataset.slug = p.slug;
 
     var ribbonLeftHTML = '';
-    if (p.status === 'inactive') {
+    var totalStock = p.totalStock !== undefined ? p.totalStock : (p.variants ? p.variants.reduce(function(sum, v) { return sum + (v.stock || 0); }, 0) : 0);
+    if (totalStock <= 0) {
       ribbonLeftHTML = '<div class="product-card__ribbon product-card__ribbon--out">HẾT HÀNG</div>';
+    } else if (p.status === 'inactive') {
+      ribbonLeftHTML = '<div class="product-card__ribbon product-card__ribbon--out" style="background:#1A0F05; color:#ffffff;">NGỪNG BÁN</div>';
     } else if (p.badge) {
       ribbonLeftHTML = '<div class="product-card__ribbon product-card__ribbon--new">' + p.badge + '</div>';
     }

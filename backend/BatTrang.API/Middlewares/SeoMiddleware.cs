@@ -12,8 +12,8 @@ namespace BatTrang.API.Middlewares
 {
     public class FaqItemDto
     {
-        public string q { get; set; }
-        public string a { get; set; }
+        public string q { get; set; } = string.Empty;
+        public string a { get; set; } = string.Empty;
     }
 
     public class SeoMiddleware

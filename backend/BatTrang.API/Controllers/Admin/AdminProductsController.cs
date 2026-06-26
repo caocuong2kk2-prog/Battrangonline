@@ -165,7 +165,7 @@ namespace BatTrang.API.Controllers.Admin
                         var existingSize = _context.Sizes.FirstOrDefault(s => s.Name == sizeNameStr);
                         if (existingSize == null)
                         {
-                            existingSize = new Size { Name = sizeNameStr };
+                            existingSize = new Size { Name = sizeNameStr, ValueInCm = ParseCmFromName(sizeNameStr) };
                             _context.Sizes.Add(existingSize);
                             _context.SaveChanges();
                         }
@@ -297,7 +297,7 @@ namespace BatTrang.API.Controllers.Admin
                         var existingSize = _context.Sizes.FirstOrDefault(s => s.Name == sizeNameStr);
                         if (existingSize == null)
                         {
-                            existingSize = new Size { Name = sizeNameStr };
+                            existingSize = new Size { Name = sizeNameStr, ValueInCm = ParseCmFromName(sizeNameStr) };
                             _context.Sizes.Add(existingSize);
                             _context.SaveChanges();
                         }
@@ -452,6 +452,27 @@ namespace BatTrang.API.Controllers.Admin
             await _cacheStore.EvictByTagAsync("products", default);
             await _cacheStore.EvictByTagAsync("filters", default);
             return NoContent();
+        }
+
+        /// <summary>
+        /// Parse numeric cm value from size name strings like "160cm", "1.6m", "26cm", "60x90cm"
+        /// </summary>
+        private static decimal ParseCmFromName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return 0;
+            var cleaned = name.Trim().ToLower();
+            // Try pattern: number + "cm" (e.g. "160cm", "26cm")
+            var cmMatch = Regex.Match(cleaned, @"([\d]+[\.,]?[\d]*)\s*cm");
+            if (cmMatch.Success && decimal.TryParse(cmMatch.Groups[1].Value.Replace(',', '.'), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var cm))
+                return cm;
+            // Try pattern: number + "m" (e.g. "1.6m")
+            var mMatch = Regex.Match(cleaned, @"([\d]+[\.,]?[\d]*)\s*m");
+            if (mMatch.Success && decimal.TryParse(mMatch.Groups[1].Value.Replace(',', '.'), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var m))
+                return m * 100;
+            // Try just a plain number
+            if (decimal.TryParse(Regex.Match(cleaned, @"[\d]+[\.,]?[\d]*").Value.Replace(',', '.'), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var plain))
+                return plain;
+            return 0;
         }
 
         private static string GenerateSlug(string phrase) 

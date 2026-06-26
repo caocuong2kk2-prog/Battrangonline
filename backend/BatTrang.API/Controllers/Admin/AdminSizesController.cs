@@ -28,6 +28,7 @@ namespace BatTrang.API.Controllers.Admin
         public async Task<IActionResult> GetAll()
         {
             var items = await _context.Sizes
+                .OrderByDescending(s => s.ValueInCm)
                 .Select(s => new SizeDto
                 {
                     Id = s.Id,

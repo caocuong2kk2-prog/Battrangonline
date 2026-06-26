@@ -29,41 +29,70 @@ namespace BatTrang.API.Controllers
         [OutputCache(PolicyName = "FiltersCache")]
         public async Task<IActionResult> GetAll()
         {
-            var categories = await _dbContext.Categories
-                .Include(c => c.Products)
+            // 1. Load categories with subcategories only (no Products Include to avoid huge payload)
+            var dbCategories = await _dbContext.Categories
                 .Include(c => c.SubCategories)
-                    .ThenInclude(sc => sc.Products)
-                .Where(c => c.ParentId == null) // Top-level only
-                .Select(c => new CategoryDto
-                {
-                    Id = c.Slug,
-                    NumericId = c.Id,
-                    Name = c.Name,
-                    Icon = c.Icon,
-                    Desc = c.Description,
-                    Faqs = c.Faqs,
-                    ProductCount = c.Products.Count() + c.SubCategories.SelectMany(sc => sc.Products).Count(),
-                    ParentId = c.ParentId,
-                    SubCategories = c.SubCategories.Select(sc => new CategoryDto
-                    {
-                        Id = sc.Slug,
-                        NumericId = sc.Id,
-                        Name = sc.Name,
-                        Icon = sc.Icon,
-                        Desc = sc.Description,
-                        Faqs = sc.Faqs,
-                        ProductCount = sc.Products.Count(),
-                        ParentId = sc.ParentId
-                    }).ToList()
-                })
-                .Where(dto => dto.ProductCount > 0 || dto.SubCategories.Any())
-                .OrderByDescending(dto => dto.ProductCount)
+                .Where(c => c.ParentId == null || c.ParentId == 0)
                 .ToListAsync();
 
-            return Ok(categories);
+            // 2. Get product counts per category in a single efficient query
+            var productCounts = await _dbContext.Products
+                .GroupBy(p => p.CategoryId)
+                .Select(g => new { CategoryId = g.Key, Count = g.Count() })
+                .ToListAsync();
+            var countMap = productCounts.ToDictionary(x => x.CategoryId, x => x.Count);
+
+            // 3. Map to DTOs in memory
+            var dtos = new System.Collections.Generic.List<CategoryDto>();
+            foreach (var c in dbCategories)
+            {
+                countMap.TryGetValue(c.Id, out int directCount);
+
+                var subCatDtos = new System.Collections.Generic.List<CategoryDto>();
+                int totalSubProducts = 0;
+                if (c.SubCategories != null)
+                {
+                    foreach (var sc in c.SubCategories)
+                    {
+                        countMap.TryGetValue(sc.Id, out int subCount);
+                        totalSubProducts += subCount;
+                        subCatDtos.Add(new CategoryDto
+                        {
+                            Id = sc.Slug,
+                            NumericId = sc.Id,
+                            Name = sc.Name,
+                            Icon = sc.Icon,
+                            Desc = sc.Description,
+                            Faqs = sc.Faqs,
+                            ProductCount = subCount,
+                            ParentId = sc.ParentId
+                        });
+                    }
+                }
+
+                var totalCount = directCount + totalSubProducts;
+                if (totalCount > 0 || subCatDtos.Count > 0)
+                {
+                    dtos.Add(new CategoryDto
+                    {
+                        Id = c.Slug,
+                        NumericId = c.Id,
+                        Name = c.Name,
+                        Icon = c.Icon,
+                        Desc = c.Description,
+                        Faqs = c.Faqs,
+                        ProductCount = totalCount,
+                        ParentId = c.ParentId,
+                        SubCategories = subCatDtos
+                    });
+                }
+            }
+
+            dtos.Sort((a, b) => b.ProductCount.CompareTo(a.ProductCount));
+            return Ok(dtos);
         }
 
-        public class OldCat { public int Id {get;set;} public string Name {get;set;} public int ParentId {get;set;} }
+        public class OldCat { public int Id {get;set;} public string Name {get;set;} = string.Empty; public int ParentId {get;set;} }
         
         /// <summary>
         /// Endpoint sửa triệt để: 
@@ -101,10 +130,10 @@ namespace BatTrang.API.Controllers
                 
                 foreach (var dup in items.Where(c => c.Id != oldIdItem.Id)) {
                     // Chuyển tất cả products từ bản trùng sang bản OLD-ID
-                    await _dbContext.Database.ExecuteSqlRawAsync(
+                    await _dbContext.Database.ExecuteSqlAsync(
                         $"UPDATE Products SET CategoryId = {oldIdItem.Id} WHERE CategoryId = {dup.Id}");
                     // Xóa bản trùng
-                    await _dbContext.Database.ExecuteSqlRawAsync(
+                    await _dbContext.Database.ExecuteSqlAsync(
                         $"DELETE FROM Categories WHERE Id = {dup.Id}");
                     merged++;
                 }
@@ -117,7 +146,7 @@ namespace BatTrang.API.Controllers
                 // ParentId = 0 => danh mục GỐC, không cần gán parent
                 // ParentId = Id => tự tham chiếu (lỗi dữ liệu cũ), bỏ qua
                 if (old.ParentId != 0 && old.ParentId != old.Id) {
-                    var result = await _dbContext.Database.ExecuteSqlRawAsync(
+                    var result = await _dbContext.Database.ExecuteSqlAsync(
                         $"UPDATE Categories SET ParentId = {old.ParentId} WHERE Id = {old.Id}");
                     parentSet += result;
                 }
