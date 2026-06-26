@@ -96,27 +96,41 @@
             var end = new Date(c.endDate);
             var statusHtml = '';
             
+            var statusLabel = '';
             if (c.status !== 'active') {
-                statusHtml = '<span class="badge badge--secondary">Tạm dừng</span>';
+                statusLabel = '<span class="badge badge--secondary">Tạm dừng</span>';
             } else if (now < start) {
-                statusHtml = '<span class="badge" style="background:#f59e0b;color:#fff">Sắp diễn ra</span>';
+                statusLabel = '<span class="badge" style="background:#f59e0b;color:#fff">Sắp diễn ra</span>';
             } else if (now > end) {
-                statusHtml = '<span class="badge badge--danger">Đã kết thúc</span>';
+                statusLabel = '<span class="badge badge--danger">Đã kết thúc</span>';
             } else {
-                statusHtml = '<span class="badge badge--success">Đang diễn ra</span>';
+                statusLabel = '<span class="badge badge--success">Đang diễn ra</span>';
             }
+
+            var toggleHtml = '<div style="display:flex; align-items:center; gap:8px;">' +
+                             '<label class="toggle-switch" style="margin:0" title="Bật/Tắt nhanh">' +
+                             '<input type="checkbox" class="toggle-campaign-status" data-id="' + c.id + '" ' + (c.status === 'active' ? 'checked' : '') + '>' +
+                             '<span class="toggle-slider"></span>' +
+                             '</label>' +
+                             statusLabel +
+                             '</div>';
 
             var productCount = c.productIds ? c.productIds.length : 0;
 
+            var imgHtml = c.bannerImage 
+                ? '<img src="' + getImgUrl(c.bannerImage) + '" onclick="showImagePreview(\'' + getImgUrl(c.bannerImage) + '\')" style="width:50px;height:50px;object-fit:cover;border-radius:6px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.1);">'
+                : '<div style="width:50px;height:50px;background:#f1f5f9;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#cbd5e1;font-size:1.2rem;margin: 0 auto;">🖼️</div>';
+
             html += '<tr>' +
                 '<td class="stt-cell">' + c.id + '</td>' +
+                '<td style="text-align: center;">' + imgHtml + '</td>' +
                 '<td><div style="font-weight:600">' + escapeHTML(c.name) + '</div><div style="font-size:0.8rem;color:var(--text-muted)">' + productCount + ' sản phẩm</div></td>' +
                 '<td><span style="color:var(--danger);font-weight:bold">-' + c.discountPercent + '%</span></td>' +
                 '<td>' +
                     '<div style="font-size:0.85rem">Bắt đầu: ' + start.toLocaleString('vi-VN') + '</div>' +
                     '<div style="font-size:0.85rem">Kết thúc: ' + end.toLocaleString('vi-VN') + '</div>' +
                 '</td>' +
-                '<td>' + statusHtml + '</td>' +
+                '<td>' + toggleHtml + '</td>' +
                 '<td class="actions-cell">' +
                     '<button class="btn btn--sm btn--secondary btn-edit" data-id="' + c.id + '">✏️ Sửa</button>' +
                     '<button class="btn btn--sm btn--danger btn-del" data-id="' + c.id + '">🗑️</button>' +
@@ -563,6 +577,33 @@
 
         // Table delegation
         document.getElementById('campaigns-table-body').addEventListener('click', function(e) {
+            if (e.target.classList.contains('toggle-campaign-status')) {
+                e.preventDefault();
+                var cb = e.target;
+                var id = parseInt(cb.dataset.id);
+                var c = campaigns.find(function(x) { return x.id === id; });
+                if (!c) return;
+                
+                var isCurrentlyActive = c.status === 'active';
+                var newStatus = isCurrentlyActive ? 'inactive' : 'active';
+                var actionText = isCurrentlyActive ? 'tạm dừng' : 'kích hoạt';
+                
+                if (window.adminConfirm) {
+                    adminConfirm('Bạn có chắc muốn ' + actionText + ' chiến dịch "' + escapeHTML(c.name) + '"?', function() {
+                        _fetch('/campaigns/' + id + '/status', {
+                            method: 'PATCH',
+                            body: JSON.stringify({ status: newStatus })
+                        }).then(function() {
+                            if (window.adminToast) adminToast('Đã ' + actionText + ' thành công', 'success');
+                            loadCampaigns();
+                        }).catch(function(err) {
+                            if (window.adminToast) adminToast('Lỗi: ' + err.message, 'error');
+                        });
+                    });
+                }
+                return;
+            }
+
             var editBtn = e.target.closest('.btn-edit');
             var delBtn = e.target.closest('.btn-del');
             if (editBtn) openEditModal(parseInt(editBtn.dataset.id));

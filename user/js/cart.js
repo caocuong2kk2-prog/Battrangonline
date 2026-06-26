@@ -97,7 +97,7 @@
           slug: product.slug,
           price: price,
           size: size || null,
-          image: (product.images && product.images[0]) ? product.images[0] : 'assets/images/placeholder.png',
+          image: (product.images && product.images[0]) ? product.images[0] : 'assets/images/placeholder.webp',
           qty: qty,
           selected: true,
           gifts: product.gifts || []
@@ -534,7 +534,7 @@
       itemGifts.forEach(function(g) {
         var gQty = g.quantity ? (g.quantity * item.qty) : item.qty;
         giftHtml += '<div style="font-size:12px; color:#5c3a1e; display:flex; align-items:center; gap:8px; margin-bottom:4px;">';
-        giftHtml += '<img src="' + (g.imageUrl || 'assets/images/placeholder.png') + '" style="width:24px; height:24px; object-fit:cover; border-radius:4px; border:1px solid #faebd7; cursor:zoom-in;" onclick="if(window.showImageModal) window.showImageModal(\'' + (g.imageUrl || 'assets/images/placeholder.png') + '\', \'' + g.name.replace(/'/g, "\\'") + '\')">';
+        giftHtml += '<img src="' + (g.imageUrl || 'assets/images/placeholder.webp') + '" style="width:24px; height:24px; object-fit:cover; border-radius:4px; border:1px solid #faebd7; cursor:zoom-in;" onclick="if(window.showImageModal) window.showImageModal(\'' + (g.imageUrl || 'assets/images/placeholder.webp') + '\', \'' + g.name.replace(/'/g, "\\'") + '\')">';
         giftHtml += '<span style="line-height:1.2;">' + g.name + ' <b style="color:#d32f2f; font-size:11px; margin-left:2px;">x' + gQty + '</b></span>';
         giftHtml += '</div>';
       });
@@ -546,13 +546,13 @@
       '<div class="cart-item__checkbox">',
       '<input type="checkbox" class="item-select-cb" data-id="' + item.id + '" data-size="' + item.size + '" ' + (item.selected ? 'checked' : '') + ' aria-label="Chọn sản phẩm">',
       '</div>',
-      '<a class="cart-item__img-link" href="product-detail.html?slug=' + item.slug + '">',
+      '<a class="cart-item__img-link" href="/' + item.slug + '">',
       (item.image && item.image.match(/\.(mp4|mov|avi|webm|ogg)$/i)
         ? '<video class="cart-item__img" src="' + item.image + '" autoplay loop muted playsinline style="object-fit:cover;"></video>'
-        : '<img class="cart-item__img" src="' + (item.image || 'assets/images/placeholder.png') + '" alt="' + item.name + '" loading="lazy">'),
+        : '<img class="cart-item__img" src="' + (item.image || 'assets/images/placeholder.webp') + '" alt="' + item.name + '" loading="lazy">'),
       '</a>',
       '<div class="cart-item__details">',
-      '<h3 class="cart-item__title"><a href="product-detail.html?slug=' + item.slug + '" style="color:var(--color-bg-mid);text-decoration:none">' + displayName + '</a></h3>',
+      '<h3 class="cart-item__title"><a href="/' + item.slug + '" style="color:var(--color-bg-mid);text-decoration:none">' + displayName + '</a></h3>',
       '<div class="cart-item__meta">',
       '<span>Đơn giá: <span class="cart-item__price-unit">' + window.formatVND(item.price) + '</span></span>' + stockStatusHtml,
       '</div>',

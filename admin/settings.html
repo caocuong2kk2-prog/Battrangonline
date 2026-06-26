@@ -736,12 +736,12 @@
     }
   </style>
   <script src="https://cdn.ckeditor.com/ckeditor5/38.1.0/super-build/ckeditor.js"></script>
-<link rel="icon" href="assets/images/logo.png" type="image/png">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" type="image/png">
 </head>
 
 <body class="admin-layout">
   <aside class="admin-sidebar" id="adminSidebar">
-      <div class="sidebar-header"><div class="sidebar-brand"><img src="assets/images/logo.png" alt="Logo" class="sidebar-brand__icon" style="width: 32px; height: 32px; object-fit: contain; background: #fff; border-radius: 50%; padding: 2px;"><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
+      <div class="sidebar-header"><div class="sidebar-brand"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Logo" class="sidebar-brand__icon" style="width: 32px; height: 32px; object-fit: contain; background: transparent;"><div><div class="sidebar-brand__name">Phúc Gia Tiên</div><div class="sidebar-brand__sub">Quản trị hệ thống</div></div></div></div>
   <nav class="sidebar-nav">
     <span class="sidebar-section-label">Tổng quan</span>
     <ul class="sidebar-nav__list">
@@ -1851,7 +1851,7 @@
               aboutStoryHtml: defaultHtml  // lưu bản clean (assets/ chuẩn) vào CSDL
             });
             adminToast('Đang khôi phục và lưu vào hệ thống...', 'success');
-            var API_BASE = (window.AdminData && window.AdminData.apiBase) || ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api');
+            var API_BASE = (window.AdminData && window.AdminData.apiBase) || '/api';
             fetch(API_BASE + '/site-config', {
               method: 'POST',
               headers: {
@@ -2022,7 +2022,7 @@
         adminToast('Đang tải ảnh lên máy chủ...', 'info');
 
         var token = (function () { try { return JSON.parse(localStorage.getItem('pgt_admin_session')).token; } catch (e) { return ''; } })();
-        var apiUrl = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api/upload' : '/api/upload';
+        var apiUrl = '/api/upload';
 
         fetch(apiUrl, {
           method: 'POST',

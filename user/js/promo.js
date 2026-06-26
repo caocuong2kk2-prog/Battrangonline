@@ -145,7 +145,7 @@
         width: 100%;
         max-width: 800px;
         background: #110904;
-        border-radius: 4px;
+        border-radius: 16px;
         overflow: hidden;
         transform: scale(0.88) translateY(30px);
         transition: all 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -157,7 +157,7 @@
       }
       .promo-popup__image {
         width: 42%;
-        background: url('assets/images/products-banner.jpg') center/cover no-repeat;
+        background: url('assets/images/products-banner.webp') center/cover no-repeat;
         position: relative;
       }
       .promo-popup__image::after {
@@ -176,9 +176,9 @@
         top: 16px;
         right: 16px;
         z-index: 10;
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.12);
-        color: rgba(255,255,255,0.6);
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: rgba(255,255,255,0.9);
         width: 32px;
         height: 32px;
         border-radius: 50%;
@@ -300,11 +300,11 @@
         font-family: var(--font-body, sans-serif);
       }
       @media (max-width: 768px) {
-        #promo-popup-card { flex-direction: column; max-width: 440px; }
+        #promo-popup-card { flex-direction: column; width: 92%; max-width: 440px; }
         .promo-popup__image { width: 100%; height: 160px; }
         .promo-popup__image::after { background: linear-gradient(to bottom, rgba(17,9,4,0) 0%, rgba(17,9,4,1) 100%); }
         .promo-popup__content-wrapper { width: 100%; }
-        .promo-popup__body { padding: 32px 24px 24px; }
+        .promo-popup__body { padding: 32px 24px 36px; }
         .promo-popup__title { font-size: 28px; }
         .promo-cd-block { min-width: 50px; padding: 8px; }
         .promo-cd-block__num { font-size: 20px; }
@@ -436,9 +436,19 @@
       const overlay = document.createElement('div');
       overlay.id = 'promo-popup-overlay';
 
+      let bgStyle = '';
+      if (activeCampaign.bannerImage) {
+        let imgUrl = activeCampaign.bannerImage;
+        if (imgUrl.startsWith('/uploads/')) {
+          const dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' ? 'http://localhost:5055' : '';
+          imgUrl = dynamicBase + imgUrl;
+        }
+        bgStyle = `style="background-image: url('${imgUrl}');"`;
+      }
+
       overlay.innerHTML = `
         <div id="promo-popup-card">
-          <div class="promo-popup__image"></div>
+          <div class="promo-popup__image" ${bgStyle}></div>
           <div class="promo-popup__content-wrapper">
             <button class="promo-popup__close" id="close-promo-popup" aria-label="Đóng">&times;</button>
             <div class="promo-popup__body">

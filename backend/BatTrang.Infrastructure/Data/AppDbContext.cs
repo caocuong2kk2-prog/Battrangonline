@@ -33,6 +33,10 @@ namespace BatTrang.Infrastructure.Data
         public DbSet<Campaign> Campaigns { get; set; }
         public DbSet<CampaignProduct> CampaignProducts { get; set; }
 
+        // Address Module
+        public DbSet<AdministrativeUnit> AdministrativeUnits { get; set; }
+        public DbSet<SavedAddress> SavedAddresses { get; set; }
+
         // Affiliate Module
         public DbSet<BatTrang.Core.Entities.Affiliate.Affiliate> Affiliates { get; set; }
         public DbSet<Commission> Commissions { get; set; }
@@ -255,6 +259,26 @@ namespace BatTrang.Infrastructure.Data
                 .WithMany()
                 .HasForeignKey(cp => cp.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Address Module
+            modelBuilder.Entity<AdministrativeUnit>()
+                .HasKey(a => new { a.Code, a.Level });
+
+            modelBuilder.Entity<AdministrativeUnit>()
+                .Property(a => a.Code)
+                .ValueGeneratedNever(); // Code đến từ API bên ngoài, không tự sinh
+
+            modelBuilder.Entity<AdministrativeUnit>()
+                .HasIndex(a => new { a.Level, a.ParentCode });
+
+            modelBuilder.Entity<SavedAddress>()
+                .HasOne(sa => sa.Customer)
+                .WithMany()
+                .HasForeignKey(sa => sa.CustomerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<SavedAddress>()
+                .HasIndex(sa => sa.CustomerId);
         }
     }
 }

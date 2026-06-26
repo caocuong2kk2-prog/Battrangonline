@@ -20,74 +20,57 @@
   // ======================================================
   async function loadComponents() {
     const headerPh = document.getElementById('header-placeholder');
-    if (headerPh) {
+    const footerPh = document.getElementById('footer-placeholder');
+    
+    // Fetch both in parallel
+    const pHeader = headerPh ? fetch(getComponentPath("header.html") + '?v=' + new Date().getTime()).then(r => r.ok ? r.text() : null) : Promise.resolve(null);
+    const pFooter = footerPh ? fetch(getComponentPath("footer.html") + '?v=' + new Date().getTime()).then(r => r.ok ? r.text() : null) : Promise.resolve(null);
+    
+    const [headerHtml, footerHtml] = await Promise.all([pHeader, pFooter]);
+
+    if (headerPh && headerHtml) {
       try {
-        const res = await fetch(getComponentPath("header.html") + '?v=' + new Date().getTime());
-        if (res.ok) {
-          const html = await res.text();
-          headerPh.insertAdjacentHTML('beforebegin', html);
-          const newHeader = document.getElementById('site-header');
-          if (newHeader) {
-            if (headerPh.className) {
-              newHeader.className = headerPh.className;
-            }
-            // Fix relative images and links in the header for subfolder root compatibility
-            const pathname = window.location.pathname.toLowerCase();
-            if (pathname === '/user' || pathname.startsWith('/user/')) {
-              newHeader.querySelectorAll('img').forEach(function (img) {
-                const src = img.getAttribute('src');
-                if (src && !src.startsWith('http') && !src.startsWith('/')) {
-                  img.src = '/user/' + src;
-                }
-              });
-              newHeader.querySelectorAll('a').forEach(function (a) {
-                const href = a.getAttribute('href');
-                if (href && !href.startsWith('http') && !href.startsWith('/') && !href.startsWith('#')) {
-                  a.href = '/user/' + href;
-                }
-              });
-            }
+        headerPh.insertAdjacentHTML('beforebegin', headerHtml);
+        const newHeader = document.getElementById('site-header');
+        if (newHeader) {
+          if (headerPh.className) newHeader.className = headerPh.className;
+          const pathname = window.location.pathname.toLowerCase();
+          if (pathname === '/user' || pathname.startsWith('/user/')) {
+            newHeader.querySelectorAll('img').forEach(function (img) {
+              const src = img.getAttribute('src');
+              if (src && !src.startsWith('http') && !src.startsWith('/')) img.src = '/user/' + src;
+            });
+            newHeader.querySelectorAll('a').forEach(function (a) {
+              const href = a.getAttribute('href');
+              if (href && !href.startsWith('http') && !href.startsWith('/') && !href.startsWith('#')) a.href = '/user/' + href;
+            });
           }
-          headerPh.remove();
-          if (typeof populateHeaderMegaMenu === 'function') populateHeaderMegaMenu();
-          document.dispatchEvent(new Event('search-ready'));
         }
-      } catch (err) {
-        console.error('Failed to load header', err);
-      }
+        headerPh.remove();
+        if (typeof populateHeaderMegaMenu === 'function') populateHeaderMegaMenu();
+        document.dispatchEvent(new Event('search-ready'));
+      } catch (err) { console.error('Failed to parse header', err); }
     }
 
-    const footerPh = document.getElementById('footer-placeholder');
-    if (footerPh) {
+    if (footerPh && footerHtml) {
       try {
-        const res = await fetch(getComponentPath("footer.html") + '?v=' + new Date().getTime());
-        if (res.ok) {
-          const html = await res.text();
-          footerPh.insertAdjacentHTML('beforebegin', html);
-          const newFooter = document.getElementById('site-footer');
-          if (newFooter) {
-            // Fix relative images and links in the footer for subfolder root compatibility
-            const pathname = window.location.pathname.toLowerCase();
-            if (pathname === '/user' || pathname.startsWith('/user/')) {
-              newFooter.querySelectorAll('img').forEach(function (img) {
-                const src = img.getAttribute('src');
-                if (src && !src.startsWith('http') && !src.startsWith('/')) {
-                  img.src = '/user/' + src;
-                }
-              });
-              newFooter.querySelectorAll('a').forEach(function (a) {
-                const href = a.getAttribute('href');
-                if (href && !href.startsWith('http') && !href.startsWith('/') && !href.startsWith('#')) {
-                  a.href = '/user/' + href;
-                }
-              });
-            }
+        footerPh.insertAdjacentHTML('beforebegin', footerHtml);
+        const newFooter = document.getElementById('site-footer');
+        if (newFooter) {
+          const pathname = window.location.pathname.toLowerCase();
+          if (pathname === '/user' || pathname.startsWith('/user/')) {
+            newFooter.querySelectorAll('img').forEach(function (img) {
+              const src = img.getAttribute('src');
+              if (src && !src.startsWith('http') && !src.startsWith('/')) img.src = '/user/' + src;
+            });
+            newFooter.querySelectorAll('a').forEach(function (a) {
+              const href = a.getAttribute('href');
+              if (href && !href.startsWith('http') && !href.startsWith('/') && !href.startsWith('#')) a.href = '/user/' + href;
+            });
           }
-          footerPh.remove();
         }
-      } catch (err) {
-        console.error('Failed to load footer', err);
-      }
+        footerPh.remove();
+      } catch (err) { console.error('Failed to parse footer', err); }
     }
   }
 
@@ -101,7 +84,11 @@ function populateHeaderMegaMenu() {
       if (!filters || !filters.categories) return;
 
       var parents = (filters.categories || [])
-        .filter(function(c) { return !c.parentId || c.parentId === null; })
+        .filter(function(c) { 
+          return (!c.parentId || c.parentId === null) && 
+                 c.id !== 'all' && 
+                 c.name && c.name.toLowerCase() !== 'tất cả'; 
+        })
         .sort(function(a, b) { 
           var aSubs = a.subCategories && a.subCategories.length ? a.subCategories.length : 0;
           var bSubs = b.subCategories && b.subCategories.length ? b.subCategories.length : 0;
@@ -191,8 +178,10 @@ function populateHeaderMegaMenu() {
       }
     }
 
-    window.addEventListener('scroll', handleHeaderScroll, { passive: true });
-    handleHeaderScroll(); // run on load
+    window.addEventListener('scroll', function() {
+      requestAnimationFrame(handleHeaderScroll);
+    }, { passive: true });
+    requestAnimationFrame(handleHeaderScroll); // run on load
 
     // Mobile nav toggle
     if (navToggle && siteNav) {
@@ -382,7 +371,7 @@ function populateHeaderMegaMenu() {
     const btn = document.getElementById('back-to-top');
     if (btn) {
       // ── Ẩn/hiện: class toggle để CSS transition slide từ phải ──
-      let lastScrollY = window.scrollY;
+      let lastScrollY = 0;
       let ticking = false;
 
       function onScroll() {
@@ -736,17 +725,80 @@ function populateHeaderMegaMenu() {
       if (config.slogan) el.textContent = config.slogan;
     });
 
+    // 7.1. Dynamic SEO Tags updates
+    if (config.storeName) {
+      // Update Title
+      var currentTitle = document.title;
+      if (currentTitle.includes('Phúc Gia Tiên')) {
+        document.title = currentTitle.replace(/Phúc Gia Tiên/g, config.storeName);
+      }
+      
+      // Update Meta Tags
+      var metaOgTitle = document.querySelector('meta[property="og:title"]');
+      if (metaOgTitle && metaOgTitle.content.includes('Phúc Gia Tiên')) {
+        metaOgTitle.content = metaOgTitle.content.replace(/Phúc Gia Tiên/g, config.storeName);
+      }
+      
+      var metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        var newDesc = metaDesc.content;
+        newDesc = newDesc.replace(/Phúc Gia Tiên/g, config.storeName);
+        if (config.phone) newDesc = newDesc.replace(/0986\s?123\s?456/g, config.phone);
+        if (config.email) newDesc = newDesc.replace(/phucgatien@gmail\.com/g, config.email);
+        metaDesc.content = newDesc;
+      }
+      
+      var metaOgDesc = document.querySelector('meta[property="og:description"]');
+      if (metaOgDesc) {
+        var newOgDesc = metaOgDesc.content;
+        newOgDesc = newOgDesc.replace(/Phúc Gia Tiên/g, config.storeName);
+        if (config.phone) newOgDesc = newOgDesc.replace(/0986\s?123\s?456/g, config.phone);
+        if (config.email) newOgDesc = newOgDesc.replace(/phucgatien@gmail\.com/g, config.email);
+        metaOgDesc.content = newOgDesc;
+      }
+    }
+
     // 8. Working hours updates
     document.querySelectorAll('.js-config-working-hours').forEach(function (el) {
       if (config.workingHours) el.textContent = config.workingHours;
     });
 
-    // 9. Map iframe updates
+    // 9. Map iframe updates (Advanced Lazy Load)
     document.querySelectorAll('.js-config-map-iframe').forEach(function (el) {
       if(config.mapIframe) {
         var txt = document.createElement("textarea");
         txt.innerHTML = config.mapIframe;
-        el.innerHTML = txt.value;
+        
+        // Tạo DOM tạm để lấy src
+        var tempDiv = document.createElement('div');
+        tempDiv.innerHTML = txt.value;
+        var iframe = tempDiv.querySelector('iframe');
+        
+        if (iframe) {
+          var realSrc = iframe.getAttribute('src');
+          iframe.removeAttribute('src'); // Bỏ src để không load
+          iframe.setAttribute('data-src', realSrc);
+          iframe.setAttribute('title', 'Bản đồ chỉ đường đến Phúc Gia Tiên');
+          
+          el.innerHTML = tempDiv.innerHTML;
+          var newIframe = el.querySelector('iframe');
+          
+          if (window.IntersectionObserver) {
+            var mapObserver = new IntersectionObserver(function(entries) {
+              entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                  entry.target.setAttribute('src', entry.target.getAttribute('data-src'));
+                  mapObserver.unobserve(entry.target);
+                }
+              });
+            }, { rootMargin: '300px' });
+            mapObserver.observe(newIframe);
+          } else {
+            newIframe.setAttribute('src', realSrc);
+          }
+        } else {
+          el.innerHTML = txt.value;
+        }
       }
     });
 
@@ -777,60 +829,58 @@ function populateHeaderMegaMenu() {
 
     // 10. Image/Banner updates
     document.querySelectorAll('.js-config-logo').forEach(function (el) {
-      if (config.logoUrl) {
-        var logoUrl = resolveImgUrl(config.logoUrl, '');
-        if (logoUrl && !logoUrl.startsWith('data:')) {
-          logoUrl += '?v=' + Date.now();
-        }
-        el.src = logoUrl;
+      var logoUrl = config.logoUrl ? resolveImgUrl(config.logoUrl, '') : 'assets/images/logo.png';
+      if (logoUrl && !logoUrl.startsWith('data:')) {
+        logoUrl += '?v=' + Date.now();
       }
+      el.src = logoUrl;
     });
-    // Cập nhật favicon từ logoUrl trong DB
-    if (config.logoUrl) {
-      var oldFavicon = document.querySelector('link[rel="icon"]');
-      var oldShortcut = document.querySelector('link[rel="shortcut icon"]');
+    // Cập nhật favicon từ logoUrl trong DB hoặc mặc định
+    var finalLogoUrl = config.logoUrl ? config.logoUrl : 'assets/images/logo.png';
+    var oldFavicon = document.querySelector('link[rel="icon"]');
+    var oldShortcut = document.querySelector('link[rel="shortcut icon"]');
 
-      var newFavicon = document.createElement('link');
-      newFavicon.rel = 'icon';
+    var newFavicon = document.createElement('link');
+    newFavicon.rel = 'icon';
 
-      // Xác định loại MIME phù hợp (hỗ trợ cả base64 và file đường dẫn tĩnh)
-      var mimeType = 'image/x-icon';
-      if (config.logoUrl.startsWith('data:')) {
-        var match = config.logoUrl.match(/^data:(image\/[^;]+);/);
-        if (match) {
-          mimeType = match[1];
-        }
-      } else if (config.logoUrl.toLowerCase().endsWith('.png')) {
-        mimeType = 'image/png';
-      } else if (config.logoUrl.toLowerCase().endsWith('.jpg') || config.logoUrl.toLowerCase().endsWith('.jpeg')) {
-        mimeType = 'image/jpeg';
-      } else if (config.logoUrl.toLowerCase().endsWith('.gif')) {
-        mimeType = 'image/gif';
-      } else if (config.logoUrl.toLowerCase().endsWith('.svg')) {
-        mimeType = 'image/svg+xml';
+    // Xác định loại MIME phù hợp (hỗ trợ cả base64 và file đường dẫn tĩnh)
+    var mimeType = 'image/x-icon';
+    if (finalLogoUrl.startsWith('data:')) {
+      var match = finalLogoUrl.match(/^data:(image\/[^;]+);/);
+      if (match) {
+        mimeType = match[1];
       }
-      newFavicon.type = mimeType;
-
-      // Tránh việc nối thêm cache-buster '?v=' cho ảnh base64 vì sẽ làm hỏng định dạng base64
-      if (config.logoUrl.startsWith('data:')) {
-        newFavicon.href = config.logoUrl;
-      } else {
-        newFavicon.href = resolveImgUrl(config.logoUrl, '') + '?v=' + Date.now();
-      }
-
-      document.head.appendChild(newFavicon);
-      if (oldFavicon) oldFavicon.remove();
-      if (oldShortcut) oldShortcut.remove();
+    } else if (finalLogoUrl.toLowerCase().endsWith('.png')) {
+      mimeType = 'image/png';
+    } else if (finalLogoUrl.toLowerCase().endsWith('.jpg') || finalLogoUrl.toLowerCase().endsWith('.jpeg')) {
+      mimeType = 'image/jpeg';
+    } else if (finalLogoUrl.toLowerCase().endsWith('.gif')) {
+      mimeType = 'image/gif';
+    } else if (finalLogoUrl.toLowerCase().endsWith('.svg')) {
+      mimeType = 'image/svg+xml';
     }
+    newFavicon.type = mimeType;
+
+    // Tránh việc nối thêm cache-buster '?v=' cho ảnh base64 vì sẽ làm hỏng định dạng base64
+    if (finalLogoUrl.startsWith('data:')) {
+      newFavicon.href = finalLogoUrl;
+    } else {
+      var resolvedUrl = resolveImgUrl(finalLogoUrl, '');
+      newFavicon.href = resolvedUrl;
+    }
+
+    document.head.appendChild(newFavicon);
+    if (oldFavicon) oldFavicon.remove();
+    if (oldShortcut) oldShortcut.remove();
     document.querySelectorAll('.js-config-home-banner-img').forEach(function (el) {
-      if (config.homeBanner) el.src = resolveImgUrl(config.homeBanner, '');
+      if (config.homeBanner) el.src = resolveImgUrl(config.homeBanner, '').replace('.jpeg', '.webp').replace('.jpg', '.webp');
     });
     document.querySelectorAll('.js-config-cta-banner-img').forEach(function (el) {
       if (config.ctaBanner === '') {
         el.style.opacity = '0';
         el.removeAttribute('src');
       } else {
-        el.src = resolveImgUrl(config.ctaBanner, 'assets/images/bg.jpeg');
+        el.src = resolveImgUrl(config.ctaBanner, 'assets/images/bg.webp').replace('.jpeg', '.webp').replace('.jpg', '.webp');
         el.style.opacity = '1';
       }
     });
@@ -1131,7 +1181,7 @@ function populateHeaderMegaMenu() {
         }
 
         var finalImgSrc = imgSrc.startsWith('/') || imgSrc.startsWith('http') || imgSrc.startsWith('data:') ? imgSrc : basePath + imgSrc;
-        var href = basePath + 'product-detail.html?slug=' + p.slug;
+        var href = basePath ? basePath.replace(/\/$/, '') + '/' + p.slug : '/' + p.slug;
         gridHTML +=
           '<a class="search-result-card" href="' + href + '" style="display:flex; flex-direction:column; overflow:hidden;">' +
           '<div class="product-card__media" style="background-image:url(\'' + finalImgSrc + '\'); margin:0; border-radius:0;">' +

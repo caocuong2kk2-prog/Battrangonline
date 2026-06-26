@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "O9hedpUhaPYkcCBCXR1nDsTPXQUMv7cyUmoTRI+fJdg=",
+  "Hash": "v/vAepoYv7SkiMMfgvaEUmxGq1MH/E4VH0uRDqG2n5U=",
   "Source": "BatTrang.API",
   "BasePath": "_content/BatTrang.API",
   "Mode": "Default",
@@ -264,6 +264,25 @@
       "OriginalItemSpec": "wwwroot\\uploads\\360ffbef-9405-4314-b72c-2320a78f4646_z7871573994855_c52dc42da49012c17ec3e5429e79fb0a.jpg"
     },
     {
+      "Identity": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\3b6607ea-862f-4e21-be7e-cef0a30bc93c_Logo.png",
+      "SourceId": "BatTrang.API",
+      "SourceType": "Discovered",
+      "ContentRoot": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\",
+      "BasePath": "_content/BatTrang.API",
+      "RelativePath": "uploads/3b6607ea-862f-4e21-be7e-cef0a30bc93c_Logo.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\3b6607ea-862f-4e21-be7e-cef0a30bc93c_Logo.png"
+    },
+    {
       "Identity": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\4dd99ca6-733f-44bc-99df-3fa232d1658c_z7875233661651_5ab6450c53f7033aa2d01de21fcbc5c1.jpg",
       "SourceId": "BatTrang.API",
       "SourceType": "Discovered",
@@ -490,25 +509,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\7b13fb0e-fcb0-44bd-9035-11bd13313db2_z7812881801303_55d30512b5115c438412550a5ec9cbb2.jpg"
-    },
-    {
-      "Identity": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\7fd50705-ef62-4229-b63a-80a7758e7b28_logo-removebg-preview.png",
-      "SourceId": "BatTrang.API",
-      "SourceType": "Discovered",
-      "ContentRoot": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\",
-      "BasePath": "_content/BatTrang.API",
-      "RelativePath": "uploads/7fd50705-ef62-4229-b63a-80a7758e7b28_logo-removebg-preview.png",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\uploads\\7fd50705-ef62-4229-b63a-80a7758e7b28_logo-removebg-preview.png"
     },
     {
       "Identity": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\82aff2d6-6384-423c-8f76-86936968b158_z7812881887820_3e684b6bbd179fb1747440229947a136.jpg",

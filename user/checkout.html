@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -104,10 +104,34 @@
                 <span class="field-error-msg" id="err-email">Email không đúng định dạng (VD: ten@gmail.com).</span>
               </div>
               
+              <div class="form-group" id="group-saved-address" style="display: none; margin-bottom: 24px;">
+                <label for="saved-address-select">Chọn từ địa chỉ đã lưu</label>
+                <select class="form-control address-select" id="saved-address-select">
+                  <option value="">-- Chọn địa chỉ --</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group" id="group-province">
+                  <label for="shipping-province">Tỉnh / Thành phố <span class="required">*</span></label>
+                  <select class="form-control address-select" id="shipping-province" required>
+                    <option value="">-- Chọn Tỉnh / Thành phố --</option>
+                  </select>
+                  <span class="field-error-msg" id="err-province">Vui lòng chọn Tỉnh / Thành phố.</span>
+                </div>
+                <div class="form-group" id="group-ward">
+                  <label for="shipping-ward">Xã / Phường / Thị trấn <span class="required">*</span></label>
+                  <select class="form-control address-select" id="shipping-ward" required disabled>
+                    <option value="">-- Chọn Xã / Phường --</option>
+                  </select>
+                  <span class="field-error-msg" id="err-ward">Vui lòng chọn Xã / Phường.</span>
+                </div>
+              </div>
+              
               <div class="form-group" id="group-address">
-                <label for="shipping-address">Địa chỉ giao hàng <span class="required">*</span></label>
-                <input class="form-control" type="text" id="shipping-address" placeholder="Số nhà, ngõ/đường, phường/xã, quận/huyện, tỉnh/TP" required autocomplete="street-address">
-                <span class="field-error-msg" id="err-address">Vui lòng nhập địa chỉ giao hàng.</span>
+                <label for="shipping-address">Địa chỉ chi tiết <span class="required">*</span></label>
+                <input class="form-control" type="text" id="shipping-address" placeholder="Số nhà, ngõ/đường..." required autocomplete="street-address">
+                <span class="field-error-msg" id="err-address">Vui lòng nhập địa chỉ chi tiết.</span>
               </div>
               
               <div class="form-group">
@@ -236,6 +260,7 @@
   <div id="footer-placeholder"></div>
 
   <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/promo.js?v=8"></script>
   <script src="js/common.js"></script>
   <script src="js/cart.js"></script>
@@ -264,6 +289,247 @@
         document.querySelectorAll('.form-group.has-error').forEach(function(g) {
           g.classList.remove('has-error');
         });
+      }
+
+      // ── Custom Select System ────────────────────
+      function initCustomSelect(selectEl) {
+        if (!selectEl) return;
+        if (selectEl.nextElementSibling && selectEl.nextElementSibling.classList.contains('custom-select-trigger')) {
+          updateCustomSelect(selectEl);
+          return;
+        }
+
+        var wrapper = document.createElement('div');
+        wrapper.className = 'custom-select-wrapper';
+        if (selectEl.disabled) wrapper.classList.add('disabled');
+        
+        selectEl.parentNode.insertBefore(wrapper, selectEl);
+        wrapper.appendChild(selectEl);
+
+        var trigger = document.createElement('div');
+        trigger.className = 'custom-select-trigger';
+        trigger.innerHTML = '<span class=\"custom-select-text\">' + (selectEl.options[selectEl.selectedIndex]?.textContent || '') + '</span><div class=\"arrow\"></div>';
+        
+        var optionsContainer = document.createElement('div');
+        optionsContainer.className = 'custom-select-options';
+
+        var searchBox = document.createElement('div');
+        searchBox.className = 'custom-select-search';
+        searchBox.innerHTML = '<input type=\"text\" placeholder=\"Tìm kiếm...\">';
+        optionsContainer.appendChild(searchBox);
+
+        var optionsList = document.createElement('div');
+        optionsList.className = 'custom-select-list';
+        optionsContainer.appendChild(optionsList);
+
+        wrapper.appendChild(trigger);
+        wrapper.appendChild(optionsContainer);
+
+        function renderOptions(filter) {
+          optionsList.innerHTML = '';
+          var hasVisible = false;
+          Array.from(selectEl.options).forEach(function(opt, index) {
+            if (index === 0 && !opt.value) return; 
+            if (filter && opt.textContent.toLowerCase().indexOf(filter.toLowerCase()) === -1) return;
+            hasVisible = true;
+            
+            var optionEl = document.createElement('div');
+            optionEl.className = 'custom-select-option' + (selectEl.selectedIndex === index ? ' selected' : '');
+            optionEl.textContent = opt.textContent;
+            optionEl.dataset.value = opt.value;
+            
+            optionEl.addEventListener('click', function(e) {
+              e.stopPropagation();
+              selectEl.value = opt.value;
+              selectEl.dispatchEvent(new Event('change'));
+              trigger.querySelector('.custom-select-text').textContent = opt.textContent;
+              wrapper.classList.remove('open');
+              
+              var formGroup = wrapper.closest('.form-group');
+              if (formGroup) formGroup.classList.remove('has-error');
+            });
+            optionsList.appendChild(optionEl);
+          });
+          if (!hasVisible) {
+            var empty = document.createElement('div');
+            empty.className = 'custom-select-option';
+            empty.style.color = '#999';
+            empty.textContent = 'Không tìm thấy kết quả';
+            optionsList.appendChild(empty);
+          }
+        }
+
+        renderOptions();
+
+        trigger.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (selectEl.disabled) return;
+          
+          var isOpen = wrapper.classList.contains('open');
+          document.querySelectorAll('.custom-select-wrapper').forEach(function(w) { w.classList.remove('open'); });
+          
+          if (!isOpen) {
+            wrapper.classList.add('open');
+            var input = searchBox.querySelector('input');
+            input.value = '';
+            renderOptions();
+            setTimeout(function() { input.focus(); }, 50);
+          }
+        });
+
+        searchBox.querySelector('input').addEventListener('input', function(e) {
+          renderOptions(e.target.value);
+        });
+        searchBox.addEventListener('click', function(e) { e.stopPropagation(); });
+
+        document.addEventListener('click', function(e) {
+          if (!wrapper.contains(e.target)) {
+            wrapper.classList.remove('open');
+          }
+        });
+      }
+
+      function updateCustomSelect(selectEl) {
+        if (!selectEl) return;
+        var wrapper = selectEl.closest('.custom-select-wrapper');
+        if (!wrapper) {
+            initCustomSelect(selectEl);
+            return;
+        }
+        
+        if (selectEl.disabled) wrapper.classList.add('disabled');
+        else wrapper.classList.remove('disabled');
+        
+        var trigger = wrapper.querySelector('.custom-select-trigger .custom-select-text');
+        if (trigger) trigger.textContent = selectEl.options[selectEl.selectedIndex]?.textContent || '';
+      }
+
+      // ── Address System ────────────────────────
+      var savedAddresses = [];
+      
+      function initAddressSystem() {
+        var provinceSelect = document.getElementById('shipping-province');
+        var wardSelect = document.getElementById('shipping-ward');
+        var savedSelect = document.getElementById('saved-address-select');
+        var savedGroup = document.getElementById('group-saved-address');
+        var detailInput = document.getElementById('shipping-address');
+        var nameInput = document.getElementById('shipping-name');
+        var phoneInput = document.getElementById('shipping-phone');
+
+        // Load provinces
+        if (window.PhucGiaTienAPI) {
+          fetch(window.PhucGiaTienAPI.apiBase + '/Address/provinces')
+            .then(function(res) { return res.json(); })
+            .then(function(provinces) {
+              provinces.forEach(function(p) {
+                var opt = document.createElement('option');
+                opt.value = p.code;
+                opt.textContent = p.name;
+                provinceSelect.appendChild(opt);
+              });
+              initCustomSelect(provinceSelect);
+
+              // After loading provinces, try to load saved address for guest
+              var guestAddress = localStorage.getItem('pgt_last_address');
+              if (guestAddress && !window.AuthService?.getCurrentUser()) {
+                try {
+                  var data = JSON.parse(guestAddress);
+                  provinceSelect.value = data.provinceCode;
+                  updateCustomSelect(provinceSelect);
+                  loadWards(data.provinceCode, data.wardCode);
+                  detailInput.value = data.detailAddress;
+                } catch(e) {}
+              }
+            })
+            .catch(function(err) { console.error('Error loading provinces', err); });
+        }
+
+        // Load saved addresses if logged in
+        if (window.AuthService && window.AuthService.getCurrentUser()) {
+          var token = localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+          if (token) {
+            fetch(window.PhucGiaTienAPI.apiBase + '/Address/saved', {
+              headers: { 'Authorization': 'Bearer ' + token }
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(addresses) {
+              if (addresses && addresses.length > 0) {
+                savedAddresses = addresses;
+                savedGroup.style.display = 'block';
+                addresses.forEach(function(a) {
+                  var opt = document.createElement('option');
+                  opt.value = a.id;
+                  opt.textContent = (a.label ? '[' + a.label + '] ' : '') + a.fullAddress;
+                  savedSelect.appendChild(opt);
+                  
+                  if (a.isDefault) {
+                    savedSelect.value = a.id;
+                    applySavedAddress(a);
+                  }
+                });
+                initCustomSelect(savedSelect);
+              }
+            })
+            .catch(function(err) { console.error('Error loading saved addresses', err); });
+          }
+        }
+
+        // Event listeners
+        provinceSelect.addEventListener('change', function() {
+          var provinceCode = this.value;
+          wardSelect.innerHTML = '<option value="">-- Chọn Xã / Phường --</option>';
+          wardSelect.disabled = true;
+          updateCustomSelect(wardSelect);
+          
+          if (provinceCode) {
+            loadWards(provinceCode);
+          }
+        });
+
+        savedSelect.addEventListener('change', function() {
+          var id = parseInt(this.value, 10);
+          if (id) {
+            var addr = savedAddresses.find(function(a) { return a.id === id; });
+            if (addr) applySavedAddress(addr);
+          } else {
+            // Reset fields
+            provinceSelect.value = '';
+            wardSelect.innerHTML = '<option value="">-- Chọn Xã / Phường --</option>';
+            wardSelect.disabled = true;
+            detailInput.value = '';
+            updateCustomSelect(provinceSelect);
+            updateCustomSelect(wardSelect);
+          }
+        });
+
+        function loadWards(provinceCode, selectedWardCode) {
+          fetch(window.PhucGiaTienAPI.apiBase + '/Address/wards/' + provinceCode)
+            .then(function(res) { return res.json(); })
+            .then(function(wards) {
+              wardSelect.innerHTML = '<option value="">-- Chọn Xã / Phường --</option>';
+              wards.forEach(function(w) {
+                var opt = document.createElement('option');
+                opt.value = w.code;
+                opt.textContent = w.name;
+                wardSelect.appendChild(opt);
+              });
+              wardSelect.disabled = false;
+              if (selectedWardCode) {
+                wardSelect.value = selectedWardCode;
+              }
+              initCustomSelect(wardSelect);
+            })
+            .catch(function(err) { console.error('Error loading wards', err); });
+        }
+
+        function applySavedAddress(addr) {
+          if (nameInput && !nameInput.value) nameInput.value = addr.recipientName;
+          if (phoneInput && !phoneInput.value) phoneInput.value = addr.phone;
+          provinceSelect.value = addr.provinceCode;
+          updateCustomSelect(provinceSelect);
+          loadWards(addr.provinceCode, addr.wardCode);
+          detailInput.value = addr.detailAddress;
+        }
       }
 
       // ── Init ─────────────────────────────────
@@ -335,14 +601,16 @@
           Promise.all(healPromises).then(function () {
             renderSummary(selectedItems);
             setupFormSubmit(selectedItems);
+            initAddressSystem();
           });
         } else {
           renderSummary(selectedItems);
           setupFormSubmit(selectedItems);
+          initAddressSystem();
         }
 
         // Real-time clear error on input
-        ['shipping-name', 'shipping-phone', 'shipping-email', 'shipping-address'].forEach(function(id) {
+        ['shipping-name', 'shipping-phone', 'shipping-email', 'shipping-address', 'shipping-province', 'shipping-ward'].forEach(function(id) {
           var el = document.getElementById(id);
           if (el) {
             el.addEventListener('input', function() {
@@ -350,7 +618,9 @@
                 'shipping-name': 'group-name',
                 'shipping-phone': 'group-phone',
                 'shipping-email': 'group-email',
-                'shipping-address': 'group-address'
+                'shipping-address': 'group-address',
+                'shipping-province': 'group-province',
+                'shipping-ward': 'group-ward'
               };
               setFieldError(groupMap[id], false);
             });
@@ -388,7 +658,7 @@
               item.gifts.forEach(function(g) {
                 var gQty = g.quantity ? (g.quantity * item.qty) : item.qty;
                 giftHtml += '<div style="font-size:11px; color:#8b5a2b; display:flex; align-items:center; gap:6px; margin-bottom:4px;">';
-                giftHtml += '<img src="' + (g.imageUrl || 'assets/images/placeholder.png') + '" style="width:20px; height:20px; object-fit:cover; border-radius:3px; border:1px solid rgba(200,146,42,0.2); cursor:zoom-in;" onclick="if(window.showImageModal) window.showImageModal(\'' + (g.imageUrl || 'assets/images/placeholder.png') + '\', \'' + g.name.replace(/'/g, "\\'") + '\')">';
+                giftHtml += '<img src="' + (g.imageUrl || 'assets/images/placeholder.webp') + '" style="width:20px; height:20px; object-fit:cover; border-radius:3px; border:1px solid rgba(200,146,42,0.2); cursor:zoom-in;" onclick="if(window.showImageModal) window.showImageModal(\'' + (g.imageUrl || 'assets/images/placeholder.webp') + '\', \'' + g.name.replace(/'/g, "\\'") + '\')">';
                 giftHtml += '<span style="line-height:1.2; flex-grow:1;">Quà tặng: <strong>' + g.name + '</strong> <b style="color:#d32f2f; margin-left:2px;">x' + gQty + '</b></span>';
                 giftHtml += '</div>';
               });
@@ -430,9 +700,18 @@
           var name = document.getElementById('shipping-name').value.trim();
           var phone = document.getElementById('shipping-phone').value.trim();
           var email = document.getElementById('shipping-email').value.trim();
-          var address = document.getElementById('shipping-address').value.trim();
           var notes = document.getElementById('shipping-notes').value.trim();
           var method = 'COD'; // Forced to COD only
+          
+          var provinceSelect = document.getElementById('shipping-province');
+          var wardSelect = document.getElementById('shipping-ward');
+          var detailInput = document.getElementById('shipping-address');
+          
+          var provinceCode = provinceSelect.value;
+          var provinceName = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
+          var wardCode = wardSelect.value;
+          var wardName = wardSelect.options[wardSelect.selectedIndex]?.text || '';
+          var detailAddress = detailInput.value.trim();
 
           // Inline validation
           clearErrors();
@@ -446,7 +725,9 @@
           var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           if (email && !emailRegex.test(email)) { setFieldError('group-email', true); hasError = true; }
 
-          if (!address) { setFieldError('group-address', true); hasError = true; }
+          if (!provinceCode) { setFieldError('group-province', true); hasError = true; }
+          if (!wardCode) { setFieldError('group-ward', true); hasError = true; }
+          if (!detailAddress) { setFieldError('group-address', true); hasError = true; }
 
           if (hasError) {
             // Scroll to first error
@@ -457,6 +738,8 @@
             }
             return;
           }
+          
+          var fullAddress = detailAddress + ', ' + wardName + ', ' + provinceName;
 
           // Loading state
           isSubmitting = true;
@@ -474,7 +757,7 @@
             customer: name,
             phone: phone.replace(/\D/g, ''),
             email: email || '',
-            address: address,
+            address: fullAddress,
             customerNote: notes || null,
             items: items.map(function(i) {
               return {
@@ -484,6 +767,19 @@
               };
             })
           };
+
+          // Temporarily save address payload for post-order save prompt
+          var addrPayload = {
+            recipientName: name,
+            phone: phone.replace(/\D/g, ''),
+            provinceCode: parseInt(provinceCode),
+            provinceName: provinceName,
+            wardCode: parseInt(wardCode),
+            wardName: wardName,
+            detailAddress: detailAddress,
+            fullAddress: fullAddress
+          };
+          sessionStorage.setItem('pgt_temp_address', JSON.stringify(addrPayload));
 
           // Send to backend API
           if (window.PhucGiaTienAPI && typeof window.PhucGiaTienAPI.createOrder === 'function') {
@@ -498,7 +794,7 @@
                   name: name,
                   phone: phone.replace(/\D/g, ''), // chuẩn hóa SĐT chỉ số
                   email: email,
-                  address: address,
+                  address: fullAddress,
                   customerNote: notes,
                   paymentMethod: 'Thanh toán khi nhận hàng (COD)',
                   items: items.map(function(i) {
@@ -545,10 +841,16 @@
                   submitBtn.classList.remove('loading');
                   submitBtn.disabled = false;
                 }
+                
+                var errorMsg = 'Không thể kết nối đến máy chủ hoặc xử lý đơn hàng. Vui lòng thử lại!';
+                if (err && err.message) {
+                  errorMsg = err.message;
+                }
+                
                 if (typeof window.showToast === 'function') {
-                  window.showToast('Không thể kết nối đến máy chủ hoặc xử lý đơn hàng. Vui lòng thử lại!', 'error');
+                  window.showToast(errorMsg, 'error');
                 } else {
-                  alert('Có lỗi xảy ra trong quá trình đặt hàng. Vui lòng thử lại!');
+                  alert(errorMsg);
                 }
               });
           } else {
@@ -561,7 +863,7 @@
               name: name,
               phone: phone.replace(/\D/g, ''),
               email: email,
-              address: address,
+              address: fullAddress,
               customerNote: notes,
               paymentMethod: 'Thanh toán khi nhận hàng (COD)',
               items: items.map(function(i) {

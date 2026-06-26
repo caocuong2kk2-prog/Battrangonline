@@ -185,7 +185,7 @@ body:has(#success-page) #site-header {
   transition: color 0.2s ease;
 }
 .form-group label .required {
-  color: #e74c3c;
+  color: #b71c1c; /* Deeper red */
   margin-left: 2px;
   font-weight: bold;
 }
@@ -586,8 +586,8 @@ textarea.form-control {
 
 /* ── Privacy Policy Notice ── */
 .checkout-privacy-policy-text {
-  font-size: 12px;
-  color: rgba(92, 58, 30, 0.75);
+  font-size: 13px;
+  color: rgba(92, 58, 30, 0.95);
   line-height: 1.6;
   margin-top: var(--space-4);
   margin-bottom: var(--space-4);
@@ -987,3 +987,117 @@ textarea.form-control {
     align-items: flex-start;
   }
 }
+
+/* -- Custom Dropdown for Address -- */
+.custom-select-wrapper {
+  position: relative;
+  user-select: none;
+  width: 100%;
+}
+.custom-select-wrapper select {
+  display: none;
+}
+.custom-select-trigger {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  border-radius: var(--radius-sm);
+  color: #2C1A0C;
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.custom-select-wrapper.disabled .custom-select-trigger {
+  background: #f5f5f5;
+  color: rgba(44, 26, 12, 0.4);
+  cursor: not-allowed;
+}
+.custom-select-wrapper.open .custom-select-trigger {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(200, 146, 42, 0.12);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.custom-select-trigger .arrow {
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid #5C3A1E;
+  border-bottom: 2px solid #5C3A1E;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.3s ease;
+}
+.custom-select-wrapper.open .custom-select-trigger .arrow {
+  transform: translateY(2px) rotate(-135deg);
+}
+.custom-select-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border: 1px solid var(--color-accent);
+  border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 10;
+  display: none;
+}
+.custom-select-wrapper.open .custom-select-options {
+  display: block;
+  animation: slideDown 0.2s ease-out;
+}
+.custom-select-option {
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: var(--fs-sm);
+  color: #2C1A0C;
+  transition: background 0.2s ease;
+}
+.custom-select-option:hover {
+  background: rgba(200, 146, 42, 0.1);
+}
+.custom-select-option.selected {
+  background: rgba(200, 146, 42, 0.15);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+.custom-select-search {
+  padding: 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
+}
+.custom-select-search input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 4px;
+  font-size: 13px;
+  outline: none;
+}
+.custom-select-search input:focus {
+  border-color: var(--color-accent);
+}
+.form-group.has-error .custom-select-trigger {
+  border-color: rgba(192, 57, 43, 0.6);
+  background: rgba(192, 57, 43, 0.04);
+  box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.08);
+}
+/* Ensure options scrollbar is pretty */
+.custom-select-options::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-select-options::-webkit-scrollbar-thumb {
+  background: rgba(200, 146, 42, 0.35);
+  border-radius: 10px;
+}
+

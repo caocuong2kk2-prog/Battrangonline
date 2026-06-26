@@ -211,6 +211,33 @@ document.addEventListener('click',function(e){
   if(btn){closeModal(btn.dataset.closeModal);}
 });
 
+// ── Inline Validation Errors ──
+window.setInlineError = function(elementOrId, msg) {
+  var el = typeof elementOrId === 'string' ? document.getElementById(elementOrId) : elementOrId;
+  if (!el) return;
+  el.classList.add('is-invalid');
+  var parent = el.parentNode;
+  var errEl = parent.querySelector('.inline-error-msg');
+  if (!errEl) {
+    errEl = document.createElement('div');
+    errEl.className = 'inline-error-msg';
+    errEl.style.color = '#dc2626';
+    errEl.style.fontSize = '12px';
+    errEl.style.marginTop = '4px';
+    parent.appendChild(errEl);
+  }
+  errEl.textContent = msg;
+};
+
+window.clearInlineErrors = function(formOrId) {
+  var container = typeof formOrId === 'string' ? document.getElementById(formOrId) : formOrId;
+  if (!container) return;
+  var invalids = container.querySelectorAll('.is-invalid');
+  invalids.forEach(function(el) { el.classList.remove('is-invalid'); });
+  var errs = container.querySelectorAll('.inline-error-msg');
+  errs.forEach(function(el) { el.remove(); });
+};
+
 // ── Global Enter Key to Save ──
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
@@ -271,7 +298,7 @@ window.generateAdminThumbnailHTML = function(src, size, extraClasses, extraAttrs
 
     var playColor = platform === 'youtube' ? '#ff0000' : (platform === 'facebook' ? '#1877f2' : '#010101');
     var playOverlay = '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.25);z-index:2;pointer-events:none;"></div>' +
-                      '<div style="position:absolute;z-index:3;width:24px;height:24px;background:' + playColor + ';border-radius:50%;display:flex;align-items:center;justify-content:center;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;">' +
+                      '<div style="position:absolute;z-index:3;width:24px;height:24px;background:' + playColor + ';border-radius:0;display:flex;align-items:center;justify-content:center;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;">' +
                         '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>' +
                       '</div>';
 
@@ -290,7 +317,7 @@ window.generateAdminThumbnailHTML = function(src, size, extraClasses, extraAttrs
 };
 window.initAdminAsyncThumbnails = function(container) {
     if (!container) return;
-    var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/api' : '/api';
+    var dynamicBase = '/api';
     var API_BASE = (window.AdminData && window.AdminData.apiBase) || dynamicBase;
     var thumbs = container.querySelectorAll('.admin-async-thumb:not(.loaded)');
     thumbs.forEach(function(thumb) {
@@ -326,7 +353,7 @@ window.initAdminAsyncThumbnails = function(container) {
           var img = new Image();
           img.onload = function() {
             var playOverlay = '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.25);z-index:2;pointer-events:none;"></div>' +
-                              '<div style="position:absolute;z-index:3;width:24px;height:24px;background:#010101;border-radius:50%;display:flex;align-items:center;justify-content:center;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>';
+                              '<div style="position:absolute;z-index:3;width:24px;height:24px;background:#010101;border-radius:0;display:flex;align-items:center;justify-content:center;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>';
             thumb.innerHTML = '<img src="' + data.url + '" style="width:100%;height:100%;object-fit:cover;pointer-events:none;">' + playOverlay;
           };
           img.onerror = applyIframeFallback;
@@ -702,23 +729,30 @@ function initBrandSchema() {
     }
     var icon = brand.querySelector('.sidebar-brand__icon');
     if (icon) {
-      icon.style.background = '#fff';
-      icon.style.borderRadius = '50%';
-      icon.style.border = '1.5px solid rgba(200, 146, 42, 0.6)';
-      icon.style.boxShadow = '0 0 0 2px rgba(26, 15, 5, 0.5)';
-      icon.style.padding = '2px';
+      icon.style.background = 'transparent';
+      icon.style.borderRadius = '0';
+      icon.style.border = 'none';
+      icon.style.boxShadow = 'none';
+      icon.style.padding = '0';
       icon.style.display = 'flex';
       icon.style.alignItems = 'center';
       icon.style.justifyContent = 'center';
       icon.style.overflow = 'hidden';
 
-      if (!icon.querySelector('img')) {
-        icon.innerHTML = '<img class="js-config-logo" src="' + initialLogoUrl + '" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" alt="Logo">';
+      if (icon.tagName === 'IMG') {
+        icon.src = initialLogoUrl;
+        if (!icon.classList.contains('js-config-logo')) {
+          icon.classList.add('js-config-logo');
+        }
       } else {
-        var img = icon.querySelector('img');
-        if (img) {
-          img.src = initialLogoUrl;
-          img.style.borderRadius = '50%';
+        if (!icon.querySelector('img')) {
+          icon.innerHTML = '<img class="js-config-logo" src="' + initialLogoUrl + '" style="width:100%; height:100%; object-fit:cover; border-radius:0;" alt="Logo">';
+        } else {
+          var img = icon.querySelector('img');
+          if (img) {
+            img.src = initialLogoUrl;
+            img.style.borderRadius = '0';
+          }
         }
       }
     }
@@ -731,23 +765,23 @@ function initBrandSchema() {
   // 2. Login Card Logo & Title Tagging
   var loginLogo = document.querySelector('.login-card__logo');
   if (loginLogo) {
-    loginLogo.style.background = '#fff';
+    loginLogo.style.background = 'transparent';
     loginLogo.style.borderRadius = '50%';
-    loginLogo.style.border = '2px solid rgba(200, 146, 42, 0.6)';
-    loginLogo.style.boxShadow = '0 0 0 3px rgba(26, 15, 5, 0.5)';
-    loginLogo.style.padding = '3px';
+    loginLogo.style.border = 'none';
+    loginLogo.style.boxShadow = 'none';
+    loginLogo.style.padding = '0';
     loginLogo.style.display = 'flex';
     loginLogo.style.alignItems = 'center';
     loginLogo.style.justifyContent = 'center';
     loginLogo.style.overflow = 'hidden';
 
     if (!loginLogo.querySelector('img')) {
-      loginLogo.innerHTML = '<img class="js-config-logo" src="' + initialLogoUrl + '" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" alt="Logo">';
+      loginLogo.innerHTML = '<img class="js-config-logo" src="' + initialLogoUrl + '" style="width:100%; height:100%; object-fit:cover; border-radius:0;" alt="Logo">';
     } else {
       var img = loginLogo.querySelector('img');
       if (img) {
         img.src = initialLogoUrl;
-        img.style.borderRadius = '50%';
+        img.style.borderRadius = '0';
       }
     }
   }
@@ -768,7 +802,7 @@ function renderBranding(config) {
         url = url.substring(3); // removes '../' to make it 'assets/...'
     }
     if (url.startsWith('/uploads/')) {
-      var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080' : '';
+      var dynamicBase = '';
       return dynamicBase + url;
     }
     return url;
@@ -886,8 +920,8 @@ document.addEventListener('DOMContentLoaded',function(){
   // Add global lightbox
   var lbHtml = '<div id="lightboxModal" style="position:fixed; top:0; left:0; width:100vw; height:100vh; z-index: 99999; display:none; background:rgba(0,0,0,0.85); flex-direction:column; align-items:center; justify-content:center;">' +
     '<div id="lbCounter" style="position:absolute; top:20px; left:20px; color:#fff; font-size:18px; z-index:100000; font-family:sans-serif;"></div>' +
-    '<button id="lbPrev" style="position:absolute; left:20px; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:#fff; border:none; width:50px; height:50px; cursor:pointer; font-size:24px; border-radius:50%; z-index:100000; display:flex; align-items:center; justify-content:center;">&#10094;</button>' +
-    '<button id="lbNext" style="position:absolute; right:20px; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:#fff; border:none; width:50px; height:50px; cursor:pointer; font-size:24px; border-radius:50%; z-index:100000; display:flex; align-items:center; justify-content:center;">&#10095;</button>' +
+    '<button id="lbPrev" style="position:absolute; left:20px; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:#fff; border:none; width:50px; height:50px; cursor:pointer; font-size:24px; border-radius:0; z-index:100000; display:flex; align-items:center; justify-content:center;">&#10094;</button>' +
+    '<button id="lbNext" style="position:absolute; right:20px; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:#fff; border:none; width:50px; height:50px; cursor:pointer; font-size:24px; border-radius:0; z-index:100000; display:flex; align-items:center; justify-content:center;">&#10095;</button>' +
     '<button id="lbClose" style="position:absolute; right:20px; top:20px; background:transparent; color:#fff; border:none; font-size:40px; cursor:pointer; z-index:100000; line-height:1;">&times;</button>' +
     '<div id="lightboxMediaContainer" style="display:flex;align-items:center;justify-content:center;max-width:90vw; max-height:90vh; transition: opacity 0.2s;"></div>' +
   '</div>';
@@ -1019,7 +1053,7 @@ document.addEventListener('DOMContentLoaded',function(){
 
     function connect() {
       try {
-        var hubBaseUrl = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5080' ? 'http://localhost:5080/hub/notifications' : '/hub/notifications';
+        var hubBaseUrl = '/hub/notifications';
         var connection = new signalR.HubConnectionBuilder()
           .withUrl(hubBaseUrl)
           .withAutomaticReconnect()

@@ -274,6 +274,26 @@
         });
       }
 
+      // -- Mobile Accordion for Sidebar --
+      var sidebarTitle = document.querySelector('.products-sidebar__title');
+      var sidebar = document.querySelector('.products-sidebar');
+      if (sidebarTitle && sidebar) {
+        // Only run toggle logic if it's not already initialized
+        if (!sidebarTitle.hasAttribute('data-toggle-initialized')) {
+          sidebarTitle.setAttribute('data-toggle-initialized', 'true');
+          sidebarTitle.addEventListener('click', function() {
+            if (window.innerWidth <= 900) {
+              sidebar.classList.toggle('is-open');
+            }
+          });
+          
+          // If a category is selected (not 'all'), auto-open the accordion on load
+          if (state.category !== 'all') {
+            sidebar.classList.add('is-open');
+          }
+        }
+      }
+
       // Sync Size Pills
       var sizePills = document.getElementById('size-pills');
       if (sizePills) {
@@ -290,15 +310,13 @@
             qualityContainer.appendChild(label);
           });
 
-          // Add event listener for quality checkboxes
           qualityContainer.addEventListener('change', function(e) {
             if (e.target.type === 'checkbox') {
               var checkedBoxes = qualityContainer.querySelectorAll('input:checked');
               var selectedVals = [];
               checkedBoxes.forEach(function(cb) { selectedVals.push(cb.value); });
               state.quality = selectedVals.length ? selectedVals.join(',') : 'all';
-              state.page = 1;
-              loadProducts();
+              updateApplyButtonCount();
             }
           });
         }
@@ -322,8 +340,7 @@
               var selectedVals = [];
               checkedBoxes.forEach(function(cb) { selectedVals.push(cb.value); });
               state.productType = selectedVals.length ? selectedVals.join(',') : 'all';
-              state.page = 1;
-              loadProducts();
+              updateApplyButtonCount();
             }
           });
         }
@@ -340,15 +357,13 @@
             materialContainer.appendChild(label);
           });
 
-          // Add event listener for material checkboxes
           materialContainer.addEventListener('change', function(e) {
             if (e.target.type === 'checkbox') {
               var checkedBoxes = materialContainer.querySelectorAll('input:checked');
               var selectedVals = [];
               checkedBoxes.forEach(function(cb) { selectedVals.push(cb.value); });
               state.material = selectedVals.length ? selectedVals.join(',') : 'all';
-              state.page = 1;
-              loadProducts();
+              updateApplyButtonCount();
             }
           });
         }
@@ -506,60 +521,44 @@
       size: state.size,
       material: state.material,
       productType: state.productType,
+      searchQuery: state.searchQuery,
+      minPrice: state.minPrice,
+      maxPrice: state.maxPrice,
+      status: state.status,
       sort: state.sort,
-      page: 1, // Fetch all when doing client-side price/search filtering
-      limit: 1000,
+      page: state.page,
+      limit: state.limit,
     }).then(function (res) {
-      // Client-side price & status & search filter
-      var filtered = res.data.filter(function(p) {
-        var matchQ = true;
-        if (state.searchQuery) {
-          var q = state.searchQuery.toLowerCase();
-          matchQ = p.name.toLowerCase().includes(q) ||
-                   (p.category || '').toLowerCase().includes(q) ||
-                   (p.material || '').toLowerCase().includes(q) ||
-                   (p.style || '').toLowerCase().includes(q);
-        }
-        return matchesPrice(p) && matchesStatus(p) && matchQ;
-      });
-
-      state.total = filtered.length;
+      state.total = res.total;
       grid.innerHTML = '';
 
       // Update count
       if (countEl) {
-        countEl.textContent = 'Hiển thị ' + filtered.length + ' sản phẩm';
+        countEl.textContent = 'Hiển thị ' + res.data.length + '/' + state.total + ' sản phẩm';
       }
       
       // Update apply button in sidebar
       var applyBtn = document.getElementById('btn-apply-filters');
       if (applyBtn) {
-        applyBtn.textContent = 'Áp dụng (' + filtered.length + ' sản phẩm)';
+        applyBtn.textContent = 'Áp dụng (' + state.total + ' sản phẩm)';
       }
 
       // Update active tags UI
       updateActiveFiltersUI();
       updateSEOMetadata();
 
-      if (!filtered.length) {
+      if (!res.data || !res.data.length) {
         grid.innerHTML =
           '<p style="text-align:center;color:var(--color-text-muted);padding:3rem 0">Không có sản phẩm phù hợp.</p>';
         return;
       }
 
-      // Pagination on filtered result
-      var totalPages = Math.ceil(filtered.length / state.limit);
-      var start = (state.page - 1) * state.limit;
-      var pageData = filtered.slice(start, start + state.limit);
+      var totalPages = Math.ceil(state.total / state.limit);
 
-      pageData.forEach(function (p, i) {
+      res.data.forEach(function (p, i) {
         var card = buildProductCard(p, i);
         grid.appendChild(card);
       });
-
-      if (countEl) {
-        countEl.textContent = 'Hiển thị ' + pageData.length + '/' + filtered.length + ' sản phẩm';
-      }
 
       renderPagination(paginationEl, state.page, totalPages);
 
@@ -569,6 +568,32 @@
     }).catch(function () {
       grid.innerHTML =
         '<p style="text-align:center;color:var(--color-text-muted)">Lỗi tải dữ liệu, vui lòng thử lại.</p>';
+    });
+  }
+
+  function updateApplyButtonCount() {
+    var applyBtn = document.getElementById('btn-apply-filters');
+    if (!applyBtn) return;
+    
+    applyBtn.textContent = 'Đang tính...';
+
+    PhucGiaTienAPI.getProducts({
+      category: state.category,
+      quality: state.quality,
+      size: state.size,
+      material: state.material,
+      productType: state.productType,
+      searchQuery: state.searchQuery,
+      minPrice: state.minPrice,
+      maxPrice: state.maxPrice,
+      status: state.status,
+      sort: state.sort,
+      page: 1,
+      limit: 1, // Only need total count
+    }).then(function (res) {
+      applyBtn.textContent = 'Áp dụng (' + res.total + ' sản phẩm)';
+    }).catch(function() {
+      applyBtn.textContent = 'Áp dụng';
     });
   }
 
@@ -596,13 +621,13 @@
     }
 
     var pVariants = Array.isArray(p.variants) ? p.variants : []; var pImages = Array.isArray(p.images) ? p.images : (typeof p.images === "string" && p.images.trim() ? [p.images] : []); var allImages = pImages.concat(pVariants.reduce(function(acc, v) { var vImgs = Array.isArray(v.images) ? v.images : (typeof v.images === "string" && v.images.trim() ? [v.images] : []); return acc.concat(vImgs); }, [])).filter(function(img) { return typeof img === 'string' && img.trim() !== ''; });
-    var firstMedia = (allImages.length > 0) ? allImages[0] : 'assets/images/placeholder.png';
+    var firstMedia = (allImages.length > 0) ? allImages[0] : 'assets/images/placeholder.webp';
     var isLocalVid = typeof firstMedia === 'string' && !!firstMedia.match(/\.(mp4|mov|avi|webm|ogg)$/i);
     var isPlatformVid = typeof firstMedia === 'string' && (firstMedia.includes('youtube.com') || firstMedia.includes('youtu.be') || 
                         firstMedia.includes('tiktok.com') || 
                         firstMedia.includes('facebook.com') || firstMedia.includes('fb.watch'));
 
-    var imgSrc = 'assets/images/placeholder.png';
+    var imgSrc = 'assets/images/placeholder.webp';
     if (firstMedia && !isLocalVid && !isPlatformVid) {
       imgSrc = firstMedia;
     } else if (allImages.length > 0) {
@@ -644,7 +669,7 @@
         '<div class="product-card__badges">' + ribbonLeftHTML + ribbonRightHTML + '</div>' +
         (isLocalVid 
           ? '<video class="product-card__img" src="' + firstMedia + '" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;pointer-events:none;"></video>'
-          : '<img class="product-card__img" src="' + imgSrc + '" alt="' + pName.replace(/"/g, '&quot;') + '" loading="lazy" onerror="this.onerror=null; this.src=\'assets/images/placeholder.png\';">') +
+          : '<img class="product-card__img" src="' + imgSrc + '" alt="' + pName.replace(/"/g, '&quot;') + '" loading="lazy" onerror="this.onerror=null; this.src=\'assets/images/placeholder.webp\';">') +
       '</div>' +
       '<div class="product-card__body">' +
         '<h3 class="product-card__name" title="' + pName + '">' + pName + '</h3>' +
@@ -656,7 +681,7 @@
           ) +
         '</div>' +
         giftHTML +
-        '<button class="product-card__btn-cta" onclick="window.location.href=\'product-detail.html?slug=' + p.slug + '\'; event.preventDefault(); event.stopPropagation();">XEM CHI TIẾT</button>' +
+        '<button class="product-card__btn-cta" onclick="window.location.href=\'/' + p.slug + '\'; event.preventDefault(); event.stopPropagation();">XEM CHI TIẾT</button>' +
       '</div>';
 
 
@@ -665,7 +690,7 @@
     var mediaEl = article.querySelector('.product-card__media');
     if (mediaEl) {
       mediaEl.addEventListener('click', function () {
-        window.location.href = 'product-detail.html?slug=' + p.slug;
+        window.location.href = '/' + p.slug;
       });
     }
 
@@ -673,7 +698,7 @@
     if (detBtn) {
       detBtn.addEventListener('click', function (e) {
         e.stopPropagation();
-        window.location.href = 'product-detail.html?slug=' + p.slug;
+        window.location.href = '/' + p.slug;
       });
     }
 
@@ -681,7 +706,7 @@
     if (ctaBtn) {
       ctaBtn.addEventListener('click', function (e) {
         e.stopPropagation();
-        window.location.href = 'product-detail.html?slug=' + p.slug;
+        window.location.href = '/' + p.slug;
       });
     }
 
@@ -689,7 +714,7 @@
     var bodyEl = article.querySelector('.product-card__body');
     if (bodyEl) {
       bodyEl.addEventListener('click', function () {
-        window.location.href = 'product-detail.html?slug=' + p.slug;
+        window.location.href = '/' + p.slug;
       });
     }
 
@@ -974,8 +999,7 @@
           window.priceSlider.set([state.minPrice, state.maxPrice]);
         }
 
-        state.page = 1;
-        loadProducts();
+        updateApplyButtonCount();
       });
     }
 
@@ -986,9 +1010,8 @@
         var pill = e.target.closest('.filter-pill');
         if (!pill) return;
         state.status = pill.dataset.value;
-        state.page = 1;
         setActivePill(statusPills, pill.dataset.value);
-        loadProducts();
+        updateApplyButtonCount();
       });
     }
 
@@ -999,9 +1022,8 @@
         var pill = e.target.closest('.filter-pill');
         if (!pill) return;
         state.size = pill.dataset.value;
-        state.page = 1;
         setActivePill(sizePills, pill.dataset.value);
-        loadProducts();
+        updateApplyButtonCount();
       });
     }
 
@@ -1192,9 +1214,21 @@
     var container = document.getElementById('product-detail-container');
     if (!container) return;
 
-    // Read slug from URL
+    // Read slug from URL or Pathname
     var params = new URLSearchParams(window.location.search);
     var slug = params.get('slug') || params.get('id');
+    
+    // Nếu không có slug ở query, lấy từ pathname (ví dụ: /lo-loc-binh-dap-noi)
+    if (!slug && window.location.pathname.length > 1) {
+      // Bỏ dấu / đầu tiên
+      var pathParts = window.location.pathname.split('/').filter(p => p);
+      if (pathParts.length > 0) {
+        // Lấy phần tử cuối cùng làm slug (hoặc phần tử duy nhất)
+        slug = pathParts[pathParts.length - 1];
+        // Bỏ đuôi .html nếu có
+        slug = slug.replace('.html', '');
+      }
+    }
 
     if (!slug) {
       container.innerHTML = '<p style="text-align:center;padding:4rem 0;">Sản phẩm không tồn tại.</p>';
@@ -1330,7 +1364,7 @@
       var totalValue = 0;
       var giftItems = p.gifts.map(function(g) { 
         totalValue += (g.estimatedValue || 0) * (g.quantity || 1);
-        var imgUrl = g.imageUrl || 'assets/images/placeholder.png';
+        var imgUrl = g.imageUrl || 'assets/images/placeholder.webp';
         var qty = g.quantity || 1;
         var val = g.estimatedValue ? window.formatVND(g.estimatedValue) : 'Liên hệ';
         
@@ -2736,9 +2770,9 @@
         }
       });
       
+      // Handle Apply instead of instant change
       sliderEl.noUiSlider.on('change', function () {
-        state.page = 1;
-        loadProducts();
+        updateApplyButtonCount();
       });
     }
   }

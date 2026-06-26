@@ -376,7 +376,7 @@
     <!-- PAGE HERO BANNER -->
     <section class="page-hero" aria-label="Banner trang tra cứu đơn hàng">
       <div class="page-hero__bg">
-        <img class="js-config-page-banner-img" src="assets/images/home_bg.jpeg" alt="Tra cứu đơn hàng Phúc Gia Tiên" role="presentation" loading="eager">
+        <img class="js-config-page-banner-img" src="assets/images/home_bg.webp" alt="Tra cứu đơn hàng Phúc Gia Tiên" role="presentation" loading="eager">
       </div>
       <div class="container">
         <div class="page-hero__content">
@@ -508,13 +508,13 @@
         if (order.status === 'cancelled') {
           return '<h3 class="success-timeline-title" style="color: #dc2626;">Đơn Hàng Đã Bị Huỷ</h3>'
             + '<div class="tracking-alert alert-error" style="margin-top: 12px; margin-bottom: 0; background-color: #fee2e2; border-color: #fca5a5; color: #991b1b; padding: 12px 16px; border-radius: var(--radius-md); font-size: var(--fs-sm);">'
-            + 'Đơn hàng này đã bị hủy trên hệ thống. Quý khách vui lòng liên hệ hotline của Phúc Gia Tiên để nhận hỗ trợ nhanh chóng nhất.'
+            + 'Đơn hàng này đã bị hủy trên hệ thống. Quý khách vui lòng liên hệ hotline của cửa hàng để nhận hỗ trợ nhanh chóng nhất.'
             + '</div>';
         }
 
         var steps = [
           { key: 'pending', label: 'Đặt hàng thành công', defaultNote: 'Đơn hàng đã được tiếp nhận.' },
-          { key: 'confirmed', label: 'Đã xác nhận', defaultNote: 'Phúc Gia Tiên đã xác nhận đơn.' },
+          { key: 'confirmed', label: 'Đã xác nhận', defaultNote: 'Cửa hàng đã xác nhận đơn.' },
           { key: 'shipping', label: 'Đang giao hàng', defaultNote: 'Đơn hàng đang trên đường giao đến quý khách.' },
           { key: 'completed', label: 'Giao hàng thành công', defaultNote: 'Cảm ơn quý khách đã mua sắm!' }
         ];
@@ -602,7 +602,7 @@
             else if (cleanName.indexOf('chum ngâm rượu') >= 0 || cleanName.indexOf('chum rượu') >= 0) imgUrl = 'assets/images/product-7-1.jpg';
             else if (cleanName.indexOf('đĩa gốm') >= 0 || cleanName.indexOf('đĩa cảnh') >= 0) imgUrl = 'assets/images/product-8-1.jpg';
             else if (cleanName.indexOf('tượng gốm di lặc') >= 0) imgUrl = 'assets/images/product-3-1.jpg';
-            else imgUrl = 'assets/images/placeholder.png';
+            else imgUrl = 'assets/images/placeholder.webp';
           }
 
           var isVideo = /\.(mp4|mov|avi|webm|ogg)$/i.test(imgUrl);
@@ -618,7 +618,7 @@
             item.gifts.forEach(function(g) {
               var gQty = g.quantity ? (g.quantity * item.qty) : item.qty;
               giftHtml += '<div style="font-size:11px; color:#ffb74d; display:flex; align-items:center; gap:6px; margin-bottom:4px;">';
-              giftHtml += '<img src="' + (g.imageUrl || 'assets/images/placeholder.png') + '" style="width:20px; height:20px; object-fit:cover; border-radius:3px; border:1px solid rgba(255,152,0,0.3); cursor:zoom-in;" onclick="if(window.showImageModal) window.showImageModal(\'' + (g.imageUrl || 'assets/images/placeholder.png') + '\', \'' + g.name.replace(/'/g, "\\'") + '\')">';
+              giftHtml += '<img src="' + (g.imageUrl || 'assets/images/placeholder.webp') + '" style="width:20px; height:20px; object-fit:cover; border-radius:3px; border:1px solid rgba(255,152,0,0.3); cursor:zoom-in;" onclick="if(window.showImageModal) window.showImageModal(\'' + (g.imageUrl || 'assets/images/placeholder.webp') + '\', \'' + g.name.replace(/'/g, "\\'") + '\')">';
               giftHtml += '<span style="line-height:1.2; flex-grow:1;">Quà tặng: <strong style="color:#fff;">' + g.name + '</strong> <b style="color:#ff9800; margin-left:2px;">x' + gQty + '</b></span>';
               giftHtml += '</div>';
             });

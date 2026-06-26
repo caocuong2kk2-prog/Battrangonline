@@ -54,6 +54,34 @@ namespace BatTrang.Infrastructure.Migrations
                     b.ToTable("AdminUsers");
                 });
 
+            modelBuilder.Entity("BatTrang.Core.Entities.AdministrativeUnit", b =>
+                {
+                    b.Property<int>("Code")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Level")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CodeName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DivisionType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ParentCode")
+                        .HasColumnType("int");
+
+                    b.HasKey("Code", "Level");
+
+                    b.HasIndex("Level", "ParentCode");
+
+                    b.ToTable("AdministrativeUnits");
+                });
+
             modelBuilder.Entity("BatTrang.Core.Entities.Affiliate.Affiliate", b =>
                 {
                     b.Property<int>("Id")
@@ -997,6 +1025,63 @@ namespace BatTrang.Infrastructure.Migrations
                     b.ToTable("ProductVariants");
                 });
 
+            modelBuilder.Entity("BatTrang.Core.Entities.SavedAddress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DetailAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Label")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProvinceCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProvinceName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RecipientName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WardCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("WardName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("SavedAddresses");
+                });
+
             modelBuilder.Entity("BatTrang.Core.Entities.SiteConfig", b =>
                 {
                     b.Property<int>("Id")
@@ -1310,6 +1395,17 @@ namespace BatTrang.Infrastructure.Migrations
                     b.Navigation("ProductType");
 
                     b.Navigation("Size");
+                });
+
+            modelBuilder.Entity("BatTrang.Core.Entities.SavedAddress", b =>
+                {
+                    b.HasOne("BatTrang.Core.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("BatTrang.Core.Entities.WithdrawalRequest", b =>

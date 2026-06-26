@@ -24,7 +24,17 @@
 
     return fetch(API_BASE + endpoint, options)
       .then(function (res) {
-        if (!res.ok) throw new Error('API Error: ' + res.status);
+        if (!res.ok) {
+          return res.text().then(function (text) {
+            var errObj;
+            try {
+              errObj = JSON.parse(text);
+            } catch (e) {
+              throw new Error('API Error: ' + res.status);
+            }
+            throw errObj; // throw the parsed json error
+          });
+        }
         return res.json();
       });
   }
@@ -40,6 +50,10 @@
         if (params.size && params.size !== 'all') query.push('size=' + encodeURIComponent(params.size));
         if (params.material && params.material !== 'all') query.push('material=' + encodeURIComponent(params.material));
         if (params.productType && params.productType !== 'all') query.push('productType=' + encodeURIComponent(params.productType));
+        if (params.searchQuery) query.push('searchQuery=' + encodeURIComponent(params.searchQuery));
+        if (params.minPrice !== undefined && params.minPrice !== 0) query.push('minPrice=' + params.minPrice);
+        if (params.maxPrice !== undefined && params.maxPrice !== 50000000) query.push('maxPrice=' + params.maxPrice);
+        if (params.status && params.status !== 'all') query.push('status=' + encodeURIComponent(params.status));
         if (params.sort && params.sort !== 'newest') query.push('sort=' + encodeURIComponent(params.sort));
         if (params.page) query.push('page=' + params.page);
         if (params.limit) query.push('limit=' + params.limit);

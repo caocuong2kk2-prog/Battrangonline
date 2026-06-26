@@ -59,7 +59,7 @@
   align-items: center;
   gap: var(--space-2);
   font-size: var(--fs-xs);
-  color: #999;
+  color: #757575;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -147,7 +147,7 @@
 
 .cart-item__meta {
   font-size: var(--fs-xs);
-  color: #888;
+  color: #757575;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
@@ -229,7 +229,7 @@
   align-items: center;
   gap: var(--space-1);
   font-size: var(--fs-xs);
-  color: #bbb;
+  color: #757575;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -270,7 +270,7 @@
 
 .cart-empty__desc {
   font-size: var(--fs-sm);
-  color: #888;
+  color: #757575;
   max-width: 360px;
   line-height: 1.7;
 }
@@ -285,7 +285,7 @@
   align-items: center;
   gap: var(--space-2);
   font-size: var(--fs-sm);
-  color: #888;
+  color: #757575;
   text-decoration: none;
   transition: color var(--transition-fast);
 }
@@ -408,7 +408,7 @@
 }
 
 .cart-promo__input::placeholder {
-  color: #bbb;
+  color: #757575;
 }
 
 .cart-promo__btn {
@@ -465,7 +465,7 @@
   align-items: center;
   gap: var(--space-3);
   font-size: var(--fs-xs);
-  color: #888;
+  color: #757575;
 }
 
 /* ========== RESPONSIVE ========== */

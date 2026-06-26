@@ -9,7 +9,7 @@
       <!-- Column 1: Brand -->
       <div class="footer-brand">
         <a class="site-logo footer-brand__logo" href="/" aria-label="Trang chủ">
-          <img class="site-logo__img js-config-logo" src="assets/images/logo.png" alt="Logo Phúc Gia Tiên" width="44"
+          <img class="site-logo__img js-config-logo" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Logo Phúc Gia Tiên" width="44"
             height="44">
           <div class="site-logo__text">
             <span class="site-logo__name js-config-store-name">PHÚC GIA TIÊN</span>
@@ -121,7 +121,7 @@
     <div class="container">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-3);">
         <p class="footer-bottom__copy">
-          © <span id="footer-year"></span> <span class="js-config-store-name">Phúc Gia Tiên</span>. Bảo lưu mọi quyền.
+          © <span id="footer-year"></span> <span class="js-config-store-name">Phúc Gia Tiên</span>. All rights reserved.
         </p>
         <nav class="footer-bottom__links" aria-label="Policy links">
           <a class="footer-bottom__link" href="terms-of-service">Điều khoản dịch vụ</a>
@@ -224,21 +224,28 @@
 
   /* --- Phone: beacon pulse + ring-ring vibrate --- */
   .quick-contact-btn--phone {
-    background: #e74c3c;
+    background: #c8922a; /* Earthy gold/brown */
     color: #fff;
   }
+  .quick-contact-btn--phone:hover {
+    background: #e74c3c;
+  }
 
-  /* Sóng mở rộng: dùng rgba background bắt đầu từ mép nút, rõ ràng không bị hoà màu */
   .quick-contact-btn--phone::before,
   .quick-contact-btn--phone::after {
     content: '';
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: rgba(231, 76, 60, 0.55);
+    background: rgba(200, 146, 42, 0.55);
     opacity: 0;
     pointer-events: none;
     z-index: -1;
+    transition: background 0.3s ease;
+  }
+  .quick-contact-btn--phone:hover::before,
+  .quick-contact-btn--phone:hover::after {
+    background: rgba(231, 76, 60, 0.55);
   }
 
   .quick-contact-btn--phone::before {
@@ -263,12 +270,18 @@
     padding: 0;
     overflow: hidden;
   }
-
   .quick-contact-btn--zalo svg {
     width: 56px;
     height: 56px;
     border-radius: 50%;
     display: block;
+  }
+  .zalo-bg-circle {
+    fill: #b87e1e; /* Earthy brown */
+    transition: fill 0.3s ease;
+  }
+  .quick-contact-btn--zalo:hover .zalo-bg-circle {
+    fill: url(#zaloGrad);
   }
 
   /* --- Messenger: full SVG icon --- */
@@ -277,12 +290,18 @@
     padding: 0;
     overflow: hidden;
   }
-
   .quick-contact-btn--messenger svg {
     width: 56px;
     height: 56px;
     border-radius: 50%;
     display: block;
+  }
+  .mess-bg-circle {
+    fill: #8a5e10; /* Darker earthy brown */
+    transition: fill 0.3s ease;
+  }
+  .quick-contact-btn--messenger:hover .mess-bg-circle {
+    fill: url(#messGrad);
   }
 
   /* ===== KEYFRAMES ===== */
@@ -469,7 +488,7 @@
         </linearGradient>
       </defs>
       <!-- Background circle -->
-      <circle cx="28" cy="28" r="28" fill="url(#zaloGrad)" />
+      <circle class="zalo-bg-circle" cx="28" cy="28" r="28" />
       <!-- White chat bubble shape -->
       <path d="M11 20a4 4 0 0 1 4-4h26a4 4 0 0 1 4 4v13a4 4 0 0 1-4 4H33l-5 5-5-5H15a4 4 0 0 1-4-4V20z" fill="white"
         opacity="0.15" />
@@ -497,7 +516,7 @@
         </radialGradient>
       </defs>
       <!-- Background circle -->
-      <circle cx="28" cy="28" r="28" fill="url(#messGrad)" />
+      <circle class="mess-bg-circle" cx="28" cy="28" r="28" />
       <!-- Official Messenger speech bubble + lightning bolt path -->
       <path
         d="M28 12C19.163 12 12 18.72 12 27.035c0 4.572 2.027 8.66 5.247 11.504v5.461l5.04-2.773A17.23 17.23 0 0 0 28 42.07c8.837 0 16-6.72 16-15.035C44 18.72 36.837 12 28 12zm1.573 20.23l-3.98-4.24L18.5 32.23l7.818-8.303 4.075 4.24 7.107-4.24-7.927 8.303z"

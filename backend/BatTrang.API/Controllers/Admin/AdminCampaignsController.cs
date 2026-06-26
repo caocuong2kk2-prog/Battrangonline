@@ -187,6 +187,21 @@ namespace BatTrang.API.Controllers.Admin
             // Background worker will automatically clear the orphaned CampaignPrices
             return NoContent();
         }
+
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] CampaignStatusDto dto)
+        {
+            var campaign = await _context.Campaigns.FindAsync(id);
+            if (campaign == null) return NotFound();
+
+            campaign.Status = dto.Status ?? "active";
+            
+            // Note: The CampaignUpdateService background worker will pick up this status change
+            // and apply/remove the CampaignPrice from the related product variants within 1 minute.
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 
     public class CampaignCreateDto
@@ -200,5 +215,10 @@ namespace BatTrang.API.Controllers.Admin
         public string? TargetUrl { get; set; }
         public string? BannerImage { get; set; }
         public List<int>? ProductIds { get; set; }
+    }
+
+    public class CampaignStatusDto
+    {
+        public string Status { get; set; } = string.Empty;
     }
 }

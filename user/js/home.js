@@ -35,7 +35,7 @@
         // Re-bind article click
         clone.addEventListener('click', function() {
           if (clone.dataset.slug) {
-            window.location.href = 'product-detail.html?slug=' + clone.dataset.slug;
+            window.location.href = '/' + clone.dataset.slug;
           }
         });
 
@@ -49,7 +49,7 @@
             var pData = JSON.parse(this.dataset.product || '{}');
             if (!pData.id) return;
             if (pData.variants && pData.variants.length > 1) {
-              window.location.href = 'product-detail.html?slug=' + pData.slug;
+              window.location.href = '/' + pData.slug;
               return;
             }
             var v = (pData.variants && pData.variants.length === 1) ? pData.variants[0] : null;
@@ -72,7 +72,9 @@
       });
 
       // Bắt đầu setup logic điều khiển thông minh
-      setupConveyorControls(conveyor, track);
+      requestAnimationFrame(function() {
+        setupConveyorControls(conveyor, track);
+      });
 
     }).catch(function (err) {
       var t = document.getElementById('home-product-track');
@@ -238,13 +240,13 @@
     }
 
     var pVariants = Array.isArray(p.variants) ? p.variants : []; var pImages = Array.isArray(p.images) ? p.images : (typeof p.images === "string" && p.images.trim() ? [p.images] : []); var allImages = pImages.concat(pVariants.reduce(function(acc, v) { var vImgs = Array.isArray(v.images) ? v.images : (typeof v.images === "string" && v.images.trim() ? [v.images] : []); return acc.concat(vImgs); }, [])).filter(function(img) { return typeof img === 'string' && img.trim() !== ''; });
-    var firstMedia = (allImages.length > 0) ? allImages[0] : 'assets/images/placeholder.png';
+    var firstMedia = (allImages.length > 0) ? allImages[0] : 'assets/images/placeholder.webp';
     var isLocalVid = typeof firstMedia === 'string' && !!firstMedia.match(/\.(mp4|mov|avi|webm|ogg)$/i);
     var isPlatformVid = typeof firstMedia === 'string' && (firstMedia.includes('youtube.com') || firstMedia.includes('youtu.be') || 
                         firstMedia.includes('tiktok.com') || 
                         firstMedia.includes('facebook.com') || firstMedia.includes('fb.watch'));
 
-    var imgSrc = 'assets/images/placeholder.png';
+    var imgSrc = 'assets/images/placeholder.webp';
     if (firstMedia && !isLocalVid && !isPlatformVid) {
       imgSrc = firstMedia;
     } else if (allImages.length > 0) {
@@ -286,7 +288,7 @@
         '<div class="product-card__badges">' + ribbonLeftHTML + ribbonRightHTML + '</div>' +
         (isLocalVid 
           ? '<video class="product-card__img" src="' + firstMedia + '" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;pointer-events:none;"></video>'
-          : '<img class="product-card__img" src="' + imgSrc + '" alt="' + pName.replace(/"/g, '&quot;') + '" loading="lazy" onerror="this.onerror=null; this.src=\'assets/images/placeholder.png\';">') +
+          : '<img class="product-card__img" src="' + imgSrc + '" alt="' + pName.replace(/"/g, '&quot;') + '" loading="lazy" onerror="this.onerror=null; this.src=\'assets/images/placeholder.webp\';">') +
       '</div>' +
       '<div class="product-card__body">' +
         '<h3 class="product-card__name" title="' + pName + '">' + pName + '</h3>' +
@@ -298,7 +300,7 @@
           ) +
         '</div>' +
         giftHTML +
-        '<button class="product-card__btn-cta" onclick="window.location.href=\'product-detail.html?slug=' + p.slug + '\'; event.preventDefault(); event.stopPropagation();">XEM CHI TIẾT</button>' +
+        '<button class="product-card__btn-cta" onclick="window.location.href=\'/' + p.slug + '\'; event.preventDefault(); event.stopPropagation();">XEM CHI TIẾT</button>' +
       '</div>';
 
 
@@ -307,7 +309,7 @@
     var mediaEl = article.querySelector('.product-card__media');
     if (mediaEl) {
       mediaEl.addEventListener('click', function () {
-        window.location.href = 'product-detail.html?slug=' + p.slug;
+        window.location.href = '/' + p.slug;
       });
     }
 
@@ -315,7 +317,7 @@
     if (detBtn) {
       detBtn.addEventListener('click', function (e) {
         e.stopPropagation();
-        window.location.href = 'product-detail.html?slug=' + p.slug;
+        window.location.href = '/' + p.slug;
       });
     }
 
@@ -323,7 +325,7 @@
     if (ctaBtn) {
       ctaBtn.addEventListener('click', function (e) {
         e.stopPropagation();
-        window.location.href = 'product-detail.html?slug=' + p.slug;
+        window.location.href = '/' + p.slug;
       });
     }
 
@@ -331,7 +333,7 @@
     var bodyEl = article.querySelector('.product-card__body');
     if (bodyEl) {
       bodyEl.addEventListener('click', function () {
-        window.location.href = 'product-detail.html?slug=' + p.slug;
+        window.location.href = '/' + p.slug;
       });
     }
 

@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace BatTrang.Infrastructure.Seed
@@ -828,6 +830,134 @@ namespace BatTrang.Infrastructure.Seed
                     await context.SaveChangesAsync();
                 }
             }
+
+            await SeedAdministrativeUnitsAsync(context);
+        }
+
+        private static async Task SeedAdministrativeUnitsAsync(AppDbContext context)
+        {
+            if (await context.AdministrativeUnits.AnyAsync()) return;
+
+            using var httpClient = new HttpClient();
+            httpClient.Timeout = TimeSpan.FromSeconds(30);
+            var jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+            try
+            {
+                Console.WriteLine("[Seed] Đang tải danh sách tỉnh/thành phố từ provinces.open-api.vn (API v2)...");
+
+                // Bước 1: Lấy danh sách tỉnh/TP (API v2, sau sáp nhập: 34 tỉnh)
+                var listResponse = await httpClient.GetAsync("https://provinces.open-api.vn/api/v2/p/");
+                if (!listResponse.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"[Seed] ⚠️ API trả về HTTP {(int)listResponse.StatusCode}");
+                    return;
+                }
+
+                var listJson = await listResponse.Content.ReadAsStringAsync();
+                var provinces = JsonSerializer.Deserialize<List<ProvinceApiDto>>(listJson, jsonOptions);
+                if (provinces == null || !provinces.Any())
+                {
+                    Console.WriteLine("[Seed] ⚠️ Không parse được danh sách tỉnh/TP.");
+                    return;
+                }
+
+                Console.WriteLine($"[Seed] Tìm thấy {provinces.Count} tỉnh/TP. Đang tải xã/phường cho từng tỉnh...");
+
+                var units = new List<AdministrativeUnit>();
+                int totalWards = 0;
+
+                // Bước 2: Gọi từng tỉnh để lấy danh sách xã/phường
+                // (endpoint list-all /api/v2/p/?depth=2 trả wards rỗng, phải gọi riêng từng tỉnh)
+                foreach (var p in provinces)
+                {
+                    // Thêm tỉnh/TP
+                    units.Add(new AdministrativeUnit
+                    {
+                        Code = p.Code,
+                        Name = p.Name,
+                        Level = "province",
+                        CodeName = p.Codename,
+                        DivisionType = p.Division_type,
+                        ParentCode = null
+                    });
+
+                    // Lấy xã/phường của tỉnh này
+                    try
+                    {
+                        var detailResponse = await httpClient.GetAsync($"https://provinces.open-api.vn/api/v2/p/{p.Code}?depth=2");
+                        if (detailResponse.IsSuccessStatusCode)
+                        {
+                            var detailJson = await detailResponse.Content.ReadAsStringAsync();
+                            var detail = JsonSerializer.Deserialize<ProvinceDetailApiDto>(detailJson, jsonOptions);
+
+                            if (detail?.Wards != null)
+                            {
+                                foreach (var w in detail.Wards)
+                                {
+                                    units.Add(new AdministrativeUnit
+                                    {
+                                        Code = w.Code,
+                                        Name = w.Name,
+                                        Level = "ward",
+                                        CodeName = w.Codename,
+                                        DivisionType = w.Division_type,
+                                        ParentCode = p.Code
+                                    });
+                                    totalWards++;
+                                }
+                            }
+                        }
+
+                        // Delay nhỏ để không spam API
+                        await Task.Delay(100);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[Seed] ⚠️ Lỗi tải xã/phường cho {p.Name}: {ex.Message}");
+                    }
+                }
+
+                Console.WriteLine($"[Seed] Đã parse {provinces.Count} tỉnh/TP và {totalWards} xã/phường. Đang lưu vào DB...");
+
+                // Bước 3: Bulk insert
+                await context.AdministrativeUnits.AddRangeAsync(units);
+                await context.SaveChangesAsync();
+
+                Console.WriteLine($"[Seed] ✅ Đã seed thành công {units.Count} đơn vị hành chính vào bảng AdministrativeUnits.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Seed] ❌ Lỗi khi seed AdministrativeUnits: {ex.Message}");
+            }
+        }
+
+        // DTO cho danh sách tỉnh (không có wards khi list all)
+        private class ProvinceApiDto
+        {
+            public int Code { get; set; }
+            public string Name { get; set; } = string.Empty;
+            public string Codename { get; set; } = string.Empty;
+            public string Division_type { get; set; } = string.Empty;
+        }
+
+        // DTO cho chi tiết 1 tỉnh (có wards khi gọi riêng với depth=2)
+        private class ProvinceDetailApiDto
+        {
+            public int Code { get; set; }
+            public string Name { get; set; } = string.Empty;
+            public string Codename { get; set; } = string.Empty;
+            public string Division_type { get; set; } = string.Empty;
+            public List<WardApiDto>? Wards { get; set; }
+        }
+
+        private class WardApiDto
+        {
+            public int Code { get; set; }
+            public string Name { get; set; } = string.Empty;
+            public string Codename { get; set; } = string.Empty;
+            public string Division_type { get; set; } = string.Empty;
         }
     }
 }
+
