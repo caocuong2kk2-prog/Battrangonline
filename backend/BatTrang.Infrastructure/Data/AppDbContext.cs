@@ -70,6 +70,14 @@ namespace BatTrang.Infrastructure.Data
                 .HasColumnType("decimal(18,2)");
 
             modelBuilder.Entity<ProductVariant>()
+                .Property(pv => pv.CampaignPrice)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Product>()
+                .Property(p => p.CommissionRate)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<ProductVariant>()
                 .HasOne(pv => pv.Product)
                 .WithMany(p => p.Variants)
                 .HasForeignKey(pv => pv.ProductId)
@@ -203,6 +211,14 @@ namespace BatTrang.Infrastructure.Data
                 
             modelBuilder.Entity<Commission>()
                 .Property(c => c.CommissionAmount)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Commission>()
+                .Property(c => c.BaseCommissionAmount)
+                .HasColumnType("decimal(18,2)");
+
+            modelBuilder.Entity<Commission>()
+                .Property(c => c.TierBonusAmount)
                 .HasColumnType("decimal(18,2)");
                 
             modelBuilder.Entity<Commission>()

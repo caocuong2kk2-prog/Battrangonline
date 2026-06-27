@@ -78,6 +78,7 @@ namespace BatTrang.API.Controllers
 
         [HttpPost("register")]
         [AllowAnonymous]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("AuthPolicy")]
         public async Task<IActionResult> Register([FromBody] CustomerRegisterRequest request)
         {
             var existingUser = await _customerRepo.GetByPhoneOrEmailAsync(request.Phone, request.Email);
@@ -125,7 +126,7 @@ namespace BatTrang.API.Controllers
                 _context.Notifications.Add(noti);
                 await _context.SaveChangesAsync();
 
-                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "CustomerRegistered", msg);
+                await _hubContext.Clients.Group("Admins").SendAsync("ReceiveNotification", "CustomerRegistered", msg);
             }
             catch (Exception ex)
             {
@@ -176,6 +177,7 @@ namespace BatTrang.API.Controllers
 
         [HttpPost("forgot-password")]
         [AllowAnonymous]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("AuthPolicy")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.EmailOrPhone)) return BadRequest(new { message = "Vui lòng nhập Email hoặc Số điện thoại." });
@@ -217,7 +219,8 @@ namespace BatTrang.API.Controllers
             user.ResetToken = BCrypt.Net.BCrypt.HashPassword(safeToken); // Hash Token
             user.ResetTokenExpiresAt = DateTime.UtcNow.AddHours(7).AddMinutes(30);
 
-            var resetLink = $"http://localhost:5055/forgot-password.html?token={safeToken}&email={user.Email}";
+            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
+            var resetLink = $"{baseUrl}/forgot-password.html?token={safeToken}&email={user.Email}";
             await _notificationService.SendPasswordResetEmailAsync(user.Email, resetLink);
 
             user.ResetAttempts++;

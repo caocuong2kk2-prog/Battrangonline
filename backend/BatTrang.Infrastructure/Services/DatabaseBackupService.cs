@@ -22,10 +22,7 @@ namespace BatTrang.Infrastructure.Services
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("[DatabaseBackup] Background service started. Performing initial startup backup...");
-            
-            // Run immediately on startup
-            await PerformBackupAsync(stoppingToken);
+            _logger.LogInformation("[DatabaseBackup] Background service started. Waiting for scheduled time...");
 
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -106,11 +103,11 @@ namespace BatTrang.Infrastructure.Services
                     return;
                 }
 
-                var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                var timestamp = DateTime.Now.ToString("yyyyMMdd");
                 var backupFileName = $"{databaseName}_{timestamp}.bak";
                 var backupFilePath = Path.Combine(backupFolder, backupFileName);
 
-                var backupQuery = $"BACKUP DATABASE [{databaseName}] TO DISK = '{backupFilePath}' WITH FORMAT, MEDIANAME = 'DBBackup', NAME = 'Full Backup';";
+                var backupQuery = $"BACKUP DATABASE [{databaseName}] TO DISK = '{backupFilePath}' WITH FORMAT, INIT, MEDIANAME = 'DBBackup', NAME = 'Full Backup';";
 
                 using (var connection = new SqlConnection(connectionString))
                 {

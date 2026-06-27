@@ -129,7 +129,7 @@ namespace BatTrang.API.Controllers.Affiliate
                 var noti = new BatTrang.Core.Entities.Notification { Type = "AffiliateRegistered", Message = msg };
                 _context.Notifications.Add(noti);
                 await _context.SaveChangesAsync();
-                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "AffiliateRegistered", msg);
+                await _hubContext.Clients.Group("Admins").SendAsync("ReceiveNotification", "AffiliateRegistered", msg);
             }
             catch (Exception) { }
 
@@ -226,7 +226,7 @@ namespace BatTrang.API.Controllers.Affiliate
                         var noti = new BatTrang.Core.Entities.Notification { Type = "AffiliateRegistered", Message = msg };
                         _context.Notifications.Add(noti);
                         await _context.SaveChangesAsync();
-                        await _hubContext.Clients.All.SendAsync("ReceiveNotification", "AffiliateRegistered", msg);
+                        await _hubContext.Clients.Group("Admins").SendAsync("ReceiveNotification", "AffiliateRegistered", msg);
                     }
                     catch (Exception) { }
                 }
@@ -810,45 +810,60 @@ namespace BatTrang.API.Controllers.Affiliate
             }
 
             // 1. Chặn tuyệt đối nếu ĐANG CÓ lệnh chờ duyệt (dù là mấy ngày trước)
-            var hasPendingRequest = await _context.WithdrawalRequests
-                .AnyAsync(w => w.AffiliateId == id && w.Status == "Pending");
-            if (hasPendingRequest)
-            {
-                return BadRequest(new { message = "Bạn đang có 1 yêu cầu rút tiền chờ xử lý. Vui lòng đợi Admin duyệt trước khi tạo yêu cầu mới." });
-            }
-
-            var commissions = await _context.Commissions.Where(c => c.AffiliateId == id).ToListAsync();
-            var approvedCommission = commissions.Where(c => c.Status == "Approved" || c.Status == "Paid").Sum(c => c.CommissionAmount);
-            
-            var withdrawals = await _context.WithdrawalRequests.Where(w => w.AffiliateId == id).ToListAsync();
-            var withdrawnAndPending = withdrawals.Where(w => w.Status == "Paid" || w.Status == "Pending").Sum(w => w.Amount);
-
-            var availableBalance = approvedCommission - withdrawnAndPending;
-
-            if (dto.Amount > availableBalance) return BadRequest(new { message = "Số dư khả dụng không đủ." });
-
-            var request = new BatTrang.Core.Entities.WithdrawalRequest
-            {
-                AffiliateId = id,
-                Amount = dto.Amount,
-                Status = "Pending",
-                RequestedAt = DateTime.UtcNow.AddHours(7)
-            };
-
-            _context.WithdrawalRequests.Add(request);
-            await _context.SaveChangesAsync();
-
+            using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
             try
             {
-                var msg = $"CTV {profile.Name} vừa yêu cầu rút {request.Amount.ToString("N0")}đ hoa hồng.";
-                var noti = new BatTrang.Core.Entities.Notification { Type = "WithdrawalRequested", Message = msg };
-                _context.Notifications.Add(noti);
-                await _context.SaveChangesAsync();
-                await _hubContext.Clients.All.SendAsync("ReceiveNotification", "WithdrawalRequested", msg);
-            }
-            catch (Exception) { }
+                var hasPendingRequest = await _context.WithdrawalRequests
+                    .AnyAsync(w => w.AffiliateId == id && w.Status == "Pending");
+                if (hasPendingRequest)
+                {
+                    await transaction.RollbackAsync();
+                    return BadRequest(new { message = "Bạn đang có 1 yêu cầu rút tiền chờ xử lý. Vui lòng đợi Admin duyệt trước khi tạo yêu cầu mới." });
+                }
 
-            return Ok(new { success = true, message = "Đã gửi yêu cầu rút tiền thành công." });
+                var commissions = await _context.Commissions.Where(c => c.AffiliateId == id).ToListAsync();
+                var approvedCommission = commissions.Where(c => c.Status == "Approved" || c.Status == "Paid").Sum(c => c.CommissionAmount);
+                
+                var withdrawals = await _context.WithdrawalRequests.Where(w => w.AffiliateId == id).ToListAsync();
+                var withdrawnAndPending = withdrawals.Where(w => w.Status == "Paid" || w.Status == "Pending").Sum(w => w.Amount);
+
+                var availableBalance = approvedCommission - withdrawnAndPending;
+
+                if (dto.Amount > availableBalance)
+                {
+                    await transaction.RollbackAsync();
+                    return BadRequest(new { message = "Số dư khả dụng không đủ." });
+                }
+
+                var request = new BatTrang.Core.Entities.WithdrawalRequest
+                {
+                    AffiliateId = id,
+                    Amount = dto.Amount,
+                    Status = "Pending",
+                    RequestedAt = DateTime.UtcNow.AddHours(7)
+                };
+
+                _context.WithdrawalRequests.Add(request);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                try
+                {
+                    var msg = $"CTV {profile.Name} vừa yêu cầu rút {request.Amount.ToString("N0")}đ hoa hồng.";
+                    var noti = new BatTrang.Core.Entities.Notification { Type = "WithdrawalRequested", Message = msg };
+                    _context.Notifications.Add(noti);
+                    await _context.SaveChangesAsync();
+                    await _hubContext.Clients.Group("Admins").SendAsync("ReceiveNotification", "WithdrawalRequested", msg);
+                }
+                catch (Exception) { }
+
+                return Ok(new { success = true, message = "Đã gửi yêu cầu rút tiền thành công." });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, new { message = "Lỗi xử lý yêu cầu rút tiền. Vui lòng thử lại sau.", detail = ex.Message });
+            }
         }
 
         [HttpGet("withdrawals")]
@@ -914,7 +929,8 @@ namespace BatTrang.API.Controllers.Affiliate
             affiliate.ResetToken = BCrypt.Net.BCrypt.HashPassword(safeToken); // Hash Token
             affiliate.ResetTokenExpiresAt = DateTime.UtcNow.AddHours(7).AddMinutes(30);
 
-            var resetLink = $"http://localhost:5055/affiliate/forgot-password.html?token={safeToken}&email={affiliate.Email}";
+            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
+            var resetLink = $"{baseUrl}/affiliate/forgot-password.html?token={safeToken}&email={affiliate.Email}";
             await _notificationService.SendPasswordResetEmailAsync(affiliate.Email, resetLink);
 
             affiliate.ResetAttempts++;

@@ -49,6 +49,7 @@ namespace BatTrang.API.Middlewares
                         .Include(p => p.Variants).ThenInclude(v => v.GlazeLine)
                         .Include(p => p.Variants).ThenInclude(v => v.Pattern)
                         .Include(p => p.Variants).ThenInclude(v => v.Size)
+                        .AsSplitQuery()
                         .FirstOrDefaultAsync(p => p.Slug == slug && p.Status == "active");
 
                     if (product != null)

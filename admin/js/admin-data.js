@@ -132,15 +132,20 @@
 
     var AdminData = {
         products: {
-            load: function () {
+            load: function (page, limit, search, category, status) {
                 sessionStorage.removeItem('pgt_admin_products');
                 sessionStorage.removeItem('pgt_admin_products_ttl');
-                return _fetch('/products');
+                var qs = [];
+                if (page) qs.push('page=' + page);
+                if (limit) qs.push('limit=' + limit);
+                if (search) qs.push('search=' + encodeURIComponent(search));
+                if (category && category !== 'all') qs.push('category=' + encodeURIComponent(category));
+                if (status && status !== 'all') qs.push('status=' + encodeURIComponent(status));
+                var queryStr = qs.length > 0 ? '?' + qs.join('&') : '';
+                return _fetch('/products' + queryStr);
             },
-            refresh: function () {
-                sessionStorage.removeItem('pgt_admin_products');
-                sessionStorage.removeItem('pgt_admin_products_ttl');
-                return _fetch('/products');
+            refresh: function (page, limit, search, category, status) {
+                return this.load(page, limit, search, category, status);
             },
             save: function (product) {
                 sessionStorage.removeItem('pgt_admin_products');
@@ -214,11 +219,23 @@
             }
         },
         orders: {
-            load: function () {
+            load: function (page, limit, search, status, dateFrom, dateTo) {
                 _invalidate('pgt_admin_orders');
-                return _fetch('/orders').then(function (data) {
-                    if (!Array.isArray(data)) return [];
-                    return data.map(normalizeOrder);
+                var qs = [];
+                if (page) qs.push('page=' + page);
+                if (limit) qs.push('limit=' + limit);
+                if (search) qs.push('search=' + encodeURIComponent(search));
+                if (status && status !== 'all') qs.push('status=' + encodeURIComponent(status));
+                if (dateFrom) qs.push('dateFrom=' + encodeURIComponent(dateFrom));
+                if (dateTo) qs.push('dateTo=' + encodeURIComponent(dateTo));
+                var queryStr = qs.length > 0 ? '?' + qs.join('&') : '';
+                return _fetch('/orders' + queryStr).then(function (data) {
+                    if (data && data.data) {
+                        data.data = data.data.map(normalizeOrder);
+                        return data;
+                    }
+                    if (!Array.isArray(data)) return { data: [], total: 0 };
+                    return { data: data.map(normalizeOrder), total: data.length };
                 });
             },
             create: function (order) {
@@ -277,18 +294,17 @@
                 _invalidate('pgt_admin_orders');
                 _invalidate('pgt_admin_customers');
             },
-            updatePendingBadge: function (orders) {
-                var promise = orders ? Promise.resolve(orders) : AdminData.orders.load();
-                return promise.then(function (list) {
-                    if (!Array.isArray(list)) list = [];
-                    var pending = list.filter(function (o) { return o.status === 'pending' || o.isCancelRequested; }).length;
+            updatePendingBadge: function (ordersData) {
+                // Ignore the provided orders data and always fetch fresh count of pending
+                return _fetch('/orders?status=pending&limit=1').then(function(res) {
+                    var pending = res && res.total ? res.total : 0;
                     var badge = document.getElementById('sb-pending');
                     if (badge) {
                         badge.textContent = pending > 0 ? String(pending) : '';
                         badge.style.display = pending > 0 ? '' : 'none';
                     }
                     return pending;
-                }).catch(function () { return 0; });
+                }).catch(function() { return 0; });
             }
         },
         customers: {

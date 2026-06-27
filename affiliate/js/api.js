@@ -1,12 +1,5 @@
 const API_BASE_URL = '/api';
 
-// Đảm bảo hiển thị Favicon (logo trên tab trình duyệt) cho tất cả các trang CTV
-if (!document.querySelector('link[rel="icon"]')) {
-    const link = document.createElement('link');
-    link.rel = 'icon';
-    link.href = '/assets/images/logo.png';
-    document.head.appendChild(link);
-}
 
 // --- Toast & Utility Functions ---
 window.showToast = function(message, type = 'success') {
@@ -131,8 +124,8 @@ function renderLayout(activePage, title) {
     const layout = `
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="sidebar-logo" style="background-color: #ffffff; overflow: hidden; padding: 2px; border-radius: 50%;">
-                    <img class="js-config-logo" src="/assets/images/logo.png" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" alt="Logo">
+                <div class="sidebar-logo" style="overflow: hidden; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; background: transparent; flex-shrink: 0;">
+                    <img class="js-config-logo" src="/assets/images/logo.png" style="width: 100%; height: 100%; object-fit: contain; border-radius: 0;" alt="Logo">
                 </div>
                 <div class="sidebar-title">Cộng Tác Viên</div>
                 <button id="closeSidebar" class="mobile-only" style="background:none;border:none;color:white;font-size:1.5rem;margin-left:auto;cursor:pointer;">✕</button>
@@ -291,7 +284,7 @@ function renderLayout(activePage, title) {
             : '/hub/notifications';
             
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl(hubBaseUrl)
+            .withUrl(hubBaseUrl, { accessTokenFactory: () => Api.getToken() })
             .withAutomaticReconnect()
             .build();
 
@@ -772,6 +765,30 @@ function showToast(message, type = 'success', duration = 3500) {
                 el.style.backgroundImage = `url('${logoUrl}')`;
             }
         });
+
+        // 1.5 Update Favicon
+        let finalLogo = resolveImgUrl(config.logoUrl, '/assets/images/logo.png');
+        var oldShortcut = document.querySelector('link[rel="shortcut icon"]');
+        if (oldShortcut) oldShortcut.remove();
+        var faviconEl = document.querySelector('link[rel="icon"]');
+        if (!faviconEl) {
+            faviconEl = document.createElement('link');
+            faviconEl.rel = 'icon';
+            document.head.appendChild(faviconEl);
+        }
+        var mimeType = 'image/x-icon';
+        if (finalLogo.startsWith('data:')) {
+            var match = finalLogo.match(/^data:(image\/[^;]+);/);
+            if (match) mimeType = match[1];
+            faviconEl.href = finalLogo;
+        } else {
+            if (finalLogo.toLowerCase().split('?')[0].endsWith('.png')) mimeType = 'image/png';
+            else if (finalLogo.toLowerCase().split('?')[0].endsWith('.jpg') || finalLogo.toLowerCase().split('?')[0].endsWith('.jpeg')) mimeType = 'image/jpeg';
+            else if (finalLogo.toLowerCase().split('?')[0].endsWith('.gif')) mimeType = 'image/gif';
+            else if (finalLogo.toLowerCase().split('?')[0].endsWith('.svg')) mimeType = 'image/svg+xml';
+            faviconEl.href = finalLogo + (finalLogo.indexOf('?') !== -1 ? '&' : '?') + 'v=' + Date.now();
+        }
+        faviconEl.type = mimeType;
 
         // 2. Update store name
         document.querySelectorAll('.js-config-store-name').forEach(el => {

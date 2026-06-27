@@ -459,31 +459,28 @@
       if (campaign.bannerImage) {
         let imgUrl = campaign.bannerImage;
 
-        // Ensure imgUrl starts with /uploads/ if it contains it
-        if (imgUrl.indexOf('/uploads/') !== -1) {
-             imgUrl = imgUrl.substring(imgUrl.indexOf('/uploads/'));
+        // Make sure upload path begins with a slash
+        let uploadIdx = imgUrl.indexOf('uploads/');
+        if (uploadIdx !== -1) {
+             imgUrl = '/' + imgUrl.substring(uploadIdx);
         }
 
         if (imgUrl.startsWith('/uploads/')) {
           let dynamicBase = '';
           
-          // Original logic that worked perfectly on localhost
-          if ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055') {
+          if (window.PhucGiaTienAPI && window.PhucGiaTienAPI.apiBase && window.PhucGiaTienAPI.apiBase.startsWith('http')) {
+              dynamicBase = window.PhucGiaTienAPI.apiBase.replace(/\/api\/?$/, '');
+          } else if ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055') {
               dynamicBase = 'http://localhost:5055';
-          } 
-          // If on Cloudflare but backend is on 5055 and uploads are not proxied
-          else if (window.location.hostname.includes('trycloudflare.com')) {
-              // If API is relative, try to load from the same domain. If the user uses a split tunnel, they might need the absolute backend URL.
-              // We'll use the API base to determine if we should prefix.
-              if (window.PhucGiaTienAPI && window.PhucGiaTienAPI.apiBase) {
-                  let apiBase = window.PhucGiaTienAPI.apiBase;
-                  if (apiBase.startsWith('http')) {
-                      dynamicBase = apiBase.replace('/api', '');
-                  }
-              }
           }
           
           imgUrl = dynamicBase + imgUrl;
+        } else if (!imgUrl.startsWith('http')) {
+          let dynamicBase = '';
+          if (window.PhucGiaTienAPI && window.PhucGiaTienAPI.apiBase && window.PhucGiaTienAPI.apiBase.startsWith('http')) {
+              dynamicBase = window.PhucGiaTienAPI.apiBase.replace(/\/api\/?$/, '');
+          }
+          imgUrl = dynamicBase + (imgUrl.startsWith('/') ? '' : '/') + imgUrl;
         }
         bannerHtml = `<img src="${imgUrl}" class="promo-popup__image" alt="Promo">`;
       }

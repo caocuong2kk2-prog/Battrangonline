@@ -1,8 +1,10 @@
 using BatTrang.Core.DTOs;
 using BatTrang.Core.Entities;
 using BatTrang.Core.Interfaces;
+using BatTrang.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +21,20 @@ namespace BatTrang.API.Controllers
         private readonly IProductRepository _productRepo;
         private readonly ICustomerRepository _customerRepo;
         private readonly ICategoryRepository _categoryRepo;
+        private readonly AppDbContext _context;
 
         public AnalyticsController(
             IOrderRepository orderRepo, 
             IProductRepository productRepo, 
             ICustomerRepository customerRepo,
-            ICategoryRepository categoryRepo)
+            ICategoryRepository categoryRepo,
+            AppDbContext context)
         {
             _orderRepo = orderRepo;
             _productRepo = productRepo;
             _customerRepo = customerRepo;
             _categoryRepo = categoryRepo;
+            _context = context;
         }
 
         // GET /api/admin/analytics/revenue-by-range?startYear=2025&startMonth=1&endYear=2025&endMonth=6
@@ -48,10 +53,12 @@ namespace BatTrang.API.Controllers
             if (rangeStart > rangeEnd)
                 return BadRequest("Khoảng thời gian không hợp lệ.");
 
-            var orders = await _orderRepo.GetOrdersWithItemsAsync();
-            var completedOrders = orders
+            var completedOrders = await _context.Orders
+                .Include(o => o.Items)
+                .AsSplitQuery()
                 .Where(o => o.Status == "completed" && o.CreatedAt >= rangeStart && o.CreatedAt < rangeEnd)
-                .ToList();
+                .AsNoTracking()
+                .ToListAsync();
 
             var result = new List<RevenueDto>();
             var cursor = rangeStart;
@@ -121,37 +128,43 @@ namespace BatTrang.API.Controllers
 
             var newOrdersToday = await _orderRepo.CountAsync(o => (o.Status == "pending" || o.Status == "confirmed") && o.CreatedAt >= now.Date);
 
-            var allOrders = await _orderRepo.GetOrdersWithItemsAsync();
-            
-            var currentOrders = allOrders.Where(o => o.CreatedAt >= currentStart && o.CreatedAt < currentEnd).ToList();
-            var previousOrders = allOrders.Where(o => o.CreatedAt >= previousStart && o.CreatedAt < previousEnd).ToList();
+            // Truy vấn trực tiếp trên DB thay vì kéo toàn bộ đơn hàng vào RAM
+            var ordersQuery = _context.Orders.AsNoTracking();
 
-            var currentCompletedOrders = currentOrders.Where(o => o.Status == "completed").ToList();
-            var previousCompletedOrders = previousOrders.Where(o => o.Status == "completed").ToList();
+            var currentOrderCount = await ordersQuery.CountAsync(o => o.CreatedAt >= currentStart && o.CreatedAt < currentEnd);
+            var previousOrderCount = await ordersQuery.CountAsync(o => o.CreatedAt >= previousStart && o.CreatedAt < previousEnd);
 
-            var currentRevenue = isAdmin ? currentCompletedOrders.Sum(o => o.Total) : 0;
-            var previousRevenue = isAdmin ? previousCompletedOrders.Sum(o => o.Total) : 0;
+            var currentCompletedCount = await ordersQuery.CountAsync(o => o.Status == "completed" && o.CreatedAt >= currentStart && o.CreatedAt < currentEnd);
+            var previousCompletedCount = await ordersQuery.CountAsync(o => o.Status == "completed" && o.CreatedAt >= previousStart && o.CreatedAt < previousEnd);
 
-            var currentAov = currentCompletedOrders.Count > 0 ? currentRevenue / currentCompletedOrders.Count : 0;
-            var previousAov = previousCompletedOrders.Count > 0 ? previousRevenue / previousCompletedOrders.Count : 0;
+            var currentRevenue = isAdmin ? await ordersQuery.Where(o => o.Status == "completed" && o.CreatedAt >= currentStart && o.CreatedAt < currentEnd).SumAsync(o => o.Total) : 0;
+            var previousRevenue = isAdmin ? await ordersQuery.Where(o => o.Status == "completed" && o.CreatedAt >= previousStart && o.CreatedAt < previousEnd).SumAsync(o => o.Total) : 0;
+
+            var currentAov = currentCompletedCount > 0 ? currentRevenue / currentCompletedCount : 0;
+            var previousAov = previousCompletedCount > 0 ? previousRevenue / previousCompletedCount : 0;
 
             double revenuePercentChange = previousRevenue > 0 ? (double)((currentRevenue - previousRevenue) / previousRevenue) * 100 : 0;
             double aovPercentChange = previousAov > 0 ? (double)((currentAov - previousAov) / previousAov) * 100 : 0;
-            double ordersPercentChange = previousOrders.Count > 0 ? (double)((currentOrders.Count - previousOrders.Count) / (double)previousOrders.Count) * 100 : 0;
+            double ordersPercentChange = previousOrderCount > 0 ? (double)((currentOrderCount - previousOrderCount) / (double)previousOrderCount) * 100 : 0;
 
-            var allCustomers = await _customerRepo.ListAllAsync();
-            var currentCustomers = allCustomers.Where(c => c.JoinedAt >= currentStart && c.JoinedAt < currentEnd).ToList();
-            var previousCustomers = allCustomers.Where(c => c.JoinedAt >= previousStart && c.JoinedAt < previousEnd).ToList();
-            double customersPercentChange = previousCustomers.Count > 0 ? (double)((currentCustomers.Count - previousCustomers.Count) / (double)previousCustomers.Count) * 100 : 0;
+            var currentCustomerCount = await _context.Customers.AsNoTracking().CountAsync(c => c.JoinedAt >= currentStart && c.JoinedAt < currentEnd);
+            var previousCustomerCount = await _context.Customers.AsNoTracking().CountAsync(c => c.JoinedAt >= previousStart && c.JoinedAt < previousEnd);
+            double customersPercentChange = previousCustomerCount > 0 ? (double)((currentCustomerCount - previousCustomerCount) / (double)previousCustomerCount) * 100 : 0;
 
-            var orderStatuses = new Dictionary<string, int>
-            {
-                { "pending", currentOrders.Count(o => o.Status == "pending") },
-                { "confirmed", currentOrders.Count(o => o.Status == "confirmed") },
-                { "shipping", currentOrders.Count(o => o.Status == "shipping") },
-                { "completed", currentOrders.Count(o => o.Status == "completed") },
-                { "cancelled", currentOrders.Count(o => o.Status == "cancelled") }
-            };
+            // Chỉ load đơn hàng trong khoảng thời gian hiện tại (cho status counts, top products, category revenue)
+            var currentOrders = await _context.Orders
+                .Include(o => o.Items)
+                .AsSplitQuery()
+                .AsNoTracking()
+                .Where(o => o.CreatedAt >= currentStart && o.CreatedAt < currentEnd)
+                .ToListAsync();
+            var currentCompletedOrders = currentOrders.Where(o => o.Status == "completed").ToList();
+
+            var orderStatuses = currentOrders.GroupBy(o => o.Status)
+                .ToDictionary(g => g.Key, g => g.Count());
+            // Ensure all statuses exist
+            foreach (var s in new[] { "pending", "confirmed", "shipping", "completed", "cancelled" })
+                if (!orderStatuses.ContainsKey(s)) orderStatuses[s] = 0;
 
             var products = await _productRepo.GetAllProductsWithVariantsAsync();
             var categories = await _categoryRepo.ListAllAsync();
@@ -232,32 +245,37 @@ namespace BatTrang.API.Controllers
                 tp.FirstImage = tp.Images.FirstOrDefault();
             }
 
-            List<string> periodCustomerPhones;
             int totalUniqueCustomers;
             int repeatCustomers;
 
             if (startDate.HasValue && endDate.HasValue)
             {
-                periodCustomerPhones = currentOrders
+                var periodPhones = currentOrders
                     .Where(o => !string.IsNullOrEmpty(o.CustomerPhone))
                     .Select(o => o.CustomerPhone)
                     .Distinct()
                     .ToList();
                 
-                totalUniqueCustomers = periodCustomerPhones.Count;
-                repeatCustomers = periodCustomerPhones
-                    .Count(phone => allOrders.Count(o => o.CustomerPhone == phone) > 1);
+                totalUniqueCustomers = periodPhones.Count;
+                // Đếm khách quay lại: có > 1 đơn hàng (tổng cộng tất cả thời gian) với cùng SĐT
+                repeatCustomers = 0;
+                foreach (var phone in periodPhones)
+                {
+                    var totalOrdersForPhone = await _context.Orders.CountAsync(o => o.CustomerPhone == phone);
+                    if (totalOrdersForPhone > 1) repeatCustomers++;
+                }
             }
             else
             {
-                var customerPhoneGroups = allOrders
-                    .Where(o => !string.IsNullOrEmpty(o.CustomerPhone))
+                var phoneStats = await _context.Orders
+                    .AsNoTracking()
+                    .Where(o => o.CustomerPhone != null && o.CustomerPhone != "")
                     .GroupBy(o => o.CustomerPhone)
                     .Select(g => g.Count())
-                    .ToList();
+                    .ToListAsync();
 
-                totalUniqueCustomers = customerPhoneGroups.Count;
-                repeatCustomers = customerPhoneGroups.Count(c => c > 1);
+                totalUniqueCustomers = phoneStats.Count;
+                repeatCustomers = phoneStats.Count(c => c > 1);
             }
 
             double returnCustomerRate = totalUniqueCustomers > 0 ? (double)repeatCustomers / totalUniqueCustomers * 100 : 0;
@@ -266,7 +284,7 @@ namespace BatTrang.API.Controllers
             var analytics = new AnalyticsDto
             {
                 TotalRevenue = currentRevenue,
-                TotalOrders = currentOrders.Count,
+                TotalOrders = currentOrderCount,
                 TotalProducts = totalProductsAllTime,
                 TotalCustomers = totalCustomersAllTime,
                 NewOrdersToday = newOrdersToday,
@@ -292,7 +310,8 @@ namespace BatTrang.API.Controllers
 
             var chartDataList = new System.Collections.Generic.List<RevenueDto>();
             var durationDays = (currentEnd - currentStart).TotalDays;
-            var allCompletedOrders = allOrders.Where(o => o.Status == "completed").ToList();
+            // Lấy tất cả completed orders cho biểu đồ (chỉ trong khoảng hiện tại)
+            var allCompletedOrders = currentCompletedOrders;
 
             if (durationDays <= 31)
             {

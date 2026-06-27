@@ -11,7 +11,7 @@ namespace BatTrang.API.Helpers
             // Only delete local uploads, ignore external URLs (e.g. facebook graph, http...)
             if (fileUrl.StartsWith("/uploads/"))
             {
-                var fileName = fileUrl.Substring("/uploads/".Length);
+                var fileName = Path.GetFileName(fileUrl);
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", fileName);
                 
                 if (File.Exists(filePath))

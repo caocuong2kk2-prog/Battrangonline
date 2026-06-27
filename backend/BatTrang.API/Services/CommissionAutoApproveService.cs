@@ -146,7 +146,7 @@ namespace BatTrang.API.Services
                 
                 try
                 {
-                    await hubContext.Clients.All.SendAsync("ReceiveNotification", "CommissionCreated", adminMsg);
+                    await hubContext.Clients.Group("Admins").SendAsync("ReceiveNotification", "CommissionCreated", adminMsg);
                 }
                 catch { }
 

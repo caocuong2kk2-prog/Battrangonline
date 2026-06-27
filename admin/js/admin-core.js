@@ -1054,8 +1054,10 @@ document.addEventListener('DOMContentLoaded',function(){
     function connect() {
       try {
         var hubBaseUrl = '/hub/notifications';
+        var adminSession = getAdminSession();
+        var token = adminSession ? adminSession.token : null;
         var connection = new signalR.HubConnectionBuilder()
-          .withUrl(hubBaseUrl)
+          .withUrl(hubBaseUrl, { accessTokenFactory: () => token })
           .withAutomaticReconnect()
           .build();
 

@@ -46,29 +46,41 @@
     }
 
     history.replaceState(null, '', '#tab=' + statusKey);
-    renderTable();
+    fetchAndRenderTable();
   }
 
+
+
   function init() {
-    Promise.all([AdminData.orders.load(), AdminData.products.load(), AdminData.customers.load()]).then(function (res) {
-      orders = res[0];
-      allProducts = res[1] || [];
+    initDatePickers();
+    filterStatus = getStatusFromHash();
+    history.replaceState(null, '', '#tab=' + filterStatus);
+    fetchAndRenderTable();
+
+    Promise.all([
+      AdminData.products.load(),
+      AdminData.customers.load(),
+      AdminData.glazeLines.load(),
+      AdminData.productTypes.load(),
+      AdminData.materials.load(),
+      AdminData.colors.load(),
+      AdminData.patterns.load(),
+      AdminData.sizes.load(),
+      AdminData.gifts.load()
+    ]).then(function (res) {
+      allProducts = res[0] || [];
       products = allProducts.filter(function (p) { return p.status === 'active'; });
-      customers = res[2] || [];
+      customers = res[1] || [];
 
       buildProductImagesMap();
-      filterStatus = getStatusFromHash();
-      history.replaceState(null, '', '#tab=' + filterStatus);
-
-      renderStatusTabs();
-      renderTable();
       bindEvents();
       populateCustomerDatalists();
       initCustomerAutocomplete();
-      AdminData.orders.updatePendingBadge(orders);
     }).catch(function () {
-      adminToast('Không tải được dữ liệu', 'error');
+      adminToast('Không tải được dữ liệu phụ', 'error');
     });
+
+    AdminData.orders.updatePendingBadge();
   }
 
   window.onAdminNotification = function (eventType, message) {
@@ -317,69 +329,10 @@
   }
 
   function getFiltered() {
-    var arr = orders.filter(function (o) {
-      var ns = window.normalizeSearch || function (s) { return (s || '').toLowerCase(); };
-      var q = ns(searchQ);
-
-      // Normalize search query for phone numbers (extract only digits and convert country code 84 to 0)
-      var qDigits = q.replace(/\D/g, '');
-      if (qDigits.startsWith('84') && qDigits.length > 2) {
-        qDigits = '0' + qDigits.slice(2);
-      }
-
-      var matchQ = !q ||
-        (o.id && String(o.id).toLowerCase().includes(q)) ||
-        (o.customer && ns(String(o.customer)).includes(q)) ||
-        (o.phone && (function () {
-          var oPhoneStr = String(o.phone);
-          if (ns(oPhoneStr).includes(q)) return true;
-          if (qDigits) {
-            var oPhoneDigits = oPhoneStr.replace(/\D/g, '');
-            if (oPhoneDigits.startsWith('84') && oPhoneDigits.length > 2) {
-              oPhoneDigits = '0' + oPhoneDigits.slice(2);
-            }
-            return oPhoneDigits.includes(qDigits);
-          }
-          return false;
-        })()) ||
-        (o.email && ns(String(o.email)).includes(q)) ||
-        (o.address && ns(String(o.address)).includes(q));
-
-      var matchDate = true;
-      if (filterDateFrom || filterDateTo) {
-        var oDate = new Date(o.date);
-        oDate.setHours(0, 0, 0, 0); // normalize for comparison
-        if (filterDateFrom) {
-          var fromDate = new Date(filterDateFrom);
-          fromDate.setHours(0, 0, 0, 0);
-          if (oDate < fromDate) matchDate = false;
-        }
-        if (filterDateTo) {
-          var toDate = new Date(filterDateTo);
-          toDate.setHours(23, 59, 59, 999);
-          if (oDate > toDate) matchDate = false;
-        }
-      }
-
-      var matchS = filterStatus === 'all' || o.status === filterStatus;
-      if (filterStatus === 'cancel_request') {
-        matchS = o.isCancelRequested === true;
-      }
-      return matchQ && matchS && matchDate;
-    });
-
-    arr.sort(function (a, b) {
-      if (sortCol === 'total') {
-        return sortDesc ? b.total - a.total : a.total - b.total;
-      } else {
-        var dA = new Date(a.date).getTime() || 0;
-        var dB = new Date(b.date).getTime() || 0;
-        return sortDesc ? dB - dA : dA - dB;
-      }
-    });
-
-    return arr;
+    return orders;
   }
+
+  var currentCounts = {};
 
   function renderStatusTabs() {
     var tabs = document.getElementById('order-status-tabs');
@@ -394,10 +347,8 @@
       { key: 'cancel_request', label: 'Yêu cầu hủy' }
     ];
     tabs.innerHTML = statuses.map(function (s) {
-      var count = 0;
-      if (s.key === 'all') count = orders.length;
-      else if (s.key === 'cancel_request') count = orders.filter(function (o) { return o.isCancelRequested; }).length;
-      else count = orders.filter(function (o) { return o.status === s.key; }).length;
+      var countKey = s.key === 'cancel_request' ? 'cancel_requested' : s.key;
+      var count = currentCounts[countKey] || 0;
 
       var specialStyle = s.key === 'cancel_request' && count > 0 ? ' style="color:#c2410c; background-color:#ffedD5;"' : '';
       return '<button class="status-tab' + (filterStatus === s.key ? ' active' : '') + '" data-status="' + s.key + '"' + specialStyle + '>' + s.label + ' <span class="tab-count">' + count + '</span></button>';
@@ -409,13 +360,22 @@
     });
   }
 
-  function renderTable() {
-    var filtered = getFiltered();
-    var total = filtered.length;
-    var pages = Math.ceil(total / pageSize) || 1;
-    if (currentPage > pages) currentPage = 1;
-    var slice = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-    var tbody = document.getElementById('orders-table-body');
+  function fetchAndRenderTable() {
+    var queryStatus = filterStatus === 'cancel_request' ? 'cancel_requested' : filterStatus;
+    AdminData.orders.load(currentPage, pageSize, searchQ, queryStatus, filterDateFrom, filterDateTo)
+      .then(function(res) {
+          orders = res.data || [];
+          var total = res.total || 0;
+          var pages = Math.ceil(total / pageSize) || 1;
+          if (currentPage > pages && pages > 0) {
+              currentPage = pages;
+              return fetchAndRenderTable();
+          }
+          currentCounts = res.counts || {};
+          renderStatusTabs();
+
+          var slice = orders;
+          var tbody = document.getElementById('orders-table-body');
     if (!slice.length) {
       tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="empty-state__icon">🛒</div><div class="empty-state__title">Không có đơn hàng</div></div></td></tr>';
     } else {
@@ -522,6 +482,10 @@
     renderPag(total, pages);
     if (window.initCustomSelects) window.initCustomSelects(tbody);
     if (typeof updateBulkActionsUI === 'function') updateBulkActionsUI();
+    }).catch(function(err) {
+        console.error(err);
+        adminToast('Lỗi tải danh sách đơn hàng', 'error');
+    });
   }
 
   function renderPag(total, pages) {
@@ -532,10 +496,10 @@
     for (var i = 1; i <= Math.min(pages, 5); i++)html += '<button class="pag-btn' + (i === currentPage ? ' active' : '') + '" data-page="' + i + '">' + i + '</button>';
     html += '<button class="pag-btn" id="o-next" ' + (currentPage === pages ? 'disabled' : '') + '>›</button></div>';
     pag.innerHTML = html;
-    pag.querySelectorAll('[data-page]').forEach(function (b) { b.addEventListener('click', function () { currentPage = +b.dataset.page; renderTable(); }); });
+    pag.querySelectorAll('[data-page]').forEach(function (b) { b.addEventListener('click', function () { currentPage = +b.dataset.page; fetchAndRenderTable(); }); });
     var p = pag.querySelector('#o-prev'), n = pag.querySelector('#o-next');
-    if (p) p.addEventListener('click', function () { if (currentPage > 1) { currentPage--; renderTable(); } });
-    if (n) n.addEventListener('click', function () { if (currentPage < pages) { currentPage++; renderTable(); } });
+    if (p) p.addEventListener('click', function () { if (currentPage > 1) { currentPage--; fetchAndRenderTable(); } });
+    if (n) n.addEventListener('click', function () { if (currentPage < pages) { currentPage++; fetchAndRenderTable(); } });
   }
 
   function viewOrder(id) {
@@ -738,12 +702,8 @@
     if (!status) return Promise.resolve();
     return AdminData.orders.updateStatus(id, status).then(function () {
       adminToast('Cập nhật trạng thái: ' + AdminData.getStatusLabel(status), 'success');
-      return AdminData.orders.load().then(function (newOrders) {
-        orders = newOrders;
-        renderStatusTabs();
-        renderTable();
-        AdminData.orders.updatePendingBadge(orders);
-      });
+      fetchAndRenderTable();
+      AdminData.orders.updatePendingBadge();
     }).catch(function () {
       adminToast('Lỗi cập nhật trạng thái', 'error');
       throw new Error('Lỗi cập nhật');
@@ -766,12 +726,8 @@
         }
         AdminData.orders.rejectCancel(id, reason).then(function () {
           adminToast('Đã từ chối yêu cầu hủy đơn.', 'success');
-          AdminData.orders.load().then(function (newOrders) {
-            orders = newOrders;
-            renderStatusTabs();
-            renderTable();
-            closeModal('orderDetailModal');
-          });
+          fetchAndRenderTable();
+          closeModal('orderDetailModal');
         }).catch(function (err) {
           adminToast(err.message || 'Lỗi khi từ chối', 'error');
         });
@@ -780,12 +736,8 @@
       if (!confirm('Bạn muốn từ chối yêu cầu hủy của khách? Đơn hàng sẽ giữ nguyên trạng thái Đã xác nhận.')) return;
       AdminData.orders.rejectCancel(id, "Shop từ chối").then(function () {
         adminToast('Đã từ chối yêu cầu hủy đơn.', 'success');
-        AdminData.orders.load().then(function (newOrders) {
-          orders = newOrders;
-          renderStatusTabs();
-          renderTable();
-          closeModal('orderDetailModal');
-        });
+        fetchAndRenderTable();
+        closeModal('orderDetailModal');
       }).catch(function (err) {
         adminToast(err.message || 'Lỗi khi từ chối', 'error');
       });
@@ -794,11 +746,9 @@
 
   function deleteOrder(id) {
     AdminData.orders.delete(id).then(function () {
-      orders = orders.filter(function (o) { return o.id !== id; });
       adminToast('Đã xóa đơn hàng #' + id, 'success');
-      renderStatusTabs();
-      renderTable();
-      AdminData.orders.updatePendingBadge(orders);
+      fetchAndRenderTable();
+      AdminData.orders.updatePendingBadge();
     }).catch(function (err) {
       adminToast('Lỗi khi xóa đơn hàng: ' + (err.message || 'thất bại'), 'error');
     });
@@ -1163,10 +1113,8 @@
       status: status,
       items: items
     }).then(function (created) {
-      orders.unshift(created);
       switchTab('all');
-      renderStatusTabs();
-      AdminData.orders.updatePendingBadge(orders);
+      AdminData.orders.updatePendingBadge();
       closeModal('orderCreateModal');
       adminToast('Đã tạo đơn hàng ' + created.id, 'success');
     }).catch(function (err) {
@@ -1230,7 +1178,7 @@
     });
 
     var search = document.getElementById('order-search');
-    if (search) search.addEventListener('input', function () { searchQ = search.value; currentPage = 1; renderTable(); });
+    if (search) search.addEventListener('input', function () { searchQ = search.value; currentPage = 1; fetchAndRenderTable(); });
 
     var dateFrom = document.getElementById('order-date-from');
     var dateTo = document.getElementById('order-date-to');
@@ -1246,8 +1194,8 @@
       }
     }
 
-    if (dateFrom) dateFrom.addEventListener('change', function () { filterDateFrom = this.value; updateClearDateBtn(); currentPage = 1; renderTable(); });
-    if (dateTo) dateTo.addEventListener('change', function () { filterDateTo = this.value; updateClearDateBtn(); currentPage = 1; renderTable(); });
+    if (dateFrom) dateFrom.addEventListener('change', function () { filterDateFrom = this.value; updateClearDateBtn(); currentPage = 1; fetchAndRenderTable(); });
+    if (dateTo) dateTo.addEventListener('change', function () { filterDateTo = this.value; updateClearDateBtn(); currentPage = 1; fetchAndRenderTable(); });
 
     if (btnClearDate) {
       btnClearDate.addEventListener('click', function () {
@@ -1257,7 +1205,7 @@
         filterDateTo = '';
         updateClearDateBtn();
         currentPage = 1;
-        renderTable();
+        fetchAndRenderTable();
       });
     }
 
@@ -1265,7 +1213,7 @@
     if (pageSizeSel) pageSizeSel.addEventListener('change', function () {
       pageSize = parseInt(this.value, 10) || 10;
       currentPage = 1;
-      renderTable();
+      fetchAndRenderTable();
     });
 
     document.querySelectorAll('th.sortable').forEach(function (th) {
@@ -1289,7 +1237,7 @@
         }
 
         currentPage = 1;
-        renderTable();
+        fetchAndRenderTable();
       });
     });
 

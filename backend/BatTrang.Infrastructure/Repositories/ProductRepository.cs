@@ -33,6 +33,7 @@ namespace BatTrang.Infrastructure.Repositories
                     .ThenInclude(v => v.Color)
                 .Include(p => p.Variants)
                     .ThenInclude(v => v.Pattern)
+                .AsSplitQuery()
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(filter.Category) && filter.Category != "all")
@@ -155,6 +156,10 @@ namespace BatTrang.Infrastructure.Repositories
                     break;
             }
 
+            if (filter.Limit > 100) filter.Limit = 100;
+            if (filter.Limit < 1) filter.Limit = 8;
+            if (filter.Page < 1) filter.Page = 1;
+
             var total = await query.CountAsync();
             var data = await query.Skip((filter.Page - 1) * filter.Limit).Take(filter.Limit).ToListAsync();
 
@@ -184,7 +189,8 @@ namespace BatTrang.Infrastructure.Repositories
                 .Include(p => p.Variants)
                     .ThenInclude(v => v.Color)
                 .Include(p => p.Variants)
-                    .ThenInclude(v => v.Pattern);
+                    .ThenInclude(v => v.Pattern)
+                .AsSplitQuery();
                 
             if (int.TryParse(slug, out int id))
             {
@@ -199,6 +205,7 @@ namespace BatTrang.Infrastructure.Repositories
         {
             return await _context.Products
                 .Include(p => p.Variants)
+                .AsSplitQuery()
                 .ToListAsync();
         }
 
@@ -220,6 +227,7 @@ namespace BatTrang.Infrastructure.Repositories
                     .ThenInclude(v => v.Color)
                 .Include(p => p.Variants)
                     .ThenInclude(v => v.Pattern)
+                .AsSplitQuery()
                 .OrderByDescending(p => p.TotalSold) // Prioritize best-selling products
                 .ThenByDescending(p => p.Id)
                 .Take(limit)
@@ -245,6 +253,7 @@ namespace BatTrang.Infrastructure.Repositories
                     .ThenInclude(v => v.Color)
                 .Include(p => p.Variants)
                     .ThenInclude(v => v.Pattern)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 

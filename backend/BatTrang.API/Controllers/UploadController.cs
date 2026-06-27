@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -8,6 +9,7 @@ namespace BatTrang.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "AdminOrStaff")]
     public class UploadController : ControllerBase
     {
         [HttpPost]
@@ -15,6 +17,9 @@ namespace BatTrang.API.Controllers
         {
             if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded.");
+
+            if (file.Length > 5 * 1024 * 1024)
+                return BadRequest("File size exceeds 5MB limit.");
 
             var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".mp4", ".mov", ".avi", ".webm" };
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
@@ -41,6 +46,7 @@ namespace BatTrang.API.Controllers
         }
 
         [HttpDelete]
+        [Microsoft.AspNetCore.Authorization.Authorize(Policy = "AdminOrStaff")]
         public IActionResult DeleteFile([FromQuery] string url)
         {
             if (string.IsNullOrWhiteSpace(url))

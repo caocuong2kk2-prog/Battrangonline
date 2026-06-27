@@ -586,7 +586,6 @@
         .catch(function (error) { console.error(error); });
     }
     Promise.all([
-      AdminData.products.load(),
       AdminData.glazeLines.load(),
       AdminData.productTypes.load(),
       AdminData.materials.load(),
@@ -597,9 +596,8 @@
       AdminData.categories.load(),
       AdminData.gifts.load()
     ]).then(function (res) {
-      products = res[0];
-      categories = res[8] || [];
-      allGifts = res[9] || [];
+      categories = res[7] || [];
+      allGifts = res[8] || [];
       renderGiftsSelector();
 
       function populateSelect(data, selectName, defaultText) {
@@ -685,10 +683,10 @@
       sizes = res[7] || [];
 
       // Handle site settings for default address (origin)
-      var settings = res[6] || {};
+      var settings = res[5] || {};
       storeAddress = settings.address || settings.Address || '';
 
-      renderTable();
+      fetchAndRenderTable();
       bindEvents();
     }).catch(function (e) { console.error(e); });
   }
@@ -783,39 +781,8 @@
   }
 
   function getFiltered() {
-    return products.filter(function (p) {
-      var q = searchQ.toLowerCase();
-      var pCode = p.sku || getSkuForCategory(p.category, p.id);
-      var matchQ = !q ||
-        p.name.toLowerCase().includes(q) ||
-        getCategoryName(p.category).toLowerCase().includes(q) ||
-        pCode.toLowerCase().includes(q) ||
-        (p.sku && p.sku.toLowerCase().includes(q)) ||
-        String(p.id) === q ||
-        ('sp' + p.id) === q ||
-        (p.material && p.material.toLowerCase().includes(q)) ||
-        (p.pattern && p.pattern.toLowerCase().includes(q));
-
-      if (!matchQ && q) {
-        var gl = glazeLines.find(function (g) { return (g.id || g.Id) == p.glazeLineId; });
-        var glName = gl ? (gl.name || gl.Name || '') : '';
-        if (glName.toLowerCase().includes(q)) {
-          matchQ = true;
-        }
-      }
-
-      if (!matchQ && q && p.variants && p.variants.length > 0) {
-        var qNum = q.replace(/[^0-9]/g, '');
-        matchQ = p.variants.some(function (v) {
-          var matchSize = (v.size || '').toLowerCase().includes(q);
-          var matchPrice = qNum !== '' && String(v.price || '').includes(qNum);
-          return matchSize || matchPrice;
-        });
-      }
-      var matchCat = filterCat === 'all' || p.category === filterCat;
-      var matchStatus = filterStatus === 'all' || p.status === filterStatus;
-      return matchQ && matchCat && matchStatus;
-    });
+    // getFiltered is no longer used for server-side pagination
+    return products;
   }
 
   function getUniqueNames(variants, dataArray, idField) {
@@ -834,21 +801,27 @@
     return names.join(', ');
   }
 
-  function renderTable() {
-    var isAdmin = window.getAdminSession ? (window.getAdminSession().role === 'admin') : false;
-    var filtered = getFiltered();
-    var total = filtered.length;
-    var pages = Math.ceil(total / pageSize) || 1;
-    if (currentPage > pages) currentPage = 1;
-    var start = (currentPage - 1) * pageSize;
-    var slice = filtered.slice(start, start + pageSize);
+  function fetchAndRenderTable() {
+    return AdminData.products.load(currentPage, pageSize, searchQ, filterCat, filterStatus)
+      .then(function(res) {
+        products = res.data || [];
+        var total = res.total || 0;
+        var pages = Math.ceil(total / pageSize) || 1;
+        if (currentPage > pages && pages > 0) {
+            currentPage = pages;
+            return fetchAndRenderTable();
+        }
 
-    var tbody = document.getElementById('products-table-body');
-    if (!slice.length) {
-      tbody.innerHTML = '<tr><td colspan="12"><div class="empty-state"><div class="empty-state__icon">📦</div><div class="empty-state__title">Không có sản phẩm</div></div></td></tr>';
-    } else {
-      tbody.innerHTML = slice.map(function (p, idx) {
-        var stt = start + idx + 1;
+        var isAdmin = window.getAdminSession ? (window.getAdminSession().role === 'admin') : false;
+        var start = (currentPage - 1) * pageSize;
+        var slice = products;
+
+        var tbody = document.getElementById('products-table-body');
+        if (!slice.length) {
+          tbody.innerHTML = '<tr><td colspan="12"><div class="empty-state"><div class="empty-state__icon">📦</div><div class="empty-state__title">Không có sản phẩm</div></div></td></tr>';
+        } else {
+          tbody.innerHTML = slice.map(function (p, idx) {
+            var stt = start + idx + 1;
         var isChecked = selectedProductIds.has(p.id) ? 'checked' : '';
         var isStatusActive = p.status === 'active';
         var statusText = isStatusActive ? '<span style="font-size:var(--fs-xs);color:var(--success);font-weight:600;white-space:nowrap">Đang bán</span>' : '<span style="font-size:var(--fs-xs);color:var(--text-muted);white-space:nowrap">Ngừng bán</span>';
@@ -953,21 +926,21 @@
       }).join('');
     }
 
-    initAdminAsyncThumbnails(tbody);
+        initAdminAsyncThumbnails(tbody);
 
-    // Pagination
-    renderPagination(total, pages);
-    document.getElementById('product-count').textContent = 'Hiển thị ' + (slice.length) + '/' + total + ' sản phẩm';
-    updateBulkActionsUI();
+        // Pagination
+        renderPagination(total, pages);
+        document.getElementById('product-count').textContent = 'Hiển thị ' + (slice.length) + '/' + total + ' sản phẩm';
+        updateBulkActionsUI();
+      })
+      .catch(function(err) {
+          console.error(err);
+          adminToast('Lỗi khi tải danh sách sản phẩm', 'error');
+      });
   }
 
   function updateBulkActionsUI() {
-    var filtered = getFiltered();
-    var total = filtered.length;
-    var pages = Math.ceil(total / pageSize) || 1;
-    if (currentPage > pages) currentPage = 1;
-    var start = (currentPage - 1) * pageSize;
-    var slice = filtered.slice(start, start + pageSize);
+    var slice = products;
 
     // Check if check-all checkbox should be checked
     var checkAll = document.getElementById('check-all-products');
@@ -995,17 +968,45 @@
   function renderPagination(total, pages) {
     var pag = document.getElementById('products-pagination');
     if (!pag) return;
-    pag.innerHTML = '<div class="pagination__info">Trang ' + currentPage + ' / ' + pages + '</div>' +
-      '<div class="pagination__btns">' +
+    var renderPaginationBtn = function (pageNum, text) {
+      var isActive = pageNum === currentPage;
+      return '<button class="pag-btn ' + (isActive ? 'active' : '') + '" data-page="' + pageNum + '">' + (text || pageNum) + '</button>';
+    };
+
+    var html = '<div class="pagination__info">Trang ' + currentPage + ' / ' + pages + '</div>' + '<div class="pagination__btns">' +
       '<button class="pag-btn" id="pag-prev" ' + (currentPage === 1 ? 'disabled' : '') + '>‹</button>';
-    for (var i = 1; i <= pages && i <= 5; i++) {
-      pag.querySelector('.pagination__btns').innerHTML += '<button class="pag-btn' + (i === currentPage ? ' active' : '') + '" data-page="' + i + '">' + i + '</button>';
+    if (pages <= 7) {
+      for (var i = 1; i <= pages; i++) html += renderPaginationBtn(i);
+    } else {
+      html += renderPaginationBtn(1);
+      if (currentPage > 3) html += '<span style="padding:0 8px;color:#aaa">...</span>';
+      var startPage = Math.max(2, currentPage - 1);
+      var endPage = Math.min(pages - 1, currentPage + 1);
+      for (var i = startPage; i <= endPage; i++) html += renderPaginationBtn(i);
+      if (currentPage < pages - 2) html += '<span style="padding:0 8px;color:#aaa">...</span>';
+      html += renderPaginationBtn(pages);
     }
-    pag.querySelector('.pagination__btns').innerHTML += '<button class="pag-btn" id="pag-next" ' + (currentPage === pages ? 'disabled' : '') + '>›</button>';
-    pag.querySelectorAll('[data-page]').forEach(function (b) { b.addEventListener('click', function () { currentPage = parseInt(b.dataset.page); renderTable(); }); });
-    var prev = pag.querySelector('#pag-prev'), next = pag.querySelector('#pag-next');
-    if (prev) prev.addEventListener('click', function () { if (currentPage > 1) { currentPage--; renderTable(); } });
-    if (next) next.addEventListener('click', function () { if (currentPage < pages) { currentPage++; renderTable(); } });
+    html += '<button class="pag-btn" id="pag-next" ' + (currentPage === pages ? 'disabled' : '') + '>›</button></div>';
+    pag.innerHTML = html;
+
+    pag.querySelectorAll('.pag-btn[data-page]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        currentPage = parseInt(this.dataset.page);
+        fetchAndRenderTable();
+      });
+    });
+    var prevBtn = document.getElementById('pag-prev');
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function () {
+        if (currentPage > 1) { currentPage--; fetchAndRenderTable(); }
+      });
+    }
+    var nextBtn = document.getElementById('pag-next');
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function () {
+        if (currentPage < pages) { currentPage++; fetchAndRenderTable(); }
+      });
+    }
   }
 
   function resetToBasicTab() {
@@ -1353,9 +1354,8 @@
   function deleteProduct(id) {
     adminConfirm('Xoá sản phẩm này? Hành động không thể hoàn tác.', function () {
       AdminData.products.delete(id).then(function () {
-        products = products.filter(function (p) { return p.id !== id; });
         adminToast('Đã xoá sản phẩm', 'warning');
-        renderTable();
+        fetchAndRenderTable();
       }).catch(function (e) {
         adminToast('Lỗi khi xóa sản phẩm', 'error');
       });
@@ -1370,10 +1370,7 @@
     AdminData.products.bulkStatus(ids, status).then(function () {
       adminToast('Đã đổi trạng thái ' + ids.length + ' sản phẩm sang ' + statusLabel, 'success');
       selectedProductIds.clear();
-      return AdminData.products.load();
-    }).then(function (newData) {
-      products = newData;
-      renderTable();
+      fetchAndRenderTable();
     }).catch(function (err) {
       console.error(err);
       adminToast('Có lỗi xảy ra khi đổi trạng thái hàng loạt!', 'error');
@@ -1393,10 +1390,7 @@
       AdminData.products.bulkDelete(ids).then(function () {
         adminToast('Đã xóa thành công ' + ids.length + ' sản phẩm', 'warning');
         selectedProductIds.clear();
-        return AdminData.products.load();
-      }).then(function (newData) {
-        products = newData;
-        renderTable();
+        fetchAndRenderTable();
       }).catch(function (err) {
         console.error(err);
         adminToast('Có lỗi xảy ra khi xóa hàng loạt!', 'error');
@@ -1406,18 +1400,18 @@
 
   function bindEvents() {
     var search = document.getElementById('product-search');
-    if (search) search.addEventListener('input', function () { searchQ = search.value; currentPage = 1; renderTable(); });
+    if (search) search.addEventListener('input', function () { searchQ = search.value; currentPage = 1; fetchAndRenderTable(); });
     var catFilter = document.getElementById('product-cat-filter');
-    if (catFilter) catFilter.addEventListener('change', function () { filterCat = this.value; currentPage = 1; renderTable(); });
+    if (catFilter) catFilter.addEventListener('change', function () { filterCat = this.value; currentPage = 1; fetchAndRenderTable(); });
     var statusFilter = document.getElementById('product-status-filter');
-    if (statusFilter) statusFilter.addEventListener('change', function () { filterStatus = this.value; currentPage = 1; renderTable(); });
+    if (statusFilter) statusFilter.addEventListener('change', function () { filterStatus = this.value; currentPage = 1; fetchAndRenderTable(); });
     var pageSizeSelect = document.getElementById('page-size-select');
     if (pageSizeSelect) {
       pageSizeSelect.value = pageSize.toString();
       pageSizeSelect.addEventListener('change', function () {
         pageSize = parseInt(pageSizeSelect.value) || 10;
         currentPage = 1;
-        renderTable();
+        fetchAndRenderTable();
       });
     }
     var addBtn = document.getElementById('btn-add-product');

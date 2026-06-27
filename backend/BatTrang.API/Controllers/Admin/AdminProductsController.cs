@@ -33,12 +33,29 @@ namespace BatTrang.API.Controllers.Admin
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int page = 1,
+            [FromQuery] int limit = 10,
+            [FromQuery] string? search = null,
+            [FromQuery] string? category = null,
+            [FromQuery] string? status = null)
         {
-            var filter = new ProductFilterDto { Limit = 1000 };
+            var filter = new ProductFilterDto 
+            { 
+                Page = page,
+                Limit = limit,
+                SearchQuery = search,
+                Category = category,
+                Status = status
+            };
+            
             var result = await _productRepo.GetProductsAsync(filter);
             
-            var productGifts = await _context.ProductGifts.Include(pg => pg.Gift).ToListAsync();
+            var productIds = result.Data.Select(p => p.Id).ToList();
+            var productGifts = await _context.ProductGifts.Include(pg => pg.Gift)
+                .Where(pg => productIds.Contains(pg.ProductId))
+                .ToListAsync();
+                
             var productGiftsGrouped = productGifts.GroupBy(pg => pg.ProductId)
                 .ToDictionary(g => g.Key, g => g.Select(pg => new GiftDto { Id = pg.GiftId, Name = pg.Gift.Name, Quantity = pg.Quantity }).ToList());
             
@@ -85,9 +102,9 @@ namespace BatTrang.API.Controllers.Admin
                     OriginalPrice = v.OriginalPrice,
                     Stock = v.Stock
                 }).ToList()
-            });
+            }).ToList();
 
-            return Ok(dtos);
+            return Ok(new { data = dtos, total = result.Total, page = result.Page, limit = filter.Limit });
         }
 
         [HttpPost]
@@ -136,7 +153,7 @@ namespace BatTrang.API.Controllers.Admin
                 Sku = dto.Sku,
                 CategoryId = categoryId,
                 Usage = dto.Usage,
-                Status = totalStock == 0 ? "inactive" : dto.Status,
+                Status = dto.Status,
                 MarketingBadges = dto.Badge,
                 IsUnique = dto.IsUnique,
                 ShortDescription = dto.ShortDescription,
@@ -255,7 +272,7 @@ namespace BatTrang.API.Controllers.Admin
             }
 
             product.Usage = dto.Usage;
-            product.Status = totalStockUpdate == 0 ? "inactive" : dto.Status;
+            product.Status = dto.Status;
             product.MarketingBadges = dto.Badge;
             product.IsUnique = dto.IsUnique;
             product.ShortDescription = dto.ShortDescription;

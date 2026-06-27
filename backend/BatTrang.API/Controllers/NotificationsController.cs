@@ -10,6 +10,7 @@ namespace BatTrang.API.Controllers
 {
     [Route("api/admin/[controller]")]
     [ApiController]
+    [Authorize(Policy = "AdminOrStaff")]
     public class NotificationsController : ControllerBase
     {
         private readonly AppDbContext _context;

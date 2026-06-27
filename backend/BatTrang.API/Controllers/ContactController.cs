@@ -19,6 +19,7 @@ namespace BatTrang.API.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("ContactPolicy")]
         public async Task<IActionResult> Submit([FromBody] ContactMessage message)
         {
             message.CreatedAt = System.DateTime.UtcNow.AddHours(7);
