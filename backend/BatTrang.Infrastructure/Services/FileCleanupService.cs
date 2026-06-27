@@ -190,6 +190,22 @@ namespace BatTrang.Infrastructure.Services
                     urls.Add(val);
             }
 
+            // 5. Campaigns — BannerImage field
+            var campaignBanners = await context.Campaigns
+                .Where(c => c.BannerImage != null)
+                .Select(c => c.BannerImage!)
+                .ToListAsync();
+            foreach (var url in campaignBanners)
+                if (!string.IsNullOrEmpty(url)) urls.Add(url);
+
+            // 6. Gifts — ImageUrl field
+            var giftImages = await context.Gifts
+                .Where(g => g.ImageUrl != null)
+                .Select(g => g.ImageUrl!)
+                .ToListAsync();
+            foreach (var url in giftImages)
+                if (!string.IsNullOrEmpty(url)) urls.Add(url);
+
             return urls;
         }
 

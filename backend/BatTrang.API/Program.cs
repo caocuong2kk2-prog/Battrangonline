@@ -68,10 +68,21 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLiveServer", policy =>
     {
-        policy.SetIsOriginAllowed(origin => true)
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        if (builder.Environment.IsDevelopment())
+        {
+            policy.SetIsOriginAllowed(origin => true)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
+        else
+        {
+            // Trên môi trường thực tế (Production), chỉ cho phép truy cập từ tên miền chính thức của hệ thống
+            policy.WithOrigins("https://phucgiatien.vn", "https://www.phucgiatien.vn")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
     });
 });
 

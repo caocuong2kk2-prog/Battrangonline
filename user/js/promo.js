@@ -9,6 +9,12 @@
     style.id = 'promo-styles';
     style.textContent = `
       /* ---- TOP PROMO BANNER ---- */
+      body.page-body {
+        transition: padding-top 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      }
+      #site-header {
+        transition: top 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, box-shadow 0.3s ease !important;
+      }
       #top-promo-banner {
         position: absolute;
         top: 0;
@@ -20,6 +26,11 @@
         padding: 0;
         overflow: hidden;
         margin: 0;
+        transform: translateY(-100%);
+        animation: slideDownBanner 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @keyframes slideDownBanner {
+        to { transform: translateY(0); }
       }
       #top-promo-banner::before {
         content: '';

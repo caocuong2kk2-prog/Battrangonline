@@ -25,7 +25,7 @@ namespace BatTrang.API.Controllers
         [HttpGet("/robots.txt")]
         public IActionResult GetRobotsTxt()
         {
-            // L?y d?ng tên mi?n hi?n t?i (VD: https://phucgiatien.vn ho?c http://localhost:5055)
+            // Lấy đúng tên miền hiện tại
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
             
             var sb = new StringBuilder();
@@ -35,9 +35,32 @@ namespace BatTrang.API.Controllers
             sb.AppendLine("Disallow: /hub/");
             sb.AppendLine("Allow: /");
             sb.AppendLine();
-            // Khai báo Sitemap tuy?t d?i
+            // Khai báo Sitemap tuyệt đối
             sb.AppendLine($"Sitemap: {baseUrl}/sitemap.xml");
 
+            return Content(sb.ToString(), "text/plain", Encoding.UTF8);
+        }
+
+        [HttpGet("/llms.txt")]
+        public IActionResult GetLlmsTxt()
+        {
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+            var sb = new StringBuilder();
+            sb.AppendLine("# Gốm Sứ Phúc Gia Tiên");
+            sb.AppendLine();
+            sb.AppendLine("Website chính thức của Gốm Sứ Phúc Gia Tiên - Chuyên cung cấp các sản phẩm gốm sứ thủ công mỹ nghệ cao cấp từ làng nghề Bát Tràng.");
+            sb.AppendLine();
+            sb.AppendLine("## Liên kết quan trọng");
+            sb.AppendLine();
+            sb.AppendLine($"- [Trang chủ]({baseUrl}/)");
+            sb.AppendLine($"- [Sản phẩm]({baseUrl}/products)");
+            sb.AppendLine($"- [Hành trình gốm sứ]({baseUrl}/journey)");
+            sb.AppendLine($"- [Liên hệ]({baseUrl}/contact)");
+            sb.AppendLine();
+            sb.AppendLine("## Giới thiệu");
+            sb.AppendLine();
+            sb.AppendLine("Phúc Gia Tiên mang đến cho quý khách hàng những sản phẩm gốm sứ chất lượng nhất, đậm đà bản sắc văn hóa Việt Nam. Các sản phẩm bao gồm lọ hoa, ấm chén, bát đĩa, đồ thờ cúng và quà tặng doanh nghiệp.");
+            
             return Content(sb.ToString(), "text/plain", Encoding.UTF8);
         }
 
