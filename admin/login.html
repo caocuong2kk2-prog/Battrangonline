@@ -41,13 +41,19 @@
       <input id="admin-password" class="login-input" type="password" placeholder="••••••••" required autocomplete="current-password">
     </div>
     <button type="submit" class="login-btn">🔐 Đăng Nhập</button>
+    <div style="text-align:center;margin-top:16px;">
+      <a href="forgot-password" style="color:var(--text-secondary);font-size:13px;text-decoration:none;transition:color .2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-secondary)'">🔑 Quên mật khẩu?</a>
+    </div>
   </form>
-  <div class="login-hint">Demo: <code>admin</code> / <code>1</code></div>
 </div>
 <div id="admin-toast-container"></div>
-<script src="js/admin-data.js?v=15"></script>
-<script src="js/admin-core.js?v=15"></script>
+<script src="js/admin-data.js?v=20260701"></script>
+<script src="js/admin-core.js?v=20260701"></script>
 <script>
+// Clean URL address bar
+if (window.location.pathname && window.location.pathname.endsWith('/login.html')) {
+  window.history.replaceState(null, '', window.location.pathname.replace(/\/login\.html$/i, '/login') + window.location.search);
+}
 // Redirect if already logged in
 if(localStorage.getItem('pgt_admin_session')){location.href="./";}
 // Particles
@@ -73,7 +79,7 @@ document.getElementById('login-form').addEventListener('submit',function(e){
   btn.disabled = true;
   btn.textContent = 'Đang xử lý...';
 
-  var isLiveServer = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && (window.location.port !== '5055' && window.location.port !== '7275');
+  var isLiveServer = window.location.port !== '5055' && window.location.port !== '7275';
   var API_BASE = isLiveServer ? 'http://localhost:5055/api' : '/api';
   fetch(API_BASE + '/auth/login', {
     method: 'POST',

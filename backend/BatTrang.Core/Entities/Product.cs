@@ -20,6 +20,7 @@ namespace BatTrang.Core.Entities
         public bool IsUnique { get; set; } = false;
         public string? ShortDescription { get; set; }
         public string? Description { get; set; }
+        public string? MetaDescription { get; set; }
         public string? Faqs { get; set; } // JSON list of FAQs specific to this product
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);

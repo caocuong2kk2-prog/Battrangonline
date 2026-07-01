@@ -38,6 +38,7 @@ namespace BatTrang.Core.DTOs
         public string Category { get; set; } = null!;
         public decimal BasePrice { get; set; }
         public int SalesQty { get; set; }
+        public int TotalSold { get; set; }
         public decimal TotalRevenue { get; set; }
         public int Stock { get; set; }
         public string? Slug { get; set; }

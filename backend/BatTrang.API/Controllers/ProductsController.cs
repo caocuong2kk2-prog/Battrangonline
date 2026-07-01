@@ -138,6 +138,7 @@ namespace BatTrang.API.Controllers
                 IsUnique = p.IsUnique,
                 ShortDescription = p.ShortDescription,
                 Description = p.Description,
+                MetaDescription = p.MetaDescription,
                 Faqs = p.Faqs,
                 CategoryFaqs = p.Category?.Faqs,
                 TotalSold = p.TotalSold,

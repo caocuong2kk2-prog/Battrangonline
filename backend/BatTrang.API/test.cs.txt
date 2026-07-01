@@ -1,0 +1,16 @@
+using System;
+using Microsoft.Data.Sqlite;
+
+class Program {
+    static void Main() {
+        var connStr = "Data Source=h:\\WORK\\Battrangonline\\backend\\BatTrang.API\\battrang.db";
+        using var conn = new SqliteConnection(connStr);
+        conn.Open();
+        var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT SizeId, COUNT(DISTINCT ProductId) FROM ProductVariants WHERE SizeId IS NOT NULL GROUP BY SizeId";
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read()) {
+            Console.WriteLine("SizeId: " + reader.GetInt32(0) + ", Count: " + reader.GetInt32(1));
+        }
+    }
+}

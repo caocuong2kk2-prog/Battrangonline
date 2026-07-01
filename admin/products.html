@@ -28,13 +28,13 @@
     
     <span class="sidebar-section-label">Kinh doanh</span>
     <ul class="sidebar-nav__list">
-      <li><a href="products" class="sidebar-nav__link active" data-page="products"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
+      <li><a href="products" class="sidebar-nav__link active" data-page="products"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span class="sidebar-nav__text">Sản phẩm</span></a></li>
       <li><a href="campaigns" class="sidebar-nav__link" data-page="campaigns"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg><span class="sidebar-nav__text">Khuyến mãi</span></a></li>
       <li><a href="gifts" class="sidebar-nav__link" data-page="gifts"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M12 2v20M2 7h20v4H2zM12 7a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg><span class="sidebar-nav__text">Quà tặng</span></a></li>
       <li><a href="orders" class="sidebar-nav__link" data-page="orders"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="sidebar-nav__text">Đơn hàng</span><span class="sidebar-nav__badge" id="sb-pending" style="display:none"></span></a></li>
       <li><a href="customers" class="sidebar-nav__link" data-page="customers"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Khách hàng</span></a></li>
       <li><a href="attributes" class="sidebar-nav__link" data-page="attributes"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg><span class="sidebar-nav__text">Thuộc tính SP</span></a></li>
-      <li><a href="affiliates" class="sidebar-nav__link" data-page="affiliates"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Cộng Tác Viên</span><span class="sidebar-nav__badge" id="sb-affiliates" style="display:none"></span></a></li>
+      <li><a href="affiliates" class="sidebar-nav__link" data-page="affiliates"><svg class="sidebar-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="10" cy="7" r=\"4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="sidebar-nav__text">Cộng Tác Viên</span><span class="sidebar-nav__badge" id="sb-affiliates" style="display:none"></span></a></li>
     </ul>
 
     <span class="sidebar-section-label">Nội dung</span>
@@ -152,11 +152,16 @@
           </div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label class="form-label">Nhãn nổi bật (Badge)</label>
-            <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 8px;">
-              <label style="display:flex; align-items:center; gap:5px; cursor:pointer;"><input type="radio" name="marketingBadges" value="" checked> Không</label>
-              <label style="display:flex; align-items:center; gap:5px; cursor:pointer;"><input type="radio" name="marketingBadges" value="Mới"> Mới</label>
-              <label style="display:flex; align-items:center; gap:5px; cursor:pointer;"><input type="radio" name="marketingBadges" value="Bán chạy"> Bán chạy</label>
+          <div class="form-group">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label class="form-label" style="margin:0;">Nhãn nổi bật (Badge)</label>
+              <button type="button" id="btn-manage-badges" style="background:none; border:none; color:var(--accent); font-size:12px; font-weight:600; cursor:pointer;">⚙️ Quản lý danh sách</button>
+            </div>
+            <div id="badge-presets-container" style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px;">
+              <!-- Dynamic preset radios rendered by JS -->
+            </div>
+            <div id="custom-badge-wrapper" style="display:none; margin-top: 10px;">
+              <input class="form-control" type="text" id="custom-badge-input" placeholder="Nhập nhãn custom (VD: Phiên bản giới hạn, Giảm 20%...)">
             </div>
           </div>
           <div class="form-group"><label class="form-label">Hoa hồng CTV (%)</label>
@@ -175,6 +180,9 @@
         <div class="form-section-heading">Mô tả & Hình ảnh</div>
         <div class="form-group"><label class="form-label">Mô tả ngắn</label><textarea class="form-control" name="shortDescription" rows="2" placeholder="Đoạn tóm tắt ngắn gọn hiển thị trên đầu trang sản phẩm..."></textarea></div>
         <div class="form-group"><label class="form-label">Mô tả sản phẩm</label><textarea class="form-control" name="description" id="product-description" rows="3" placeholder="Mô tả chi tiết về sản phẩm..."></textarea></div>
+
+        <div class="form-section-heading" style="margin-top: 20px;">Tối Ưu SEO</div>
+        <div class="form-group"><label class="form-label">Meta Description (Mô tả SEO)</label><textarea class="form-control" name="metaDescription" id="product-meta-desc" rows="2" placeholder="Mô tả dùng cho SEO Google (150-160 ký tự)"></textarea></div>
 
         <div class="form-section-heading" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
           <span>Câu Hỏi Thường Gặp (FAQ)</span>
@@ -204,7 +212,28 @@
   </div>
 </div>
 
-
+<!-- Badge Management Modal -->
+<div class="modal-overlay" id="badgeManageModal">
+  <div class="modal modal--sm" style="max-width: 440px;">
+    <div class="modal-header">
+      <h2 class="modal-title" style="font-size: 16px;">⚙️ Quản Lý Danh Sách Badge</h2>
+      <button type="button" class="modal-close" data-close-modal="badgeManageModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size: 13px; color: #666; margin-bottom: 12px;">Thêm, sửa hoặc xoá các nhãn chọn nhanh cho sản phẩm:</p>
+      <div id="badge-manage-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+        <!-- Rendered by JS -->
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <input type="text" id="new-badge-input" class="form-control" placeholder="Nhập tên badge mới..." style="flex: 1;">
+        <button type="button" class="btn btn--primary btn--sm" id="btn-add-badge">➕ Thêm</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn--secondary btn--block" data-close-modal="badgeManageModal">Đóng</button>
+    </div>
+  </div>
+</div>
 
 <!-- Floating Bulk Actions Bar -->
 <div class="bulk-actions-bar" id="bulk-actions-bar">
@@ -220,5 +249,5 @@
 </div>
 
 <div id="admin-toast-container"></div>
-<script src="js/admin-data.js?v=15"></script><script src="js/admin-core.js?v=15"></script><script src="js/products-admin.js?v=4"></script>
+<script src="js/admin-data.js?v=20260627_fix2"></script><script src="js/admin-core.js?v=20260627_fix2"></script><script src="js/products-admin.js?v=20260701_nosignsku"></script>
 </body></html>

@@ -193,7 +193,6 @@
       hasFaq: true,
       hasSlugId: false,
       api: 'categories',
-      productField: 'category',
       idIsString: true,
       thead: '<tr><th class="chk-cell" style="width:40px"><input type="checkbox" class="check-all-attr"></th><th class="stt-cell">STT</th><th>Tên danh mục</th><th>Mô tả</th><th style="width:130px">Số sản phẩm</th><th style="width:130px">Hành động</th></tr>',
       renderRow: function(item, idx, cnt) {
@@ -236,7 +235,7 @@
       nameLabel: 'Tên phân khúc',
       namePlaceholder: 'VD: Cao cấp, Phổ thông...',
       hasDesc: false, hasCatDesc: false, hasSlugId: false,
-      api: 'productTypes', productField: 'productTypeId', idIsString: false,
+      api: 'productTypes', idIsString: false,
       thead: '<tr><th class="chk-cell" style="width:40px"><input type="checkbox" class="check-all-attr"></th><th class="stt-cell">STT</th><th>Tên phân khúc</th><th style="width:150px">Số sản phẩm</th><th style="width:130px">Hành động</th></tr>',
       renderRow: function(item, idx, cnt) {
         return '<tr><td class="chk-cell"><input type="checkbox" class="check-item-attr" value="' + item.id + '" ' + (cnt > 0 ? 'disabled title="Xóa sản phẩm trước"' : '') + '></td><td class="stt-cell">' + (idx+1) + '</td>' +
@@ -251,7 +250,7 @@
       nameLabel: 'Tên chất liệu',
       namePlaceholder: 'VD: Gốm sứ, Đất nung...',
       hasDesc: true, hasCatDesc: false, hasSlugId: false,
-      api: 'materials', productField: 'materialId', idIsString: false,
+      api: 'materials', idIsString: false,
       thead: '<tr><th class="chk-cell" style="width:40px"><input type="checkbox" class="check-all-attr"></th><th class="stt-cell">STT</th><th>Tên chất liệu</th><th>Mô tả</th><th style="width:130px">Số sản phẩm</th><th style="width:130px">Hành động</th></tr>',
       renderRow: function(item, idx, cnt) {
         return '<tr><td class="chk-cell"><input type="checkbox" class="check-item-attr" value="' + item.id + '" ' + (cnt > 0 ? 'disabled title="Xóa sản phẩm trước"' : '') + '></td><td class="stt-cell">' + (idx+1) + '</td>' +
@@ -267,7 +266,7 @@
       nameLabel: 'Tên màu',
       namePlaceholder: 'VD: Đỏ, Xanh lam...',
       hasDesc: false, hasCatDesc: false, hasSlugId: false,
-      api: 'colors', productField: 'colorId', idIsString: false,
+      api: 'colors', idIsString: false,
       thead: '<tr><th class="chk-cell" style="width:40px"><input type="checkbox" class="check-all-attr"></th><th class="stt-cell">STT</th><th>Tên màu sắc</th><th style="width:150px">Số sản phẩm</th><th style="width:130px">Hành động</th></tr>',
       renderRow: function(item, idx, cnt) {
         return '<tr><td class="chk-cell"><input type="checkbox" class="check-item-attr" value="' + item.id + '" ' + (cnt > 0 ? 'disabled title="Xóa sản phẩm trước"' : '') + '></td><td class="stt-cell">' + (idx+1) + '</td>' +
@@ -282,7 +281,7 @@
       nameLabel: 'Tên kích thước',
       namePlaceholder: 'VD: 1.6m, 60x90cm, Bộ 5 món...',
       hasDesc: false, hasCatDesc: false, hasSlugId: false, hasValueInCm: true,
-      api: 'sizes', productField: 'sizeId', idIsString: false,
+      api: 'sizes', idIsString: false,
       thead: '<tr><th class="chk-cell" style="width:40px"><input type="checkbox" class="check-all-attr"></th><th class="stt-cell">STT</th><th>Tên kích thước</th><th style="width:150px">Số sản phẩm</th><th style="width:130px">Hành động</th></tr>',
       renderRow: function(item, idx, cnt) {
         return '<tr><td class="chk-cell"><input type="checkbox" class="check-item-attr" value="' + item.id + '" ' + (cnt > 0 ? 'disabled title="Xóa sản phẩm trước"' : '') + '></td><td class="stt-cell">' + (idx+1) + '</td>' +
@@ -297,7 +296,7 @@
       nameLabel: 'Tên hoa văn',
       namePlaceholder: 'VD: Trúc sen, Rồng phụng...',
       hasDesc: false, hasCatDesc: false, hasSlugId: false,
-      api: 'patterns', productField: 'patternId', idIsString: false,
+      api: 'patterns', idIsString: false,
       thead: '<tr><th class="chk-cell" style="width:40px"><input type="checkbox" class="check-all-attr"></th><th class="stt-cell">STT</th><th>Tên hoa văn</th><th style="width:150px">Số sản phẩm</th><th style="width:130px">Hành động</th></tr>',
       renderRow: function(item, idx, cnt) {
         return '<tr><td class="chk-cell"><input type="checkbox" class="check-item-attr" value="' + item.id + '" ' + (cnt > 0 ? 'disabled title="Xóa sản phẩm trước"' : '') + '></td><td class="stt-cell">' + (idx+1) + '</td>' +
@@ -312,7 +311,7 @@
       nameLabel: 'Tên dòng men',
       namePlaceholder: 'VD: Men rạn, Men ngọc...',
       hasDesc: true, hasCatDesc: false, hasSlugId: false,
-      api: 'glazeLines', productField: 'glazeLineId', idIsString: false,
+      api: 'glazeLines', idIsString: false,
       thead: '<tr><th class="chk-cell" style="width:40px"><input type="checkbox" class="check-all-attr"></th><th class="stt-cell">STT</th><th>Tên dòng men</th><th>Mô tả</th><th style="width:130px">Số sản phẩm</th><th style="width:130px">Hành động</th></tr>',
       renderRow: function(item, idx, cnt) {
         return '<tr><td class="chk-cell"><input type="checkbox" class="check-item-attr" value="' + item.id + '" ' + (cnt > 0 ? 'disabled title="Xóa sản phẩm trước"' : '') + '></td><td class="stt-cell">' + (idx+1) + '</td>' +
@@ -430,9 +429,8 @@
     var api = AdminData[cfg.api];
     if (!api) return;
 
-    Promise.all([api.load(), AdminData.products.load()]).then(function(res) {
-      items = res[0];
-      products = res[1];
+    api.load().then(function(res) {
+      items = (res && res.data && Array.isArray(res.data)) ? res.data : (Array.isArray(res) ? res : []);
       renderTable();
     }).catch(function(e) {
       console.error(e);
@@ -441,31 +439,10 @@
   }
 
   function getProductCount(item) {
-    var cfg = TABS[currentTab];
-    var field = cfg.productField;
-    
     if (currentTab === 'categories') {
-      var count = products.filter(function(p) { return p[field] === item.id; }).length;
-      if (item.subCategories && Array.isArray(item.subCategories)) {
-        item.subCategories.forEach(function(sub) {
-          count += products.filter(function(p) { return p[field] === sub.id; }).length;
-        });
-      }
-      return count;
+        return item.productCount || 0;
     }
-
-    return products.filter(function(p) {
-      if (cfg.idIsString) return p[field] === item.id;
-      
-      // Check if field is a variant attribute
-      if (p.variants && Array.isArray(p.variants)) {
-         return p.variants.some(function(v) {
-             return v[field] === item.id;
-         });
-      }
-
-      return p[field] === item.id;
-    }).length;
+    return item.productCount || 0;
   }
 
   function renderTable() {
@@ -804,3 +781,5 @@
 }());
 </script>
 </body></html>
+
+

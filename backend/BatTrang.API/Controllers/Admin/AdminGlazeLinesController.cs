@@ -32,7 +32,8 @@ namespace BatTrang.API.Controllers.Admin
                 {
                     Id = g.Id,
                     Name = g.Name,
-                    Description = g.Description
+                    Description = g.Description,
+                    ProductCount = g.ProductVariants.Select(v => v.ProductId).Distinct().Count()
                 })
                 .ToListAsync();
             return Ok(items);
@@ -93,4 +94,5 @@ namespace BatTrang.API.Controllers.Admin
         }
     }
 }
+
 

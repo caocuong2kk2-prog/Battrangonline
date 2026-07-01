@@ -14,7 +14,7 @@
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
   <link rel="stylesheet" href="css/layout.css?v=8">
-  <link rel="stylesheet" href="css/product.css?v=5">
+  <link rel="stylesheet" href="css/product.css?v=20260701_livesearch">
   <link rel="stylesheet" href="css/responsive.css">
       <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head>
@@ -73,17 +73,19 @@
           <div class="filter-top-row" style="justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 20px;">
             
             <!-- Inline Search -->
-            <div class="inline-search" style="flex: 1; max-width: 400px; margin-bottom: 0;">
-              <input type="text" id="inline-search-input" class="inline-search__input" placeholder="Tìm trong danh sách..." autocomplete="off">
+            <div class="inline-search" style="flex: 1; max-width: 400px; margin-bottom: 0; position: relative;">
+              <input type="text" id="inline-search-input" class="inline-search__input" placeholder="Gõ tên sản phẩm, lộc bình, ấm chén..." autocomplete="off">
               <button id="inline-search-btn" class="inline-search__btn" aria-label="Tìm kiếm">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
               </button>
+              <div id="live-search-dropdown" class="live-search-dropdown" aria-live="polite"></div>
             </div>
             
             <div class="filter-actions">
               <div class="custom-sort-wrapper">
                 <select class="filter-select" id="sort-select" aria-label="Sắp xếp theo">
                   <option value="newest">Mới Nhất</option>
+                  <option value="bestselling">Bán Chạy Nhất</option>
                   <option value="price-asc">Giá Tăng Dần</option>
                   <option value="price-desc">Giá Giảm Dần</option>
                 </select>
@@ -267,7 +269,7 @@
   <script src="js/cart.js"></script>
   <script src="js/promo.js?v=8"></script>
   <script src="js/common.js"></script>
-  <script src="js/product.js?v=6"></script>
+  <script src="js/product.js?v=20260701_livesearch"></script>
 </body>
 
 </html>

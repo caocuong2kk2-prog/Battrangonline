@@ -2,7 +2,7 @@
 (function (global) {
     'use strict';
 
-    var isLiveServer = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && (window.location.port !== '5055' && window.location.port !== '7275');
+    var isLiveServer = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' && window.location.port !== '7275';
     var dynamicBase = isLiveServer ? 'http://localhost:5055/api' : '/api';
     var API_BASE = dynamicBase + '/admin';
     var PUBLIC_API_BASE = dynamicBase;
@@ -142,7 +142,21 @@
                 if (category && category !== 'all') qs.push('category=' + encodeURIComponent(category));
                 if (status && status !== 'all') qs.push('status=' + encodeURIComponent(status));
                 var queryStr = qs.length > 0 ? '?' + qs.join('&') : '';
-                return _fetch('/products' + queryStr);
+                return _fetch('/products' + queryStr).then(function (res) {
+                    if (res && res.data && Array.isArray(res.data)) {
+                        var arr = res.data;
+                        arr.total = res.total || arr.length;
+                        arr.page = res.page || 1;
+                        arr.limit = res.limit || arr.length;
+                        arr.data = arr;
+                        return arr;
+                    }
+                    if (Array.isArray(res)) {
+                        res.total = res.length;
+                        res.data = res;
+                    }
+                    return res;
+                });
             },
             refresh: function (page, limit, search, category, status) {
                 return this.load(page, limit, search, category, status);

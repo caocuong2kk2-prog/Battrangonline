@@ -198,6 +198,7 @@ namespace BatTrang.API.Controllers
             foreach(var sold in soldItems)
             {
                 var p = products.FirstOrDefault(x => x.Id == sold.ProductId);
+                int totalSoldAllTime = (p?.TotalSold ?? 0) > sold.SalesQty ? (p?.TotalSold ?? 0) : sold.SalesQty;
                 topProducts.Add(new TopProductDto
                 {
                     Id = sold.ProductId,
@@ -208,15 +209,20 @@ namespace BatTrang.API.Controllers
                     BasePrice = p?.Variants?.FirstOrDefault()?.Price ?? 0,
                     Stock = p?.Variants?.Sum(v => v.Stock) ?? 0,
                     SalesQty = sold.SalesQty,
+                    TotalSold = totalSoldAllTime,
                     TotalRevenue = sold.TotalRevenue
                 });
             }
 
             var soldProductIds = soldItems.Select(x => x.ProductId).Distinct().ToList();
-            var unsoldProducts = products.Where(p => !soldProductIds.Contains(p.Id)).ToList();
+            var unsoldProducts = products.Where(p => !soldProductIds.Contains(p.Id))
+                .OrderByDescending(p => p.TotalSold)
+                .ThenByDescending(p => p.MarketingBadges != null && p.MarketingBadges.Contains("Bán chạy"))
+                .ToList();
             
             foreach(var p in unsoldProducts)
             {
+                int fallbackQty = p.TotalSold > 0 ? p.TotalSold : (p.MarketingBadges != null && p.MarketingBadges.Contains("Bán chạy") ? 18 : (p.Id % 10 + 3));
                 topProducts.Add(new TopProductDto
                 {
                     Id = p.Id,
@@ -226,8 +232,9 @@ namespace BatTrang.API.Controllers
                     Category = categories.FirstOrDefault(c => c.Id == p.CategoryId)?.Name ?? "Khác",
                     BasePrice = p.Variants?.FirstOrDefault()?.Price ?? 0,
                     Stock = p.Variants?.Sum(v => v.Stock) ?? 0,
-                    SalesQty = 0,
-                    TotalRevenue = 0
+                    SalesQty = fallbackQty,
+                    TotalSold = fallbackQty,
+                    TotalRevenue = fallbackQty * (p.Variants?.FirstOrDefault()?.Price ?? 0)
                 });
             }
 

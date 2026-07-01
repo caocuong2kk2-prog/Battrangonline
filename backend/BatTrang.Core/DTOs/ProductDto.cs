@@ -21,6 +21,7 @@ namespace BatTrang.Core.DTOs
         public bool IsUnique { get; set; }
         public string? ShortDescription { get; set; }
         public string? Description { get; set; }
+        public string? MetaDescription { get; set; }
         public string? Usage { get; set; }
         public string? Faqs { get; set; }
         public string? CategoryFaqs { get; set; }

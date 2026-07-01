@@ -1,0 +1,16 @@
+using System;
+using Microsoft.Data.Sqlite;
+
+class Program {
+    static void Main() {
+        var connStr = "Data Source=h:\\WORK\\Battrangonline\\backend\\BatTrang.API\\battrang.db";
+        using var conn = new SqliteConnection(connStr);
+        conn.Open();
+        var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT name FROM sqlite_master WHERE type='table';";
+        using var reader = cmd.ExecuteReader();
+        while (reader.Read()) {
+            Console.WriteLine(reader.GetString(0));
+        }
+    }
+}

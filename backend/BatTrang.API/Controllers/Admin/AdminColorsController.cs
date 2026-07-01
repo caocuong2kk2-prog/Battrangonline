@@ -31,7 +31,8 @@ namespace BatTrang.API.Controllers.Admin
                 .Select(g => new ColorDto
                 {
                     Id = g.Id,
-                    Name = g.Name
+                    Name = g.Name,
+                    ProductCount = g.ProductVariants.Select(v => v.ProductId).Distinct().Count()
                 })
                 .ToListAsync();
             return Ok(items);
@@ -90,4 +91,5 @@ namespace BatTrang.API.Controllers.Admin
         }
     }
 }
+
 

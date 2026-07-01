@@ -9,13 +9,43 @@
   <meta name="keywords" content="gốm sứ Bát Tràng, lộc bình thủ công, đồ thờ gốm sứ, tranh gốm, Phúc Gia Tiên">
   <meta property="og:title" content="Phúc Gia Tiên – Gốm Sứ Thủ Công Bát Tràng">
   <meta property="og:description" content="Tinh hoa gốm sứ thủ công Bát Tràng – 2 vợ chồng – 1 xưởng – 1 hành trình.">
+  <meta property="og:image" content="https://phucgiatien.vn/assets/images/home_bg.webp">
   <meta property="og:type" content="website">
   <title>Phúc Gia Tiên – Gốm Sứ Thủ Công Bát Tràng</title>
+  <!-- GEO SEO -->
+  <meta name="geo.region" content="VN-HN">
+  <meta name="geo.placename" content="Gia Lâm, Hà Nội">
+  <meta name="geo.position" content="20.981165;105.911641">
+  <meta name="ICBM" content="20.981165, 105.911641">
+  <link rel="canonical" href="https://phucgiatien.vn/">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Phúc Gia Tiên",
+    "description": "Gốm sứ thủ công Bát Tràng cao cấp",
+    "image": "https://phucgiatien.vn/assets/images/logo.png",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Bát Tràng",
+      "addressLocality": "Gia Lâm",
+      "addressRegion": "Hà Nội",
+      "addressCountry": "VN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 20.981165,
+      "longitude": 105.911641
+    },
+    "telephone": "0989.123.456",
+    "url": "https://phucgiatien.vn/"
+  }
+  </script>
   <!-- Preconnect & Preload -->
-  <link rel="preconnect" href="https://battrangonline.vn">
+  <link rel="preconnect" href="https://phucgiatien.vn">
   <link rel="preload" as="image" href="/assets/images/home_bg.webp" fetchpriority="high">
   <link rel="preload" as="style" href="css/layout.css?v=8">
-  <link rel="preload" as="style" href="css/home.css?v=6">
+  <link rel="preload" as="style" href="css/home.css?v=20260701_smarthint">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,8 +56,8 @@
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/layout.css?v=8">
-  <link rel="stylesheet" href="css/home.css?v=6">
-  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/home.css?v=20260701_smarthint">
+  <link rel="stylesheet" href="css/responsive.css?v=20260701_hoverflip">
 
       <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head>
@@ -102,7 +132,7 @@
         <div class="story-teaser" style="flex-direction: row-reverse;">
           <div class="story-teaser__media reveal-right">
             <img class="story-teaser__img js-config-home-story-img" src="assets/images/about-workshop.jpg"
-              alt="Đôi vợ chồng nghệ nhân Phúc Gia Tiên" loading="lazy">
+              alt="Đôi vợ chồng nghệ nhân Phúc Gia Tiên" loading="lazy" width="600" height="400" decoding="async">
           </div>
           <div class="story-teaser__content reveal-left">
             <div class="js-config-home-story-text">
@@ -186,137 +216,147 @@
         </div>
         <div class="process-steps" role="list">
 
-          <!-- Bước 1: Chuẩn bị đất — Bàn tay nhào đất sét -->
-          <div class="process-step" role="listitem">
-            <div class="process-step__icon-wrap">
-              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6"
-                stroke-linecap="round" stroke-linejoin="round">
-                <!-- Khối đất sét / đất đồi -->
-                <ellipse cx="24" cy="36" rx="16" ry="5"/>
-                <path d="M8 36 C8 28 14 24 24 24 C34 24 40 28 40 36"/>
-                <!-- Bàn tay nhào đất - các ngón tay -->
-                <path d="M18 24 C17 18 16 13 17 10 C17.5 8 19 8 19.5 10 L20 18"/>
-                <path d="M21 23 C20.5 17 20 12 21 9 C21.5 7 23 7 23.5 9 L24 18"/>
-                <path d="M24 23 C24 17 24 12 25 9 C25.5 7 27 7 27.5 9 L28 18"/>
-                <path d="M27 23 C27.5 18 28 13 30 10.5 C31 9 32.5 9.5 32 12 L31 19"/>
-                <!-- Lòng bàn tay -->
-                <path d="M18 24 Q19 26 24 27 Q29 26 31 24"/>
-              </svg>
+          <!-- Bước 1: Chuẩn bị đất -->
+          <div class="process-step-flip" role="listitem" onclick="this.classList.toggle('is-flipped')">
+            <div class="process-flip-inner">
+              <div class="process-flip-front">
+                <span class="process-step__badge">BƯỚC 01</span>
+                <div class="process-step__icon-wrap">
+                  <svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <ellipse cx="24" cy="36" rx="16" ry="5"/>
+                    <path d="M8 36 C8 28 14 24 24 24 C34 24 40 28 40 36"/>
+                    <path d="M18 24 C17 18 16 13 17 10 C17.5 8 19 8 19.5 10 L20 18"/>
+                    <path d="M21 23 C20.5 17 20 12 21 9 C21.5 7 23 7 23.5 9 L24 18"/>
+                    <path d="M24 23 C24 17 24 12 25 9 C25.5 7 27 7 27.5 9 L28 18"/>
+                    <path d="M27 23 C27.5 18 28 13 30 10.5 C31 9 32.5 9.5 32 12 L31 19"/>
+                  </svg>
+                </div>
+                <p class="process-step__label js-config-proc-1-title">1. Chuẩn bị đất</p>
+                <p class="process-step__desc js-config-proc-1-desc">Chọn lựa và nhào đất sét Bát Tràng đúng độ dẻo</p>
+                <span class="process-flip-hint"></span>
+              </div>
+              <div class="process-flip-back" style="background-image: url('assets/images/process-1.png');">
+                <div class="process-flip-back__overlay">
+                  <span class="process-flip-back__step">Công đoạn 01</span>
+                  <h4 class="process-flip-back__title">Nhào Luyện Đất</h4>
+                  <p class="process-flip-back__text">Đất cao lanh tuyển chọn được nghệ nhân ủ và nhào nặn thủ công hàng nghìn lần để đạt độ dẻo mịn tuyệt đối trước khi lên bàn xoay.</p>
+                </div>
+              </div>
             </div>
-            <p class="process-step__label js-config-proc-1-title">1. Chuẩn bị đất</p>
-            <p class="process-step__desc js-config-proc-1-desc">Chọn lựa và nhào đất sét Bát Tràng đúng độ dẻo</p>
           </div>
 
-          <div class="process-connector" aria-hidden="true"></div>
-
-          <!-- Bước 2: Tạo hình — Bàn xoay gốm (pottery wheel) -->
-          <div class="process-step" role="listitem">
-            <div class="process-step__icon-wrap">
-              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6"
-                stroke-linecap="round" stroke-linejoin="round">
-                <!-- Mâm xoay -->
-                <ellipse cx="24" cy="39" rx="15" ry="4"/>
-                <line x1="9" y1="39" x2="9" y2="41"/>
-                <line x1="39" y1="39" x2="39" y2="41"/>
-                <!-- Trụ xoay -->
-                <line x1="24" y1="35" x2="24" y2="39"/>
-                <!-- Thân bình gốm đang tạo hình -->
-                <path d="M18 35 C16 28 15 20 18 14 Q24 10 30 14 C33 20 32 28 30 35 Z"/>
-                <!-- Miệng bình đang mở -->
-                <ellipse cx="24" cy="14" rx="6" ry="2.5"/>
-                <!-- 2 bàn tay vuốt đất hai bên -->
-                <path d="M14 22 Q11 22 10 25 Q11 28 14 27"/>
-                <path d="M34 22 Q37 22 38 25 Q37 28 34 27"/>
-              </svg>
+          <!-- Bước 2: Tạo hình -->
+          <div class="process-step-flip" role="listitem" onclick="this.classList.toggle('is-flipped')">
+            <div class="process-flip-inner">
+              <div class="process-flip-front">
+                <span class="process-step__badge">BƯỚC 02</span>
+                <div class="process-step__icon-wrap">
+                  <svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <ellipse cx="24" cy="39" rx="15" ry="4"/>
+                    <line x1="24" y1="35" x2="24" y2="39"/>
+                    <path d="M18 35 C16 28 15 20 18 14 Q24 10 30 14 C33 20 32 28 30 35 Z"/>
+                    <ellipse cx="24" cy="14" rx="6" ry="2.5"/>
+                    <path d="M14 22 Q11 22 10 25 Q11 28 14 27"/>
+                    <path d="M34 22 Q37 22 38 25 Q37 28 34 27"/>
+                  </svg>
+                </div>
+                <p class="process-step__label js-config-proc-2-title">2. Tạo hình</p>
+                <p class="process-step__desc js-config-proc-2-desc">Vuốt đất trên bàn xoay bằng đôi bàn tay điêu luyện</p>
+                <span class="process-flip-hint"></span>
+              </div>
+              <div class="process-flip-back" style="background-image: url('assets/images/process-2.png');">
+                <div class="process-flip-back__overlay">
+                  <span class="process-flip-back__step">Công đoạn 02</span>
+                  <h4 class="process-flip-back__title">Vuốt Gốm Bàn Xoay</h4>
+                  <p class="process-flip-back__text">Dưới đôi bàn tay điêu luyện của nghệ nhân, khối đất sét vô tri trượt quay tròn mượt mà biến hóa thành hình dáng lộc bình thanh thoát.</p>
+                </div>
+              </div>
             </div>
-            <p class="process-step__label js-config-proc-2-title">2. Tạo hình</p>
-            <p class="process-step__desc js-config-proc-2-desc">Vuốt đất trên bàn xoay bằng đôi bàn tay điêu luyện</p>
           </div>
 
-          <div class="process-connector" aria-hidden="true"></div>
-
-          <!-- Bước 3: Vẽ tay — Bút lông vẽ hoa văn lên bình -->
-          <div class="process-step" role="listitem">
-            <div class="process-step__icon-wrap">
-              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6"
-                stroke-linecap="round" stroke-linejoin="round">
-                <!-- Thân bình gốm -->
-                <path d="M17 40 C15 33 15 22 18 16 Q24 12 30 16 C33 22 33 33 31 40 Z"/>
-                <ellipse cx="24" cy="16" rx="6" ry="2.5"/>
-                <ellipse cx="24" cy="40" rx="7" ry="2.5"/>
-                <!-- Hoa văn trên bình (hoa sen cách điệu) -->
-                <path d="M20 27 Q24 23 28 27" stroke-width="1"/>
-                <path d="M19 31 Q24 26 29 31" stroke-width="1"/>
-                <circle cx="24" cy="32" r="1" fill="currentColor"/>
-                <!-- Cán bút lông -->
-                <line x1="35" y1="10" x2="28" y2="26"/>
-                <!-- Đầu bút -->
-                <path d="M35 10 L38 7 L37 12 Z" fill="currentColor"/>
-                <!-- Ngọn bút chạm vào bình -->
-                <path d="M28 26 L27 29" stroke-width="1"/>
-              </svg>
+          <!-- Bước 3: Vẽ tay -->
+          <div class="process-step-flip" role="listitem" onclick="this.classList.toggle('is-flipped')">
+            <div class="process-flip-inner">
+              <div class="process-flip-front">
+                <span class="process-step__badge">BƯỚC 03</span>
+                <div class="process-step__icon-wrap">
+                  <svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 40 C15 33 15 22 18 16 Q24 12 30 16 C33 22 33 33 31 40 Z"/>
+                    <ellipse cx="24" cy="16" rx="6" ry="2.5"/>
+                    <path d="M20 27 Q24 23 28 27"/>
+                    <path d="M19 31 Q24 26 29 31"/>
+                    <line x1="35" y1="10" x2="28" y2="26"/>
+                    <path d="M35 10 L38 7 L37 12 Z" fill="currentColor"/>
+                  </svg>
+                </div>
+                <p class="process-step__label js-config-proc-3-title">3. Vẽ tay</p>
+                <p class="process-step__desc js-config-proc-3-desc">Trang trí hoa văn truyền thống bằng bút lông thủ công</p>
+                <span class="process-flip-hint"></span>
+              </div>
+              <div class="process-flip-back" style="background-image: url('assets/images/process-3.png');">
+                <div class="process-flip-back__overlay">
+                  <span class="process-flip-back__step">Công đoạn 03</span>
+                  <h4 class="process-flip-back__title">Chấm Bút Họa Lam</h4>
+                  <p class="process-flip-back__text">Từng nét cọ bút lông thủ công tỉ mỉ chấm lam vẽ hoa sen, rồng phượng uyển chuyển, thổi hồn sống động vào từng thớ gốm mộc.</p>
+                </div>
+              </div>
             </div>
-            <p class="process-step__label js-config-proc-3-title">3. Vẽ tay</p>
-            <p class="process-step__desc js-config-proc-3-desc">Trang trí hoa văn truyền thống bằng bút lông thủ công</p>
           </div>
 
-          <div class="process-connector" aria-hidden="true"></div>
-
-          <!-- Bước 4: Nung lò — Lò nung với ngọn lửa -->
-          <div class="process-step" role="listitem">
-            <div class="process-step__icon-wrap">
-              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6"
-                stroke-linecap="round" stroke-linejoin="round">
-                <!-- Thân lò nung hình vòm -->
-                <path d="M8 38 L8 22 Q8 10 24 10 Q40 10 40 22 L40 38 Z"/>
-                <!-- Cửa lò -->
-                <path d="M17 38 L17 30 Q17 26 24 26 Q31 26 31 30 L31 38"/>
-                <!-- Vạch gạch lò -->
-                <line x1="8" y1="30" x2="16" y2="30"/>
-                <line x1="32" y1="30" x2="40" y2="30"/>
-                <!-- Ngọn lửa trong lò -->
-                <path d="M22 35 C21 32 22 28 24 26 C26 28 27 32 26 35" stroke-width="1.2"/>
-                <path d="M24 35 C23 31 24 27 24 26 C24 27 25 31 24 35" stroke-width="1"/>
-                <!-- Khói/nhiệt bay lên -->
-                <path d="M16 10 C15 7 17 5 16 3" stroke-width="1" stroke-dasharray="2 2"/>
-                <path d="M24 10 C23 6 25 4 24 2" stroke-width="1" stroke-dasharray="2 2"/>
-                <path d="M32 10 C31 7 33 5 32 3" stroke-width="1" stroke-dasharray="2 2"/>
-              </svg>
+          <!-- Bước 4: Nung lò -->
+          <div class="process-step-flip" role="listitem" onclick="this.classList.toggle('is-flipped')">
+            <div class="process-flip-inner">
+              <div class="process-flip-front">
+                <span class="process-step__badge">BƯỚC 04</span>
+                <div class="process-step__icon-wrap">
+                  <svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 38 L8 22 Q8 10 24 10 Q40 10 40 22 L40 38 Z"/>
+                    <path d="M17 38 L17 30 Q17 26 24 26 Q31 26 31 30 L31 38"/>
+                    <path d="M22 35 C21 32 22 28 24 26 C26 28 27 32 26 35"/>
+                    <path d="M16 10 C15 7 17 5 16 3"/>
+                    <path d="M32 10 C31 7 33 5 32 3"/>
+                  </svg>
+                </div>
+                <p class="process-step__label js-config-proc-4-title">4. Nung lò</p>
+                <p class="process-step__desc js-config-proc-4-desc">Nung ở nhiệt độ 1.280°C trong lò truyền thống</p>
+                <span class="process-flip-hint"></span>
+              </div>
+              <div class="process-flip-back" style="background-image: url('assets/images/process-4.png');">
+                <div class="process-flip-back__overlay">
+                  <span class="process-flip-back__step">Công đoạn 04</span>
+                  <h4 class="process-flip-back__title">Lửa Thử Vàng 1.280°C</h4>
+                  <p class="process-flip-back__text">Nung liên tục ròng rã suốt ngày đêm trong ngọn lửa rực hồng 1.280°C để sương gốm kết khối kiên cố và men chảy trong vắt vĩnh cửu.</p>
+                </div>
+              </div>
             </div>
-            <p class="process-step__label js-config-proc-4-title">4. Nung lò</p>
-            <p class="process-step__desc js-config-proc-4-desc">Nung ở nhiệt độ 1.280°C trong lò truyền thống</p>
           </div>
 
-          <div class="process-connector" aria-hidden="true"></div>
-
-          <!-- Bước 5: Hoàn thiện — Bình gốm hoàn chỉnh với ánh sáng -->
-          <div class="process-step" role="listitem">
-            <div class="process-step__icon-wrap">
-              <svg width="40" height="40" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6"
-                stroke-linecap="round" stroke-linejoin="round">
-                <!-- Bình gốm hoàn chỉnh đẹp -->
-                <path d="M16 42 C14 35 13 24 17 16 Q24 10 31 16 C35 24 34 35 32 42 Z"/>
-                <ellipse cx="24" cy="16" rx="7" ry="3"/>
-                <!-- Cổ bình -->
-                <path d="M21 10 Q24 8 27 10 L27 16 Q24 17 21 16 Z"/>
-                <!-- Miệng bình -->
-                <ellipse cx="24" cy="10" rx="4" ry="1.5"/>
-                <!-- Đế bình -->
-                <ellipse cx="24" cy="42" rx="8" ry="2.5"/>
-                <!-- Hoa văn hoàn thiện -->
-                <path d="M18 28 Q24 24 30 28" stroke-width="1"/>
-                <path d="M17 33 Q24 28 31 33" stroke-width="1"/>
-                <!-- Tia sáng lấp lánh - hoàn chỉnh -->
-                <line x1="8" y1="12" x2="12" y2="12" stroke-width="1.2"/>
-                <line x1="10" y1="10" x2="10" y2="14" stroke-width="1.2"/>
-                <line x1="38" y1="18" x2="42" y2="18" stroke-width="1.2"/>
-                <line x1="40" y1="16" x2="40" y2="20" stroke-width="1.2"/>
-                <line x1="37" y1="8" x2="40" y2="11" stroke-width="1"/>
-                <line x1="40" y1="8" x2="37" y2="11" stroke-width="1"/>
-              </svg>
+          <!-- Bước 5: Hoàn thiện -->
+          <div class="process-step-flip" role="listitem" onclick="this.classList.toggle('is-flipped')">
+            <div class="process-flip-inner">
+              <div class="process-flip-front">
+                <span class="process-step__badge">BƯỚC 05</span>
+                <div class="process-step__icon-wrap">
+                  <svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 42 C14 35 13 24 17 16 Q24 10 31 16 C35 24 34 35 32 42 Z"/>
+                    <ellipse cx="24" cy="16" rx="7" ry="3"/>
+                    <line x1="8" y1="12" x2="12" y2="12"/>
+                    <line x1="38" y1="18" x2="42" y2="18"/>
+                    <line x1="37" y1="8" x2="40" y2="11"/>
+                  </svg>
+                </div>
+                <p class="process-step__label js-config-proc-5-title">5. Hoàn thiện</p>
+                <p class="process-step__desc js-config-proc-5-desc">Kiểm tra, đánh bóng và đóng gói tác phẩm hoàn hảo</p>
+                <span class="process-flip-hint"></span>
+              </div>
+              <div class="process-flip-back" style="background-image: url('assets/images/process-5.png');">
+                <div class="process-flip-back__overlay">
+                  <span class="process-flip-back__step">Công đoạn 05</span>
+                  <h4 class="process-flip-back__title">Tuyệt Tác Xuất Xưởng</h4>
+                  <p class="process-flip-back__text">Từng tác phẩm ra lò được kiểm tra âm thanh, độ bóng men khắt khe trước khi bọc gói trân trọng trao gửi đến tay quý khách hàng.</p>
+                </div>
+              </div>
             </div>
-            <p class="process-step__label js-config-proc-5-title">5. Hoàn thiện</p>
-            <p class="process-step__desc js-config-proc-5-desc">Kiểm tra, đánh bóng và đóng gói tác phẩm hoàn hảo</p>
           </div>
 
         </div>
@@ -326,7 +366,7 @@
     <!-- ========== CTA BANNER ========== -->
     <section class="cta-banner" aria-labelledby="cta-heading">
       <div class="hero__bg">
-        <img class="hero__bg-img js-config-cta-banner-img" src="assets/images/bg.webp" alt="" role="presentation" loading="lazy">
+        <img class="hero__bg-img js-config-cta-banner-img" src="assets/images/bg.webp" alt="" role="presentation" loading="lazy" width="1920" height="1080" decoding="async">
         <div class="hero__overlay" style="background: rgba(26, 15, 5, 0.65);"></div>
       </div>
       <div class="container" style="position: relative; z-index: 1;">
@@ -352,11 +392,11 @@
   <div id="footer-placeholder"></div>
 
   <!-- JS -->
-  <script src="js/api.js?v=2"></script>
-  <script src="js/cart.js"></script>
-  <script src="js/promo.js?v=8"></script>
-  <script src="js/common.js?v=5"></script>
-  <script src="js/home.js?v=7"></script>
+  <script src="js/api.js?v=2" defer></script>
+  <script src="js/cart.js" defer></script>
+  <script src="js/promo.js?v=8" defer></script>
+  <script src="js/common.js?v=5" defer></script>
+  <script src="js/home.js?v=7" defer></script>
 </body>
 
 </html>

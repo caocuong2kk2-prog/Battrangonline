@@ -602,6 +602,121 @@ function populateHeaderMegaMenu() {
   // Expose globally for dynamic page elements
   window.initScrollReveal = initScrollReveal;
 
+  window.buildProductCard = function(p, i) {
+    var basePath = (function () {
+      var pn = window.location.pathname.toLowerCase();
+      return (pn === '/user' || pn.startsWith('/user/')) ? '/user/' : '/';
+    })();
+    var article = document.createElement('article');
+    article.className = 'product-card reveal';
+    article.dataset.delay = String(i * 80);
+
+    var ribbonLeftHTML = '';
+    var totalStock = p.totalStock !== undefined ? p.totalStock : (p.variants ? p.variants.reduce(function (sum, v) { return sum + (v.stock || 0); }, 0) : 0);
+    if (totalStock <= 0) {
+      ribbonLeftHTML = '<div class="product-card__ribbon product-card__ribbon--out">HẾT HÀNG</div>';
+    } else if (p.status === 'inactive') {
+      ribbonLeftHTML = '<div class="product-card__ribbon product-card__ribbon--out" style="background:#1A0F05; color:#ffffff;">NGỪNG BÁN</div>';
+    } else if (p.badge) {
+      ribbonLeftHTML = '<div class="product-card__ribbon product-card__ribbon--new">' + p.badge + '</div>';
+    }
+
+    var basePrice = p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0);
+    var oldPrice = p.baseOriginalPrice || (p.variants && p.variants.length ? p.variants[0].originalPrice : 0);
+
+    var ribbonRightHTML = '';
+    if (oldPrice && basePrice && oldPrice > basePrice) {
+      var percent = Math.round((1 - basePrice / oldPrice) * 100);
+      if (percent > 0) {
+        ribbonRightHTML = '<div class="product-card__discount">-' + percent + '%</div>';
+      }
+    }
+
+    var pVariants = Array.isArray(p.variants) ? p.variants : []; 
+    var pImages = Array.isArray(p.images) ? p.images : (typeof p.images === "string" && p.images.trim() ? [p.images] : []); 
+    var allImages = pImages.concat(pVariants.reduce(function (acc, v) { 
+      var vImgs = Array.isArray(v.images) ? v.images : (typeof v.images === "string" && v.images.trim() ? [v.images] : []); 
+      return acc.concat(vImgs); 
+    }, [])).filter(function (img) { return typeof img === 'string' && img.trim() !== ''; });
+    
+    var firstMedia = (allImages.length > 0) ? allImages[0] : 'assets/images/placeholder.webp';
+    var isLocalVid = typeof firstMedia === 'string' && !!firstMedia.match(/\.(mp4|mov|avi|webm|ogg)$/i);
+    var isPlatformVid = typeof firstMedia === 'string' && (firstMedia.includes('youtube.com') || firstMedia.includes('youtu.be') ||
+      firstMedia.includes('tiktok.com') ||
+      firstMedia.includes('facebook.com') || firstMedia.includes('fb.watch'));
+
+    var imgSrc = 'assets/images/placeholder.webp';
+    if (firstMedia && !isLocalVid && !isPlatformVid) {
+      imgSrc = firstMedia;
+    } else if (allImages.length > 0) {
+      var foundImg = allImages.find(function (img) {
+        var isLocV = !!img.match(/\.(mp4|mov|avi|webm|ogg)$/i);
+        var isPlatV = img.includes('youtube.com') || img.includes('youtu.be') ||
+          img.includes('tiktok.com') ||
+          img.includes('facebook.com') || img.includes('fb.watch');
+        return !isLocV && !isPlatV;
+      });
+      if (foundImg) {
+        imgSrc = foundImg;
+      } else if (isPlatformVid) {
+        var ytMatch = firstMedia.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/))([A-Za-z0-9_-]{11})/);
+        var ytId = (ytMatch && ytMatch[1]) ? ytMatch[1] : '';
+        if (ytId) {
+          imgSrc = 'https://img.youtube.com/vi/' + ytId + '/hqdefault.jpg';
+        } else if (firstMedia.includes('tiktok.com')) {
+          imgSrc = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="%23000"/><text x="50%" y="50%" fill="%23fff" font-size="40" font-family="sans-serif" text-anchor="middle" dy=".3em">TikTok Video</text></svg>';
+        } else if (firstMedia.includes('facebook.com') || firstMedia.includes('fb.watch')) {
+          imgSrc = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="%231877f2"/><text x="50%" y="50%" fill="%23fff" font-size="40" font-family="sans-serif" text-anchor="middle" dy=".3em">Facebook Video</text></svg>';
+        }
+      }
+    }
+
+    // Resolve img path
+    if (imgSrc && !imgSrc.startsWith('http') && !imgSrc.startsWith('/') && !imgSrc.startsWith('data:')) {
+      if (basePath === '/user/') imgSrc = '/user/' + imgSrc;
+      else imgSrc = '/' + imgSrc;
+    }
+
+    var giftHTML = '';
+    if (Array.isArray(p.gifts) && p.gifts.length > 0) {
+      var giftNames = p.gifts.map(function (g) { return g.name; }).join(' + ');
+      giftHTML = '<div class="product-card__gift" title="' + giftNames + '"><span class="gift-icon">🎁</span> Tặng: ' + giftNames + '</div>';
+    }
+
+    var pName = p.name ? String(p.name) : 'Sản phẩm';
+    var targetUrl = (basePath === '/user/') ? '/user/' + p.slug : '/' + p.slug;
+
+    article.innerHTML =
+      '<div class="product-card__media">' +
+      '<div class="product-card__badges">' + ribbonLeftHTML + ribbonRightHTML + '</div>' +
+      (isLocalVid
+        ? '<video class="product-card__img" src="' + firstMedia + '" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;pointer-events:none;"></video>'
+        : '<img class="product-card__img" src="' + imgSrc + '" alt="' + pName.replace(/"/g, '&quot;') + '" loading="lazy" onerror="this.onerror=null; this.src=\'assets/images/placeholder.webp\';">') +
+      '</div>' +
+      '<div class="product-card__body">' +
+      '<h3 class="product-card__name" title="' + pName + '">' + pName + '</h3>' +
+      '<div class="product-card__price-wrapper">' +
+      ((basePrice <= 0)
+        ? '<a href="' + (basePath === '/user/' ? '/user/' : '/') + 'contact.html" class="price-contact" style="text-decoration:none;" onclick="event.stopPropagation();">LIÊN HỆ</a>'
+        : '<span class="product-card__price">' + window.formatVND(basePrice) + '</span>' +
+        (oldPrice && oldPrice > basePrice ? '<span class="product-card__original-price">' + window.formatVND(oldPrice) + '</span>' : '')
+      ) +
+      '</div>' +
+      giftHTML +
+      '<button class="product-card__btn-cta" onclick="window.location.href=\'' + targetUrl + '\'; event.preventDefault(); event.stopPropagation();">XEM CHI TIẾT</button>' +
+      '</div>';
+
+    // Bind event for Details
+    var mediaEl = article.querySelector('.product-card__media');
+    if (mediaEl) {
+      mediaEl.addEventListener('click', function () {
+        window.location.href = targetUrl;
+      });
+    }
+
+    return article;
+  };
+
   // ======================================================
   // GLOBAL CONFIGURATION SYSTEM
   // ======================================================
@@ -1141,7 +1256,7 @@ function populateHeaderMegaMenu() {
     }
 
     // Render results
-    function renderResults(products, query) {
+    function renderResults(products, totalCount, query) {
       if (!products || !products.length) {
         resultsEl.innerHTML =
           '<div class="search-overlay__empty">' +
@@ -1157,84 +1272,39 @@ function populateHeaderMegaMenu() {
         return (pn === '/user' || pn.startsWith('/user/')) ? '/user/' : '';
       })();
 
-      var countHTML = '<p class="search-results__count">Tìm thấy ' + products.length + ' sản phẩm cho "' + query + '"</p>';
-      var gridHTML = '<div class="search-results__grid">';
-      products.forEach(function (p) {
-        var allImages = (p.images || []).concat((p.variants || []).reduce(function (acc, v) { return acc.concat(v.images || []); }, []));
-        var firstMedia = (allImages.length > 0) ? allImages[0] : '';
-        var isLocalVid = firstMedia ? !!firstMedia.match(/\.(mp4|mov|avi|webm|ogg)$/i) : false;
-        var isPlatformVid = firstMedia ? (firstMedia.includes('youtube.com') || firstMedia.includes('youtu.be') || firstMedia.includes('tiktok.com') || firstMedia.includes('facebook.com') || firstMedia.includes('fb.watch')) : false;
-
-        var imgSrc = 'assets/images/placeholder.jpg';
-        if (firstMedia && !isLocalVid && !isPlatformVid) {
-          imgSrc = firstMedia;
-        } else if (allImages.length > 0) {
-          var foundImg = allImages.find(function (img) {
-            var isLocV = !!img.match(/\.(mp4|mov|avi|webm|ogg)$/i);
-            var isPlatV = img.includes('youtube.com') || img.includes('youtu.be') || img.includes('tiktok.com') || img.includes('facebook.com') || img.includes('fb.watch');
-            return !isLocV && !isPlatV;
-          });
-          if (foundImg) {
-            imgSrc = foundImg;
-          } else if (isPlatformVid) {
-            var ytMatch = firstMedia.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/))([A-Za-z0-9_-]{11})/);
-            var ytId = (ytMatch && ytMatch[1]) ? ytMatch[1] : '';
-            if (ytId) {
-              imgSrc = 'https://img.youtube.com/vi/' + ytId + '/hqdefault.jpg';
-            } else if (firstMedia.includes('tiktok.com')) {
-              imgSrc = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="%23000"/><text x="50%" y="50%" fill="%23fff" font-size="40" font-family="sans-serif" text-anchor="middle" dy=".3em">TikTok Video</text></svg>';
-            } else if (firstMedia.includes('facebook.com') || firstMedia.includes('fb.watch')) {
-              imgSrc = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="%231877f2"/><text x="50%" y="50%" fill="%23fff" font-size="40" font-family="sans-serif" text-anchor="middle" dy=".3em">Facebook Video</text></svg>';
-            }
-          }
-        }
-        var badgeHTML = '';
-        if (p.status === 'inactive') {
-          badgeHTML = '<span class="product-card__badge" style="background:#e07070;">Hết hàng</span>';
-        } else if (p.badge) {
-          badgeHTML = '<span class="product-card__badge">' + p.badge + '</span>';
-        }
-
-        var finalImgSrc = imgSrc.startsWith('/') || imgSrc.startsWith('http') || imgSrc.startsWith('data:') ? imgSrc : basePath + imgSrc;
-        var href = basePath ? basePath.replace(/\/$/, '') + '/' + p.slug : '/' + p.slug;
-        gridHTML +=
-          '<a class="search-result-card" href="' + href + '" style="display:flex; flex-direction:column; overflow:hidden;">' +
-          '<div class="product-card__media" style="background-image:url(\'' + finalImgSrc + '\'); margin:0; border-radius:0;">' +
-          badgeHTML +
-          '<img class="product-card__img" src="' + finalImgSrc + '" alt="' + p.name + '" loading="lazy">' +
-          '</div>' +
-          '<div class="search-result-card__body" style="display:flex; flex-direction:column; flex-grow:1; justify-content:space-between; gap:12px;">' +
-          '<div>' +
-          '<p class="search-result-card__name">' + p.name + '</p>' +
-          '<p class="search-result-card__price">' + fmt(p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0)) + '</p>' +
-          '</div>' +
-          '<button class="product-card__btn-cta" onclick="window.location.href=\'' + href + '\'; event.preventDefault(); event.stopPropagation();">XEM CHI TIẾT</button>' +
-          '</div>' +
-          '</a>';
-      });
-      gridHTML += '</div>';
-
-      var viewAllHTML = '<div style="text-align:center; margin-top: 24px;">' +
-        '<a href="' + basePath + 'products.html?q=' + encodeURIComponent(query) + '" class="btn btn--outline btn--sm" style="display:inline-flex;">Xem tất cả ' + products.length + ' kết quả &rarr;</a>' +
+      var countHTML = 
+        '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">' +
+        '<p class="search-results__count" style="margin-bottom: 0;">Tìm thấy ' + totalCount + ' sản phẩm cho "' + query + '"</p>' +
+        (totalCount > products.length ? '<a href="' + basePath + 'products.html?q=' + encodeURIComponent(query) + '" style="color: var(--color-accent); font-size: 13px; font-weight: 600; text-decoration: underline; text-transform: uppercase; letter-spacing: 0.05em;">Xem tất cả ' + totalCount + ' kết quả &rarr;</a>' : '') +
         '</div>';
-
-      resultsEl.innerHTML = countHTML + gridHTML + viewAllHTML;
+      
+      var gridDiv = document.createElement('div');
+      gridDiv.className = 'search-results__grid';
+      
+      products.forEach(function (p, i) {
+        if (typeof window.buildProductCard === 'function') {
+          gridDiv.appendChild(window.buildProductCard(p, i));
+        }
+      });
+      
+      resultsEl.innerHTML = countHTML;
+      resultsEl.appendChild(gridDiv);
+      
+      if (typeof window.initScrollReveal === 'function') {
+        window.initScrollReveal();
+      }
     }
 
-    // Search logic (client-side filter from API)
+    // Search logic (server-side filter from API)
     function doSearch(query) {
-      var q = query.trim().toLowerCase();
+      var q = query.trim();
       if (!q) { resultsEl.innerHTML = ''; return; }
 
       if (window.PhucGiaTienAPI) {
-        window.PhucGiaTienAPI.getProducts({ limit: 100 }).then(function (res) {
-          var filtered = (res.data || []).filter(function (p) {
-            return p.name.toLowerCase().includes(q) ||
-              (p.category || '').toLowerCase().includes(q) ||
-              (p.material || '').toLowerCase().includes(q) ||
-              (p.style || '').toLowerCase().includes(q);
-          });
-          renderResults(filtered, query.trim());
+        window.PhucGiaTienAPI.getProducts({ searchQuery: q, limit: 8 }).then(function (res) {
+          var data = res.data || [];
+          var total = res.total !== undefined ? res.total : data.length;
+          renderResults(data, total, q);
         });
       }
     }

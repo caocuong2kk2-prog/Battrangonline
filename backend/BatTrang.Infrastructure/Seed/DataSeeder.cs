@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace BatTrang.Infrastructure.Seed
@@ -135,6 +136,11 @@ namespace BatTrang.Infrastructure.Seed
 
             if (!context.Orders.Any())
             {
+                var pList = await context.Products.Take(3).ToListAsync();
+                int p1Id = pList.Count > 0 ? pList[0].Id : 1;
+                int p2Id = pList.Count > 1 ? pList[1].Id : p1Id;
+                int p3Id = pList.Count > 2 ? pList[2].Id : p1Id;
+
                 var order1 = new Order
                 {
                     OrderCode = "DH001",
@@ -144,10 +150,10 @@ namespace BatTrang.Infrastructure.Seed
                     Address = "123 Lê Lợi, Q.1, TP.HCM",
                     Total = 40000000,
                     Status = "completed",
-                    CreatedAt = new DateTime(2026, 5, 20, 0, 0, 0, DateTimeKind.Utc),
+                    CreatedAt = DateTime.UtcNow.AddHours(7).AddDays(-5),
                     Items = new List<OrderItem>
                     {
-                        new OrderItem { ProductName = "Lộc Bình Vẽ Tay 1M6", UnitPrice = 40000000, Quantity = 1, ProductId = 1 }
+                        new OrderItem { ProductName = "Lộc Bình Vẽ Tay 1M6", UnitPrice = 40000000, Quantity = 1, ProductId = p1Id }
                     }
                 };
                 
@@ -161,15 +167,51 @@ namespace BatTrang.Infrastructure.Seed
                     Total = 39000000,
                     Status = "shipping",
                     CustomerNote = "Giao giờ hành chính",
-                    CreatedAt = new DateTime(2026, 5, 20, 0, 0, 0, DateTimeKind.Utc),
+                    CreatedAt = DateTime.UtcNow.AddHours(7).AddDays(-2),
                     Items = new List<OrderItem>
                     {
-                        new OrderItem { ProductName = "Bộ Đồ Thờ Cao Cấp", UnitPrice = 15000000, Quantity = 1, ProductId = 5 },
-                        new OrderItem { ProductName = "Bình Hút Lộc", UnitPrice = 12000000, Quantity = 2, ProductId = 6 }
+                        new OrderItem { ProductName = "Bộ Đồ Thờ Cao Cấp", UnitPrice = 15000000, Quantity = 1, ProductId = p2Id },
+                        new OrderItem { ProductName = "Bình Hút Lộc", UnitPrice = 12000000, Quantity = 2, ProductId = p3Id }
                     }
                 };
 
-                await context.Orders.AddRangeAsync(new[] { order1, order2 });
+                var order3 = new Order
+                {
+                    OrderCode = "DH003",
+                    CustomerName = "Lê Văn Cường",
+                    CustomerPhone = "0933445566",
+                    CustomerEmail = "cuong@gmail.com",
+                    Address = "78 Cầu Giấy, Hà Nội",
+                    Total = 12000000,
+                    Status = "pending",
+                    CustomerNote = "Kiểm tra kỹ đóng gói trước khi giao",
+                    CreatedAt = DateTime.UtcNow.AddHours(7).AddHours(-4),
+                    Items = new List<OrderItem>
+                    {
+                        new OrderItem { ProductName = "Bình Hút Lộc", UnitPrice = 12000000, Quantity = 1, ProductId = p3Id }
+                    }
+                };
+
+                var order4 = new Order
+                {
+                    OrderCode = "DH004",
+                    CustomerName = "Pham Thị Mai",
+                    CustomerPhone = "0977889900",
+                    CustomerEmail = "mai@gmail.com",
+                    Address = "12 Quang Trung, Hà Đông, Hà Nội",
+                    Total = 33000000,
+                    Status = "pending",
+                    IsCancelRequested = true,
+                    CancelReason = "Đổi ý muốn chọn mẫu kích thước lớn hơn",
+                    CancelRequestedAt = DateTime.UtcNow.AddHours(7).AddHours(-1),
+                    CreatedAt = DateTime.UtcNow.AddHours(7).AddDays(-1),
+                    Items = new List<OrderItem>
+                    {
+                        new OrderItem { ProductName = "Lộc Bình Men Rạn", UnitPrice = 33000000, Quantity = 1, ProductId = p2Id }
+                    }
+                };
+
+                await context.Orders.AddRangeAsync(new[] { order1, order2, order3, order4 });
                 await context.SaveChangesAsync();
             }
 
@@ -831,7 +873,267 @@ namespace BatTrang.Infrastructure.Seed
                 }
             }
 
+            await EnsureProductAttributesAndVariantsAsync(context);
             await SeedAdministrativeUnitsAsync(context);
+        }
+
+        private static async Task EnsureProductAttributesAndVariantsAsync(AppDbContext context)
+        {
+            if (!await context.GlazeLines.AnyAsync())
+            {
+                await context.GlazeLines.AddRangeAsync(new List<GlazeLine>
+                {
+                    new GlazeLine { Name = "Men rạn cổ", Description = "Dòng men rạn Bát Tràng truyền thống ngàn năm tuổi" },
+                    new GlazeLine { Name = "Men lam cổ", Description = "Dòng men vẽ lam xanh nghệ thuật trên nền gốm sứ" },
+                    new GlazeLine { Name = "Men hoàng thổ", Description = "Dòng men màu vàng hoàng thổ hoàng gia quý phái" },
+                    new GlazeLine { Name = "Men ngọc", Description = "Dòng men xanh ngọc bích bóng mịn tinh tế" },
+                    new GlazeLine { Name = "Men hoả biến", Description = "Dòng men hỏa biến độc bản tự nhiên trong lò nung" }
+                });
+                await context.SaveChangesAsync();
+            }
+
+            if (!await context.Materials.AnyAsync())
+            {
+                await context.Materials.AddRangeAsync(new List<Material>
+                {
+                    new Material { Name = "Gốm sứ cao cấp Bát Tràng", Description = "Chất liệu gốm sứ tinh luyện chuẩn Bát Tràng" },
+                    new Material { Name = "Đất sét cao lanh", Description = "Đất sét cao lanh trắng tinh khiết độ bền cao" },
+                    new Material { Name = "Đất sét đỏ sông Hồng", Description = "Đất sét đỏ truyền thống vùng phù sa sông Hồng" },
+                    new Material { Name = "Gốm tử sa", Description = "Gốm tử sa giữ hương giữ nhiệt tuyệt hảo" }
+                });
+                await context.SaveChangesAsync();
+            }
+
+            if (!await context.ProductTypes.AnyAsync())
+            {
+                await context.ProductTypes.AddRangeAsync(new List<ProductType>
+                {
+                    new ProductType { Name = "Hàng nghệ nhân cao cấp", Description = "Tác phẩm độc bản chế tác bởi nghệ nhân hàng đầu" },
+                    new ProductType { Name = "Hàng phong thuỷ", Description = "Vật phẩm chiêu tài lộc, trấn trạch phong thủy" },
+                    new ProductType { Name = "Hàng quà tặng", Description = "Quà tặng cao cấp cho đối tác, gia tộc, tân gia" },
+                    new ProductType { Name = "Hàng gia dụng cao cấp", Description = "Sản phẩm gốm sứ phục vụ đời sống gia đình" }
+                });
+                await context.SaveChangesAsync();
+            }
+
+            if (!await context.Colors.AnyAsync())
+            {
+                await context.Colors.AddRangeAsync(new List<Color>
+                {
+                    new Color { Name = "Xanh lam cổ" },
+                    new Color { Name = "Vàng hoàng thổ" },
+                    new Color { Name = "Trắng sứ ngọc" },
+                    new Color { Name = "Nâu đất rạn" }
+                });
+                await context.SaveChangesAsync();
+            }
+
+            var commonPatterns = new string[]
+            {
+                "Phúc Đức", "Đức Lưu Quang", "Chữ Phúc", "Chữ Lộc", "Chữ Thọ", "Chữ Nhẫn", "Chữ Tâm", "Vinh Quy Bái Tổ", "Bát Tiên",
+                "Bát bửu độ gia", "Bát bửu", "Bách phúc", "Bách lộc", "Bách thọ", "Bách hạc", "Bách nhi phú quý", "Bách nhi",
+                "Cửu long", "Ngũ long", "Rồng phú quý", "Phúc lộc thọ", "Sơn thủy", "Trống đồng",
+                "Tùng hạc diên niên", "Tùng hươu", "Tùng lộc", "Đào lộc mẫu đơn", "Mẫu đơn", "Chim trĩ", "Khổng tước",
+                "Cúc dơi", "Cúc họa mi", "Hoa dây", "Tứ cảnh", "Cảnh quê hương", "Phố cổ Hà Nội", "Cảnh Hà Nội", "Công đào", "Ngũ phúc",
+                "Vạn sự như ý", "Hoa mặt trời", "Hoa khai phú quý", "Hoa chuối cảnh", "Hoa thiên điểu",
+                "Tứ quý (Tùng - Cúc - Trúc - Mai)", "Tứ quý", "Tùng cúc trúc mai",
+                "Lý ngư vọng nguyệt", "Cá chép hóa rồng", "Thuận buồm xuôi gió", "Mã đáo thành công", "Hoa sen vân mây",
+                "Hoa sen", "Sen cá", "Sen hạc", "Rồng", "Phượng hoàng", "Phượng", "Rồng phượng", "Kim kê", "Gà", "Hổ", "Trúc", "Tùng", "Cúc", "Hoa đào", "Đào", "Mai"
+            };
+            var existingPatternNames = await context.Patterns.Select(p => p.Name).ToListAsync();
+            var newPatternsToAdd = commonPatterns.Where(name => !existingPatternNames.Any(en => string.Equals(en, name, StringComparison.OrdinalIgnoreCase))).Select(name => new Pattern { Name = name }).ToList();
+            if (newPatternsToAdd.Any())
+            {
+                await context.Patterns.AddRangeAsync(newPatternsToAdd);
+                await context.SaveChangesAsync();
+            }
+
+            var glazes = await context.GlazeLines.ToListAsync();
+            var materials = await context.Materials.ToListAsync();
+            var types = await context.ProductTypes.ToListAsync();
+            var colors = await context.Colors.ToListAsync();
+            var patterns = await context.Patterns.ToListAsync();
+            var sizes = await context.Sizes.ToListAsync();
+
+            if (!glazes.Any() || !materials.Any() || !types.Any()) return;
+
+            var products = await context.Products.Include(p => p.Variants).Include(p => p.Category).ToListAsync();
+            bool changed = false;
+
+            foreach (var p in products)
+            {
+                var nameLower = (p.Name ?? "").ToLower();
+
+                // Determine quality / glaze (ONLY if mentioned in product name)
+                int? matchedGlazeId = null;
+                var matchedGlaze = glazes.FirstOrDefault(g => nameLower.Contains(g.Name.ToLower()) || 
+                    (g.Name.ToLower().Contains("rạn") && nameLower.Contains("rạn")) || 
+                    (g.Name.ToLower().Contains("lam") && nameLower.Contains("lam")) || 
+                    (g.Name.ToLower().Contains("hoàng thổ") && (nameLower.Contains("hoàng thổ") || nameLower.Contains("trổ"))) ||
+                    (g.Name.ToLower().Contains("ngọc") && nameLower.Contains("ngọc")) ||
+                    ((g.Name.ToLower().Contains("hoả biến") || g.Name.ToLower().Contains("hỏa biến")) && (nameLower.Contains("hoả biến") || nameLower.Contains("hỏa biến"))));
+                if (matchedGlaze != null) 
+                {
+                    matchedGlazeId = matchedGlaze.Id;
+                }
+                else
+                {
+                    var glazeMatch = Regex.Match(p.Name ?? "", @"(?i)(men\s+(rạn|lam|bóng|ngọc|hỏa biến|hoả biến|hoàng thổ|đen|cốt|trắng|mát|matt|da lươn|rêu|thô)(\s+cổ|\s+đắp\s+nổi|\s+vẽ\s+tay|\s+celadon)?)");
+                    if (glazeMatch.Success)
+                    {
+                        string gStr = glazeMatch.Value.Trim();
+                        gStr = char.ToUpper(gStr[0]) + gStr.Substring(1).ToLower();
+                        var existingG = glazes.FirstOrDefault(g => string.Equals(g.Name, gStr, StringComparison.OrdinalIgnoreCase));
+                        if (existingG == null)
+                        {
+                            existingG = new GlazeLine { Name = gStr };
+                            context.GlazeLines.Add(existingG);
+                            await context.SaveChangesAsync();
+                            glazes.Add(existingG);
+                        }
+                        matchedGlazeId = existingG.Id;
+                    }
+                }
+
+                // Determine material (ONLY if mentioned in product name or standard ceramic item)
+                int? matchedMatId = null;
+                var matchedMat = materials.FirstOrDefault(m => nameLower.Contains(m.Name.ToLower()) ||
+                    (m.Name.Contains("tử sa") && nameLower.Contains("tử sa")) ||
+                    (m.Name.Contains("đắp nổi") && nameLower.Contains("đắp nổi")) ||
+                    (m.Name.Contains("vẽ vàng") && nameLower.Contains("vẽ vàng")) ||
+                    (m.Name.Contains("dát vàng") && nameLower.Contains("dát vàng")) ||
+                    (m.Name.Contains("bọc đồng") && nameLower.Contains("bọc đồng")) ||
+                    (m.Name.Contains("đất nung") && (nameLower.Contains("đất nung") || nameLower.Contains("chum") || nameLower.Contains("vại"))));
+                if (matchedMat != null) 
+                {
+                    matchedMatId = matchedMat.Id;
+                }
+                else
+                {
+                    var matMatch = Regex.Match(p.Name ?? "", @"(?i)(đắp nổi|vẽ vàng|dát vàng|bọc đồng|vẽ tay|khắc nổi|chạm khắc|tử sa|gốm tử sa|cao lanh|sứ cao lanh|đất nung|gốm sứ|sứ)");
+                    if (matMatch.Success)
+                    {
+                        string mStr = matMatch.Value.Trim().ToLower();
+                        if (mStr == "sứ" || mStr == "gốm sứ") mStr = "Sứ";
+                        else if (mStr.Contains("tử sa")) mStr = "Gốm tử sa";
+                        else mStr = char.ToUpper(mStr[0]) + mStr.Substring(1);
+
+                        var existingM = materials.FirstOrDefault(m => string.Equals(m.Name, mStr, StringComparison.OrdinalIgnoreCase));
+                        if (existingM == null)
+                        {
+                            existingM = new Material { Name = mStr };
+                            context.Materials.Add(existingM);
+                            await context.SaveChangesAsync();
+                            materials.Add(existingM);
+                        }
+                        matchedMatId = existingM.Id;
+                    }
+                    else if (nameLower.Contains("lộc bình") || nameLower.Contains("lọ") || nameLower.Contains("bình") || nameLower.Contains("ấm chén") || nameLower.Contains("chén") || nameLower.Contains("bát") || nameLower.Contains("đĩa"))
+                    {
+                        var suMat = materials.FirstOrDefault(m => string.Equals(m.Name, "Sứ", StringComparison.OrdinalIgnoreCase));
+                        if (suMat != null) matchedMatId = suMat.Id;
+                    }
+                }
+
+                // Determine product type / segment (ONLY if mentioned in product name)
+                int? matchedTypeId = null;
+                var matchedType = types.FirstOrDefault(t => nameLower.Contains(t.Name.ToLower()) ||
+                    (t.Name.Contains("vẽ kỹ") && nameLower.Contains("vẽ kỹ")) ||
+                    (t.Name.Contains("vẽ tay") && nameLower.Contains("vẽ tay")) ||
+                    (t.Name.Contains("nghệ nhân") && nameLower.Contains("nghệ nhân")) ||
+                    (t.Name.Contains("phong thuỷ") && nameLower.Contains("phong thuỷ")) ||
+                    (t.Name.Contains("quà tặng") && nameLower.Contains("quà tặng")) ||
+                    (t.Name.Contains("gia dụng") && nameLower.Contains("gia dụng")));
+                if (matchedType != null) matchedTypeId = matchedType.Id;
+
+                // Determine color (ONLY if mentioned in product name)
+                int? matchedColorId = null;
+                var matchedColor = colors.FirstOrDefault(c => nameLower.Contains(c.Name.ToLower()) ||
+                    (c.Name.Contains("lam") && nameLower.Contains("lam")) ||
+                    (c.Name.Contains("vàng") && (nameLower.Contains("vàng") || nameLower.Contains("hoàng thổ"))) ||
+                    (c.Name.Contains("trắng") && nameLower.Contains("trắng")) ||
+                    (c.Name.Contains("nâu") && nameLower.Contains("nâu")) ||
+                    (c.Name.Contains("xanh") && nameLower.Contains("xanh")));
+                if (matchedColor != null) matchedColorId = matchedColor.Id;
+
+                // Determine pattern (ONLY if mentioned in product name)
+                int? matchedPatternId = null;
+                var matchedPattern = patterns.OrderByDescending(pt => pt.Name.Length).FirstOrDefault(pt => 
+                    (pt.Name.Equals("Hoa sen vân mây", StringComparison.OrdinalIgnoreCase) && nameLower.Contains("vân mây") && nameLower.Contains("sen")) ||
+                    (pt.Name.Equals("Hoa sen", StringComparison.OrdinalIgnoreCase) && nameLower.Contains("sen") && !nameLower.Contains("vân mây") && !nameLower.Contains("sen cá") && !nameLower.Contains("sen hạc")) ||
+                    (pt.Name.Equals("Mai", StringComparison.OrdinalIgnoreCase) && (nameLower.Contains("vẽ mai") || nameLower.Contains("hoa mai") || nameLower.Contains("trúc mai") || (nameLower.Contains("mai") && !nameLower.Contains("mai bình") && !nameLower.Contains("ban mai") && !nameLower.Contains("nắng mai") && !nameLower.Contains("sáng mai")))) ||
+                    ((pt.Name.Equals("Đào", StringComparison.OrdinalIgnoreCase) || pt.Name.Equals("Hoa đào", StringComparison.OrdinalIgnoreCase)) && (nameLower.Contains("vẽ đào") || nameLower.Contains("hoa đào") || nameLower.Contains("đào đỏ") || nameLower.Contains("đào hồng") || nameLower.Contains("đào xanh") || nameLower.Contains("kem đào") || nameLower.Contains("trĩ đào")) && !nameLower.Contains("công đào") && !nameLower.Contains("đào lộc")) ||
+                    (pt.Name.Equals("Rồng", StringComparison.OrdinalIgnoreCase) && nameLower.Contains("rồng") && !nameLower.Contains("hóa rồng") && !nameLower.Contains("hoá rồng") && !nameLower.Contains("rồng phượng") && !nameLower.Contains("long phượng") && !nameLower.Contains("cửu long") && !nameLower.Contains("ngũ long")) ||
+                    (pt.Name.Equals("Phượng", StringComparison.OrdinalIgnoreCase) && nameLower.Contains("phượng") && !nameLower.Contains("phượng hoàng") && !nameLower.Contains("rồng phượng") && !nameLower.Contains("long phượng")) ||
+                    (pt.Name.Equals("Rồng phượng", StringComparison.OrdinalIgnoreCase) && (nameLower.Contains("rồng phượng") || nameLower.Contains("long phượng") || (nameLower.Contains("rồng") && nameLower.Contains("phượng")))) ||
+                    ((pt.Name.Equals("Gà", StringComparison.OrdinalIgnoreCase) || pt.Name.Equals("Kim kê", StringComparison.OrdinalIgnoreCase)) && (nameLower.Contains("gà") || nameLower.Contains("kim kê")) && !nameLower.Contains("rồng -gà") && !nameLower.Contains("rồng-gà") && !nameLower.Contains("trâu-gà")) ||
+                    (pt.Name.Equals("Cảnh quê hương", StringComparison.OrdinalIgnoreCase) && (nameLower.Contains("cảnh quê") || nameLower.Contains("đồng quê") || nameLower.Contains("quê hương"))) ||
+                    (pt.Name.Equals("Phố cổ Hà Nội", StringComparison.OrdinalIgnoreCase) && nameLower.Contains("phố cổ")) ||
+                    (pt.Name.Equals("Hoa chuối cảnh", StringComparison.OrdinalIgnoreCase) && (nameLower.Contains("hoa chuối") || nameLower.Contains("chuối cảnh"))) ||
+                    ((pt.Name.Equals("Tùng hươu", StringComparison.OrdinalIgnoreCase) || pt.Name.Equals("Tùng lộc", StringComparison.OrdinalIgnoreCase)) && (nameLower.Contains("tùng hươu") || nameLower.Contains("tùng lộc"))) ||
+                    ((pt.Name.ToLower().Contains("bách nhi")) && nameLower.Contains("bách nhi")) ||
+                    (pt.Name.Equals("Hoa thiên điểu", StringComparison.OrdinalIgnoreCase) && nameLower.Contains("thiên điểu")) ||
+                    ((pt.Name.ToLower().Contains("cá chép") || pt.Name.ToLower().Contains("lý ngư")) && (nameLower.Contains("cá chép") || nameLower.Contains("lý ngư") || nameLower.Contains("hoá rồng") || nameLower.Contains("hóa rồng"))) ||
+                    (pt.Name.ToLower().Contains("tứ quý") && nameLower.Contains("tứ quý")) ||
+                    (pt.Name.ToLower().Contains("thuận buồm") && nameLower.Contains("thuận buồm")) ||
+                    (pt.Name.ToLower().Contains("mã đáo") && nameLower.Contains("mã đáo")) ||
+                    (!pt.Name.Equals("Hoa sen vân mây", StringComparison.OrdinalIgnoreCase) && !pt.Name.Equals("Hoa sen", StringComparison.OrdinalIgnoreCase) && !pt.Name.Equals("Mai", StringComparison.OrdinalIgnoreCase) && !pt.Name.Equals("Đào", StringComparison.OrdinalIgnoreCase) && !pt.Name.Equals("Hoa đào", StringComparison.OrdinalIgnoreCase) && !pt.Name.Equals("Rồng", StringComparison.OrdinalIgnoreCase) && !pt.Name.Equals("Phượng", StringComparison.OrdinalIgnoreCase) && !pt.Name.Equals("Rồng phượng", StringComparison.OrdinalIgnoreCase) && !pt.Name.Equals("Gà", StringComparison.OrdinalIgnoreCase) && !pt.Name.Equals("Kim kê", StringComparison.OrdinalIgnoreCase) && !pt.Name.Equals("Cảnh quê hương", StringComparison.OrdinalIgnoreCase) && !pt.Name.Equals("Phố cổ Hà Nội", StringComparison.OrdinalIgnoreCase) && !pt.Name.Equals("Hoa chuối cảnh", StringComparison.OrdinalIgnoreCase) && !pt.Name.Equals("Tùng hươu", StringComparison.OrdinalIgnoreCase) && !pt.Name.Equals("Tùng lộc", StringComparison.OrdinalIgnoreCase) && !pt.Name.ToLower().Contains("bách nhi") && !pt.Name.Equals("Hoa thiên điểu", StringComparison.OrdinalIgnoreCase) && !pt.Name.ToLower().Contains("cá chép") && !pt.Name.ToLower().Contains("lý ngư") && nameLower.Contains(pt.Name.ToLower())));
+                if (matchedPattern != null) matchedPatternId = matchedPattern.Id;
+
+                // Determine size (ONLY if mentioned in product name)
+                int? matchedSizeId = null;
+                string cleanName = Regex.Replace(p.Name ?? "", @"(?i)\b(cao|dài|rộng|H)\s*(?=\d)", "");
+                var sizeMatch = Regex.Match(cleanName, @"(?i)(\d+m\d+|\d+\.?\d*\s*m|\d+\s*x\s*\d+\s*cm|\d+\s*cm|\d+\s*lít|bộ\s+\d+\s*món)");
+                if (sizeMatch.Success)
+                {
+                    string sStr = sizeMatch.Value.Trim().ToLower();
+                    if (Regex.IsMatch(sStr, @"^\d+m\d+$"))
+                    {
+                        sStr = sStr.Replace("m", ".") + "m";
+                    }
+                    else if (Regex.IsMatch(sStr, @"^[\d\.]+$"))
+                    {
+                        if (double.TryParse(sStr, out double dVal) && dVal <= 5.0) sStr += "m";
+                        else sStr += "cm";
+                    }
+
+                    int cm = 0;
+                    var cmMatch = Regex.Match(sStr, @"^([\d\.]+)\s*cm$");
+                    if (cmMatch.Success && double.TryParse(cmMatch.Groups[1].Value, out double dCm)) cm = (int)dCm;
+                    var mMatch = Regex.Match(sStr, @"^([\d\.]+)\s*m$");
+                    if (mMatch.Success && double.TryParse(mMatch.Groups[1].Value, out double dM)) cm = (int)(dM * 100);
+
+                    var existing = sizes.OrderByDescending(s => s.Name.Length).FirstOrDefault(s => 
+                        string.Equals(s.Name, sStr, StringComparison.OrdinalIgnoreCase) ||
+                        (cm > 0 && s.ValueInCm == cm) ||
+                        (s.Name.Replace(".0m", "m") == sStr.Replace(".0m", "m"))
+                    );
+
+                    if (existing == null)
+                    {
+                        existing = new Size { Name = sStr, ValueInCm = cm };
+                        context.Sizes.Add(existing);
+                        await context.SaveChangesAsync();
+                        sizes.Add(existing);
+                    }
+                    matchedSizeId = existing.Id;
+                }
+
+                foreach (var v in p.Variants)
+                {
+                    if (v.GlazeLineId != matchedGlazeId) { v.GlazeLineId = matchedGlazeId; changed = true; }
+                    if (v.MaterialId != matchedMatId) { v.MaterialId = matchedMatId; changed = true; }
+                    if (v.ProductTypeId != matchedTypeId) { v.ProductTypeId = matchedTypeId; changed = true; }
+                    if (v.ColorId != matchedColorId) { v.ColorId = matchedColorId; changed = true; }
+                    if (v.PatternId != matchedPatternId) { v.PatternId = matchedPatternId; changed = true; }
+                    if (matchedSizeId.HasValue && v.SizeId != matchedSizeId.Value) { v.SizeId = matchedSizeId.Value; changed = true; }
+                }
+            }
+
+            if (changed)
+            {
+                await context.SaveChangesAsync();
+            }
         }
 
         private static async Task SeedAdministrativeUnitsAsync(AppDbContext context)

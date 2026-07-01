@@ -31,7 +31,8 @@ namespace BatTrang.API.Controllers
                 {
                     Id = s.Id,
                     Name = s.Name,
-                    ValueInCm = s.ValueInCm
+                    ValueInCm = s.ValueInCm,
+                    ProductCount = s.ProductVariants.Select(v => v.ProductId).Distinct().Count()
                 })
                 .ToListAsync();
 

@@ -3,10 +3,10 @@
 
   var session = getAdminSession();
   if (!session || session.role !== 'admin') {
-    window.location.href = "index";
+    window.location.href = "index.html";
   }
 
-  var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' ? 'http://localhost:5055/api' : '/api';
+  var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' && window.location.port !== '7275' ? 'http://localhost:5055/api' : '/api';
   var API_URL = dynamicBase + '/adminaccounts';
   var accounts = [];
 
@@ -31,19 +31,33 @@
       return;
     }
 
-    var role = getAdminSession()?.role || 'staff';
+    var session = getAdminSession();
+    var role = session?.role || 'staff';
     var isAdmin = role === 'admin';
+    var totalAdmins = accounts.filter(function(a) { return (a.role || '').toLowerCase() === 'admin'; }).length;
 
     tbody.innerHTML = accounts.map(function (acc) {
-      var roleBadge = acc.role === 'admin'
+      var isAccAdmin = (acc.role || '').toLowerCase() === 'admin';
+      var roleBadge = isAccAdmin
         ? '<span style="color:var(--accent);font-weight:600;background:rgba(200,146,42,0.1);padding:2px 8px;border-radius:4px;font-size:12px;">Admin</span>'
         : '<span style="color:var(--text-muted);font-weight:500;background:var(--surface-100);padding:2px 8px;border-radius:4px;font-size:12px;">Nhân viên</span>';
 
       var actions = '';
       if (isAdmin) {
+        var isSelf = session && session.username && acc.username && (session.username.toLowerCase() === acc.username.toLowerCase());
+        var isLastAdmin = (acc.role === 'admin' && totalAdmins <= 1);
+        var deleteBtn = '';
+        if (isSelf) {
+          deleteBtn = '<button class="btn btn--sm btn--secondary" disabled title="Bạn đang đăng nhập tài khoản này">Đang dùng</button>';
+        } else if (isLastAdmin) {
+          deleteBtn = '<button class="btn btn--sm btn--secondary" disabled title="Không thể xóa tài khoản Admin cuối cùng">Khóa xóa</button>';
+        } else {
+          deleteBtn = '<button class="btn btn--sm btn--danger btn-delete" data-id="' + acc.id + '" title="Xóa">Xóa</button>';
+        }
+
         actions = '<td class="actions-cell">' +
           '<button class="btn btn--sm btn--secondary btn-edit" data-id="' + acc.id + '" style="margin-right:4px">Sửa</button>' +
-          '<button class="btn btn--sm btn--danger btn-delete" data-id="' + acc.id + '" title="Xóa">Xóa</button>' +
+          deleteBtn +
           '</td>';
       } else {
         actions = '<td><span class="text-muted" style="font-size:12px">Không có quyền</span></td>';
@@ -90,7 +104,13 @@
     document.getElementById('acc-name').value = data ? data.name : '';
     document.getElementById('acc-username').value = data ? data.username : '';
     document.getElementById('acc-password').value = '';
-    document.getElementById('acc-role').value = data ? data.role : 'staff';
+    var roleVal = (data && data.role) ? String(data.role).toLowerCase().trim() : 'staff';
+    var isAdminRole = roleVal === 'admin' || roleVal === 'quản trị viên' || roleVal.indexOf('admin') !== -1;
+    var roleSel = document.getElementById('acc-role');
+    if (roleSel) {
+      roleSel.value = isAdminRole ? 'admin' : 'staff';
+      roleSel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
 
     var hint = document.getElementById('acc-pass-hint');
     var passLabel = document.getElementById('acc-pass-label');

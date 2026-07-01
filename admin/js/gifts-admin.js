@@ -277,7 +277,7 @@
     var formData = new FormData();
     formData.append('file', file);
 
-    var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && (window.location.port !== '5055' && window.location.port !== '7275') ? 'http://localhost:5055/api' : '/api';
+    var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' && window.location.port !== '7275' ? 'http://localhost:5055/api' : '/api';
 
     fetch(dynamicBase + '/upload', {
       method: 'POST',

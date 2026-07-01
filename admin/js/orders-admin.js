@@ -52,7 +52,6 @@
 
 
   function init() {
-    initDatePickers();
     filterStatus = getStatusFromHash();
     history.replaceState(null, '', '#tab=' + filterStatus);
     fetchAndRenderTable();
@@ -68,9 +67,11 @@
       AdminData.sizes.load(),
       AdminData.gifts.load()
     ]).then(function (res) {
-      allProducts = res[0] || [];
+      allProducts = res[0].data || res[0] || [];
+      if (!Array.isArray(allProducts)) allProducts = [];
       products = allProducts.filter(function (p) { return p.status === 'active'; });
-      customers = res[1] || [];
+      customers = res[1].data || res[1] || [];
+      if (!Array.isArray(customers)) customers = [];
 
       buildProductImagesMap();
       bindEvents();
@@ -86,7 +87,7 @@
   window.onAdminNotification = function (eventType, message) {
     if (['OrderPlaced', 'OrderStatusChanged', 'OrderCancelled', 'CancelRequested', 'FallbackPoll'].indexOf(eventType) !== -1) {
       AdminData.orders.load().then(function (res) {
-        orders = res;
+        orders = res.data || res;
         AdminData.orders.updatePendingBadge(orders);
         renderStatusTabs();
         renderTable();
@@ -360,6 +361,10 @@
     });
   }
 
+  function renderTable() {
+    return fetchAndRenderTable();
+  }
+
   function fetchAndRenderTable() {
     var queryStatus = filterStatus === 'cancel_request' ? 'cancel_requested' : filterStatus;
     AdminData.orders.load(currentPage, pageSize, searchQ, queryStatus, filterDateFrom, filterDateTo)
@@ -377,7 +382,7 @@
           var slice = orders;
           var tbody = document.getElementById('orders-table-body');
     if (!slice.length) {
-      tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="empty-state__icon">🛒</div><div class="empty-state__title">Không có đơn hàng</div></div></td></tr>';
+      tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><div class="empty-state__icon">🛒</div><div class="empty-state__title">Không có đơn hàng</div></div></td></tr>';
     } else {
       tbody.innerHTML = slice.map(function (o, idx) {
         var stt = (currentPage - 1) * pageSize + idx + 1;
@@ -755,8 +760,8 @@
   }
 
   function escapeHTML(str) {
-    if (!str) return '';
-    return str.replace(/&/g, '&amp;')
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
@@ -1567,7 +1572,7 @@
   window.onAdminNotification = function (eventType, message) {
     if (eventType === 'OrderPlaced' || eventType === 'OrderStatusChanged' || eventType === 'OrderDeleted' || eventType === 'OrderCancelled' || eventType === 'CancelRequested' || eventType === 'FallbackPoll') {
       AdminData.orders.load().then(function (newOrders) {
-        orders = newOrders;
+        orders = newOrders.data || newOrders;
         renderStatusTabs();
         renderTable();
         AdminData.orders.updatePendingBadge(orders);
@@ -1612,7 +1617,7 @@
       AdminData.orders.bulkStatus(ids, status).then(function() {
         adminToast('Đã chuyển ' + ids.length + ' đơn hàng sang "' + statusLabel + '"', 'success');
         return AdminData.orders.load().then(function(newOrders) {
-          orders = newOrders;
+          orders = newOrders.data || newOrders;
           renderStatusTabs();
           renderTable();
           AdminData.orders.updatePendingBadge(orders);
@@ -1630,7 +1635,7 @@
       AdminData.orders.bulkDelete(ids).then(function() {
         adminToast('Đã xóa ' + ids.length + ' đơn hàng', 'success');
         return AdminData.orders.load().then(function(newOrders) {
-          orders = newOrders;
+          orders = newOrders.data || newOrders;
           renderStatusTabs();
           renderTable();
           AdminData.orders.updatePendingBadge(orders);
@@ -1712,7 +1717,7 @@
     adminToast('Đã xuất Excel (CSV) thành công', 'success');
   }
 
-  document.addEventListener('DOMContentLoaded', function() {
+  function startApp() {
     init();
     
     var checkAllBtn = document.getElementById('check-all-orders');
@@ -1773,5 +1778,11 @@
     if (bulkExcelBtn) {
       bulkExcelBtn.addEventListener('click', executeBulkExcel);
     }
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startApp);
+  } else {
+    startApp();
+  }
 }());

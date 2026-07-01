@@ -75,6 +75,7 @@ namespace BatTrang.API.Controllers.Admin
                 IsUnique = p.IsUnique,
                 ShortDescription = p.ShortDescription,
                 Description = p.Description,
+                MetaDescription = p.MetaDescription,
                 Faqs = p.Faqs,
                 CategoryFaqs = p.Category?.Faqs,
                 TotalSold = p.TotalSold,
@@ -112,10 +113,11 @@ namespace BatTrang.API.Controllers.Admin
         {
             if (!string.IsNullOrWhiteSpace(dto.Sku))
             {
-                var isSkuExists = await _productRepo.CountAsync(p => p.Sku == dto.Sku.Trim()) > 0;
+                dto.Sku = RemoveDiacritics(dto.Sku).ToUpperInvariant().Trim();
+                var isSkuExists = await _productRepo.CountAsync(p => p.Sku == dto.Sku) > 0;
                 if (isSkuExists)
                 {
-                    return BadRequest(new { message = $"Mã SKU '{dto.Sku.Trim()}' đã tồn tại trong hệ thống. Vui lòng nhập mã khác!" });
+                    return BadRequest(new { message = $"Mã SKU '{dto.Sku}' đã tồn tại trong hệ thống. Vui lòng nhập mã khác!" });
                 }
             }
 
@@ -158,6 +160,7 @@ namespace BatTrang.API.Controllers.Admin
                 IsUnique = dto.IsUnique,
                 ShortDescription = dto.ShortDescription,
                 Description = dto.Description,
+                MetaDescription = dto.MetaDescription,
                 Faqs = dto.Faqs,
                 CommissionRate = dto.CommissionRate ?? 10.0m,
                 Variants = new List<ProductVariant>()
@@ -207,6 +210,22 @@ namespace BatTrang.API.Controllers.Admin
 
             await _productRepo.AddAsync(product);
 
+            if (string.IsNullOrWhiteSpace(product.Sku))
+            {
+                var cat = await _categoryRepo.GetByIdAsync(categoryId);
+                string prefix = "SP";
+                if (cat != null && !string.IsNullOrWhiteSpace(cat.Slug))
+                {
+                    string cleanSlug = RemoveDiacritics(cat.Slug);
+                    var parts = cleanSlug.Split('-', StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 2) prefix = $"{char.ToUpperInvariant(parts[0][0])}{char.ToUpperInvariant(parts[1][0])}";
+                    else if (parts[0].Length >= 2) prefix = parts[0].Substring(0, 2).ToUpperInvariant();
+                    else if (parts[0].Length == 1) prefix = $"{char.ToUpperInvariant(parts[0][0])}X";
+                }
+                product.Sku = $"{prefix}-{product.Id:D3}";
+                await _productRepo.UpdateAsync(product);
+            }
+
             if (dto.Gifts != null && dto.Gifts.Any())
             {
                 foreach (var gift in dto.Gifts)
@@ -245,10 +264,11 @@ namespace BatTrang.API.Controllers.Admin
         {
             if (!string.IsNullOrWhiteSpace(dto.Sku))
             {
-                var isSkuExists = await _productRepo.CountAsync(p => p.Sku == dto.Sku.Trim() && p.Id != id) > 0;
+                dto.Sku = RemoveDiacritics(dto.Sku).ToUpperInvariant().Trim();
+                var isSkuExists = await _productRepo.CountAsync(p => p.Sku == dto.Sku && p.Id != id) > 0;
                 if (isSkuExists)
                 {
-                    return BadRequest(new { message = $"Mã SKU '{dto.Sku.Trim()}' đã tồn tại trong hệ thống. Vui lòng nhập mã khác!" });
+                    return BadRequest(new { message = $"Mã SKU '{dto.Sku}' đã tồn tại trong hệ thống. Vui lòng nhập mã khác!" });
                 }
             }
 
@@ -271,12 +291,28 @@ namespace BatTrang.API.Controllers.Admin
                 }
             }
 
+            if (string.IsNullOrWhiteSpace(product.Sku))
+            {
+                var cat = await _categoryRepo.GetByIdAsync(product.CategoryId);
+                string prefix = "SP";
+                if (cat != null && !string.IsNullOrWhiteSpace(cat.Slug))
+                {
+                    string cleanSlug = RemoveDiacritics(cat.Slug);
+                    var parts = cleanSlug.Split('-', StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 2) prefix = $"{char.ToUpperInvariant(parts[0][0])}{char.ToUpperInvariant(parts[1][0])}";
+                    else if (parts[0].Length >= 2) prefix = parts[0].Substring(0, 2).ToUpperInvariant();
+                    else if (parts[0].Length == 1) prefix = $"{char.ToUpperInvariant(parts[0][0])}X";
+                }
+                product.Sku = $"{prefix}-{product.Id:D3}";
+            }
+
             product.Usage = dto.Usage;
             product.Status = dto.Status;
             product.MarketingBadges = dto.Badge;
             product.IsUnique = dto.IsUnique;
             product.ShortDescription = dto.ShortDescription;
             product.Description = dto.Description;
+            product.MetaDescription = dto.MetaDescription;
             product.Faqs = dto.Faqs;
             product.CommissionRate = dto.CommissionRate ?? 10.0m;
 
@@ -507,6 +543,7 @@ namespace BatTrang.API.Controllers.Admin
 
         private static string RemoveDiacritics(string text) 
         {
+            if (string.IsNullOrWhiteSpace(text)) return text;
             var normalizedString = text.Normalize(NormalizationForm.FormD);
             var stringBuilder = new StringBuilder();
 
@@ -518,7 +555,8 @@ namespace BatTrang.API.Controllers.Admin
                     stringBuilder.Append(c);
                 }
             }
-            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC)
+                                .Replace("đ", "d").Replace("Đ", "D");
         }
     }
 }

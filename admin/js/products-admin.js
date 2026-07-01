@@ -49,10 +49,18 @@
     if (badge) badge.textContent = count;
   }
 
+  function removeVietnameseAccents(str) {
+    if (!str) return '';
+    return str.normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '')
+              .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+  }
+
   function getSkuForCategory(categorySlug, productId) {
     var prefix = 'SP';
     if (categorySlug) {
-      var parts = categorySlug.split('-');
+      var cleanSlug = removeVietnameseAccents(categorySlug);
+      var parts = cleanSlug.split('-');
       if (parts.length >= 2) {
         prefix = (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
       } else if (parts[0].length >= 2) {
@@ -411,7 +419,7 @@
           btnAddLink.disabled = true;
 
           var files = Array.from(this.files);
-          var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' ? 'http://localhost:5055/api' : '/api';
+          var dynamicBase = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' && window.location.port !== '7275' ? 'http://localhost:5055/api' : '/api';
 
           var uploadPromises = files.map(function (file) {
             var formData = new FormData();
@@ -506,11 +514,13 @@
           return {
             upload: function () {
               return loader.file.then(function (file) {
-                return new Promise(function (resolve, reject) {
-                  var reader = new FileReader();
-                  reader.onload = function () { resolve({ default: reader.result }); };
-                  reader.onerror = function (error) { reject(error); };
-                  reader.readAsDataURL(file);
+                return (window.compressToWebP ? window.compressToWebP(file, 1200, 0.8) : Promise.resolve(file)).then(function (processedFile) {
+                  return new Promise(function (resolve, reject) {
+                    var reader = new FileReader();
+                    reader.onload = function () { resolve({ default: reader.result }); };
+                    reader.onerror = function (error) { reject(error); };
+                    reader.readAsDataURL(processedFile);
+                  });
                 });
               });
             },
@@ -596,6 +606,12 @@
       AdminData.categories.load(),
       AdminData.gifts.load()
     ]).then(function (res) {
+      glazeLines = res[0] || [];
+      productTypes = res[1] || [];
+      materials = res[2] || [];
+      colors = res[3] || [];
+      patterns = res[4] || [];
+      sizes = res[6] || [];
       categories = res[7] || [];
       allGifts = res[8] || [];
       renderGiftsSelector();
@@ -675,20 +691,16 @@
         }
       }
 
-      glazeLines = res[1];
-      productTypes = res[2];
-      materials = res[3];
-      colors = res[4];
-      patterns = res[5];
-      sizes = res[7] || [];
-
       // Handle site settings for default address (origin)
       var settings = res[5] || {};
       storeAddress = settings.address || settings.Address || '';
 
       fetchAndRenderTable();
-      bindEvents();
-    }).catch(function (e) { console.error(e); });
+    }).catch(function (e) { console.error('[Products] Init data load error:', e); });
+
+    // IMPORTANT: bindEvents() must be called outside Promise.all
+    // so buttons always work even if API calls fail
+    bindEvents();
   }
 
   function renderGiftsSelector() {
@@ -799,6 +811,10 @@
       }
     });
     return names.join(', ');
+  }
+
+  function renderTable() {
+    return fetchAndRenderTable();
   }
 
   function fetchAndRenderTable() {
@@ -1009,6 +1025,132 @@
     }
   }
 
+  function getPresetBadges() {
+    try {
+      var saved = localStorage.getItem('admin_preset_badges');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return ['Mới', 'Bán chạy'];
+  }
+
+  function savePresetBadges(list) {
+    localStorage.setItem('admin_preset_badges', JSON.stringify(list));
+  }
+
+  function renderPresetBadges(selectedVal) {
+    var container = document.getElementById('badge-presets-container');
+    if (!container) return;
+    var list = getPresetBadges();
+    var isPresetSelected = false;
+    var html = '<label style="display:flex; align-items:center; gap:5px; cursor:pointer;"><input type="radio" name="marketingBadges" value="" ' + (!selectedVal ? 'checked' : '') + '> Không</label>';
+    list.forEach(function (b) {
+      var isChecked = selectedVal === b;
+      if (isChecked) isPresetSelected = true;
+      html += '<label style="display:flex; align-items:center; gap:5px; cursor:pointer;"><input type="radio" name="marketingBadges" value="' + escapeHTML(b) + '" ' + (isChecked ? 'checked' : '') + '> ' + escapeHTML(b) + '</label>';
+    });
+    var isCustomChecked = selectedVal && !isPresetSelected && selectedVal !== '';
+    html += '<label style="display:flex; align-items:center; gap:5px; cursor:pointer;"><input type="radio" name="marketingBadges" value="CUSTOM" ' + (isCustomChecked ? 'checked' : '') + '> Khác / Tự nhập...</label>';
+    container.innerHTML = html;
+
+    container.querySelectorAll('[name="marketingBadges"]').forEach(function (radio) {
+      radio.addEventListener('change', function () {
+        var customWrapper = document.getElementById('custom-badge-wrapper');
+        var customInput = document.getElementById('custom-badge-input');
+        if (this.value === 'CUSTOM') {
+          if (customWrapper) customWrapper.style.display = 'block';
+          if (customInput) customInput.focus();
+        } else {
+          if (customWrapper) customWrapper.style.display = 'none';
+        }
+      });
+    });
+  }
+
+  function renderBadgeManageModal(editingIdx) {
+    var listContainer = document.getElementById('badge-manage-list');
+    if (!listContainer) return;
+    var list = getPresetBadges();
+    if (list.length === 0) {
+      listContainer.innerHTML = '<div style="color:#888; font-size:13px; font-style:italic; padding:10px; text-align:center;">Chưa có badge nào trong danh sách preset.</div>';
+      return;
+    }
+    listContainer.innerHTML = list.map(function (b, idx) {
+      if (editingIdx === idx) {
+        return '<div style="display:flex; align-items:center; gap:8px; padding:6px 10px; background:#fffcf6; border:1.5px solid var(--accent); border-radius:6px;">' +
+          '<input type="text" id="edit-badge-inp-' + idx + '" class="form-control" value="' + escapeHTML(b) + '" style="height:32px; font-size:13px; padding:4px 8px; flex:1;">' +
+          '<button type="button" class="btn btn--sm btn--primary btn-save-edit-badge" data-idx="' + idx + '" style="padding:4px 10px; font-size:12px;">💾 Lưu</button>' +
+          '<button type="button" class="btn btn--sm btn--secondary btn-cancel-edit-badge" style="padding:4px 8px; font-size:12px;">✕</button>' +
+        '</div>';
+      }
+      return '<div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#f9f9f9; border:1px solid #eee; border-radius:6px;">' +
+        '<span style="font-weight:600; color:#333;">' + escapeHTML(b) + '</span>' +
+        '<div style="display:flex; gap:6px;">' +
+          '<button type="button" class="btn btn--sm btn--secondary btn-edit-badge" data-idx="' + idx + '" style="padding:2px 8px; font-size:12px;">✏️ Sửa</button>' +
+          '<button type="button" class="btn btn--sm btn--danger btn-del-badge" data-idx="' + idx + '" style="padding:2px 8px; font-size:12px;">🗑️ Xoá</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    if (editingIdx !== undefined && editingIdx !== null) {
+      var inp = document.getElementById('edit-badge-inp-' + editingIdx);
+      if (inp) {
+        inp.focus();
+        inp.select();
+        var saveAction = function () {
+          var newVal = inp.value.trim();
+          if (!newVal) {
+            adminToast('Tên badge không được để trống!', 'error');
+            return;
+          }
+          var oldVal = list[editingIdx];
+          if (newVal !== oldVal && list.indexOf(newVal) !== -1) {
+            adminToast('Badge này đã tồn tại trong danh sách!', 'error');
+            return;
+          }
+          list[editingIdx] = newVal;
+          savePresetBadges(list);
+          renderBadgeManageModal();
+          var currentChecked = document.querySelector('#product-form [name="marketingBadges"]:checked');
+          renderPresetBadges(currentChecked ? (currentChecked.value === oldVal ? newVal : currentChecked.value) : '');
+          adminToast('Đã sửa tên badge thành công!', 'success');
+        };
+
+        var saveBtn = listContainer.querySelector('.btn-save-edit-badge');
+        if (saveBtn) saveBtn.addEventListener('click', saveAction);
+
+        var cancelBtn = listContainer.querySelector('.btn-cancel-edit-badge');
+        if (cancelBtn) cancelBtn.addEventListener('click', function () { renderBadgeManageModal(); });
+
+        inp.addEventListener('keypress', function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            saveAction();
+          }
+        });
+      }
+    }
+
+    listContainer.querySelectorAll('.btn-edit-badge').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = parseInt(this.dataset.idx);
+        renderBadgeManageModal(idx);
+      });
+    });
+
+    listContainer.querySelectorAll('.btn-del-badge').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = parseInt(this.dataset.idx);
+        var list = getPresetBadges();
+        var removed = list.splice(idx, 1);
+        savePresetBadges(list);
+        renderBadgeManageModal();
+        var currentChecked = document.querySelector('#product-form [name="marketingBadges"]:checked');
+        renderPresetBadges(currentChecked ? currentChecked.value : '');
+        adminToast('Đã xoá badge "' + removed[0] + '"', 'warning');
+      });
+    });
+  }
+
   function resetToBasicTab() {
     var tabs = document.querySelectorAll('.modal-tab-btn');
     var contents = document.querySelectorAll('.modal-tab-content');
@@ -1037,6 +1179,12 @@
       currentProdFaqs = [];
       renderProdFaqs();
 
+      renderPresetBadges('');
+      var customWrapper = document.getElementById('custom-badge-wrapper');
+      var customInput = document.getElementById('custom-badge-input');
+      if (customWrapper) customWrapper.style.display = 'none';
+      if (customInput) customInput.value = '';
+
       // Reset gift checkboxes
       document.querySelectorAll('.product-gift-checkbox').forEach(function (cb) {
         cb.checked = false;
@@ -1060,7 +1208,8 @@
       openModal('productModal');
     } catch(err) {
       console.error(err);
-      fetch('http://localhost:5055/api/log', { method: 'POST', body: err.stack }).catch(()=>null);
+      var logUrl = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' && window.location.port !== '7275' ? 'http://localhost:5055/api/log' : '/api/log';
+      fetch(logUrl, { method: 'POST', body: err.stack }).catch(()=>null);
       alert(err.message);
     }
   }
@@ -1110,15 +1259,21 @@
         updateVariantTabBadge();
       }
       var badgeValue = (p.marketingBadges || '').split(',')[0].trim();
-      var radioToSelect = f.querySelector('[name="marketingBadges"][value="' + badgeValue + '"]');
-      if (radioToSelect) {
-        radioToSelect.checked = true;
+      renderPresetBadges(badgeValue);
+      var customWrapper = document.getElementById('custom-badge-wrapper');
+      var customInput = document.getElementById('custom-badge-input');
+      var list = getPresetBadges();
+      if (badgeValue && list.indexOf(badgeValue) === -1) {
+        if (customWrapper) customWrapper.style.display = 'block';
+        if (customInput) customInput.value = badgeValue;
       } else {
-        var defaultRadio = f.querySelector('[name="marketingBadges"][value=""]');
-        if (defaultRadio) defaultRadio.checked = true;
+        if (customWrapper) customWrapper.style.display = 'none';
+        if (customInput) customInput.value = '';
       }
       f.querySelector('[name="usage"]').value = p.usage || '';
       f.querySelector('[name="shortDescription"]').value = p.shortDescription || '';
+      var metaDescEl = f.querySelector('[name="metaDescription"]');
+      if (metaDescEl) metaDescEl.value = p.metaDescription || '';
 
       if (editorInstance) {
         editorInstance.setData(p.description || '');
@@ -1136,7 +1291,8 @@
       openModal('productModal');
     } catch(err) {
       console.error(err);
-      fetch('http://localhost:5055/api/log', { method: 'POST', body: err.stack }).catch(()=>null);
+      var logUrl = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' && window.location.port !== '7275' ? 'http://localhost:5055/api/log' : '/api/log';
+      fetch(logUrl, { method: 'POST', body: err.stack }).catch(()=>null);
       alert(err.message);
     } finally {
       isPopulating = false;
@@ -1297,7 +1453,12 @@
       status: productStatus,
       marketingBadges: (function () {
         var checkedRadio = f.querySelector('[name="marketingBadges"]:checked');
-        return checkedRadio ? (checkedRadio.value || null) : null;
+        if (!checkedRadio || !checkedRadio.value) return null;
+        if (checkedRadio.value === 'CUSTOM') {
+          var customVal = document.getElementById('custom-badge-input');
+          return customVal && customVal.value.trim() ? customVal.value.trim() : null;
+        }
+        return checkedRadio.value;
       })(),
       faqs: (function() {
         var clean = currentProdFaqs.filter(function(f){ return f.q && f.q.trim() !== '' && f.a && f.a.trim() !== ''; });
@@ -1306,6 +1467,7 @@
       usage: f.querySelector('[name="usage"]').value.trim() || null,
       commissionRate: parseFloat(f.querySelector('[name="commissionRate"]').value) || 10,
       shortDescription: f.querySelector('[name="shortDescription"]').value.trim() || null,
+      metaDescription: (function(){ var el = f.querySelector('[name="metaDescription"]'); return el ? (el.value.trim() || null) : null; })(),
       description: desc,
       slug: name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-'),
       gifts: (function () {
@@ -1419,6 +1581,45 @@
     var saveBtn = document.getElementById('btn-save-product');
     if (saveBtn) saveBtn.addEventListener('click', saveProduct);
 
+    var manageBadgeBtn = document.getElementById('btn-manage-badges');
+    if (manageBadgeBtn) {
+      manageBadgeBtn.addEventListener('click', function () {
+        renderBadgeManageModal();
+        openModal('badgeManageModal');
+      });
+    }
+
+    var addBadgeBtn = document.getElementById('btn-add-badge');
+    var newBadgeInput = document.getElementById('new-badge-input');
+    if (addBadgeBtn && newBadgeInput) {
+      var addNewBadgeAction = function () {
+        var val = newBadgeInput.value.trim();
+        if (!val) {
+          adminToast('Vui lòng nhập tên badge!', 'error');
+          return;
+        }
+        var list = getPresetBadges();
+        if (list.indexOf(val) !== -1) {
+          adminToast('Badge này đã có trong danh sách!', 'error');
+          return;
+        }
+        list.push(val);
+        savePresetBadges(list);
+        newBadgeInput.value = '';
+        renderBadgeManageModal();
+        var currentChecked = document.querySelector('#product-form [name="marketingBadges"]:checked');
+        renderPresetBadges(currentChecked ? currentChecked.value : '');
+        adminToast('Đã thêm badge mới vào danh sách!', 'success');
+      };
+      addBadgeBtn.addEventListener('click', addNewBadgeAction);
+      newBadgeInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          addNewBadgeAction();
+        }
+      });
+    }
+
     // Tab Switching Logic
     var tabBtns = document.querySelectorAll('.modal-tab-btn');
     tabBtns.forEach(function(btn) {
@@ -1511,7 +1712,7 @@
             adminToast('Đã chuyển sang ' + statusLabel, 'success');
             var p = products.find(function (x) { return x.id === id });
             if (p) p.status = newStatus;
-            renderTable();
+            fetchAndRenderTable();
           }).catch(function (err) {
             console.error(err);
             adminToast('Lỗi khi đổi trạng thái!', 'error');
@@ -1729,5 +1930,9 @@
     });
   });
 
-  document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 }());

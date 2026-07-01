@@ -33,7 +33,7 @@
         clone.setAttribute('aria-hidden', 'true');
 
         // Re-bind article click
-        clone.addEventListener('click', function() {
+        clone.addEventListener('click', function () {
           if (clone.dataset.slug) {
             window.location.href = '/' + clone.dataset.slug;
           }
@@ -72,7 +72,7 @@
       });
 
       // Bắt đầu setup logic điều khiển thông minh
-      requestAnimationFrame(function() {
+      requestAnimationFrame(function () {
         setupConveyorControls(conveyor, track);
       });
 
@@ -220,7 +220,7 @@
     article.dataset.slug = p.slug;
 
     var ribbonLeftHTML = '';
-    var totalStock = p.totalStock !== undefined ? p.totalStock : (p.variants ? p.variants.reduce(function(sum, v) { return sum + (v.stock || 0); }, 0) : 0);
+    var totalStock = p.totalStock !== undefined ? p.totalStock : (p.variants ? p.variants.reduce(function (sum, v) { return sum + (v.stock || 0); }, 0) : 0);
     if (totalStock <= 0) {
       ribbonLeftHTML = '<div class="product-card__ribbon product-card__ribbon--out">HẾT HÀNG</div>';
     } else if (p.status === 'inactive') {
@@ -231,7 +231,7 @@
 
     var basePrice = p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0);
     var oldPrice = p.baseOriginalPrice || (p.variants && p.variants.length ? p.variants[0].originalPrice : 0);
-    
+
     var ribbonRightHTML = '';
     if (oldPrice && basePrice && oldPrice > basePrice) {
       var percent = Math.round((1 - basePrice / oldPrice) * 100);
@@ -240,22 +240,22 @@
       }
     }
 
-    var pVariants = Array.isArray(p.variants) ? p.variants : []; var pImages = Array.isArray(p.images) ? p.images : (typeof p.images === "string" && p.images.trim() ? [p.images] : []); var allImages = pImages.concat(pVariants.reduce(function(acc, v) { var vImgs = Array.isArray(v.images) ? v.images : (typeof v.images === "string" && v.images.trim() ? [v.images] : []); return acc.concat(vImgs); }, [])).filter(function(img) { return typeof img === 'string' && img.trim() !== ''; });
+    var pVariants = Array.isArray(p.variants) ? p.variants : []; var pImages = Array.isArray(p.images) ? p.images : (typeof p.images === "string" && p.images.trim() ? [p.images] : []); var allImages = pImages.concat(pVariants.reduce(function (acc, v) { var vImgs = Array.isArray(v.images) ? v.images : (typeof v.images === "string" && v.images.trim() ? [v.images] : []); return acc.concat(vImgs); }, [])).filter(function (img) { return typeof img === 'string' && img.trim() !== ''; });
     var firstMedia = (allImages.length > 0) ? allImages[0] : 'assets/images/placeholder.webp';
     var isLocalVid = typeof firstMedia === 'string' && !!firstMedia.match(/\.(mp4|mov|avi|webm|ogg)$/i);
-    var isPlatformVid = typeof firstMedia === 'string' && (firstMedia.includes('youtube.com') || firstMedia.includes('youtu.be') || 
-                        firstMedia.includes('tiktok.com') || 
-                        firstMedia.includes('facebook.com') || firstMedia.includes('fb.watch'));
+    var isPlatformVid = typeof firstMedia === 'string' && (firstMedia.includes('youtube.com') || firstMedia.includes('youtu.be') ||
+      firstMedia.includes('tiktok.com') ||
+      firstMedia.includes('facebook.com') || firstMedia.includes('fb.watch'));
 
     var imgSrc = 'assets/images/placeholder.webp';
     if (firstMedia && !isLocalVid && !isPlatformVid) {
       imgSrc = firstMedia;
     } else if (allImages.length > 0) {
-      var foundImg = allImages.find(function(img) {
+      var foundImg = allImages.find(function (img) {
         var isLocV = !!img.match(/\.(mp4|mov|avi|webm|ogg)$/i);
-        var isPlatV = img.includes('youtube.com') || img.includes('youtu.be') || 
-                      img.includes('tiktok.com') || 
-                      img.includes('facebook.com') || img.includes('fb.watch');
+        var isPlatV = img.includes('youtube.com') || img.includes('youtu.be') ||
+          img.includes('tiktok.com') ||
+          img.includes('facebook.com') || img.includes('fb.watch');
         return !isLocV && !isPlatV;
       });
       if (foundImg) {
@@ -275,7 +275,7 @@
 
     var giftHTML = '';
     if (Array.isArray(p.gifts) && p.gifts.length > 0) {
-      var giftNames = p.gifts.map(function(g) { return g.name; }).join(' + ');
+      var giftNames = p.gifts.map(function (g) { return g.name; }).join(' + ');
       giftHTML = '<div class="product-card__gift" title="' + giftNames + '"><span class="gift-icon">🎁</span> Tặng: ' + giftNames + '</div>';
     }
 
@@ -286,22 +286,22 @@
     var pName = p.name ? String(p.name) : 'Sản phẩm';
     article.innerHTML =
       '<div class="product-card__media">' +
-        '<div class="product-card__badges">' + ribbonLeftHTML + ribbonRightHTML + '</div>' +
-        (isLocalVid 
-          ? '<video class="product-card__img" src="' + firstMedia + '" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;pointer-events:none;"></video>'
-          : '<img class="product-card__img" src="' + imgSrc + '" alt="' + pName.replace(/"/g, '&quot;') + '" loading="lazy" onerror="this.onerror=null; this.src=\'assets/images/placeholder.webp\';">') +
+      '<div class="product-card__badges">' + ribbonLeftHTML + ribbonRightHTML + '</div>' +
+      (isLocalVid
+        ? '<video class="product-card__img" src="' + firstMedia + '" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;pointer-events:none;"></video>'
+        : '<img class="product-card__img" src="' + imgSrc + '" alt="' + pName.replace(/"/g, '&quot;') + '" loading="lazy" onerror="this.onerror=null; this.src=\'assets/images/placeholder.webp\';">') +
       '</div>' +
       '<div class="product-card__body">' +
-        '<h3 class="product-card__name" title="' + pName + '">' + pName + '</h3>' +
-        '<div class="product-card__price-wrapper">' +
-          ((basePrice === 0)
-            ? '<a href="contact.html" class="price-contact" style="text-decoration:none;" onclick="event.stopPropagation();">LIÊN HỆ</a>'
-            : '<span class="product-card__price">' + window.formatVND(basePrice) + '</span>' +
-              (oldPrice && oldPrice > basePrice ? '<span class="product-card__original-price">' + window.formatVND(oldPrice) + '</span>' : '')
-          ) +
-        '</div>' +
-        giftHTML +
-        '<button class="product-card__btn-cta" onclick="window.location.href=\'/' + p.slug + '\'; event.preventDefault(); event.stopPropagation();">XEM CHI TIẾT</button>' +
+      '<h3 class="product-card__name" title="' + pName + '">' + pName + '</h3>' +
+      '<div class="product-card__price-wrapper">' +
+      ((basePrice <= 0)
+        ? '<a href="contact.html" class="price-contact" style="text-decoration:none;" onclick="event.stopPropagation();">LIÊN HỆ</a>'
+        : '<span class="product-card__price">' + window.formatVND(basePrice) + '</span>' +
+        (oldPrice && oldPrice > basePrice ? '<span class="product-card__original-price">' + window.formatVND(oldPrice) + '</span>' : '')
+      ) +
+      '</div>' +
+      giftHTML +
+      '<button class="product-card__btn-cta" onclick="window.location.href=\'/' + p.slug + '\'; event.preventDefault(); event.stopPropagation();">XEM CHI TIẾT</button>' +
       '</div>';
 
 

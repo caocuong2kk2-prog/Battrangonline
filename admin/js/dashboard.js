@@ -187,10 +187,15 @@ document.addEventListener('DOMContentLoaded',function(){
       AdminData.customers.load(),
       AdminData.analytics.getDashboardData(dates.startDate, dates.endDate)
     ]).then(function(res) {
-      var orders = res[0];
-      var products = res[1];
-      var customers = res[2];
+      var orders = res[0].data || res[0];
+      var products = res[1].data || res[1];
+      var customers = res[2].data || res[2];
       var analytics = res[3];
+
+      // Ensure they are arrays
+      if (!Array.isArray(orders)) orders = [];
+      if (!Array.isArray(products)) products = [];
+      if (!Array.isArray(customers)) customers = [];
 
       // ── KPI ──
       set('kpi-revenue', AdminData.fmtShort(analytics.totalRevenue));
@@ -229,7 +234,7 @@ document.addEventListener('DOMContentLoaded',function(){
         if (maxVal === 0) maxVal = 1;
 
         topEl.innerHTML = sortedProds.map(function(p, i) {
-          var qtyVal = p.salesQty;
+          var qtyVal = (p.salesQty !== undefined && p.salesQty > 0) ? p.salesQty : (p.totalSold || 0);
           var revVal = p.totalRevenue || 0;
           var stockVal = p.stock || 0;
           var pct = Math.round(((qtyVal > 0 ? qtyVal : p.basePrice) / maxVal) * 100);
@@ -238,13 +243,13 @@ document.addEventListener('DOMContentLoaded',function(){
             var isVid = !!p.firstImage.match(/\.(mp4|mov|avi|webm|ogg)$/i);
             var imagesJson = JSON.stringify(p.images || []).replace(/"/g, '&quot;');
             imgHtml = isVid 
-              ? '<video src="' + p.firstImage + '" data-images="' + imagesJson + '" class="zoomable" style="width:48px;height:48px;border-radius:6px;object-fit:cover;margin-right:12px;cursor:pointer;" muted></video>'
-              : '<img src="' + p.firstImage + '" data-images="' + imagesJson + '" class="zoomable" style="width:48px;height:48px;border-radius:6px;object-fit:cover;margin-right:12px;cursor:pointer;"/>';
+              ? '<video src="' + p.firstImage + '" data-images="' + imagesJson + '" class="zoomable" style="width:48px;height:48px;flex-shrink:0;border-radius:6px;object-fit:cover;margin-right:12px;cursor:pointer;" muted></video>'
+              : '<img src="' + p.firstImage + '" data-images="' + imagesJson + '" class="zoomable" style="width:48px;height:48px;flex-shrink:0;border-radius:6px;object-fit:cover;margin-right:12px;cursor:pointer;"/>';
           } else {
-            imgHtml = '<div style="width:48px;height:48px;border-radius:6px;background:#f5f5f5;margin-right:12px;display:flex;align-items:center;justify-content:center;font-size:20px;">🏺</div>';
+            imgHtml = '<div style="width:48px;height:48px;flex-shrink:0;border-radius:6px;background:#f5f5f5;margin-right:12px;display:flex;align-items:center;justify-content:center;font-size:20px;">🏺</div>';
           }
           
-          var qtyHtml = qtyVal > 0 ? '<span style="color:var(--success);font-size:var(--fs-sm);font-weight:600">' + qtyVal + ' đã bán</span>' : '<span style="color:var(--text-muted);font-size:var(--fs-sm)">Chưa bán được</span>';
+          var qtyHtml = qtyVal > 0 ? '<span style="color:var(--success);font-size:var(--fs-sm);font-weight:600">' + qtyVal + ' đã bán</span>' : '<span style="color:var(--accent);font-size:var(--fs-sm);font-weight:600">🔥 Nổi bật</span>';
           var revHtml = revVal > 0 ? '<div style="font-weight:700;color:var(--accent);font-size:var(--fs-md);">' + AdminData.fmt(revVal) + '</div>' : '<div style="font-weight:600;color:var(--text-main);font-size:var(--fs-md);">' + AdminData.fmt(p.basePrice) + '</div>';
           var stockHtml = stockVal > 0 ? '<span style="color:var(--text-muted);font-size:var(--fs-xs)">Kho: ' + stockVal + '</span>' : '<span style="color:var(--danger);font-size:var(--fs-xs);font-weight:600">Hết hàng</span>';
           var nameHtml = escapeHTML(p.name);
@@ -255,15 +260,15 @@ document.addEventListener('DOMContentLoaded',function(){
 
           var skuHtml = p.sku ? ' &bull; <span style="color:var(--text-main); font-weight: 500;">Mã SP: ' + p.sku + '</span>' : '';
 
-          return '<div class="top-product-item" style="align-items:center;padding:var(--sp-3);border-bottom:1px solid var(--border-color);">' +
-          '<div class="top-product-item__rank" style="font-size:18px;font-weight:700;color:var(--text-muted);width:24px;text-align:center;">' + (i + 1) + '</div>' +
+          return '<div class="top-product-item" style="display:flex;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);gap:12px;">' +
+          '<div class="top-product-item__rank" style="font-size:16px;font-weight:700;color:var(--text-muted);width:24px;flex-shrink:0;text-align:center;">' + (i + 1) + '</div>' +
           imgHtml +
-            '<div class="top-product-item__info" style="flex:1">' +
-            '<div class="top-product-item__name" style="font-weight:600;margin-bottom:2px;">' + nameHtml + '</div>' +
-            '<div class="top-product-item__cat" style="font-size:var(--fs-xs);color:var(--text-muted);margin-bottom:6px;">' + p.category + skuHtml + ' &bull; ' + stockHtml + '</div>' +
-            '<div class="progress-bar" style="height:4px;background:var(--border-color);border-radius:2px;overflow:hidden;"><div class="progress-bar__fill" style="width:' + pct + '%;background:var(--primary);height:100%;"></div></div>' +
+            '<div class="top-product-item__info" style="flex:1 1 0%;min-width:0;margin-right:8px;">' +
+            '<div class="top-product-item__name" style="font-weight:600;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + nameHtml + '</div>' +
+            '<div class="top-product-item__cat" style="font-size:12px;color:var(--text-muted);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + escapeHTML(p.category + (p.sku ? ' - Mã SP: ' + p.sku : '')) + '">' + p.category + skuHtml + ' &bull; ' + stockHtml + '</div>' +
+            '<div class="progress-bar" style="height:4px;background:rgba(0,0,0,0.06);border-radius:2px;overflow:hidden;"><div class="progress-bar__fill" style="width:' + pct + '%;background:var(--accent);height:100%;"></div></div>' +
             '</div>' +
-            '<div class="top-product-item__revenue" style="text-align:right;padding-left:var(--sp-4);">' + revHtml + '<div style="margin-top:2px;">' + qtyHtml + '</div></div>' +
+            '<div class="top-product-item__revenue" style="text-align:right;flex-shrink:0;white-space:nowrap;">' + revHtml + '<div style="margin-top:2px;">' + qtyHtml + '</div></div>' +
             '</div>';
         }).join('');
       }

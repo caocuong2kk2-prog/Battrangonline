@@ -224,11 +224,11 @@
 
   /* --- Phone: beacon pulse + ring-ring vibrate --- */
   .quick-contact-btn--phone {
-    background: #c8922a; /* Earthy gold/brown */
+    background: linear-gradient(135deg, #28a745, #1e7e34); /* Xanh lá gọi điện chuẩn nhận diện */
     color: #fff;
   }
   .quick-contact-btn--phone:hover {
-    background: #e74c3c;
+    background: linear-gradient(135deg, #34ce57, #28a745);
   }
 
   .quick-contact-btn--phone::before,
@@ -237,7 +237,7 @@
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: rgba(200, 146, 42, 0.55);
+    background: rgba(40, 167, 69, 0.55);
     opacity: 0;
     pointer-events: none;
     z-index: -1;
@@ -245,7 +245,7 @@
   }
   .quick-contact-btn--phone:hover::before,
   .quick-contact-btn--phone:hover::after {
-    background: rgba(231, 76, 60, 0.55);
+    background: rgba(52, 206, 87, 0.65);
   }
 
   .quick-contact-btn--phone::before {
@@ -264,7 +264,7 @@
     animation: phoneVibrate 4s ease-in-out infinite;
   }
 
-  /* --- Zalo: full SVG icon --- */
+  /* --- Zalo: full SVG icon (Luôn hiển thị màu xanh chuẩn nhận diện) --- */
   .quick-contact-btn--zalo {
     background: transparent;
     padding: 0;
@@ -277,14 +277,14 @@
     display: block;
   }
   .zalo-bg-circle {
-    fill: #b87e1e; /* Earthy brown */
-    transition: fill 0.3s ease;
+    fill: url(#zaloGrad); /* Màu xanh Zalo chuẩn */
+    transition: filter 0.3s ease;
   }
   .quick-contact-btn--zalo:hover .zalo-bg-circle {
-    fill: url(#zaloGrad);
+    filter: brightness(1.1);
   }
 
-  /* --- Messenger: full SVG icon --- */
+  /* --- Messenger: full SVG icon (Luôn hiển thị màu gradient chuẩn) --- */
   .quick-contact-btn--messenger {
     background: transparent;
     padding: 0;
@@ -297,11 +297,11 @@
     display: block;
   }
   .mess-bg-circle {
-    fill: #8a5e10; /* Darker earthy brown */
-    transition: fill 0.3s ease;
+    fill: url(#messGrad); /* Màu gradient Messenger chuẩn */
+    transition: filter 0.3s ease;
   }
   .quick-contact-btn--messenger:hover .mess-bg-circle {
-    fill: url(#messGrad);
+    filter: brightness(1.1);
   }
 
   /* ===== KEYFRAMES ===== */
@@ -410,21 +410,21 @@
   /* ===== MOBILE RESPONSIVENESS ===== */
   @media (max-width: 768px) {
     .quick-contact-widget {
-      bottom: 90px; /* Push up above sticky add to cart */
-      right: 12px;
-      gap: 10px;
+      bottom: 85px; /* Push up above sticky add to cart */
+      right: 8px; /* Ép sát lề phải hơn */
+      gap: 8px; /* Giảm khoảng cách giữa các nút */
     }
     .quick-contact-btn, #back-to-top {
-      width: 46px;
-      height: 46px;
+      width: 38px; /* Thu nhỏ nút Zalo/Phone/Mess */
+      height: 38px;
     }
     .quick-contact-btn--phone .btn-icon {
-      width: 22px;
-      height: 22px;
+      width: 18px; /* Thu nhỏ icon bên trong */
+      height: 18px;
     }
     .quick-contact-btn--zalo svg, .quick-contact-btn--messenger svg {
-      width: 46px;
-      height: 46px;
+      width: 38px;
+      height: 38px;
     }
   }
 

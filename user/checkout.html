@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
   <meta name="description"
     content="Thanh toán đơn hàng của bạn – Phúc Gia Tiên. Nhập thông tin giao nhận hàng thủ công Bát Tràng cao cấp.">
   <title>Thanh Toán Đơn Hàng – Phúc Gia Tiên</title>
@@ -764,8 +765,9 @@
 
           if (!name) { setFieldError('group-name', true); hasError = true; }
 
-          var phoneRegex = /^[0-9\s\-\+\(\)]{9,15}$/;
-          if (!phone || !phoneRegex.test(phone)) { setFieldError('group-phone', true); hasError = true; }
+          var digitsOnly = phone.replace(/\D/g, '');
+          var isValidPhone = /^(0[35789][0-9]{8}|84[35789][0-9]{8})$/.test(digitsOnly);
+          if (!phone || !isValidPhone) { setFieldError('group-phone', true); hasError = true; }
 
           var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           if (email && !emailRegex.test(email)) { setFieldError('group-email', true); hasError = true; }
@@ -1217,3 +1219,4 @@
 </body>
 
 </html>
+

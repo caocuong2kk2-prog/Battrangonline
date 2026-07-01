@@ -165,7 +165,7 @@
       }
     }
     document.title = catName + ' Bát Tràng Cao Cấp – Phúc Gia Tiên';
-    
+
     var metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
       metaDesc.setAttribute('content', 'Khám phá các sản phẩm ' + catName.toLowerCase() + ' thủ công truyền thống Bát Tràng tại Phúc Gia Tiên. Chất lượng cao cấp nung ở 1.200 độ C.');
@@ -225,7 +225,7 @@
                 hasActiveChildInTree = true;
               }
 
-              btn.addEventListener('click', function(e) {
+              btn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 ul.classList.toggle('open');
@@ -243,11 +243,11 @@
 
         // Use counts directly from categories tree
         var links = catSidebar.querySelectorAll('a');
-        
+
         function findCategoryById(categories, id) {
           if (id === 'all') {
             var sum = 0;
-            categories.forEach(function(c) {
+            categories.forEach(function (c) {
               if (c.id !== 'all') sum += (c.productCount || 0);
             });
             return { productCount: sum };
@@ -263,7 +263,7 @@
           return null;
         }
 
-        links.forEach(function(a) {
+        links.forEach(function (a) {
           var val = a.dataset.value;
           var catObj = findCategoryById(filters.categories, val);
           var cnt = catObj ? (catObj.productCount || 0) : 0;
@@ -281,12 +281,12 @@
         // Only run toggle logic if it's not already initialized
         if (!sidebarTitle.hasAttribute('data-toggle-initialized')) {
           sidebarTitle.setAttribute('data-toggle-initialized', 'true');
-          sidebarTitle.addEventListener('click', function() {
+          sidebarTitle.addEventListener('click', function () {
             if (window.innerWidth <= 900) {
               sidebar.classList.toggle('is-open');
             }
           });
-          
+
           // If a category is selected (not 'all'), auto-open the accordion on load
           if (state.category !== 'all') {
             sidebar.classList.add('is-open');
@@ -299,74 +299,74 @@
       if (sizePills) {
         setActivePill(sizePills, state.size);
       }
-        var qualityContainer = document.getElementById('quality-checkboxes');
-        if (qualityContainer) {
-          qualityContainer.innerHTML = '';
-          var selectedQualities = state.quality === 'all' ? [] : state.quality.split(',');
-          filters.qualities.forEach(function (q) {
-            var label = document.createElement('label');
-            label.className = 'custom-checkbox';
-            label.innerHTML = '<input type="checkbox" value="' + q.id + '"' + (selectedQualities.indexOf(String(q.id)) > -1 ? ' checked' : '') + '><span class="checkmark"></span>' + q.name;
-            qualityContainer.appendChild(label);
-          });
+      var qualityContainer = document.getElementById('quality-checkboxes');
+      if (qualityContainer) {
+        qualityContainer.innerHTML = '';
+        var selectedQualities = state.quality === 'all' ? [] : state.quality.split(',');
+        filters.qualities.forEach(function (q) {
+          var label = document.createElement('label');
+          label.className = 'custom-checkbox';
+          label.innerHTML = '<input type="checkbox" value="' + q.id + '"' + (selectedQualities.indexOf(String(q.id)) > -1 ? ' checked' : '') + '><span class="checkmark"></span>' + q.name;
+          qualityContainer.appendChild(label);
+        });
 
-          qualityContainer.addEventListener('change', function(e) {
-            if (e.target.type === 'checkbox') {
-              var checkedBoxes = qualityContainer.querySelectorAll('input:checked');
-              var selectedVals = [];
-              checkedBoxes.forEach(function(cb) { selectedVals.push(cb.value); });
-              state.quality = selectedVals.length ? selectedVals.join(',') : 'all';
-              updateApplyButtonCount();
-            }
-          });
-        }
+        qualityContainer.addEventListener('change', function (e) {
+          if (e.target.type === 'checkbox') {
+            var checkedBoxes = qualityContainer.querySelectorAll('input:checked');
+            var selectedVals = [];
+            checkedBoxes.forEach(function (cb) { selectedVals.push(cb.value); });
+            state.quality = selectedVals.length ? selectedVals.join(',') : 'all';
+            updateApplyButtonCount();
+          }
+        });
+      }
 
-        // Populate Segment/ProductType checkboxes
-        var segmentContainer = document.getElementById('segment-checkboxes');
-        if (segmentContainer && filters.productTypes) {
-          segmentContainer.innerHTML = '';
-          var selectedTypes = state.productType === 'all' ? [] : state.productType.split(',');
-          filters.productTypes.forEach(function (t) {
-            var label = document.createElement('label');
-            label.className = 'custom-checkbox';
-            label.innerHTML = '<input type="checkbox" value="' + t.id + '"' + (selectedTypes.indexOf(String(t.id)) > -1 ? ' checked' : '') + '><span class="checkmark"></span>' + t.name;
-            segmentContainer.appendChild(label);
-          });
+      // Populate Segment/ProductType checkboxes
+      var segmentContainer = document.getElementById('segment-checkboxes');
+      if (segmentContainer && filters.productTypes) {
+        segmentContainer.innerHTML = '';
+        var selectedTypes = state.productType === 'all' ? [] : state.productType.split(',');
+        filters.productTypes.forEach(function (t) {
+          var label = document.createElement('label');
+          label.className = 'custom-checkbox';
+          label.innerHTML = '<input type="checkbox" value="' + t.id + '"' + (selectedTypes.indexOf(String(t.id)) > -1 ? ' checked' : '') + '><span class="checkmark"></span>' + t.name;
+          segmentContainer.appendChild(label);
+        });
 
-          // Add event listener for segment checkboxes
-          segmentContainer.addEventListener('change', function(e) {
-            if (e.target.type === 'checkbox') {
-              var checkedBoxes = segmentContainer.querySelectorAll('input:checked');
-              var selectedVals = [];
-              checkedBoxes.forEach(function(cb) { selectedVals.push(cb.value); });
-              state.productType = selectedVals.length ? selectedVals.join(',') : 'all';
-              updateApplyButtonCount();
-            }
-          });
-        }
+        // Add event listener for segment checkboxes
+        segmentContainer.addEventListener('change', function (e) {
+          if (e.target.type === 'checkbox') {
+            var checkedBoxes = segmentContainer.querySelectorAll('input:checked');
+            var selectedVals = [];
+            checkedBoxes.forEach(function (cb) { selectedVals.push(cb.value); });
+            state.productType = selectedVals.length ? selectedVals.join(',') : 'all';
+            updateApplyButtonCount();
+          }
+        });
+      }
 
-        // Populate Material checkboxes
-        var materialContainer = document.getElementById('material-checkboxes');
-        if (materialContainer && filters.materials) {
-          materialContainer.innerHTML = '';
-          var selectedMaterials = state.material === 'all' ? [] : state.material.split(',');
-          filters.materials.forEach(function (m) {
-            var label = document.createElement('label');
-            label.className = 'custom-checkbox';
-            label.innerHTML = '<input type="checkbox" value="' + m.id + '"' + (selectedMaterials.indexOf(String(m.id)) > -1 ? ' checked' : '') + '><span class="checkmark"></span>' + m.name;
-            materialContainer.appendChild(label);
-          });
+      // Populate Material checkboxes
+      var materialContainer = document.getElementById('material-checkboxes');
+      if (materialContainer && filters.materials) {
+        materialContainer.innerHTML = '';
+        var selectedMaterials = state.material === 'all' ? [] : state.material.split(',');
+        filters.materials.forEach(function (m) {
+          var label = document.createElement('label');
+          label.className = 'custom-checkbox';
+          label.innerHTML = '<input type="checkbox" value="' + m.id + '"' + (selectedMaterials.indexOf(String(m.id)) > -1 ? ' checked' : '') + '><span class="checkmark"></span>' + m.name;
+          materialContainer.appendChild(label);
+        });
 
-          materialContainer.addEventListener('change', function(e) {
-            if (e.target.type === 'checkbox') {
-              var checkedBoxes = materialContainer.querySelectorAll('input:checked');
-              var selectedVals = [];
-              checkedBoxes.forEach(function(cb) { selectedVals.push(cb.value); });
-              state.material = selectedVals.length ? selectedVals.join(',') : 'all';
-              updateApplyButtonCount();
-            }
-          });
-        }
+        materialContainer.addEventListener('change', function (e) {
+          if (e.target.type === 'checkbox') {
+            var checkedBoxes = materialContainer.querySelectorAll('input:checked');
+            var selectedVals = [];
+            checkedBoxes.forEach(function (cb) { selectedVals.push(cb.value); });
+            state.material = selectedVals.length ? selectedVals.join(',') : 'all';
+            updateApplyButtonCount();
+          }
+        });
+      }
 
       // Only init custom select for the sort dropdown
       initCustomSelects();
@@ -536,7 +536,7 @@
       if (countEl) {
         countEl.textContent = 'Hiển thị ' + res.data.length + '/' + state.total + ' sản phẩm';
       }
-      
+
       // Update apply button in sidebar
       var applyBtn = document.getElementById('btn-apply-filters');
       if (applyBtn) {
@@ -556,8 +556,10 @@
       var totalPages = Math.ceil(state.total / state.limit);
 
       res.data.forEach(function (p, i) {
-        var card = buildProductCard(p, i);
-        grid.appendChild(card);
+        if (typeof window.buildProductCard === 'function') {
+          var card = window.buildProductCard(p, i);
+          grid.appendChild(card);
+        }
       });
 
       renderPagination(paginationEl, state.page, totalPages);
@@ -574,7 +576,7 @@
   function updateApplyButtonCount() {
     var applyBtn = document.getElementById('btn-apply-filters');
     if (!applyBtn) return;
-    
+
     applyBtn.textContent = 'Đang tính...';
 
     PhucGiaTienAPI.getProducts({
@@ -592,136 +594,9 @@
       limit: 1, // Only need total count
     }).then(function (res) {
       applyBtn.textContent = 'Áp dụng (' + res.total + ' sản phẩm)';
-    }).catch(function() {
+    }).catch(function () {
       applyBtn.textContent = 'Áp dụng';
     });
-  }
-
-  function buildProductCard(p, i) {
-    var article = document.createElement('article');
-    article.className = 'product-card reveal';
-    article.dataset.delay = String(i * 80);
-
-    var ribbonLeftHTML = '';
-    var totalStock = p.totalStock !== undefined ? p.totalStock : (p.variants ? p.variants.reduce(function(sum, v) { return sum + (v.stock || 0); }, 0) : 0);
-    if (totalStock <= 0) {
-      ribbonLeftHTML = '<div class="product-card__ribbon product-card__ribbon--out">HẾT HÀNG</div>';
-    } else if (p.status === 'inactive') {
-      ribbonLeftHTML = '<div class="product-card__ribbon product-card__ribbon--out" style="background:#1A0F05; color:#ffffff;">NGỪNG BÁN</div>';
-    } else if (p.badge) {
-      ribbonLeftHTML = '<div class="product-card__ribbon product-card__ribbon--new">' + p.badge + '</div>';
-    }
-
-    var basePrice = p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0);
-    var oldPrice = p.baseOriginalPrice || (p.variants && p.variants.length ? p.variants[0].originalPrice : 0);
-    
-    var ribbonRightHTML = '';
-    if (oldPrice && basePrice && oldPrice > basePrice) {
-      var percent = Math.round((1 - basePrice / oldPrice) * 100);
-      if (percent > 0) {
-        ribbonRightHTML = '<div class="product-card__discount">-' + percent + '%</div>';
-      }
-    }
-
-    var pVariants = Array.isArray(p.variants) ? p.variants : []; var pImages = Array.isArray(p.images) ? p.images : (typeof p.images === "string" && p.images.trim() ? [p.images] : []); var allImages = pImages.concat(pVariants.reduce(function(acc, v) { var vImgs = Array.isArray(v.images) ? v.images : (typeof v.images === "string" && v.images.trim() ? [v.images] : []); return acc.concat(vImgs); }, [])).filter(function(img) { return typeof img === 'string' && img.trim() !== ''; });
-    var firstMedia = (allImages.length > 0) ? allImages[0] : 'assets/images/placeholder.webp';
-    var isLocalVid = typeof firstMedia === 'string' && !!firstMedia.match(/\.(mp4|mov|avi|webm|ogg)$/i);
-    var isPlatformVid = typeof firstMedia === 'string' && (firstMedia.includes('youtube.com') || firstMedia.includes('youtu.be') || 
-                        firstMedia.includes('tiktok.com') || 
-                        firstMedia.includes('facebook.com') || firstMedia.includes('fb.watch'));
-
-    var imgSrc = 'assets/images/placeholder.webp';
-    if (firstMedia && !isLocalVid && !isPlatformVid) {
-      imgSrc = firstMedia;
-    } else if (allImages.length > 0) {
-      var foundImg = allImages.find(function(img) {
-        var isLocV = !!img.match(/\.(mp4|mov|avi|webm|ogg)$/i);
-        var isPlatV = img.includes('youtube.com') || img.includes('youtu.be') || 
-                      img.includes('tiktok.com') || 
-                      img.includes('facebook.com') || img.includes('fb.watch');
-        return !isLocV && !isPlatV;
-      });
-      if (foundImg) {
-        imgSrc = foundImg;
-      } else if (isPlatformVid) {
-        var ytMatch = firstMedia.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/))([A-Za-z0-9_-]{11})/);
-        var ytId = (ytMatch && ytMatch[1]) ? ytMatch[1] : '';
-        if (ytId) {
-          imgSrc = 'https://img.youtube.com/vi/' + ytId + '/hqdefault.jpg';
-        } else if (firstMedia.includes('tiktok.com')) {
-          imgSrc = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="%23000"/><text x="50%" y="50%" fill="%23fff" font-size="40" font-family="sans-serif" text-anchor="middle" dy=".3em">TikTok Video</text></svg>';
-        } else if (firstMedia.includes('facebook.com') || firstMedia.includes('fb.watch')) {
-          imgSrc = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400"><rect width="100%" height="100%" fill="%231877f2"/><text x="50%" y="50%" fill="%23fff" font-size="40" font-family="sans-serif" text-anchor="middle" dy=".3em">Facebook Video</text></svg>';
-        }
-      }
-    }
-
-    var giftHTML = '';
-    if (Array.isArray(p.gifts) && p.gifts.length > 0) {
-      var giftNames = p.gifts.map(function(g) { return g.name; }).join(' + ');
-      giftHTML = '<div class="product-card__gift" title="' + giftNames + '"><span class="gift-icon">🎁</span> Tặng: ' + giftNames + '</div>';
-    }
-
-    var pSafe = JSON.stringify({
-      id: p.id, slug: p.slug, name: p.name, price: p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0), images: allImages
-    }).replace(/'/g, '&#39;');
-
-    var pName = p.name ? String(p.name) : 'Sản phẩm';
-    article.innerHTML =
-      '<div class="product-card__media">' +
-        '<div class="product-card__badges">' + ribbonLeftHTML + ribbonRightHTML + '</div>' +
-        (isLocalVid 
-          ? '<video class="product-card__img" src="' + firstMedia + '" autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;pointer-events:none;"></video>'
-          : '<img class="product-card__img" src="' + imgSrc + '" alt="' + pName.replace(/"/g, '&quot;') + '" loading="lazy" onerror="this.onerror=null; this.src=\'assets/images/placeholder.webp\';">') +
-      '</div>' +
-      '<div class="product-card__body">' +
-        '<h3 class="product-card__name" title="' + pName + '">' + pName + '</h3>' +
-        '<div class="product-card__price-wrapper">' +
-          ((basePrice === 0)
-            ? '<a href="contact.html" class="price-contact" style="text-decoration:none;" onclick="event.stopPropagation();">LIÊN HỆ</a>'
-            : '<span class="product-card__price">' + window.formatVND(basePrice) + '</span>' +
-              (oldPrice && oldPrice > basePrice ? '<span class="product-card__original-price">' + window.formatVND(oldPrice) + '</span>' : '')
-          ) +
-        '</div>' +
-        giftHTML +
-        '<button class="product-card__btn-cta" onclick="window.location.href=\'/' + p.slug + '\'; event.preventDefault(); event.stopPropagation();">XEM CHI TIẾT</button>' +
-      '</div>';
-
-
-
-    // Bind event for Details (click anywhere on the media or details button)
-    var mediaEl = article.querySelector('.product-card__media');
-    if (mediaEl) {
-      mediaEl.addEventListener('click', function () {
-        window.location.href = '/' + p.slug;
-      });
-    }
-
-    var detBtn = article.querySelector('.product-card__btn-detail');
-    if (detBtn) {
-      detBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        window.location.href = '/' + p.slug;
-      });
-    }
-
-    var ctaBtn = article.querySelector('.product-card__btn-cta');
-    if (ctaBtn) {
-      ctaBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        window.location.href = '/' + p.slug;
-      });
-    }
-
-    // Click anywhere on body leads to detail
-    var bodyEl = article.querySelector('.product-card__body');
-    if (bodyEl) {
-      bodyEl.addEventListener('click', function () {
-        window.location.href = '/' + p.slug;
-      });
-    }
-
-    return article;
   }
 
   // -- Pagination --
@@ -771,33 +646,33 @@
     var container = document.getElementById('active-filters-container');
     var tagsList = document.getElementById('active-tags-list');
     var badge = document.getElementById('advanced-filter-badge');
-    
+
     var sidebarContainer = document.getElementById('sidebar-active-tags-container');
     var sidebarTagsList = document.getElementById('sidebar-active-tags-list');
-    
+
     if (!container || !tagsList) return;
-    
+
     tagsList.innerHTML = '';
     if (sidebarTagsList) sidebarTagsList.innerHTML = '';
-    
+
     var activeCount = 0;
 
     // Helper to create tag
     function createTag(label, type, value) {
-      var tagHTML = label + ' <span class="active-tag-close" data-type="'+type+'" data-value="'+value+'">&times;</span>';
-      
+      var tagHTML = label + ' <span class="active-tag-close" data-type="' + type + '" data-value="' + value + '">&times;</span>';
+
       var tag = document.createElement('div');
       tag.className = 'active-tag';
       tag.innerHTML = tagHTML;
       tagsList.appendChild(tag);
-      
+
       if (sidebarTagsList) {
         var sidebarTag = document.createElement('div');
         sidebarTag.className = 'active-tag';
         sidebarTag.innerHTML = tagHTML;
         sidebarTagsList.appendChild(sidebarTag);
       }
-      
+
       activeCount++;
     }
 
@@ -808,7 +683,7 @@
 
     // Price tag
     if (state.isPriceFiltered) {
-      createTag(window.formatVND(state.minPrice) + ' - ' + (state.maxPrice >= 50000000 ? window.formatVND(state.maxPrice)+'+' : window.formatVND(state.maxPrice)), 'price', 'all');
+      createTag(window.formatVND(state.minPrice) + ' - ' + (state.maxPrice >= 50000000 ? window.formatVND(state.maxPrice) + '+' : window.formatVND(state.maxPrice)), 'price', 'all');
     }
 
     // Size tag
@@ -826,8 +701,8 @@
     // Quality tag (can be multiple)
     if (state.quality !== 'all') {
       var qs = state.quality.split(',');
-      qs.forEach(function(q) {
-        var cb = document.querySelector('#quality-checkboxes input[value="'+q+'"]');
+      qs.forEach(function (q) {
+        var cb = document.querySelector('#quality-checkboxes input[value="' + q + '"]');
         if (cb && cb.nextElementSibling && cb.nextElementSibling.nextSibling) {
           createTag(cb.nextElementSibling.nextSibling.textContent, 'quality', q);
         }
@@ -837,8 +712,8 @@
     // Material tag (can be multiple)
     if (state.material !== 'all') {
       var ms = state.material.split(',');
-      ms.forEach(function(m) {
-        var cb = document.querySelector('#material-checkboxes input[value="'+m+'"]');
+      ms.forEach(function (m) {
+        var cb = document.querySelector('#material-checkboxes input[value="' + m + '"]');
         if (cb && cb.nextElementSibling && cb.nextElementSibling.nextSibling) {
           createTag(cb.nextElementSibling.nextSibling.textContent, 'material', m);
         }
@@ -848,8 +723,8 @@
     // Segment tag (can be multiple)
     if (state.productType !== 'all') {
       var pts = state.productType.split(',');
-      pts.forEach(function(pt) {
-        var cb = document.querySelector('#segment-checkboxes input[value="'+pt+'"]');
+      pts.forEach(function (pt) {
+        var cb = document.querySelector('#segment-checkboxes input[value="' + pt + '"]');
         if (cb && cb.nextElementSibling && cb.nextElementSibling.nextSibling) {
           createTag(cb.nextElementSibling.nextSibling.textContent, 'productType', pt);
         }
@@ -858,7 +733,7 @@
 
     // Status tag
     if (state.status !== 'all') {
-      var statusBtn = document.querySelector('#status-pills .filter-pill[data-value="'+state.status+'"]');
+      var statusBtn = document.querySelector('#status-pills .filter-pill[data-value="' + state.status + '"]');
       if (statusBtn) createTag(statusBtn.textContent, 'status', 'all');
     }
 
@@ -878,11 +753,11 @@
   }
 
   // Bind active tag removal
-  document.addEventListener('click', function(e) {
+  document.addEventListener('click', function (e) {
     if (e.target.classList.contains('active-tag-close')) {
       var type = e.target.dataset.type;
       var value = e.target.dataset.value;
-      
+
       if (type === 'search') {
         state.searchQuery = '';
         var inlineInput = document.getElementById('inline-search-input');
@@ -899,26 +774,26 @@
         state.status = 'all';
         setActivePill(document.getElementById('status-pills'), 'all');
       } else if (type === 'quality') {
-        var qs = state.quality.split(',').filter(function(q) { return q !== value; });
+        var qs = state.quality.split(',').filter(function (q) { return q !== value; });
         state.quality = qs.length ? qs.join(',') : 'all';
-        var cb = document.querySelector('#quality-checkboxes input[value="'+value+'"]');
+        var cb = document.querySelector('#quality-checkboxes input[value="' + value + '"]');
         if (cb) cb.checked = false;
       } else if (type === 'material') {
-        var ms = state.material.split(',').filter(function(m) { return m !== value; });
+        var ms = state.material.split(',').filter(function (m) { return m !== value; });
         state.material = ms.length ? ms.join(',') : 'all';
-        var cb = document.querySelector('#material-checkboxes input[value="'+value+'"]');
+        var cb = document.querySelector('#material-checkboxes input[value="' + value + '"]');
         if (cb) cb.checked = false;
       } else if (type === 'productType') {
-        var pts = state.productType.split(',').filter(function(pt) { return pt !== value; });
+        var pts = state.productType.split(',').filter(function (pt) { return pt !== value; });
         state.productType = pts.length ? pts.join(',') : 'all';
-        var cb = document.querySelector('#segment-checkboxes input[value="'+value+'"]');
+        var cb = document.querySelector('#segment-checkboxes input[value="' + value + '"]');
         if (cb) cb.checked = false;
       }
-      
+
       state.page = 1;
       loadProducts();
     }
-    
+
     // Clear all
     if (e.target.id === 'btn-clear-all-filters') {
       state.searchQuery = '';
@@ -931,14 +806,38 @@
 
   // -- Handle UI events --
   function bindFilters() {
-    // Inline Search
+    // Inline Search & Live Autocomplete Dropdown
     var inlineSearchInput = document.getElementById('inline-search-input');
     var inlineSearchBtn = document.getElementById('inline-search-btn');
+    var liveDropdown = document.getElementById('live-search-dropdown');
+    var searchTimeout = null;
+
+    function removeAccentsHelper(str) {
+      if (!str) return '';
+      return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+    }
+
+    function highlightMatch(text, query) {
+      if (!query) return text;
+      var regex = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+      return text.replace(regex, '<mark>$1</mark>');
+    }
+
+    function flattenCategoriesTree(cats, res) {
+      res = res || [];
+      (cats || []).forEach(function (c) {
+        if (c.id !== 'all') res.push(c);
+        if (c.children && c.children.length) flattenCategoriesTree(c.children, res);
+      });
+      return res;
+    }
 
     function executeInlineSearch() {
       if (!inlineSearchInput) return;
       var val = inlineSearchInput.value.trim();
       state.searchQuery = val;
+
+      if (liveDropdown) liveDropdown.classList.remove('show');
 
       state.page = 1;
       loadProducts();
@@ -948,16 +847,119 @@
       inlineSearchBtn.addEventListener('click', executeInlineSearch);
     }
     if (inlineSearchInput) {
-      inlineSearchInput.addEventListener('keydown', function(e) {
+      inlineSearchInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
           e.preventDefault();
           executeInlineSearch();
+        } else if (e.key === 'Escape' && liveDropdown) {
+          liveDropdown.classList.remove('show');
         }
       });
       // Populate if there's already a query in state
       if (state.searchQuery) {
         inlineSearchInput.value = state.searchQuery;
       }
+    }
+
+    if (inlineSearchInput && liveDropdown) {
+      inlineSearchInput.addEventListener('input', function (e) {
+        var query = e.target.value.trim();
+        clearTimeout(searchTimeout);
+
+        if (!query || query.length < 1) {
+          liveDropdown.classList.remove('show');
+          liveDropdown.innerHTML = '';
+          return;
+        }
+
+        searchTimeout = setTimeout(function () {
+          var normQuery = removeAccentsHelper(query).toLowerCase();
+
+          // 1. Fetch matching products
+          if (window.PhucGiaTienAPI && typeof window.PhucGiaTienAPI.getProducts === 'function') {
+            window.PhucGiaTienAPI.getProducts({ searchQuery: query, limit: 6 }).then(function (res) {
+              var items = (res && res.data) ? res.data : (Array.isArray(res) ? res : []);
+              renderLiveDropdown(query, items.slice(0, 6));
+            }).catch(function () {
+              renderLiveDropdown(query, []);
+            });
+          } else {
+            renderLiveDropdown(query, []);
+          }
+        }, 220);
+      });
+
+      function renderLiveDropdown(query, items) {
+        if (items.length === 0) {
+          liveDropdown.innerHTML = '<div class="live-search-empty">🔍 Không tìm thấy sản phẩm nào phù hợp với "<strong>' + query + '</strong>".</div>';
+          liveDropdown.classList.add('show');
+          return;
+        }
+
+        var html = '';
+
+        // Products section
+        if (items.length > 0) {
+          html += '<div class="live-search-section">';
+          html += '<div class="live-search-section__title">🔥 Sản Phẩm Đề Xuất</div>';
+          html += '<div class="live-search-items">';
+          items.forEach(function (p) {
+            var pVariants = Array.isArray(p.variants) ? p.variants : [];
+            var pImages = Array.isArray(p.images) ? p.images : (typeof p.images === "string" && p.images.trim() ? [p.images] : []);
+            var allImages = pImages.concat(pVariants.reduce(function (acc, v) {
+              var vImgs = Array.isArray(v.images) ? v.images : (typeof v.images === "string" && v.images.trim() ? [v.images] : []);
+              return acc.concat(vImgs);
+            }, [])).filter(function (img) { return typeof img === 'string' && img.trim() !== ''; });
+            
+            var imgUrl = (allImages.length > 0) ? allImages[0] : 'assets/images/placeholder.webp';
+            if (imgUrl && !imgUrl.startsWith('http') && !imgUrl.startsWith('/')) imgUrl = '/' + imgUrl;
+            var priceStr = p.basePrice ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p.basePrice) : 'Liên hệ';
+            var skuStr = p.sku || ('SP-' + String(p.id).padStart(4, '0'));
+            var targetUrl = 'product-detail.html?slug=' + (p.slug || p.id);
+
+            html += '<a href="' + targetUrl + '" class="live-search-item">';
+            html += '<img src="' + imgUrl + '" alt="" class="live-search-item__img" onerror="this.src=\'assets/images/placeholder.webp\'">';
+            html += '<div class="live-search-item__info">';
+            html += '<div class="live-search-item__name">' + highlightMatch(p.name, query) + '</div>';
+            html += '<div class="live-search-item__meta">';
+            html += '<span class="live-search-item__price">' + priceStr + '</span>';
+            html += '<span class="live-search-item__sku">' + skuStr + '</span>';
+            html += '</div></div></a>';
+          });
+          html += '</div></div>';
+        }
+
+        // Footer button
+        html += '<div class="live-search-footer">';
+        html += '<button type="button" class="live-search-footer__btn" id="live-search-view-all">Xem tất cả kết quả cho "' + query + '" ➔</button>';
+        html += '</div>';
+
+        liveDropdown.innerHTML = html;
+        liveDropdown.classList.add('show');
+
+        // Attach view all click handler
+        var viewAllBtn = liveDropdown.querySelector('#live-search-view-all');
+        if (viewAllBtn) {
+          viewAllBtn.addEventListener('click', function () {
+            liveDropdown.classList.remove('show');
+            executeInlineSearch();
+          });
+        }
+      }
+
+      // Hide dropdown when clicking outside
+      document.addEventListener('click', function (e) {
+        if (!e.target.closest('.inline-search')) {
+          liveDropdown.classList.remove('show');
+        }
+      });
+
+      // Show dropdown again on focus if query exists
+      inlineSearchInput.addEventListener('focus', function () {
+        if (inlineSearchInput.value.trim().length >= 1 && liveDropdown.innerHTML !== '') {
+          liveDropdown.classList.add('show');
+        }
+      });
     }
 
     // Category sidebar
@@ -982,7 +984,7 @@
         if (!pill) return;
         var val = pill.dataset.value;
         setActivePill(pricePills, val);
-        
+
         state.isPriceFiltered = true;
         if (val === 'all') {
           state.isPriceFiltered = false;
@@ -1035,10 +1037,10 @@
     var btnReset = document.getElementById('btn-reset-filters');
     var overlay = document.getElementById('advanced-filter-overlay');
     var sidebar = document.getElementById('advanced-filter-sidebar');
-    
+
     function closeSidebar() {
-      if(overlay) overlay.classList.remove('is-active');
-      if(sidebar) sidebar.classList.remove('is-active');
+      if (overlay) overlay.classList.remove('is-active');
+      if (sidebar) sidebar.classList.remove('is-active');
     }
 
     if (btnApply) {
@@ -1060,11 +1062,11 @@
         var sizePills = document.getElementById('size-pills');
         if (sizePills) setActivePill(sizePills, 'all');
         var qualityCheckboxes = document.querySelectorAll('#quality-checkboxes input[type="checkbox"]');
-        qualityCheckboxes.forEach(function(cb) { cb.checked = false; });
+        qualityCheckboxes.forEach(function (cb) { cb.checked = false; });
         var materialCheckboxes = document.querySelectorAll('#material-checkboxes input[type="checkbox"]');
-        materialCheckboxes.forEach(function(cb) { cb.checked = false; });
+        materialCheckboxes.forEach(function (cb) { cb.checked = false; });
         var segmentCheckboxes = document.querySelectorAll('#segment-checkboxes input[type="checkbox"]');
-        segmentCheckboxes.forEach(function(cb) { cb.checked = false; });
+        segmentCheckboxes.forEach(function (cb) { cb.checked = false; });
         var statusPills = document.getElementById('status-pills');
         if (statusPills) setActivePill(statusPills, 'all');
         if (pricePills) setActivePill(pricePills, 'all');
@@ -1148,9 +1150,9 @@
     };
     var cfg = configs[platform] || { bg: '#555', icon: '&#9654;', label: 'Video' };
     return '<div style="width:100%;height:100%;background:' + cfg.bg + ';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-sizing:border-box;">' +
-             '<div style="opacity:0.95">' + cfg.icon + '</div>' +
-             '<span style="color:#fff;font-size:8px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;opacity:0.9;">' + cfg.label + '</span>' +
-           '</div>';
+      '<div style="opacity:0.95">' + cfg.icon + '</div>' +
+      '<span style="color:#fff;font-size:8px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;opacity:0.9;">' + cfg.label + '</span>' +
+      '</div>';
   }
 
   function renderMediaHtml(src, isLightbox) {
@@ -1164,8 +1166,8 @@
         return '<video src="' + src + '" autoplay loop controls style="max-width:85vw; max-height:85vh; border-radius:8px; box-shadow: 0 4px 30px rgba(0,0,0,0.7); object-fit:contain; display:block;"></video>';
       } else {
         return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#000;background-image:url(' + src + ');background-size:cover;background-position:center;filter:blur(10px);" data-is-video="1">' +
-                 '<video class="product-gallery__main-img" id="gallery-main-media" src="' + src + '" autoplay loop muted playsinline controls style="width:100%;height:100%;object-fit:contain;border:none;"></video>' +
-               '</div>';
+          '<video class="product-gallery__main-img" id="gallery-main-media" src="' + src + '" autoplay loop muted playsinline controls style="width:100%;height:100%;object-fit:contain;border:none;"></video>' +
+          '</div>';
       }
     }
 
@@ -1174,14 +1176,14 @@
       if (!embedUrl) {
         if (isLightbox) {
           return '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:80vw;height:80vh;max-width:85vw;max-height:85vh;background:#111;color:#fff;border-radius:8px;box-shadow:0 4px 30px rgba(0,0,0,0.7);text-align:center;padding:20px;gap:20px;box-sizing:border-box;">' +
-                   '<span style="font-size:64px;">&#9654;&#65039;</span>' +
-                   '<a href="' + src + '" target="_blank" rel="noopener" style="color:#C8922A;font-size:20px;font-weight:700;text-decoration:underline;letter-spacing:0.02em;">Xem video thực tế trên ' + (platform === 'youtube' ? 'YouTube' : platform === 'tiktok' ? 'TikTok' : 'Facebook') + ' ↗</a>' +
-                 '</div>';
+            '<span style="font-size:64px;">&#9654;&#65039;</span>' +
+            '<a href="' + src + '" target="_blank" rel="noopener" style="color:#C8922A;font-size:20px;font-weight:700;text-decoration:underline;letter-spacing:0.02em;">Xem video thực tế trên ' + (platform === 'youtube' ? 'YouTube' : platform === 'tiktok' ? 'TikTok' : 'Facebook') + ' ↗</a>' +
+            '</div>';
         } else {
           return '<div class="gallery-iframe-wrap" id="gallery-main-media" data-is-video="1" style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:#111;color:#fff;text-align:center;padding:20px;gap:15px;box-sizing:border-box;">' +
-                   '<span style="font-size:48px;">&#9654;&#65039;</span>' +
-                   '<a href="' + src + '" target="_blank" rel="noopener" style="color:#C8922A;font-size:16px;font-weight:700;text-decoration:underline;">Xem video thực tế trên ' + (platform === 'youtube' ? 'YouTube' : platform === 'tiktok' ? 'TikTok' : 'Facebook') + ' ↗</a>' +
-                 '</div>';
+            '<span style="font-size:48px;">&#9654;&#65039;</span>' +
+            '<a href="' + src + '" target="_blank" rel="noopener" style="color:#C8922A;font-size:16px;font-weight:700;text-decoration:underline;">Xem video thực tế trên ' + (platform === 'youtube' ? 'YouTube' : platform === 'tiktok' ? 'TikTok' : 'Facebook') + ' ↗</a>' +
+            '</div>';
         }
       }
 
@@ -1201,8 +1203,8 @@
         return '<iframe src="' + finalEmbedUrl + '" style="width:80vw;height:80vh;max-width:85vw;max-height:85vh;border:none;border-radius:8px;box-shadow:0 4px 30px rgba(0,0,0,0.7);display:block;" ' + iframeAllow + '></iframe>';
       } else {
         return '<div class="gallery-iframe-wrap" id="gallery-main-media" data-is-video="1">' +
-                 '<iframe src="' + finalEmbedUrl + '" ' + iframeAllow + '></iframe>' +
-               '</div>';
+          '<iframe src="' + finalEmbedUrl + '" ' + iframeAllow + '></iframe>' +
+          '</div>';
       }
     }
 
@@ -1213,6 +1215,92 @@
     }
   }
 
+  function updateProductSEO(product) {
+    var seoDesc = product.metaDescription || product.shortDescription || (product.description ? product.description.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...' : '');
+    var seoTitle = document.title;
+    var seoImage = (product.variants && product.variants.length > 0 && product.variants[0].images && product.variants[0].images.length > 0) ? product.variants[0].images[0] : 'https://phucgiatien.vn/assets/images/logo.png';
+    if (seoImage && !seoImage.startsWith('http')) seoImage = window.location.origin + '/' + seoImage;
+
+    var metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', seoDesc);
+
+    // Helper: find or create a meta tag
+    function setMeta(attr, key, value) {
+      var el = document.querySelector('meta[' + attr + '="' + key + '"]');
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(attr, key);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', value);
+    }
+
+    setMeta('property', 'og:title', seoTitle);
+    setMeta('property', 'og:description', seoDesc);
+    setMeta('property', 'og:image', seoImage);
+    setMeta('property', 'og:type', 'product');
+    setMeta('property', 'og:locale', 'vi_VN');
+    setMeta('property', 'og:url', window.location.href);
+
+    // Update canonical URL
+    var canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', window.location.href);
+
+    // Inject JSON-LD for Product + Geo SEO
+    var oldSchema = document.getElementById('product-schema-jsonld');
+    if (oldSchema) oldSchema.remove();
+
+    var schema = {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": product.name,
+      "image": seoImage,
+      "description": seoDesc,
+      "sku": product.sku || ("SP" + String(product.id).padStart(4, '0')),
+      "brand": {
+        "@type": "Brand",
+        "name": "Phúc Gia Tiên"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": window.location.href,
+        "priceCurrency": "VND",
+        "price": product.basePrice || 0,
+        "availability": (product.status === 'active') ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@type": "LocalBusiness",
+          "name": "Phúc Gia Tiên",
+          "image": "https://phucgiatien.vn/assets/images/logo.png",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Bát Tràng",
+            "addressLocality": "Gia Lâm",
+            "addressRegion": "Hà Nội",
+            "addressCountry": "VN"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 20.981165,
+            "longitude": 105.911641
+          },
+          "telephone": "0989.123.456"
+        }
+      }
+    };
+
+    var script = document.createElement('script');
+    script.id = 'product-schema-jsonld';
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify(schema);
+    document.head.appendChild(script);
+  }
+
   function initProductDetail() {
     var container = document.getElementById('product-detail-container');
     if (!container) return;
@@ -1220,7 +1308,7 @@
     // Read slug from URL or Pathname
     var params = new URLSearchParams(window.location.search);
     var slug = params.get('slug') || params.get('id');
-    
+
     // Nếu không có slug ở query, lấy từ pathname (ví dụ: /lo-loc-binh-dap-noi)
     if (!slug && window.location.pathname.length > 1) {
       // Bỏ dấu / đầu tiên
@@ -1244,6 +1332,7 @@
       renderProductDetail(container, product);
       var shortStoreName = (window.PGT_CONFIG && window.PGT_CONFIG.storeName) ? window.PGT_CONFIG.storeName.split('–')[0].split('-')[0].trim() : 'Phúc Gia Tiên';
       document.title = product.name + ' – ' + shortStoreName;
+      updateProductSEO(product);
       initGallery();
       initTabs();
       initQuantity();
@@ -1252,45 +1341,45 @@
       // Fetch related products
       var relatedGrid = document.getElementById('related-products-grid');
       if (relatedGrid) {
-         var categoryId = product.category ? (typeof product.category === 'object' ? product.category.id : product.category) : null;
-         var query = { limit: 8, sort: 'bestselling' }; // fetch slightly more to filter out current product
-         if (categoryId) query.category = categoryId;
-         
-         function renderRelated(items) {
-             var relatedProducts = items.filter(function(p) { return p.id !== product.id; }).slice(0, 4);
-             if (relatedProducts.length > 0) {
-                 relatedGrid.innerHTML = '';
-                 relatedProducts.forEach(function(rp, i) {
-                     var card = buildProductCard(rp, i);
-                     if (card) relatedGrid.appendChild(card);
-                 });
-                 if (typeof window.initScrollReveal === 'function') {
-                   window.initScrollReveal();
-                 }
-             } else {
-                 relatedGrid.innerHTML = '<p style="text-align:center;width:100%;color:#666;">Chưa có sản phẩm liên quan.</p>';
-             }
-         }
+        var categoryId = product.category ? (typeof product.category === 'object' ? product.category.id : product.category) : null;
+        var query = { limit: 8, sort: 'bestselling' }; // fetch slightly more to filter out current product
+        if (categoryId) query.category = categoryId;
 
-         PhucGiaTienAPI.getProducts(query).then(function(res) {
-             var items = res.data || res.items || (Array.isArray(res) ? res : []);
-             var relatedProducts = items.filter(function(p) { return p.id !== product.id; });
-             
-             if (relatedProducts.length > 0) {
-                 renderRelated(items);
-             } else {
-                 // Fallback to newest products if no related products in the same category
-                 PhucGiaTienAPI.getProducts({ limit: 8, sort: 'newest' }).then(function(res2) {
-                     var items2 = res2.data || res2.items || (Array.isArray(res2) ? res2 : []);
-                     renderRelated(items2);
-                 }).catch(function() {
-                     renderRelated([]);
-                 });
-             }
-         }).catch(function(err) {
-             console.error("Error fetching related products", err);
-             relatedGrid.innerHTML = '';
-         });
+        function renderRelated(items) {
+          var relatedProducts = items.filter(function (p) { return p.id !== product.id; }).slice(0, 4);
+          if (relatedProducts.length > 0) {
+            relatedGrid.innerHTML = '';
+            relatedProducts.forEach(function (rp, i) {
+              var card = buildProductCard(rp, i);
+              if (card) relatedGrid.appendChild(card);
+            });
+            if (typeof window.initScrollReveal === 'function') {
+              window.initScrollReveal();
+            }
+          } else {
+            relatedGrid.innerHTML = '<p style="text-align:center;width:100%;color:#666;">Chưa có sản phẩm liên quan.</p>';
+          }
+        }
+
+        PhucGiaTienAPI.getProducts(query).then(function (res) {
+          var items = res.data || res.items || (Array.isArray(res) ? res : []);
+          var relatedProducts = items.filter(function (p) { return p.id !== product.id; });
+
+          if (relatedProducts.length > 0) {
+            renderRelated(items);
+          } else {
+            // Fallback to newest products if no related products in the same category
+            PhucGiaTienAPI.getProducts({ limit: 8, sort: 'newest' }).then(function (res2) {
+              var items2 = res2.data || res2.items || (Array.isArray(res2) ? res2 : []);
+              renderRelated(items2);
+            }).catch(function () {
+              renderRelated([]);
+            });
+          }
+        }).catch(function (err) {
+          console.error("Error fetching related products", err);
+          relatedGrid.innerHTML = '';
+        });
       }
     }).catch(function (err) {
       console.error("PRODUCT FETCH OR RENDER ERROR:", err);
@@ -1299,7 +1388,7 @@
     });
   }
 
-  window.openImageModal = function(src) {
+  window.openImageModal = function (src) {
     var overlay = document.createElement('div');
     overlay.style.position = 'fixed';
     overlay.style.top = '0';
@@ -1314,7 +1403,7 @@
     overlay.style.cursor = 'zoom-out';
     overlay.style.opacity = '0';
     overlay.style.transition = 'opacity 0.2s ease';
-    
+
     var img = document.createElement('img');
     img.src = src;
     img.style.maxWidth = '90%';
@@ -1323,19 +1412,19 @@
     img.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
     img.style.transform = 'scale(0.95)';
     img.style.transition = 'transform 0.2s ease';
-    
+
     overlay.appendChild(img);
     document.body.appendChild(overlay);
-    
+
     // trigger reflow
     void overlay.offsetWidth;
     overlay.style.opacity = '1';
     img.style.transform = 'scale(1)';
-    
-    overlay.onclick = function() {
+
+    overlay.onclick = function () {
       overlay.style.opacity = '0';
       img.style.transform = 'scale(0.95)';
-      setTimeout(function() {
+      setTimeout(function () {
         if (overlay.parentNode) document.body.removeChild(overlay);
       }, 200);
     };
@@ -1344,7 +1433,7 @@
   function renderProductDetail(container, p) {
     window.currentProductData = p;
 
-    var totalStock = p.totalStock || (p.variants && p.variants.length > 0 ? p.variants.reduce(function(a,b){return a+(b.stock||0)},0) : 0);
+    var totalStock = p.totalStock || (p.variants && p.variants.length > 0 ? p.variants.reduce(function (a, b) { return a + (b.stock || 0) }, 0) : 0);
     var statusText = (p.status === 'active' && totalStock > 0) ? '<span class="status-badge active">Còn hàng (' + totalStock + ' sản phẩm)</span>' : (p.status === 'inactive' || totalStock <= 0 ? '<span class="status-badge inactive">Hết hàng</span>' : '<span class="status-badge active">' + (p.status || 'Còn hàng') + '</span>');
     var shortDesc = p.shortDescription || '';
 
@@ -1356,49 +1445,49 @@
       '<tr id="row-spec-color" style="display:none; border-bottom:1px solid #eee;"><td style="padding:10px 0; color:#666;">Màu sắc</td><td style="padding:10px 0; font-weight:500;" id="spec-color"></td></tr>' +
       '<tr id="row-spec-glaze" style="display:none; border-bottom:1px solid #eee;"><td style="padding:10px 0; color:#666;">Dòng men</td><td style="padding:10px 0; font-weight:500;" id="spec-glaze"></td></tr>' +
       '<tr id="row-spec-pattern" style="display:none; border-bottom:1px solid #eee;"><td style="padding:10px 0; color:#666;">Hoa văn</td><td style="padding:10px 0; font-weight:500;" id="spec-pattern"></td></tr>';
-      
+
     if (p.usage) specsTableHTML += '<tr style="border-bottom:1px solid #eee;"><td style="padding:10px 0; color:#666;">Công dụng</td><td style="padding:10px 0; font-weight:500;">' + p.usage + '</td></tr>';
     specsTableHTML += '</tbody></table></div>';
 
     var detailPriceHTML = '<p class="product-info__price" id="detail-price"></p>';
-      
+
     var giftHTML = '';
     if (Array.isArray(p.gifts) && p.gifts.length > 0) {
       var totalValue = 0;
-      var giftItems = p.gifts.map(function(g) { 
+      var giftItems = p.gifts.map(function (g) {
         totalValue += (g.estimatedValue || 0) * (g.quantity || 1);
         var imgUrl = g.imageUrl || 'assets/images/placeholder.webp';
         var qty = g.quantity || 1;
         var val = g.estimatedValue ? window.formatVND(g.estimatedValue) : 'Liên hệ';
-        
+
         return '<div style="display:flex; gap:8px; align-items:center; background:#fff; padding:8px; border-radius:6px; border:1px solid #faebd7;">' +
           '<img src="' + imgUrl + '" alt="' + g.name + '" onclick="if(window.openImageModal) window.openImageModal(this.src)" style="width:40px; height:40px; object-fit:cover; border-radius:4px; border:1px solid #f0f0f0; cursor:pointer;" title="Click để xem ảnh lớn">' +
           '<div style="flex:1;">' +
-            '<div style="font-size:13px; font-weight:600; color:#333; margin-bottom:2px; line-height:1.3;">' + g.name + '</div>' +
-            '<div style="font-size:11px; color:#666;">Số lượng: <span style="font-weight:600; color:#222;">x' + qty + '</span> <span style="margin:0 8px; color:#ddd;">|</span> Trị giá: <span style="color:#d32f2f; font-weight:600;">' + val + '</span></div>' +
+          '<div style="font-size:13px; font-weight:600; color:#333; margin-bottom:2px; line-height:1.3;">' + g.name + '</div>' +
+          '<div style="font-size:11px; color:#666;">Số lượng: <span style="font-weight:600; color:#222;">x' + qty + '</span> <span style="margin:0 8px; color:#ddd;">|</span> Trị giá: <span style="color:#d32f2f; font-weight:600;">' + val + '</span></div>' +
           '</div>' +
-        '</div>';
+          '</div>';
       }).join('');
-      
+
       var totalValueHTML = totalValue > 0 ? '<div style="font-size:12px; color:#825300; font-weight:500;">Tổng: <span style="color:#d32f2f; font-weight:700; font-size:14px;">' + window.formatVND(totalValue) + '</span></div>' : '';
 
       giftHTML = '<div class="product-detail__gift-box" style="background: linear-gradient(135deg, #fff9e6 0%, #fff1c5 100%); border: 1px solid #e5c385; border-radius: 8px; padding: 12px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(229, 195, 133, 0.15);">' +
         '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed #e5c385; padding-bottom:10px; margin-bottom:10px;">' +
-          '<div style="font-weight:700; color:#d32f2f; display:flex; align-items:center; gap:6px; font-size:14px; text-transform:uppercase;">' +
-            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="22"></line><path d="M12 8H8a2 2 0 0 1-2-2 2 2 0 0 1 2-2h0c1.1 0 2 .9 2 2v2"></path><path d="M12 8h4a2 2 0 0 0 2-2 2 2 0 0 0-2-2h0c-1.1 0-2 .9-2 2v2"></path></svg>' +
-            'Ưu Đãi Quà Tặng' +
-          '</div>' +
-          totalValueHTML +
+        '<div style="font-weight:700; color:#d32f2f; display:flex; align-items:center; gap:6px; font-size:14px; text-transform:uppercase;">' +
+        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="14" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="22"></line><path d="M12 8H8a2 2 0 0 1-2-2 2 2 0 0 1 2-2h0c1.1 0 2 .9 2 2v2"></path><path d="M12 8h4a2 2 0 0 0 2-2 2 2 0 0 0-2-2h0c-1.1 0-2 .9-2 2v2"></path></svg>' +
+        'Ưu Đãi Quà Tặng' +
+        '</div>' +
+        totalValueHTML +
         '</div>' +
         '<div style="display:flex; flex-direction:column; gap:6px;">' + giftItems + '</div>' +
-      '</div>';
+        '</div>';
     }
 
     var shortDescHTML = shortDesc ? '<div style="color:#555; font-size:15px; line-height:1.6; margin-bottom:16px;">' + shortDesc + '</div>' : '';
 
     var actionsHTML = '';
     if (p.status === 'inactive') {
-      actionsHTML = 
+      actionsHTML =
         giftHTML +
         '<div class="product-actions" style="margin-top:24px;">' +
         '<button class="btn" disabled style="background:#f5f5f5;color:#999;border:1px solid #e0e0e0;cursor:not-allowed;width:100%;justify-content:center;">TẠM HẾT HÀNG</button>' +
@@ -1406,60 +1495,60 @@
     } else {
       var variantSelectorHtml = '';
       if (p.variants && p.variants.length > 0) {
-          var attrs = [
-            { key: 'patternName', label: 'Hoa văn' },
-            { key: 'productTypeName', label: 'Phân khúc' },
-            { key: 'colorName', label: 'Màu sắc' },
-            { key: 'sizeName', fallback: 'size', label: 'Kích thước' }
-          ];
-          
-          attrs.forEach(function(attr) {
-             var uniqueVals = [];
-             p.variants.forEach(function(v) {
-                 var val = v[attr.key] || (attr.fallback ? v[attr.fallback] : null);
-                 if (val && uniqueVals.indexOf(val) === -1) {
-                     uniqueVals.push(val);
-                 }
-             });
-             if (uniqueVals.length > 0) {
-                 variantSelectorHtml += '<div class="product-variants">' +
-                    '<label class="product-variants__label" style="display:block; margin-bottom:8px; font-weight:600;">' + attr.label + ':</label>' +
-                    '<div class="variant-options attr-group" data-group="' + attr.key + '">' +
-                    uniqueVals.map(function(val) {
-                        var thumbnailHtml = '';
-                        if (attr.key === 'patternName') {
-                            var firstVariantWithImage = p.variants.find(function(v) { return v[attr.key] === val && v.images && v.images.length > 0; });
-                            if (firstVariantWithImage && firstVariantWithImage.images[0]) {
-                                var imgUrl = firstVariantWithImage.images[0];
-                                thumbnailHtml = '<img src="' + imgUrl + '" style="width:32px;height:32px;object-fit:cover;border-radius:4px;margin-right:8px;border:1px solid #eee;" alt="' + val + '">';
-                            }
-                        }
-                        var styleOverride = thumbnailHtml ? 'display:inline-flex; align-items:center; padding:4px 16px 4px 6px; gap:4px;' : '';
-                        return '<button class="btn-variant-attr btn-variant" ' + (styleOverride ? 'style="' + styleOverride + '"' : '') + ' data-val="' + val.replace(/"/g, '&quot;') + '">' + thumbnailHtml + '<span>' + val + '</span></button>';
-                    }).join('') +
-                    '</div></div>';
-             }
+        var attrs = [
+          { key: 'patternName', label: 'Hoa văn' },
+          { key: 'productTypeName', label: 'Phân khúc' },
+          { key: 'colorName', label: 'Màu sắc' },
+          { key: 'sizeName', fallback: 'size', label: 'Kích thước' }
+        ];
+
+        attrs.forEach(function (attr) {
+          var uniqueVals = [];
+          p.variants.forEach(function (v) {
+            var val = v[attr.key] || (attr.fallback ? v[attr.fallback] : null);
+            if (val && uniqueVals.indexOf(val) === -1) {
+              uniqueVals.push(val);
+            }
           });
-          
-          if (variantSelectorHtml === '' && p.variants.length > 1) {
-             variantSelectorHtml = '<div class="product-variants">' +
-                '<label class="product-variants__label" style="display:block; margin-bottom:8px; font-weight:600;">Chọn phiên bản:</label>' +
-                '<div class="variant-options attr-group" data-group="fallback">' +
-                p.variants.map(function(v, i) {
-                    var sName = 'Phiên bản ' + (i+1);
-                    return '<button class="btn-variant-attr btn-variant" data-vid="' + v.id + '">' + sName + '</button>';
-                }).join('') +
-                '</div></div>';
+          if (uniqueVals.length > 0) {
+            variantSelectorHtml += '<div class="product-variants">' +
+              '<label class="product-variants__label" style="display:block; margin-bottom:8px; font-weight:600;">' + attr.label + ':</label>' +
+              '<div class="variant-options attr-group" data-group="' + attr.key + '">' +
+              uniqueVals.map(function (val) {
+                var thumbnailHtml = '';
+                if (attr.key === 'patternName') {
+                  var firstVariantWithImage = p.variants.find(function (v) { return v[attr.key] === val && v.images && v.images.length > 0; });
+                  if (firstVariantWithImage && firstVariantWithImage.images[0]) {
+                    var imgUrl = firstVariantWithImage.images[0];
+                    thumbnailHtml = '<img src="' + imgUrl + '" style="width:32px;height:32px;object-fit:cover;border-radius:4px;margin-right:8px;border:1px solid #eee;" alt="' + val + '">';
+                  }
+                }
+                var styleOverride = thumbnailHtml ? 'display:inline-flex; align-items:center; padding:4px 16px 4px 6px; gap:4px;' : '';
+                return '<button class="btn-variant-attr btn-variant" ' + (styleOverride ? 'style="' + styleOverride + '"' : '') + ' data-val="' + val.replace(/"/g, '&quot;') + '">' + thumbnailHtml + '<span>' + val + '</span></button>';
+              }).join('') +
+              '</div></div>';
           }
+        });
+
+        if (variantSelectorHtml === '' && p.variants.length > 1) {
+          variantSelectorHtml = '<div class="product-variants">' +
+            '<label class="product-variants__label" style="display:block; margin-bottom:8px; font-weight:600;">Chọn phiên bản:</label>' +
+            '<div class="variant-options attr-group" data-group="fallback">' +
+            p.variants.map(function (v, i) {
+              var sName = 'Phiên bản ' + (i + 1);
+              return '<button class="btn-variant-attr btn-variant" data-vid="' + v.id + '">' + sName + '</button>';
+            }).join('') +
+            '</div></div>';
+        }
       } else {
-          // If no variants, just show default price
-          var basePriceVal = p.basePrice || 0;
-          detailPriceHTML = basePriceVal === 0 
-            ? '<a href="contact" class="product-info__price" id="detail-price" style="color:#d32f2f; text-transform:uppercase; text-decoration:none; display:block;">LIÊN HỆ</a>'
-            : '<p class="product-info__price" id="detail-price">' + window.formatVND(basePriceVal) + '</p>';
+        // If no variants, just show default price
+        var basePriceVal = p.basePrice || 0;
+        detailPriceHTML = basePriceVal <= 0
+          ? '<a href="contact.html" class="product-info__price" id="detail-price" style="color:#d32f2f; text-transform:uppercase; text-decoration:none; display:block;">LIÊN HỆ</a>'
+          : '<p class="product-info__price" id="detail-price">' + window.formatVND(basePriceVal) + '</p>';
       }
 
-      actionsHTML = 
+      actionsHTML =
         variantSelectorHtml +
         '<div class="quantity-control" style="margin-bottom: 24px;">' +
         '<div class="quantity-input-group">' +
@@ -1503,7 +1592,7 @@
       specsTableHTML +
       '<div class="tab-content-text" style="color:#333;">' + (p.description || '') + '</div>' +
       '</div>';
-      
+
     // Render initial variant logic (or default)
     if (window.updateVariantDisplay) {
       window.updateVariantDisplay(null, p);
@@ -1536,9 +1625,9 @@
         thumbEl.innerHTML =
           '<img src="' + imageUrl + '" alt="video preview" style="width:100%;height:100%;object-fit:cover;">' +
           '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;z-index:2;">' +
-            '<div style="width:28px;height:28px;background:' + playColor + ';border-radius:50%;display:flex;align-items:center;justify-content:center;">' +
-              '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>' +
-            '</div>' +
+          '<div style="width:28px;height:28px;background:' + playColor + ';border-radius:50%;display:flex;align-items:center;justify-content:center;">' +
+          '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>' +
+          '</div>' +
           '</div>';
       };
       img.src = imageUrl;
@@ -1571,7 +1660,7 @@
                   if (oembed && oembed.thumbnail_url) {
                     replaceBadgeWithImage(thumb, oembed.thumbnail_url, 'tiktok');
                   }
-                }).catch(function() {});
+                }).catch(function () { });
             }
           })
           .catch(function () {
@@ -1581,7 +1670,7 @@
                 if (oembed && oembed.thumbnail_url) {
                   replaceBadgeWithImage(thumb, oembed.thumbnail_url, 'tiktok');
                 }
-              }).catch(function() {});
+              }).catch(function () { });
           });
       } else if (platform === 'facebook') {
         // Facebook uses iframe thumbnail directly now, no async fetch needed
@@ -1589,7 +1678,7 @@
     });
   }
 
-   // Toggle gallery-main aspect ratio based on whether current media is video
+  // Toggle gallery-main aspect ratio based on whether current media is video
   function updateGalleryAspect(mainContainer) {
     var mediaEl = document.getElementById('gallery-main-media');
     if (!mediaEl && mainContainer.firstElementChild) {
@@ -1642,7 +1731,7 @@
     var thumbs = document.querySelectorAll('.product-thumbnail');
     if (!mainContainer) return;
 
-    var images = Array.from(thumbs).map(function(t) { return t.dataset.src; });
+    var images = Array.from(thumbs).map(function (t) { return t.dataset.src; });
 
     // Set initial aspect ratio based on first media type
     updateGalleryAspect(mainContainer);
@@ -1652,97 +1741,97 @@
     var thumbNext = document.getElementById('thumb-nav-next');
 
     function updateNavArrows() {
-        if (!thumbPrev || !thumbNext || images.length <= 4) return;
-        var activeThumb = document.querySelector('.product-thumbnail.active');
-        if (!activeThumb && thumbs.length > 0) activeThumb = thumbs[0];
-        var thumbsArr = Array.from(thumbs);
-        var currentIndex = thumbsArr.indexOf(activeThumb);
-        
-        thumbPrev.style.display = currentIndex > 0 ? 'flex' : 'none';
-        thumbNext.style.display = currentIndex < thumbsArr.length - 1 ? 'flex' : 'none';
+      if (!thumbPrev || !thumbNext || images.length <= 4) return;
+      var activeThumb = document.querySelector('.product-thumbnail.active');
+      if (!activeThumb && thumbs.length > 0) activeThumb = thumbs[0];
+      var thumbsArr = Array.from(thumbs);
+      var currentIndex = thumbsArr.indexOf(activeThumb);
+
+      thumbPrev.style.display = currentIndex > 0 ? 'flex' : 'none';
+      thumbNext.style.display = currentIndex < thumbsArr.length - 1 ? 'flex' : 'none';
     }
 
     if (thumbs.length > 0) {
-        thumbs.forEach(function (thumb) {
-          thumb.addEventListener('click', function () {
-            thumbs.forEach(function (t) { t.classList.remove('active'); });
-            thumb.classList.add('active');
+      thumbs.forEach(function (thumb) {
+        thumb.addEventListener('click', function () {
+          thumbs.forEach(function (t) { t.classList.remove('active'); });
+          thumb.classList.add('active');
 
-            var src = thumb.dataset.src;
-            var mediaEl = document.getElementById('gallery-main-media');
-            
-            // Only fade out if the current media is not a video/iframe to prevent rendering freezes
-            var isCurrentVideo = mediaEl && (mediaEl.dataset.isVideo === '1' || mediaEl.tagName === 'VIDEO' || mediaEl.tagName === 'IFRAME' || mediaEl.querySelector('iframe, video'));
-            if (mediaEl && !isCurrentVideo) {
-              mediaEl.style.opacity = '0';
-            }
+          var src = thumb.dataset.src;
+          var mediaEl = document.getElementById('gallery-main-media');
 
-            setTimeout(function() {
-              mainContainer.innerHTML = renderMediaHtml(src, false);
-              // Update aspect ratio class for video vs image
-              updateGalleryAspect(mainContainer);
-              
-              var newMedia = document.getElementById('gallery-main-media');
-              if (newMedia) {
-                var isNewVideo = newMedia.dataset.isVideo === '1' || newMedia.tagName === 'VIDEO' || newMedia.tagName === 'IFRAME' || newMedia.querySelector('iframe, video');
-                if (isNewVideo) {
-                  // Videos show immediately to avoid iframe painting issues
-                  newMedia.style.opacity = '1';
-                } else {
-                  // Images fade in smoothly
-                  newMedia.style.opacity = '0';
-                  void newMedia.offsetWidth; // reflow
-                  newMedia.style.transition = 'opacity 0.3s ease';
-                  newMedia.style.opacity = '1';
-                }
+          // Only fade out if the current media is not a video/iframe to prevent rendering freezes
+          var isCurrentVideo = mediaEl && (mediaEl.dataset.isVideo === '1' || mediaEl.tagName === 'VIDEO' || mediaEl.tagName === 'IFRAME' || mediaEl.querySelector('iframe, video'));
+          if (mediaEl && !isCurrentVideo) {
+            mediaEl.style.opacity = '0';
+          }
+
+          setTimeout(function () {
+            mainContainer.innerHTML = renderMediaHtml(src, false);
+            // Update aspect ratio class for video vs image
+            updateGalleryAspect(mainContainer);
+
+            var newMedia = document.getElementById('gallery-main-media');
+            if (newMedia) {
+              var isNewVideo = newMedia.dataset.isVideo === '1' || newMedia.tagName === 'VIDEO' || newMedia.tagName === 'IFRAME' || newMedia.querySelector('iframe, video');
+              if (isNewVideo) {
+                // Videos show immediately to avoid iframe painting issues
+                newMedia.style.opacity = '1';
+              } else {
+                // Images fade in smoothly
+                newMedia.style.opacity = '0';
+                void newMedia.offsetWidth; // reflow
+                newMedia.style.transition = 'opacity 0.3s ease';
+                newMedia.style.opacity = '1';
               }
-              updateNavArrows();
-            }, 150);
-          });
+            }
+            updateNavArrows();
+          }, 150);
         });
+      });
     }
 
     if (thumbContainer) {
-        updateNavArrows();
-        
-        function switchMainImage(direction) {
-            var activeThumb = document.querySelector('.product-thumbnail.active');
-            if (!activeThumb && thumbs.length > 0) activeThumb = thumbs[0];
-            if (!activeThumb) return;
-            
-            var thumbsArr = Array.from(thumbs);
-            var currentIndex = thumbsArr.indexOf(activeThumb);
-            var newIndex = currentIndex + direction;
-            
-            if (newIndex < 0) return;
-            if (newIndex >= thumbsArr.length) return;
-            
-            var nextThumb = thumbsArr[newIndex];
-            nextThumb.click(); // Triggers the existing click handler (sets active class, updates main image)
-            
-            // Scroll thumbnail container so the new active thumb is visible
-            var scrollPos = nextThumb.offsetLeft - thumbContainer.offsetWidth / 2 + nextThumb.offsetWidth / 2;
-            thumbContainer.scrollTo({ left: scrollPos, behavior: 'smooth' });
-        }
+      updateNavArrows();
 
-        if (thumbPrev) {
-            thumbPrev.addEventListener('click', function() {
-                switchMainImage(-1);
-            });
-        }
-        if (thumbNext) {
-            thumbNext.addEventListener('click', function() {
-                switchMainImage(1);
-            });
-        }
+      function switchMainImage(direction) {
+        var activeThumb = document.querySelector('.product-thumbnail.active');
+        if (!activeThumb && thumbs.length > 0) activeThumb = thumbs[0];
+        if (!activeThumb) return;
 
-        thumbContainer.addEventListener('wheel', function(e) {
-            // Horizontal scroll with mouse wheel
-            if (e.deltaY !== 0) {
-                e.preventDefault();
-                thumbContainer.scrollLeft += e.deltaY;
-            }
-        }, { passive: false });
+        var thumbsArr = Array.from(thumbs);
+        var currentIndex = thumbsArr.indexOf(activeThumb);
+        var newIndex = currentIndex + direction;
+
+        if (newIndex < 0) return;
+        if (newIndex >= thumbsArr.length) return;
+
+        var nextThumb = thumbsArr[newIndex];
+        nextThumb.click(); // Triggers the existing click handler (sets active class, updates main image)
+
+        // Scroll thumbnail container so the new active thumb is visible
+        var scrollPos = nextThumb.offsetLeft - thumbContainer.offsetWidth / 2 + nextThumb.offsetWidth / 2;
+        thumbContainer.scrollTo({ left: scrollPos, behavior: 'smooth' });
+      }
+
+      if (thumbPrev) {
+        thumbPrev.addEventListener('click', function () {
+          switchMainImage(-1);
+        });
+      }
+      if (thumbNext) {
+        thumbNext.addEventListener('click', function () {
+          switchMainImage(1);
+        });
+      }
+
+      thumbContainer.addEventListener('wheel', function (e) {
+        // Horizontal scroll with mouse wheel
+        if (e.deltaY !== 0) {
+          e.preventDefault();
+          thumbContainer.scrollLeft += e.deltaY;
+        }
+      }, { passive: false });
     }
 
     // --- Wheel Magnifier (Desktop) ---
@@ -1752,29 +1841,29 @@
     var isInlineDragging = false;
     var inlineDragStartX, inlineDragStartY, inlinePanStartX, inlinePanStartY;
 
-    mainContainer.addEventListener('wheel', function(e) {
+    mainContainer.addEventListener('wheel', function (e) {
       if (window.innerWidth < 1024) return;
       var media = mainContainer.querySelector('img#gallery-main-media');
       if (!media) return;
-      
+
       // Allow normal scroll if zooming out at scale 1
       if (e.deltaY > 0 && inlineZoomScale <= 1) return;
-      
+
       e.preventDefault();
-      
+
       var rect = mainContainer.getBoundingClientRect();
       var cx = e.clientX - rect.left - rect.width / 2;
       var cy = e.clientY - rect.top - rect.height / 2;
-      
+
       var prevScale = inlineZoomScale;
       var zoomStep = 0.4;
       var newScale = e.deltaY < 0 ? inlineZoomScale + zoomStep : inlineZoomScale - zoomStep;
       inlineZoomScale = Math.max(1, Math.min(newScale, 4));
-      
+
       var scaleDelta = inlineZoomScale / prevScale;
       inlinePanX = cx + (inlinePanX - cx) * scaleDelta;
       inlinePanY = cy + (inlinePanY - cy) * scaleDelta;
-      
+
       if (inlineZoomScale <= 1) {
         inlinePanX = 0; inlinePanY = 0;
       } else {
@@ -1783,16 +1872,16 @@
         inlinePanX = Math.max(-maxX, Math.min(maxX, inlinePanX));
         inlinePanY = Math.max(-maxY, Math.min(maxY, inlinePanY));
       }
-      
+
       media.style.transformOrigin = 'center center';
       media.style.transform = 'translate(' + inlinePanX + 'px, ' + inlinePanY + 'px) scale(' + inlineZoomScale + ')';
     }, { passive: false });
 
-    mainContainer.addEventListener('mousedown', function(e) {
+    mainContainer.addEventListener('mousedown', function (e) {
       if (window.innerWidth < 1024 || inlineZoomScale <= 1 || e.button !== 0) return;
       var media = mainContainer.querySelector('img#gallery-main-media');
       if (!media) return;
-      
+
       isInlineDragging = true;
       inlineDragStartX = e.clientX;
       inlineDragStartY = e.clientY;
@@ -1802,33 +1891,33 @@
       e.preventDefault();
     });
 
-    window.addEventListener('mousemove', function(e) {
+    window.addEventListener('mousemove', function (e) {
       if (!isInlineDragging) return;
       var media = mainContainer.querySelector('img#gallery-main-media');
       if (!media) return;
-      
+
       var dx = e.clientX - inlineDragStartX;
       var dy = e.clientY - inlineDragStartY;
       inlinePanX = inlinePanStartX + dx;
       inlinePanY = inlinePanStartY + dy;
-      
+
       var rect = mainContainer.getBoundingClientRect();
       var maxX = Math.max(0, (rect.width * inlineZoomScale - rect.width) / 2);
       var maxY = Math.max(0, (rect.height * inlineZoomScale - rect.height) / 2);
       inlinePanX = Math.max(-maxX, Math.min(maxX, inlinePanX));
       inlinePanY = Math.max(-maxY, Math.min(maxY, inlinePanY));
-      
+
       media.style.transform = 'translate(' + inlinePanX + 'px, ' + inlinePanY + 'px) scale(' + inlineZoomScale + ')';
     });
 
-    window.addEventListener('mouseup', function() {
+    window.addEventListener('mouseup', function () {
       if (isInlineDragging) {
         isInlineDragging = false;
         mainContainer.style.cursor = inlineZoomScale > 1 ? 'grab' : 'zoom-in';
       }
     });
 
-    mainContainer.addEventListener('mouseleave', function() {
+    mainContainer.addEventListener('mouseleave', function () {
       if (window.innerWidth < 1024 || isInlineDragging) return;
       var media = mainContainer.querySelector('img#gallery-main-media');
       if (media) {
@@ -1843,285 +1932,285 @@
     // Lightbox logic
     var lb = document.getElementById('lightboxModal');
     if (lb) {
-        var lbMedia = document.getElementById('lightboxMediaContainer');
-        var lbViewport = document.getElementById('lbViewport');
-        var lbPrev = document.getElementById('lbPrev');
-        var lbNext = document.getElementById('lbNext');
-        var lbCounter = document.getElementById('lbCounter');
-        var lbZoomIn = document.getElementById('lbZoomIn');
-        var lbZoomOut = document.getElementById('lbZoomOut');
-        var lbZoomReset = document.getElementById('lbZoomReset');
-        var lbZoomLevel = document.getElementById('lbZoomLevel');
-        var lbClose = document.getElementById('lbClose');
-        var lbThumbnails = document.getElementById('lbThumbnails');
-        var lbIndex = 0;
+      var lbMedia = document.getElementById('lightboxMediaContainer');
+      var lbViewport = document.getElementById('lbViewport');
+      var lbPrev = document.getElementById('lbPrev');
+      var lbNext = document.getElementById('lbNext');
+      var lbCounter = document.getElementById('lbCounter');
+      var lbZoomIn = document.getElementById('lbZoomIn');
+      var lbZoomOut = document.getElementById('lbZoomOut');
+      var lbZoomReset = document.getElementById('lbZoomReset');
+      var lbZoomLevel = document.getElementById('lbZoomLevel');
+      var lbClose = document.getElementById('lbClose');
+      var lbThumbnails = document.getElementById('lbThumbnails');
+      var lbIndex = 0;
 
-        // --- Zoom & pan state ---
-        var zoomScale = 1;
-        var panX = 0;
-        var panY = 0;
-        var MIN_ZOOM = 1;
-        var MAX_ZOOM = 5;
-        var ZOOM_STEP = 0.4;
+      // --- Zoom & pan state ---
+      var zoomScale = 1;
+      var panX = 0;
+      var panY = 0;
+      var MIN_ZOOM = 1;
+      var MAX_ZOOM = 5;
+      var ZOOM_STEP = 0.4;
 
-        function applyTransform(animated) {
-            if (!lbMedia) return;
-            if (animated) {
-                lbMedia.style.transition = 'transform 0.2s ease, opacity 0.2s';
-            } else {
-                lbMedia.style.transition = 'opacity 0.2s';
-            }
-            lbMedia.style.transform = 'translate(' + panX + 'px, ' + panY + 'px) scale(' + zoomScale + ')';
-            if (lbZoomLevel) lbZoomLevel.textContent = Math.round(zoomScale * 100) + '%';
-            // Update cursor
-            if (lbViewport) lbViewport.style.cursor = zoomScale > 1 ? 'grab' : 'default';
+      function applyTransform(animated) {
+        if (!lbMedia) return;
+        if (animated) {
+          lbMedia.style.transition = 'transform 0.2s ease, opacity 0.2s';
+        } else {
+          lbMedia.style.transition = 'opacity 0.2s';
+        }
+        lbMedia.style.transform = 'translate(' + panX + 'px, ' + panY + 'px) scale(' + zoomScale + ')';
+        if (lbZoomLevel) lbZoomLevel.textContent = Math.round(zoomScale * 100) + '%';
+        // Update cursor
+        if (lbViewport) lbViewport.style.cursor = zoomScale > 1 ? 'grab' : 'default';
+      }
+
+      function clampPan() {
+        if (!lbViewport || !lbMedia) return;
+        var vw = lbViewport.clientWidth;
+        var vh = lbViewport.clientHeight;
+        // When fully zoomed out, no panning allowed
+        if (zoomScale <= 1) { panX = 0; panY = 0; return; }
+        var contentW = vw * zoomScale;
+        var contentH = vh * zoomScale;
+        var maxX = Math.max(0, (contentW - vw) / 2);
+        var maxY = Math.max(0, (contentH - vh) / 2);
+        panX = Math.max(-maxX, Math.min(maxX, panX));
+        panY = Math.max(-maxY, Math.min(maxY, panY));
+      }
+
+      function resetZoom(animated) {
+        zoomScale = 1; panX = 0; panY = 0;
+        applyTransform(animated);
+      }
+
+      function zoomTo(newScale, originX, originY, animated) {
+        // originX/Y are in viewport coordinates (relative to center)
+        var prevScale = zoomScale;
+        zoomScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newScale));
+        // Adjust pan so zoom feels anchored at cursor position
+        if (originX !== undefined && originY !== undefined) {
+          var scaleDelta = zoomScale / prevScale;
+          panX = originX + (panX - originX) * scaleDelta;
+          panY = originY + (panY - originY) * scaleDelta;
+        }
+        clampPan();
+        applyTransform(animated);
+      }
+
+      function updateLb() {
+        if (lbMedia) lbMedia.style.opacity = '0';
+        resetZoom(false);
+
+        // Build thumbnails HTML
+        if (lbThumbnails) {
+          lbThumbnails.innerHTML = images.map(function (src, i) {
+            var isVideo = src.match(/\.(mp4|mov|avi|webm|ogg)$/i) || src.includes('youtube.com') || src.includes('youtu.be') || src.includes('tiktok.com') || src.includes('facebook.com');
+            var thumbContent = isVideo ? '<span style="color:#fff;font-size:16px;">▶</span>' : '<img src="' + src + '" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">';
+            var borderStyle = (i === lbIndex) ? 'border:2px solid var(--color-accent);' : 'border:2px solid transparent; opacity:0.6;';
+            return '<button class="lb-thumb-btn" data-index="' + i + '" style="width:50px;height:50px;padding:0;background:#000;cursor:pointer;flex-shrink:0;transition:all 0.2s;' + borderStyle + 'border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center;">' + thumbContent + '</button>';
+          }).join('');
+
+          // Add click listeners to thumbs
+          var thumbBtns = lbThumbnails.querySelectorAll('.lb-thumb-btn');
+          thumbBtns.forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+              e.stopPropagation();
+              lbIndex = parseInt(btn.dataset.index, 10);
+              updateLb();
+            });
+          });
         }
 
-        function clampPan() {
-            if (!lbViewport || !lbMedia) return;
-            var vw = lbViewport.clientWidth;
-            var vh = lbViewport.clientHeight;
-            // When fully zoomed out, no panning allowed
-            if (zoomScale <= 1) { panX = 0; panY = 0; return; }
-            var contentW = vw * zoomScale;
-            var contentH = vh * zoomScale;
-            var maxX = Math.max(0, (contentW - vw) / 2);
-            var maxY = Math.max(0, (contentH - vh) / 2);
-            panX = Math.max(-maxX, Math.min(maxX, panX));
-            panY = Math.max(-maxY, Math.min(maxY, panY));
+        setTimeout(function () {
+          var src = images[lbIndex];
+          if (lbMedia) lbMedia.innerHTML = renderMediaHtml(src, true);
+          if (lbMedia) lbMedia.style.opacity = '1';
+          if (lbCounter) lbCounter.textContent = (lbIndex + 1) + ' / ' + images.length;
+        }, 180);
+        if (lbPrev) lbPrev.style.display = images.length > 1 ? 'flex' : 'none';
+        if (lbNext) lbNext.style.display = images.length > 1 ? 'flex' : 'none';
+      }
+
+
+
+      mainContainer.style.cursor = 'zoom-in';
+      mainContainer.addEventListener('click', function (e) {
+        if (typeof inlineZoomScale !== 'undefined' && inlineZoomScale > 1) return;
+        if (e.target.tagName.toLowerCase() === 'video' && e.offsetY >= e.target.clientHeight - 40) return;
+        var activeThumb = document.querySelector('.product-thumbnail.active');
+        if (activeThumb) lbIndex = images.indexOf(activeThumb.dataset.src);
+        else lbIndex = 0;
+        if (lbIndex < 0) lbIndex = 0;
+        updateLb();
+        lb.style.display = 'flex';
+      });
+
+      // Close
+      if (lbClose) lbClose.addEventListener('click', function () {
+        lb.style.display = 'none';
+        if (lbMedia) lbMedia.innerHTML = '';
+        resetZoom(false);
+      });
+
+      lb.addEventListener('click', function (e) {
+        if (e.target === lb) {
+          lb.style.display = 'none';
+          if (lbMedia) lbMedia.innerHTML = '';
+          resetZoom(false);
         }
+      });
 
-        function resetZoom(animated) {
-            zoomScale = 1; panX = 0; panY = 0;
-            applyTransform(animated);
+      // Prev/Next
+      if (lbPrev) lbPrev.addEventListener('click', function (e) {
+        e.stopPropagation();
+        lbIndex = (lbIndex - 1 + images.length) % images.length;
+        updateLb();
+      });
+      if (lbNext) lbNext.addEventListener('click', function (e) {
+        e.stopPropagation();
+        lbIndex = (lbIndex + 1) % images.length;
+        updateLb();
+      });
+
+      // Zoom buttons
+      if (lbZoomIn) lbZoomIn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        zoomTo(zoomScale + ZOOM_STEP, 0, 0, true);
+      });
+      if (lbZoomOut) lbZoomOut.addEventListener('click', function (e) {
+        e.stopPropagation();
+        zoomTo(zoomScale - ZOOM_STEP, 0, 0, true);
+      });
+      if (lbZoomReset) lbZoomReset.addEventListener('click', function (e) {
+        e.stopPropagation();
+        resetZoom(true);
+      });
+
+      // Scroll wheel zoom (anchored at cursor)
+      if (lbViewport) lbViewport.addEventListener('wheel', function (e) {
+        e.preventDefault();
+        // Get cursor position relative to viewport center
+        var rect = lbViewport.getBoundingClientRect();
+        var cx = e.clientX - rect.left - rect.width / 2;
+        var cy = e.clientY - rect.top - rect.height / 2;
+        var delta = e.deltaY < 0 ? ZOOM_STEP * 0.6 : -ZOOM_STEP * 0.6;
+        zoomTo(zoomScale + delta, cx, cy, false);
+      }, { passive: false });
+
+      // Double-click to reset zoom
+      if (lbViewport) lbViewport.addEventListener('dblclick', function (e) {
+        if (e.target === lbPrev || e.target === lbNext || e.target === lbClose) return;
+        if (zoomScale > 1) {
+          resetZoom(true);
+        } else {
+          // Double-click to zoom in 2x centered on cursor
+          var rect = lbViewport.getBoundingClientRect();
+          var cx = e.clientX - rect.left - rect.width / 2;
+          var cy = e.clientY - rect.top - rect.height / 2;
+          zoomTo(2, cx, cy, true);
         }
+      });
 
-        function zoomTo(newScale, originX, originY, animated) {
-            // originX/Y are in viewport coordinates (relative to center)
-            var prevScale = zoomScale;
-            zoomScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newScale));
-            // Adjust pan so zoom feels anchored at cursor position
-            if (originX !== undefined && originY !== undefined) {
-                var scaleDelta = zoomScale / prevScale;
-                panX = originX + (panX - originX) * scaleDelta;
-                panY = originY + (panY - originY) * scaleDelta;
-            }
-            clampPan();
-            applyTransform(animated);
-        }
-
-        function updateLb() {
-            if(lbMedia) lbMedia.style.opacity = '0';
-            resetZoom(false);
-            
-            // Build thumbnails HTML
-            if (lbThumbnails) {
-                lbThumbnails.innerHTML = images.map(function(src, i) {
-                    var isVideo = src.match(/\.(mp4|mov|avi|webm|ogg)$/i) || src.includes('youtube.com') || src.includes('youtu.be') || src.includes('tiktok.com') || src.includes('facebook.com');
-                    var thumbContent = isVideo ? '<span style="color:#fff;font-size:16px;">▶</span>' : '<img src="' + src + '" style="width:100%;height:100%;object-fit:cover;border-radius:4px;">';
-                    var borderStyle = (i === lbIndex) ? 'border:2px solid var(--color-accent);' : 'border:2px solid transparent; opacity:0.6;';
-                    return '<button class="lb-thumb-btn" data-index="' + i + '" style="width:50px;height:50px;padding:0;background:#000;cursor:pointer;flex-shrink:0;transition:all 0.2s;' + borderStyle + 'border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center;">' + thumbContent + '</button>';
-                }).join('');
-                
-                // Add click listeners to thumbs
-                var thumbBtns = lbThumbnails.querySelectorAll('.lb-thumb-btn');
-                thumbBtns.forEach(function(btn) {
-                    btn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        lbIndex = parseInt(btn.dataset.index, 10);
-                        updateLb();
-                    });
-                });
-            }
-
-            setTimeout(function() {
-                var src = images[lbIndex];
-                if(lbMedia) lbMedia.innerHTML = renderMediaHtml(src, true);
-                if(lbMedia) lbMedia.style.opacity = '1';
-                if(lbCounter) lbCounter.textContent = (lbIndex + 1) + ' / ' + images.length;
-            }, 180);
-            if(lbPrev) lbPrev.style.display = images.length > 1 ? 'flex' : 'none';
-            if(lbNext) lbNext.style.display = images.length > 1 ? 'flex' : 'none';
-        }
-
-
-
-        mainContainer.style.cursor = 'zoom-in';
-        mainContainer.addEventListener('click', function(e) {
-            if (typeof inlineZoomScale !== 'undefined' && inlineZoomScale > 1) return;
-            if(e.target.tagName.toLowerCase() === 'video' && e.offsetY >= e.target.clientHeight - 40) return;
-            var activeThumb = document.querySelector('.product-thumbnail.active');
-            if(activeThumb) lbIndex = images.indexOf(activeThumb.dataset.src);
-            else lbIndex = 0;
-            if(lbIndex < 0) lbIndex = 0;
-            updateLb();
-            lb.style.display = 'flex';
+      // Drag/pan (mouse)
+      var isDragging = false;
+      var dragStartX, dragStartY, panStartX, panStartY;
+      if (lbViewport) {
+        lbViewport.addEventListener('mousedown', function (e) {
+          if (zoomScale <= 1) return;
+          if (e.button !== 0) return;
+          isDragging = true;
+          dragStartX = e.clientX;
+          dragStartY = e.clientY;
+          panStartX = panX;
+          panStartY = panY;
+          lbViewport.style.cursor = 'grabbing';
+          e.preventDefault();
         });
+        window.addEventListener('mousemove', function (e) {
+          if (!isDragging) return;
+          panX = panStartX + (e.clientX - dragStartX);
+          panY = panStartY + (e.clientY - dragStartY);
+          clampPan();
+          applyTransform(false);
+        });
+        window.addEventListener('mouseup', function () {
+          if (!isDragging) return;
+          isDragging = false;
+          lbViewport.style.cursor = zoomScale > 1 ? 'grab' : 'default';
+        });
+      }
 
-        // Close
-        if(lbClose) lbClose.addEventListener('click', function() {
-            lb.style.display = 'none';
-            if(lbMedia) lbMedia.innerHTML = '';
-            resetZoom(false);
-        });
+      // Touch: pinch-to-zoom + pan
+      var touches = {};
+      var pinchStartDist = 0;
+      var pinchStartScale = 1;
+      var touchPanStartX = 0, touchPanStartY = 0;
+      var touchPanPX = 0, touchPanPY = 0;
 
-        lb.addEventListener('click', function(e) {
-            if(e.target === lb) {
-                lb.style.display = 'none';
-                if(lbMedia) lbMedia.innerHTML = '';
-                resetZoom(false);
-            }
-        });
-
-        // Prev/Next
-        if(lbPrev) lbPrev.addEventListener('click', function(e) {
-            e.stopPropagation();
-            lbIndex = (lbIndex - 1 + images.length) % images.length;
-            updateLb();
-        });
-        if(lbNext) lbNext.addEventListener('click', function(e) {
-            e.stopPropagation();
-            lbIndex = (lbIndex + 1) % images.length;
-            updateLb();
-        });
-
-        // Zoom buttons
-        if(lbZoomIn) lbZoomIn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            zoomTo(zoomScale + ZOOM_STEP, 0, 0, true);
-        });
-        if(lbZoomOut) lbZoomOut.addEventListener('click', function(e) {
-            e.stopPropagation();
-            zoomTo(zoomScale - ZOOM_STEP, 0, 0, true);
-        });
-        if(lbZoomReset) lbZoomReset.addEventListener('click', function(e) {
-            e.stopPropagation();
-            resetZoom(true);
-        });
-
-        // Scroll wheel zoom (anchored at cursor)
-        if(lbViewport) lbViewport.addEventListener('wheel', function(e) {
-            e.preventDefault();
-            // Get cursor position relative to viewport center
-            var rect = lbViewport.getBoundingClientRect();
-            var cx = e.clientX - rect.left - rect.width / 2;
-            var cy = e.clientY - rect.top - rect.height / 2;
-            var delta = e.deltaY < 0 ? ZOOM_STEP * 0.6 : -ZOOM_STEP * 0.6;
-            zoomTo(zoomScale + delta, cx, cy, false);
+      if (lbViewport) {
+        lbViewport.addEventListener('touchstart', function (e) {
+          Array.from(e.changedTouches).forEach(function (t) { touches[t.identifier] = t; });
+          var ids = Object.keys(touches);
+          if (ids.length === 2) {
+            var t1 = touches[ids[0]], t2 = touches[ids[1]];
+            pinchStartDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+            pinchStartScale = zoomScale;
+          } else if (ids.length === 1) {
+            var t = touches[ids[0]];
+            touchPanStartX = t.clientX;
+            touchPanStartY = t.clientY;
+            touchPanPX = panX;
+            touchPanPY = panY;
+          }
+          e.preventDefault();
         }, { passive: false });
 
-        // Double-click to reset zoom
-        if(lbViewport) lbViewport.addEventListener('dblclick', function(e) {
-            if (e.target === lbPrev || e.target === lbNext || e.target === lbClose) return;
-            if (zoomScale > 1) {
-                resetZoom(true);
-            } else {
-                // Double-click to zoom in 2x centered on cursor
-                var rect = lbViewport.getBoundingClientRect();
-                var cx = e.clientX - rect.left - rect.width / 2;
-                var cy = e.clientY - rect.top - rect.height / 2;
-                zoomTo(2, cx, cy, true);
-            }
+        lbViewport.addEventListener('touchmove', function (e) {
+          Array.from(e.changedTouches).forEach(function (t) { touches[t.identifier] = t; });
+          var ids = Object.keys(touches);
+          if (ids.length === 2) {
+            var t1 = touches[ids[0]], t2 = touches[ids[1]];
+            var dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+            var newScale = pinchStartScale * (dist / pinchStartDist);
+            zoomTo(newScale, 0, 0, false);
+          } else if (ids.length === 1 && zoomScale > 1) {
+            var t = touches[ids[0]];
+            panX = touchPanPX + (t.clientX - touchPanStartX);
+            panY = touchPanPY + (t.clientY - touchPanStartY);
+            clampPan();
+            applyTransform(false);
+          }
+          e.preventDefault();
+        }, { passive: false });
+
+        lbViewport.addEventListener('touchend', function (e) {
+          Array.from(e.changedTouches).forEach(function (t) { delete touches[t.identifier]; });
         });
+      }
 
-        // Drag/pan (mouse)
-        var isDragging = false;
-        var dragStartX, dragStartY, panStartX, panStartY;
-        if(lbViewport) {
-            lbViewport.addEventListener('mousedown', function(e) {
-                if (zoomScale <= 1) return;
-                if (e.button !== 0) return;
-                isDragging = true;
-                dragStartX = e.clientX;
-                dragStartY = e.clientY;
-                panStartX = panX;
-                panStartY = panY;
-                lbViewport.style.cursor = 'grabbing';
-                e.preventDefault();
-            });
-            window.addEventListener('mousemove', function(e) {
-                if (!isDragging) return;
-                panX = panStartX + (e.clientX - dragStartX);
-                panY = panStartY + (e.clientY - dragStartY);
-                clampPan();
-                applyTransform(false);
-            });
-            window.addEventListener('mouseup', function() {
-                if (!isDragging) return;
-                isDragging = false;
-                lbViewport.style.cursor = zoomScale > 1 ? 'grab' : 'default';
-            });
+      // Keyboard: arrow keys to navigate, Escape to close, +/- to zoom
+      document.addEventListener('keydown', function (e) {
+        if (lb.style.display === 'none') return;
+        if (e.key === 'Escape') {
+          lb.style.display = 'none';
+          if (lbMedia) lbMedia.innerHTML = '';
+          resetZoom(false);
+        } else if (e.key === 'ArrowLeft') {
+          lbIndex = (lbIndex - 1 + images.length) % images.length;
+          updateLb();
+        } else if (e.key === 'ArrowRight') {
+          lbIndex = (lbIndex + 1) % images.length;
+          updateLb();
+        } else if (e.key === '+' || e.key === '=') {
+          zoomTo(zoomScale + ZOOM_STEP, 0, 0, true);
+        } else if (e.key === '-') {
+          zoomTo(zoomScale - ZOOM_STEP, 0, 0, true);
+        } else if (e.key === '0') {
+          resetZoom(true);
         }
-
-        // Touch: pinch-to-zoom + pan
-        var touches = {};
-        var pinchStartDist = 0;
-        var pinchStartScale = 1;
-        var touchPanStartX = 0, touchPanStartY = 0;
-        var touchPanPX = 0, touchPanPY = 0;
-
-        if(lbViewport) {
-            lbViewport.addEventListener('touchstart', function(e) {
-                Array.from(e.changedTouches).forEach(function(t) { touches[t.identifier] = t; });
-                var ids = Object.keys(touches);
-                if (ids.length === 2) {
-                    var t1 = touches[ids[0]], t2 = touches[ids[1]];
-                    pinchStartDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-                    pinchStartScale = zoomScale;
-                } else if (ids.length === 1) {
-                    var t = touches[ids[0]];
-                    touchPanStartX = t.clientX;
-                    touchPanStartY = t.clientY;
-                    touchPanPX = panX;
-                    touchPanPY = panY;
-                }
-                e.preventDefault();
-            }, { passive: false });
-
-            lbViewport.addEventListener('touchmove', function(e) {
-                Array.from(e.changedTouches).forEach(function(t) { touches[t.identifier] = t; });
-                var ids = Object.keys(touches);
-                if (ids.length === 2) {
-                    var t1 = touches[ids[0]], t2 = touches[ids[1]];
-                    var dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-                    var newScale = pinchStartScale * (dist / pinchStartDist);
-                    zoomTo(newScale, 0, 0, false);
-                } else if (ids.length === 1 && zoomScale > 1) {
-                    var t = touches[ids[0]];
-                    panX = touchPanPX + (t.clientX - touchPanStartX);
-                    panY = touchPanPY + (t.clientY - touchPanStartY);
-                    clampPan();
-                    applyTransform(false);
-                }
-                e.preventDefault();
-            }, { passive: false });
-
-            lbViewport.addEventListener('touchend', function(e) {
-                Array.from(e.changedTouches).forEach(function(t) { delete touches[t.identifier]; });
-            });
-        }
-
-        // Keyboard: arrow keys to navigate, Escape to close, +/- to zoom
-        document.addEventListener('keydown', function(e) {
-            if (lb.style.display === 'none') return;
-            if (e.key === 'Escape') {
-                lb.style.display = 'none';
-                if(lbMedia) lbMedia.innerHTML = '';
-                resetZoom(false);
-            } else if (e.key === 'ArrowLeft') {
-                lbIndex = (lbIndex - 1 + images.length) % images.length;
-                updateLb();
-            } else if (e.key === 'ArrowRight') {
-                lbIndex = (lbIndex + 1) % images.length;
-                updateLb();
-            } else if (e.key === '+' || e.key === '=') {
-                zoomTo(zoomScale + ZOOM_STEP, 0, 0, true);
-            } else if (e.key === '-') {
-                zoomTo(zoomScale - ZOOM_STEP, 0, 0, true);
-            } else if (e.key === '0') {
-                resetZoom(true);
-            }
-        });
+      });
     }
   }
 
@@ -2165,8 +2254,12 @@
     plus.addEventListener('click', function () {
       var val = parseInt(input.value, 10) || 1;
       var max = parseInt(input.max, 10) || 99;
-      if (val < max) input.value = val + 1;
-      else alert('Số lượng vượt quá sản phẩm hiện có trong kho (' + max + ')');
+      if (val < max) {
+        input.value = val + 1;
+      } else {
+        if (window.showToast) window.showToast('Số lượng vượt quá sản phẩm hiện có trong kho (' + max + ')', 'warning');
+        else alert('Số lượng vượt quá sản phẩm hiện có trong kho (' + max + ')');
+      }
     });
 
     input.addEventListener('change', function () {
@@ -2175,41 +2268,94 @@
       if (isNaN(val) || val < 1) input.value = 1;
       else if (val > max) {
         input.value = max;
-        alert('Số lượng vượt quá sản phẩm hiện có trong kho (' + max + ')');
+        if (window.showToast) window.showToast('Số lượng vượt quá sản phẩm hiện có trong kho (' + max + ')', 'warning');
+        else alert('Số lượng vượt quá sản phẩm hiện có trong kho (' + max + ')');
       }
     });
   }
 
-  // -- Add to cart (real CartAPI) --
-  window.updateVariantDisplay = function(v, p) {
-    if (!p) p = window.currentProductData;
-    if (!v && p.variants && p.variants.length > 0) v = p.variants[0];
-
-    // Cập nhật giá
-    var currentPrice = v ? v.price : (p.basePrice || 0);
+  // Helper xử lý giao diện giá và nút cho sản phẩm có giá 0đ (Liên hệ)
+  window.renderDetailPriceUI = function (price, minPrice, maxPrice) {
     var priceEl = document.getElementById('detail-price');
-    if (priceEl) {
-      if (currentPrice === 0) {
-        priceEl.textContent = 'LIÊN HỆ';
-        priceEl.style.color = '#d32f2f';
-        priceEl.style.textTransform = 'uppercase';
-        if (priceEl.tagName === 'A') priceEl.href = "contact";
+    var stickyPriceEl = document.getElementById('sticky-price');
+    var cartBtn = document.getElementById('btn-add-cart');
+    var buyNowBtn = document.getElementById('btn-buy-now');
+    var stickyCartBtn = document.getElementById('sticky-btn-cart');
+    var stickyBuyBtn = document.getElementById('sticky-btn-buy');
+
+    var isContact = false;
+    var priceHtml = '';
+
+    if (minPrice !== undefined && maxPrice !== undefined && minPrice !== null && maxPrice !== null && minPrice !== maxPrice) {
+      if (minPrice <= 0) {
+        priceHtml = '<a href="contact.html" style="color:#d32f2f; text-transform:uppercase; text-decoration:none;">LIÊN HỆ</a> - ' + window.formatVND(maxPrice);
       } else {
-        priceEl.textContent = window.formatVND(currentPrice);
-        priceEl.style.color = 'var(--color-accent)';
-        priceEl.style.textTransform = 'none';
-        if (priceEl.tagName === 'A') priceEl.removeAttribute('href');
+        priceHtml = window.formatVND(minPrice) + ' - ' + window.formatVND(maxPrice);
+      }
+    } else {
+      var val = (price !== undefined && price !== null) ? price : (minPrice !== undefined && minPrice !== null ? minPrice : 0);
+      if (val <= 0) {
+        isContact = true;
+        priceHtml = '<a href="contact.html" style="color:#d32f2f; text-transform:uppercase; text-decoration:none;">LIÊN HỆ</a>';
+      } else {
+        priceHtml = window.formatVND(val);
       }
     }
 
-    // Cập nhật giá & nút ở sticky bar
-    var stickyPriceEl = document.getElementById('sticky-price');
-    if (stickyPriceEl) {
-      stickyPriceEl.textContent = currentPrice === 0 ? 'LIÊN HỆ' : window.formatVND(currentPrice);
+    if (priceEl) {
+      if (isContact) {
+        if (priceEl.tagName === 'A') {
+          priceEl.textContent = 'LIÊN HỆ';
+          priceEl.href = 'contact.html';
+          priceEl.style.color = '#d32f2f';
+          priceEl.style.textTransform = 'uppercase';
+          priceEl.style.textDecoration = 'none';
+        } else {
+          priceEl.innerHTML = priceHtml;
+        }
+      } else {
+        if (priceEl.tagName === 'A') {
+          priceEl.textContent = priceHtml;
+          priceEl.removeAttribute('href');
+          priceEl.style.color = 'var(--color-accent)';
+          priceEl.style.textTransform = 'none';
+        } else {
+          priceEl.innerHTML = priceHtml;
+          priceEl.style.color = 'var(--color-accent)';
+          priceEl.style.textTransform = 'none';
+        }
+      }
     }
-    var stickyBtnBuy = document.getElementById('sticky-btn-buy');
-    if (stickyBtnBuy) {
-      stickyBtnBuy.textContent = currentPrice === 0 ? 'LIÊN HỆ' : 'MUA NGAY';
+
+    if (stickyPriceEl) {
+      stickyPriceEl.innerHTML = isContact ? '<a href="contact.html" style="color:#d32f2f; text-decoration:none; font-weight:700;">LIÊN HỆ</a>' : priceHtml;
+    }
+
+    var qtyControl = document.querySelector('.quantity-control');
+    if (isContact) {
+      if (cartBtn) cartBtn.style.display = 'none';
+      if (stickyCartBtn) stickyCartBtn.style.display = 'none';
+      if (qtyControl) qtyControl.style.display = 'none';
+      if (buyNowBtn) buyNowBtn.textContent = 'LIÊN HỆ TƯ VẤN';
+      if (stickyBuyBtn) stickyBuyBtn.textContent = 'LIÊN HỆ';
+    } else {
+      if (cartBtn) cartBtn.style.display = '';
+      if (stickyCartBtn) stickyCartBtn.style.display = '';
+      if (qtyControl) qtyControl.style.display = '';
+      if (buyNowBtn && buyNowBtn.textContent === 'LIÊN HỆ TƯ VẤN') buyNowBtn.textContent = 'MUA NGAY';
+      if (stickyBuyBtn && stickyBuyBtn.textContent === 'LIÊN HỆ') stickyBuyBtn.textContent = 'MUA NGAY';
+    }
+  };
+
+  // -- Add to cart (real CartAPI) --
+  window.updateVariantDisplay = function (v, p) {
+    if (!p) p = window.currentProductData;
+    if (!v && p.variants && p.variants.length > 0) v = p.variants[0];
+
+    // Cập nhật giá & nút UI
+    var currentPrice = v ? v.price : (p.basePrice || 0);
+    if (window.renderDetailPriceUI) {
+      window.renderDetailPriceUI(currentPrice);
     }
 
     // Cập nhật tình trạng tồn kho
@@ -2262,54 +2408,54 @@
     var firstMedia = targetImages[0];
 
     var mainMediaHtml = renderMediaHtml(firstMedia, false);
-    var thumbnailsHTML = targetImages.map(function(src, i) {
-        var isLocalVid = !!src.match(/\.(mp4|mov|avi|webm|ogg)$/i);
-        var platform = getPlatform(src);
-        var isExternalVid = platform !== 'other' && platform !== 'unknown';
-        var innerHtml = '';
-        var mediaType = 'image';
+    var thumbnailsHTML = targetImages.map(function (src, i) {
+      var isLocalVid = !!src.match(/\.(mp4|mov|avi|webm|ogg)$/i);
+      var platform = getPlatform(src);
+      var isExternalVid = platform !== 'other' && platform !== 'unknown';
+      var innerHtml = '';
+      var mediaType = 'image';
 
-        if (isLocalVid) {
-           innerHtml = '<video src="' + src + '" style="width:100%;height:100%;object-fit:cover;" muted></video>';
-           mediaType = 'video';
-        } else if (isExternalVid) {
-           var staticThumb = getAutoThumbnail(src);
-           if (platform === 'youtube' && staticThumb) {
-             innerHtml =
-               '<img src="' + staticThumb + '" alt="video" style="width:100%;height:100%;object-fit:cover;">' +
-               '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;z-index:2;">' +
-                 '<div style="width:28px;height:28px;background:#ff0000;border-radius:50%;display:flex;align-items:center;justify-content:center;">' +
-                   '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>' +
-                 '</div></div>';
-           } else if (platform === 'facebook') {
-             var fbEmbedUrl = toEmbedUrl(src);
-             innerHtml = '<div style="width:100%;height:100%;position:relative;overflow:hidden;pointer-events:none;background:#000;display:flex;align-items:center;justify-content:center;">' +
-                           '<iframe src="' + fbEmbedUrl + '&width=250" scrolling="no" frameborder="0" allow="autoplay;clipboard-write;encrypted-media;picture-in-picture;web-share" allowfullscreen style="width:250px;height:250px;border:none;pointer-events:none;transform:scale(0.45);transform-origin:center;" tabindex="-1"></iframe>' +
-                           '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.2);z-index:10;"></div>' +
-                           '<div style="position:absolute;z-index:11;width:28px;height:28px;background:#1877f2;border-radius:50%;display:flex;align-items:center;justify-content:center;">' +
-                             '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>' +
-                           '</div></div>';
-           } else if (platform === 'tiktok') {
-             var ttMatch = src.match(/video\/(\d+)/);
-             if (ttMatch) {
-               innerHtml = '<div style="width:100%;height:100%;position:relative;overflow:hidden;pointer-events:none;background:#000;display:flex;align-items:center;justify-content:center;">' +
-                             '<iframe src="https://www.tiktok.com/player/v1/' + ttMatch[1] + '?music_info=0&description=0&native_context_menu=0" scrolling="no" frameborder="0" allowfullscreen style="width:300px;height:400px;border:none;pointer-events:none;transform:scale(0.3);transform-origin:center;" tabindex="-1"></iframe>' +
-                             '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.2);z-index:10;"></div>' +
-                             '<div style="position:absolute;z-index:11;width:28px;height:28px;background:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;">' +
-                               '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>' +
-                             '</div></div>';
-             } else {
-               innerHtml = buildPlatformBadge(platform);
-             }
-           } else {
-             innerHtml = buildPlatformBadge(platform);
-           }
-           mediaType = 'iframe';
+      if (isLocalVid) {
+        innerHtml = '<video src="' + src + '" style="width:100%;height:100%;object-fit:cover;" muted></video>';
+        mediaType = 'video';
+      } else if (isExternalVid) {
+        var staticThumb = getAutoThumbnail(src);
+        if (platform === 'youtube' && staticThumb) {
+          innerHtml =
+            '<img src="' + staticThumb + '" alt="video" style="width:100%;height:100%;object-fit:cover;">' +
+            '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;z-index:2;">' +
+            '<div style="width:28px;height:28px;background:#ff0000;border-radius:50%;display:flex;align-items:center;justify-content:center;">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>' +
+            '</div></div>';
+        } else if (platform === 'facebook') {
+          var fbEmbedUrl = toEmbedUrl(src);
+          innerHtml = '<div style="width:100%;height:100%;position:relative;overflow:hidden;pointer-events:none;background:#000;display:flex;align-items:center;justify-content:center;">' +
+            '<iframe src="' + fbEmbedUrl + '&width=250" scrolling="no" frameborder="0" allow="autoplay;clipboard-write;encrypted-media;picture-in-picture;web-share" allowfullscreen style="width:250px;height:250px;border:none;pointer-events:none;transform:scale(0.45);transform-origin:center;" tabindex="-1"></iframe>' +
+            '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.2);z-index:10;"></div>' +
+            '<div style="position:absolute;z-index:11;width:28px;height:28px;background:#1877f2;border-radius:50%;display:flex;align-items:center;justify-content:center;">' +
+            '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>' +
+            '</div></div>';
+        } else if (platform === 'tiktok') {
+          var ttMatch = src.match(/video\/(\d+)/);
+          if (ttMatch) {
+            innerHtml = '<div style="width:100%;height:100%;position:relative;overflow:hidden;pointer-events:none;background:#000;display:flex;align-items:center;justify-content:center;">' +
+              '<iframe src="https://www.tiktok.com/player/v1/' + ttMatch[1] + '?music_info=0&description=0&native_context_menu=0" scrolling="no" frameborder="0" allowfullscreen style="width:300px;height:400px;border:none;pointer-events:none;transform:scale(0.3);transform-origin:center;" tabindex="-1"></iframe>' +
+              '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.2);z-index:10;"></div>' +
+              '<div style="position:absolute;z-index:11;width:28px;height:28px;background:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;">' +
+              '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>' +
+              '</div></div>';
+          } else {
+            innerHtml = buildPlatformBadge(platform);
+          }
         } else {
-           innerHtml = '<img src="' + src + '" alt="ảnh ' + (i + 1) + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;">';
-           mediaType = 'image';
+          innerHtml = buildPlatformBadge(platform);
         }
-        return '<button class="product-thumbnail' + (i === 0 ? ' active' : '') + '" data-src="' + src + '" data-type="' + mediaType + '" aria-label="Ảnh ' + (i + 1) + '" style="position:relative;overflow:hidden;">' + innerHtml + '</button>';
+        mediaType = 'iframe';
+      } else {
+        innerHtml = '<img src="' + src + '" alt="ảnh ' + (i + 1) + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;">';
+        mediaType = 'image';
+      }
+      return '<button class="product-thumbnail' + (i === 0 ? ' active' : '') + '" data-src="' + src + '" data-type="' + mediaType + '" aria-label="Ảnh ' + (i + 1) + '" style="position:relative;overflow:hidden;">' + innerHtml + '</button>';
     }).join('');
 
     var mainContainer = document.getElementById('gallery-main');
@@ -2328,279 +2474,292 @@
     var cartBtn = document.getElementById('btn-add-cart');
     var buyNowBtn = document.getElementById('btn-buy-now');
     var attrBtns = document.querySelectorAll('.btn-variant-attr');
-    
+
     var currentPrice = product.basePrice || (product.variants && product.variants.length ? product.variants[0].price : 0);
     var currentSizeStr = null;
     var currentImages = product.images;
     var currentVariantId = null;
 
     if (attrBtns.length > 0) {
-        // Handle click on any attribute button
-        attrBtns.forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                if (btn.classList.contains('disabled')) return; // Do not allow clicking disabled
+      // Handle click on any attribute button
+      attrBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (btn.classList.contains('disabled')) return; // Do not allow clicking disabled
 
-                var group = btn.closest('.attr-group');
-                if (group) {
-                    var isActive = btn.classList.contains('active');
-                    group.querySelectorAll('.btn-variant-attr').forEach(function(b) { b.classList.remove('active'); });
-                    if (!isActive) {
-                        btn.classList.add('active');
-                    }
-                }
-                checkMatchingVariant();
-            });
-        });
-
-        // Auto select ONLY if a group has exactly ONE option
-        document.querySelectorAll('.attr-group').forEach(function(group) {
-            var btns = group.querySelectorAll('.btn-variant-attr');
-            if (btns.length === 1) {
-                btns[0].classList.add('active');
+          var group = btn.closest('.attr-group');
+          if (group) {
+            var isActive = btn.classList.contains('active');
+            group.querySelectorAll('.btn-variant-attr').forEach(function (b) { b.classList.remove('active'); });
+            if (!isActive) {
+              btn.classList.add('active');
             }
+          }
+          checkMatchingVariant();
         });
-        
-        checkMatchingVariant();
+      });
+
+      // Auto select ONLY if a group has exactly ONE option
+      document.querySelectorAll('.attr-group').forEach(function (group) {
+        var btns = group.querySelectorAll('.btn-variant-attr');
+        if (btns.length === 1) {
+          btns[0].classList.add('active');
+        }
+      });
+
+      checkMatchingVariant();
     } else if (product.variants && product.variants.length === 1) {
-        window.currentSelectedVariant = product.variants[0];
-        currentVariantId = product.variants[0].id;
-        currentPrice = product.variants[0].price || product.basePrice || 0;
-        
-        var sizeParts = [];
-        var v = product.variants[0];
-        var size = v.sizeName || v.size;
-        if (size) sizeParts.push(size);
-        if (v.patternName) sizeParts.push(v.patternName);
-        if (v.colorName) sizeParts.push(v.colorName);
-        if (v.productTypeName) sizeParts.push(v.productTypeName);
-        if (v.materialName) sizeParts.push(v.materialName);
-        currentSizeStr = sizeParts.join(' · ') || null;
-        currentImages = v.images && v.images.length > 0 ? v.images : product.images;
-        
-        var priceEl = document.getElementById('detail-price');
-        if (priceEl) {
-            priceEl.textContent = window.formatVND(currentPrice);
-            priceEl.style.color = 'var(--color-accent)';
-        }
-        var statusEl = document.getElementById('spec-status');
-        if (statusEl) {
-            statusEl.innerHTML = '<span class="status-badge active">Còn hàng' + (v.stock ? ' (' + v.stock + ' sản phẩm)' : '') + '</span>';
-        }
-        
-        if (window.updateVariantDisplayExternal) window.updateVariantDisplayExternal(v, product);
+      window.currentSelectedVariant = product.variants[0];
+      currentVariantId = product.variants[0].id;
+      currentPrice = product.variants[0].price || product.basePrice || 0;
+
+      var sizeParts = [];
+      var v = product.variants[0];
+      var size = v.sizeName || v.size;
+      if (size) sizeParts.push(size);
+      if (v.patternName) sizeParts.push(v.patternName);
+      if (v.colorName) sizeParts.push(v.colorName);
+      if (v.productTypeName) sizeParts.push(v.productTypeName);
+      if (v.materialName) sizeParts.push(v.materialName);
+      currentSizeStr = sizeParts.join(' · ') || null;
+      currentImages = v.images && v.images.length > 0 ? v.images : product.images;
+
+      if (window.renderDetailPriceUI) {
+        window.renderDetailPriceUI(currentPrice);
+      }
+      var statusEl = document.getElementById('spec-status');
+      if (statusEl) {
+        statusEl.innerHTML = '<span class="status-badge active">Còn hàng' + (v.stock ? ' (' + v.stock + ' sản phẩm)' : '') + '</span>';
+      }
+
+      if (window.updateVariantDisplayExternal) window.updateVariantDisplayExternal(v, product);
     }
 
     function checkMatchingVariant() {
-        if (!product.variants || product.variants.length === 0) return;
-        
-        // 1. Get current selection from all groups
-        var selected = {};
-        document.querySelectorAll('.attr-group').forEach(function(group) {
-            var active = group.querySelector('.btn-variant-attr.active');
-            if (active) {
-                var groupKey = group.dataset.group;
-                if (groupKey === 'fallback') {
-                    selected.vid = active.dataset.vid;
-                } else {
-                    selected[groupKey] = active.dataset.val;
-                }
-            }
-        });
+      if (!product.variants || product.variants.length === 0) return;
 
-        // 2. Update button states (enable/disable based on possible combinations)
-        document.querySelectorAll('.attr-group').forEach(function(group) {
-            var groupKey = group.dataset.group;
-            if (groupKey === 'fallback') return; // Skip fallback logic for matrix
-
-            group.querySelectorAll('.btn-variant-attr').forEach(function(btn) {
-                var btnVal = btn.dataset.val;
-                
-                // Check if there is ANY variant that has this btnVal AND matches all OTHER currently selected groups
-                var isValid = product.variants.some(function(v) {
-                    // It must match this button's value
-                    var vValForGroup = v[groupKey];
-                    if (groupKey === 'sizeName' && !vValForGroup) vValForGroup = v['size'];
-                    if (vValForGroup != btnVal) return false;
-                    
-                    // It must have stock
-                    if (v.stock <= 0 && v.status !== 'active') return false; // assuming out of stock invalidates it, adapt if pre-order allowed
-
-                    // It must match all OTHER selected groups
-                    var matchesOtherSelected = true;
-                    for (var otherKey in selected) {
-                        if (otherKey !== groupKey && selected[otherKey]) {
-                            var vOtherVal = v[otherKey];
-                            if (otherKey === 'sizeName' && !vOtherVal) vOtherVal = v['size'];
-                            if (vOtherVal != selected[otherKey]) {
-                                matchesOtherSelected = false;
-                                break;
-                            }
-                        }
-                    }
-                    return matchesOtherSelected;
-                });
-
-                if (isValid) {
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
-                    btn.style.cursor = 'pointer';
-                    btn.classList.remove('disabled');
-                } else {
-                    btn.disabled = true;
-                    btn.style.opacity = '0.4';
-                    btn.style.cursor = 'not-allowed';
-                    btn.classList.add('disabled');
-                    // If the active button becomes disabled, unselect it
-                    if (btn.classList.contains('active')) {
-                        btn.classList.remove('active');
-                        delete selected[groupKey];
-                    }
-                }
-            });
-        });
-
-        // 3. Find exact match for the CURRENT selection to update price/image
-        var isFullySelected = true;
-        var selectedNames = [];
-        document.querySelectorAll('.attr-group').forEach(function(g) {
-            var activeBtn = g.querySelector('.btn-variant-attr.active');
-            if (!activeBtn) {
-                isFullySelected = false;
-            } else {
-                selectedNames.push(activeBtn.textContent.trim());
-            }
-        });
-        
-        // Update product title dynamically based on actual selection
-        var titleEl = document.getElementById('detail-product-name');
-        if (titleEl) {
-            if (selectedNames.length > 0) {
-                titleEl.textContent = product.name + ' - ' + selectedNames.join(' - ');
-            } else {
-                titleEl.textContent = product.name;
-            }
+      // 1. Get current selection from all groups
+      var selected = {};
+      document.querySelectorAll('.attr-group').forEach(function (group) {
+        var active = group.querySelector('.btn-variant-attr.active');
+        if (active) {
+          var groupKey = group.dataset.group;
+          if (groupKey === 'fallback') {
+            selected.vid = active.dataset.vid;
+          } else {
+            selected[groupKey] = active.dataset.val;
+          }
         }
+      });
 
-        var partialMatch = null;
-        if (Object.keys(selected).length > 0) {
-            partialMatch = product.variants.find(function(v) {
-                if (selected.vid) {
-                    return v.id == selected.vid;
+      // 2. Update button states (enable/disable based on possible combinations)
+      document.querySelectorAll('.attr-group').forEach(function (group) {
+        var groupKey = group.dataset.group;
+        if (groupKey === 'fallback') return; // Skip fallback logic for matrix
+
+        group.querySelectorAll('.btn-variant-attr').forEach(function (btn) {
+          var btnVal = btn.dataset.val;
+
+          // Check if there is ANY variant that has this btnVal AND matches all OTHER currently selected groups
+          var isValid = product.variants.some(function (v) {
+            // It must match this button's value
+            var vValForGroup = v[groupKey];
+            if (groupKey === 'sizeName' && !vValForGroup) vValForGroup = v['size'];
+            if (vValForGroup != btnVal) return false;
+
+            // It must have stock
+            if (v.stock <= 0 && v.status !== 'active') return false; // assuming out of stock invalidates it, adapt if pre-order allowed
+
+            // It must match all OTHER selected groups
+            var matchesOtherSelected = true;
+            for (var otherKey in selected) {
+              if (otherKey !== groupKey && selected[otherKey]) {
+                var vOtherVal = v[otherKey];
+                if (otherKey === 'sizeName' && !vOtherVal) vOtherVal = v['size'];
+                if (vOtherVal != selected[otherKey]) {
+                  matchesOtherSelected = false;
+                  break;
                 }
-                return Object.keys(selected).every(function(key) {
-                    var vVal = v[key];
-                    if (key === 'sizeName' && !vVal) vVal = v['size'];
-                    return vVal == selected[key];
-                });
-            });
-        }
-        
-        if (partialMatch && window.updateVariantDisplay) {
-            window.updateVariantDisplay(partialMatch, product);
-        } else if (!partialMatch && Object.keys(selected).length === 0 && window.updateVariantDisplay) {
-            window.updateVariantDisplay(null, product);
-        }
+              }
+            }
+            return matchesOtherSelected;
+          });
 
-        var match = isFullySelected ? partialMatch : null;
-        window.currentSelectedVariant = match;
+          if (isValid) {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+            btn.classList.remove('disabled');
+          } else {
+            btn.disabled = true;
+            btn.style.opacity = '0.4';
+            btn.style.cursor = 'not-allowed';
+            btn.classList.add('disabled');
+            // If the active button becomes disabled, unselect it
+            if (btn.classList.contains('active')) {
+              btn.classList.remove('active');
+              delete selected[groupKey];
+            }
+          }
+        });
+      });
 
-        if (match) {
-            currentPrice = parseFloat(match.price) || 0;
-            currentVariantId = match.id;
-            
-            // Build size string for cart (clean format)
-            var sizeParts = [];
-            var size = match.sizeName || match.size;
-            if (size) sizeParts.push(size);
-            if (match.patternName) sizeParts.push(match.patternName);
-            if (match.colorName) sizeParts.push(match.colorName);
-            if (match.productTypeName) sizeParts.push(match.productTypeName);
-            if (match.materialName) sizeParts.push(match.materialName);
-            
-            currentSizeStr = sizeParts.join(' · ') || null;
-            if (!currentSizeStr && selected.vid) currentSizeStr = 'Phiên bản ' + match.id;
-            
-            currentImages = match.images && match.images.length > 0 ? match.images : product.images;
-            
-            // Final update for price, stock, and exact images when fully selected
-            var priceEl = document.getElementById('detail-price');
-            if (priceEl) {
-                priceEl.textContent = window.formatVND(currentPrice);
-                priceEl.style.color = 'var(--color-accent)';
-            }
-            var statusEl = document.getElementById('spec-status');
-            if (statusEl) {
-                statusEl.innerHTML = '<span class="status-badge active">Còn hàng' + (match.stock ? ' (' + match.stock + ' sản phẩm)' : '') + '</span>';
-            }
-            if (window.updateVariantDisplayExternal) window.updateVariantDisplayExternal(match, product);
-            
-            if (cartBtn) {
-                cartBtn.classList.remove('is-incomplete');
-                cartBtn.style.opacity = '1';
-                cartBtn.style.cursor = 'pointer';
-            }
-            if (buyNowBtn) {
-                buyNowBtn.classList.remove('is-incomplete');
-                buyNowBtn.style.opacity = '1';
-                buyNowBtn.style.cursor = 'pointer';
-            }
+      // 3. Find exact match for the CURRENT selection to update price/image
+      var isFullySelected = true;
+      var selectedNames = [];
+      document.querySelectorAll('.attr-group').forEach(function (g) {
+        var activeBtn = g.querySelector('.btn-variant-attr.active');
+        if (!activeBtn) {
+          isFullySelected = false;
         } else {
-            // No match found or not fully selected
-            var priceEl = document.getElementById('detail-price');
-            if (priceEl) {
-                if (!isFullySelected) {
-                    var matchingPrices = product.variants.filter(function(v) {
-                        return Object.keys(selected).every(function(key) {
-                            var vVal = v[key];
-                            if (key === 'sizeName' && !vVal) vVal = v['size'];
-                            return vVal == selected[key];
-                        });
-                    }).map(function(v) { return v.price; });
-                    
-                    if (matchingPrices.length > 0) {
-                        var minPrice = Math.min.apply(null, matchingPrices);
-                        var maxPrice = Math.max.apply(null, matchingPrices);
-                        if (minPrice === maxPrice) {
-                            priceEl.textContent = window.formatVND(minPrice);
-                        } else {
-                            priceEl.textContent = window.formatVND(minPrice) + ' - ' + window.formatVND(maxPrice);
-                        }
-                    } else {
-                        priceEl.textContent = window.formatVND(product.basePrice || 0);
-                    }
-                    priceEl.style.color = 'var(--color-accent)';
-                } else {
-                    priceEl.textContent = 'Phân loại không tồn tại';
-                    priceEl.style.color = '#999';
-                }
-            }
-            var statusEl = document.getElementById('spec-status');
-            if (statusEl) {
-                if (!isFullySelected) {
-                    statusEl.innerHTML = '<span class="status-badge active">Vui lòng chọn phân loại</span>';
-                } else {
-                    statusEl.innerHTML = '<span class="status-badge inactive">Không khả dụng</span>';
-                }
-            }
-            
-            if (cartBtn) {
-                cartBtn.classList.add('is-incomplete');
-                cartBtn.style.opacity = '0.5';
-                cartBtn.style.cursor = 'not-allowed';
-            }
-            if (buyNowBtn) {
-                buyNowBtn.classList.add('is-incomplete');
-                buyNowBtn.style.opacity = '0.5';
-                buyNowBtn.style.cursor = 'not-allowed';
-            }
+          selectedNames.push(activeBtn.textContent.trim());
         }
+      });
+
+      // Update product title dynamically based on actual selection
+      var titleEl = document.getElementById('detail-product-name');
+      if (titleEl) {
+        var cleanNames = selectedNames.filter(function (n) {
+          var nClean = n.toLowerCase().trim();
+          var pLower = product.name.toLowerCase();
+          if (pLower.indexOf(nClean) !== -1) return false;
+          var numOnly = nClean.replace(/(cm|mm|ml|lít|l|m|kg|g)$/i, '').trim();
+          if (numOnly !== nClean && numOnly.length > 0) {
+            var regex = new RegExp('(\\b|\\s|[^0-9])' + numOnly.replace(/\./g, '\\.') + '(\\b|\\s|[^0-9]|$)');
+            if (regex.test(pLower)) return false;
+          }
+          return true;
+        });
+        if (cleanNames.length > 0) {
+          titleEl.textContent = product.name + ' - ' + cleanNames.join(' - ');
+        } else {
+          titleEl.textContent = product.name;
+        }
+      }
+
+      var partialMatch = null;
+      if (Object.keys(selected).length > 0) {
+        partialMatch = product.variants.find(function (v) {
+          if (selected.vid) {
+            return v.id == selected.vid;
+          }
+          return Object.keys(selected).every(function (key) {
+            var vVal = v[key];
+            if (key === 'sizeName' && !vVal) vVal = v['size'];
+            return vVal == selected[key];
+          });
+        });
+      }
+
+      if (partialMatch && window.updateVariantDisplay) {
+        window.updateVariantDisplay(partialMatch, product);
+      } else if (!partialMatch && Object.keys(selected).length === 0 && window.updateVariantDisplay) {
+        window.updateVariantDisplay(null, product);
+      }
+
+      var match = isFullySelected ? partialMatch : null;
+      window.currentSelectedVariant = match;
+
+      if (match) {
+        currentPrice = parseFloat(match.price) || 0;
+        currentVariantId = match.id;
+
+        // Build size string for cart (clean format)
+        var sizeParts = [];
+        var size = match.sizeName || match.size;
+        if (size) sizeParts.push(size);
+        if (match.patternName) sizeParts.push(match.patternName);
+        if (match.colorName) sizeParts.push(match.colorName);
+        if (match.productTypeName) sizeParts.push(match.productTypeName);
+        if (match.materialName) sizeParts.push(match.materialName);
+
+        currentSizeStr = sizeParts.join(' · ') || null;
+        if (!currentSizeStr && selected.vid) currentSizeStr = 'Phiên bản ' + match.id;
+
+        currentImages = match.images && match.images.length > 0 ? match.images : product.images;
+
+        // Final update for price, stock, and exact images when fully selected
+        if (window.renderDetailPriceUI) {
+          window.renderDetailPriceUI(currentPrice);
+        }
+        var statusEl = document.getElementById('spec-status');
+        if (statusEl) {
+          statusEl.innerHTML = '<span class="status-badge active">Còn hàng' + (match.stock ? ' (' + match.stock + ' sản phẩm)' : '') + '</span>';
+        }
+        if (window.updateVariantDisplayExternal) window.updateVariantDisplayExternal(match, product);
+
+        if (cartBtn) {
+          cartBtn.classList.remove('is-incomplete');
+          cartBtn.style.opacity = '1';
+          cartBtn.style.cursor = 'pointer';
+        }
+        if (buyNowBtn) {
+          buyNowBtn.classList.remove('is-incomplete');
+          buyNowBtn.style.opacity = '1';
+          buyNowBtn.style.cursor = 'pointer';
+        }
+      } else {
+        if (!isFullySelected) {
+          var matchingPrices = product.variants.filter(function (v) {
+            return Object.keys(selected).every(function (key) {
+              var vVal = v[key];
+              if (key === 'sizeName' && !vVal) vVal = v['size'];
+              return vVal == selected[key];
+            });
+          }).map(function (v) { return v.price; });
+
+          if (matchingPrices.length > 0) {
+            var minPrice = Math.min.apply(null, matchingPrices);
+            var maxPrice = Math.max.apply(null, matchingPrices);
+            if (window.renderDetailPriceUI) {
+              if (minPrice === maxPrice) {
+                window.renderDetailPriceUI(minPrice);
+              } else {
+                window.renderDetailPriceUI(null, minPrice, maxPrice);
+              }
+            }
+          } else {
+            if (window.renderDetailPriceUI) {
+              window.renderDetailPriceUI(product.basePrice || 0);
+            }
+          }
+        } else {
+          var priceEl = document.getElementById('detail-price');
+          if (priceEl) {
+            priceEl.textContent = 'Phân loại không tồn tại';
+            priceEl.style.color = '#999';
+          }
+        }
+        var statusEl = document.getElementById('spec-status');
+        if (statusEl) {
+          if (!isFullySelected) {
+            statusEl.innerHTML = '<span class="status-badge active">Vui lòng chọn phân loại</span>';
+          } else {
+            statusEl.innerHTML = '<span class="status-badge inactive">Không khả dụng</span>';
+          }
+        }
+
+        if (cartBtn) {
+          cartBtn.classList.add('is-incomplete');
+          cartBtn.style.opacity = '0.5';
+          cartBtn.style.cursor = 'not-allowed';
+        }
+        if (buyNowBtn) {
+          buyNowBtn.classList.add('is-incomplete');
+          buyNowBtn.style.opacity = '0.5';
+          buyNowBtn.style.cursor = 'not-allowed';
+        }
+      }
     }
 
     if (cartBtn) {
       cartBtn.addEventListener('click', function (e) {
+        if (currentPrice <= 0) {
+          window.location.href = "contact.html";
+          return;
+        }
         if (cartBtn.classList.contains('is-incomplete')) {
-            window.showToast('Vui lòng chọn đầy đủ phân loại hàng trước khi thêm vào giỏ', 'warning');
-            return;
+          window.showToast('Vui lòng chọn đầy đủ phân loại hàng trước khi thêm vào giỏ', 'warning');
+          return;
         }
         var qty = parseInt(document.getElementById('qty-input').value, 10) || 1;
         // Include specific variant ID as fallback or size string to differentiate in cart
@@ -2615,9 +2774,13 @@
 
     if (buyNowBtn) {
       buyNowBtn.addEventListener('click', function () {
+        if (currentPrice <= 0) {
+          window.location.href = "contact.html";
+          return;
+        }
         if (buyNowBtn.classList.contains('is-incomplete')) {
-            window.showToast('Vui lòng chọn đầy đủ phân loại hàng trước khi mua', 'warning');
-            return;
+          window.showToast('Vui lòng chọn đầy đủ phân loại hàng trước khi mua', 'warning');
+          return;
         }
         var qty = parseInt(document.getElementById('qty-input').value, 10) || 1;
         var itemToAdd = { id: product.id, slug: product.slug, name: product.name, price: currentPrice, size: currentSizeStr, images: currentImages, gifts: product.gifts };
@@ -2631,35 +2794,38 @@
     // Tạo Sticky Add To Cart (Mobile)
     var stickyHtml = document.createElement('div');
     stickyHtml.className = 'sticky-add-to-cart';
-    stickyHtml.innerHTML = 
+    stickyHtml.innerHTML =
       '<div class="sticky-add-to-cart__info">' +
-        '<div class="sticky-add-to-cart__label">Giá sản phẩm</div>' +
-        '<div class="sticky-add-to-cart__price" id="sticky-price">' + (currentPrice === 0 ? 'LIÊN HỆ' : window.formatVND(currentPrice)) + '</div>' +
+      '<div class="sticky-add-to-cart__label">Giá sản phẩm</div>' +
+      '<div class="sticky-add-to-cart__price" id="sticky-price">' + (currentPrice <= 0 ? 'LIÊN HỆ' : window.formatVND(currentPrice)) + '</div>' +
       '</div>' +
       '<div class="sticky-add-to-cart__actions">' +
-        '<button class="sticky-cart-icon-btn" id="sticky-btn-cart" aria-label="Thêm vào giỏ">' + 
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>' +
-        '</button>' +
-        '<button class="sticky-buy-now-btn" id="sticky-btn-buy">' + (currentPrice === 0 ? 'LIÊN HỆ' : 'MUA NGAY') + '</button>' +
+      '<button class="sticky-cart-icon-btn" id="sticky-btn-cart" aria-label="Thêm vào giỏ">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>' +
+      '</button>' +
+      '<button class="sticky-buy-now-btn" id="sticky-btn-buy">' + (currentPrice <= 0 ? 'LIÊN HỆ' : 'MUA NGAY') + '</button>' +
       '</div>';
     document.body.appendChild(stickyHtml);
+    if (window.renderDetailPriceUI) {
+      window.renderDetailPriceUI(currentPrice);
+    }
 
     function getStickyItemToAdd() {
       var price = window.currentSelectedVariant ? window.currentSelectedVariant.price : (product.basePrice || 0);
       var sizeStr = '';
       if (window.currentSelectedVariant && window.currentSelectedVariant.sizeName) {
-         sizeStr = window.currentSelectedVariant.sizeName;
+        sizeStr = window.currentSelectedVariant.sizeName;
       } else if (window.currentSelectedVariant && window.currentSelectedVariant.size) {
-         sizeStr = window.currentSelectedVariant.size;
+        sizeStr = window.currentSelectedVariant.size;
       } else {
-         sizeStr = product.size || '';
+        sizeStr = product.size || '';
       }
       var imgs = (window.currentSelectedVariant && window.currentSelectedVariant.images && window.currentSelectedVariant.images.length > 0) ? window.currentSelectedVariant.images : product.images;
       return { id: product.id, slug: product.slug, name: product.name, price: price, size: sizeStr, images: imgs };
     }
 
     // Logic nút thêm vào giỏ hàng ở sticky bar
-    document.getElementById('sticky-btn-cart').addEventListener('click', function(e) {
+    document.getElementById('sticky-btn-cart').addEventListener('click', function (e) {
       var hasVariants = product.variants && product.variants.length > 0;
       if (hasVariants && !window.currentSelectedVariant) {
         window.showToast('Vui lòng chọn đầy đủ phân loại hàng', 'warning');
@@ -2669,8 +2835,8 @@
         }
         return;
       }
-      if (currentPrice === 0) {
-        window.location.href = "contact";
+      if (currentPrice <= 0) {
+        window.location.href = "contact.html";
         return;
       }
       var qty = parseInt(document.getElementById('qty-input').value, 10) || 1;
@@ -2682,7 +2848,7 @@
     });
 
     // Logic nút mua ngay ở sticky bar (chuyển hướng sang giỏ hàng)
-    document.getElementById('sticky-btn-buy').addEventListener('click', function() {
+    document.getElementById('sticky-btn-buy').addEventListener('click', function () {
       var hasVariants = product.variants && product.variants.length > 0;
       if (hasVariants && !window.currentSelectedVariant) {
         window.showToast('Vui lòng chọn đầy đủ phân loại hàng', 'warning');
@@ -2692,8 +2858,8 @@
         }
         return;
       }
-      if (currentPrice === 0) {
-        window.location.href = "contact";
+      if (currentPrice <= 0) {
+        window.location.href = "contact.html";
         return;
       }
       var qty = parseInt(document.getElementById('qty-input').value, 10) || 1;
@@ -2704,7 +2870,7 @@
     });
 
     // Hiện sticky bar khi cuộn qua nút mua chính
-    var observer = new IntersectionObserver(function(entries) {
+    var observer = new IntersectionObserver(function (entries) {
       if (entries[0].isIntersecting) {
         stickyHtml.classList.remove('is-visible');
       } else {
@@ -2727,13 +2893,13 @@
     var sidebar = document.getElementById('advanced-filter-sidebar');
 
     function openSidebar() {
-      if(overlay) overlay.classList.add('is-active');
-      if(sidebar) sidebar.classList.add('is-active');
+      if (overlay) overlay.classList.add('is-active');
+      if (sidebar) sidebar.classList.add('is-active');
     }
 
     function closeSidebar() {
-      if(overlay) overlay.classList.remove('is-active');
-      if(sidebar) sidebar.classList.remove('is-active');
+      if (overlay) overlay.classList.remove('is-active');
+      if (sidebar) sidebar.classList.remove('is-active');
     }
 
     if (btnOpen) btnOpen.addEventListener('click', openSidebar);
@@ -2772,7 +2938,7 @@
           state.isPriceFiltered = false;
         }
       });
-      
+
       // Handle Apply instead of instant change
       sliderEl.noUiSlider.on('change', function () {
         updateApplyButtonCount();

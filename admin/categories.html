@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi"><head>
 <script>if(localStorage.getItem('sidebar-collapsed')==='true')document.documentElement.classList.add('sidebar-collapsed');</script>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -89,7 +89,7 @@
 </div>
 
 <div id="admin-toast-container"></div>
-<script src="js/admin-data.js?v=15"></script><script src="js/admin-core.js?v=15"></script>
+<script src="js/admin-data.js?v=20260627_fix2"></script><script src="js/admin-core.js?v=20260627_fix2"></script>
 <script>
 (function(){
   var cats = [], products = [], editId=null;
@@ -99,8 +99,8 @@
       AdminData.categories.load(),
       AdminData.products.load()
     ]).then(function(res) {
-      cats = res[0];
-      products = res[1];
+      cats = (res[0] && res[0].data && Array.isArray(res[0].data)) ? res[0].data : (Array.isArray(res[0]) ? res[0] : []);
+      products = (res[1] && res[1].data && Array.isArray(res[1].data)) ? res[1].data : (Array.isArray(res[1]) ? res[1] : []);
       renderCats();
       
       document.getElementById('btn-add-cat').addEventListener('click',function(){

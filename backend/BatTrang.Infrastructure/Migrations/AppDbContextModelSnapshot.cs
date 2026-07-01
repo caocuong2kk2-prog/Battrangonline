@@ -547,6 +547,7 @@ namespace BatTrang.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Stock")
+                        .IsConcurrencyToken()
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -862,6 +863,9 @@ namespace BatTrang.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("MarketingBadges")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MetaDescription")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")

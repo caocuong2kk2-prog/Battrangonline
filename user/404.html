@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Không tìm thấy trang. Trang bạn yêu cầu không tồn tại hoặc đã bị xóa.">
+  <meta name="robots" content="noindex">
+  <title>Không Tìm Thấy Trang – Phúc Gia Tiên</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/home.css">
+  <style>
+    .error-page-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      padding: var(--space-24, 60px) var(--space-8, 20px);
+      background-color: #f9f2ec;
+    }
+    .error-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+      background: #ffffff;
+      padding: var(--space-16, 40px);
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+      position: relative;
+      overflow: hidden;
+    }
+    .error-container::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: #C8922A;
+    }
+    .error-image {
+      max-width: 200px;
+      width: 100%;
+      height: auto;
+      margin-bottom: 24px;
+      animation: float 6s ease-in-out infinite;
+      filter: drop-shadow(0 15px 15px rgba(0,0,0,0.15));
+    }
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+      100% { transform: translateY(0px); }
+    }
+    .error-code {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 5rem;
+      font-weight: 600;
+      color: #C8922A;
+      line-height: 1;
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+    }
+    .error-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 500;
+      color: #2C1A0C;
+      margin-bottom: 16px;
+    }
+    .error-desc {
+      font-size: 1rem;
+      color: #5C3A1E;
+      margin-bottom: 32px;
+      line-height: 1.6;
+      max-width: 90%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .error-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    @media (max-width: 576px) {
+      .error-code { font-size: 4rem; }
+      .error-title { font-size: 1.8rem; }
+      .error-image { max-width: 150px; }
+    }
+  </style>
+</head>
+<body class="page-body">
+  <div id="header-placeholder"></div>
+
+  <main id="main-content">
+    <section class="error-page-wrapper">
+      <div class="error-container">
+        <img src="/assets/images/404-vase.png" alt="Chiếc bình vỡ" class="error-image" onerror="this.style.display='none'">
+        <div class="error-code">404</div>
+        <h1 class="error-title">Ôi không! Đã xảy ra lỗi...</h1>
+        <p class="error-desc">Xin lỗi, trang bạn đang tìm kiếm dường như không tồn tại, đã bị gỡ bỏ hoặc tạm thời không truy cập được. Hãy để Phúc Gia Tiên đưa bạn trở về nhé!</p>
+        <div class="error-actions">
+          <a href="/" class="btn btn--primary">Về Trang Chủ</a>
+          <a href="/products.html" class="btn btn--outline" style="color: #2C1A0C; border-color: #2C1A0C;">Xem Sản Phẩm</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/cart.js"></script>
+  <script src="/js/promo.js?v=8"></script>
+  <script src="/js/common.js"></script>
+</body>
+</html>

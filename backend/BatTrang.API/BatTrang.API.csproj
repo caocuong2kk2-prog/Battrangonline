@@ -23,6 +23,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>e632b033-4aa8-4a0f-92ef-d7b185f467b1</UserSecretsId>
+    <DefaultItemExcludes>$(DefaultItemExcludes);TestDb\**</DefaultItemExcludes>
   </PropertyGroup>
 
 </Project>

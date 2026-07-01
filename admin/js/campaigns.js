@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var isLiveServer = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && (window.location.port !== '5055' && window.location.port !== '7275');
+    var isLiveServer = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' && window.location.port !== '7275';
     var API_BASE = (isLiveServer ? 'http://localhost:5055' : '') + '/api/admin';
     var PUBLIC_API_BASE = (isLiveServer ? 'http://localhost:5055' : '') + '/api';
 

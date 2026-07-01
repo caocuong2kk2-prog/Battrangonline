@@ -282,18 +282,14 @@
     font-size: var(--fs-3xl);
   }
 
-  /* ---------- Process steps ---------- */
+  /* ---------- Process steps (3D Flip Cards Responsive) ---------- */
   .process-steps {
-    flex-wrap: wrap;
-    gap: var(--space-6);
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
   }
 
-  .process-step {
-    flex: 0 0 calc(50% - var(--space-3));
-  }
-
-  .process-connector {
-    display: none;
+  .process-step-flip {
+    height: 320px;
   }
 
   /* ---------- About stats ---------- */
@@ -543,6 +539,10 @@
 
   .product-actions .btn {
     width: 100%;
+  }
+
+  .process-steps {
+    grid-template-columns: 1fr;
   }
 }
 

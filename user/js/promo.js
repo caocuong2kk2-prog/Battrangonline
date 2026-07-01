@@ -13,7 +13,7 @@
         transition: padding-top 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
       }
       #site-header {
-        transition: top 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease, box-shadow 0.3s ease !important;
+        transition: background 0.3s ease, box-shadow 0.3s ease !important;
       }
       #top-promo-banner {
         position: absolute;
@@ -328,11 +328,11 @@
     if (!window.PhucGiaTienAPI) return;
 
     window.PhucGiaTienAPI.getActiveCampaign()
-      .then(function(campaign) {
+      .then(function (campaign) {
         if (!campaign || !campaign.id) return;
         initPromo(campaign);
       })
-      .catch(function(err) {
+      .catch(function (err) {
         console.log('No active campaign.');
       });
 
@@ -372,134 +372,134 @@
         </div>
       `;
 
-    // Chèn vào trước body.firstChild, đảm bảo không có khoảng trắng
-    document.body.style.margin = '0';
-    document.body.style.padding = '0';
-    document.body.insertBefore(banner, document.body.firstChild);
+      // Chèn vào trước body.firstChild, đảm bảo không có khoảng trắng
+      document.body.style.margin = '0';
+      document.body.style.padding = '0';
+      document.body.insertBefore(banner, document.body.firstChild);
 
-    // Đẩy header xuống dưới banner và bù padding-top nội dung trang
-    function getHeader() {
-      return document.getElementById('site-header');
-    }
-
-    function updateLayout() {
-      const header = getHeader();
-      if (!header) return;
-      const bh = banner.offsetHeight;
-      const scrolled = window.scrollY;
-
-      // Header luôn ngay dưới banner khi chưa cuộn qua banner
-      if (scrolled >= bh) {
-        header.style.top = '0px';
-      } else {
-        header.style.top = (bh - scrolled) + 'px';
+      // Đẩy header xuống dưới banner và bù padding-top nội dung trang
+      function getHeader() {
+        return document.getElementById('site-header');
       }
-    }
 
-    function applyInitialLayout() {
-      const header = getHeader();
-      if (!header) return;
-      
-      const bh = banner.offsetHeight;
+      function updateLayout() {
+        const header = getHeader();
+        if (!header) return;
+        const bh = banner.offsetHeight;
+        const scrolled = window.scrollY;
 
-      // Set header ngay dưới banner
-      header.style.top = bh + 'px';
+        // Header luôn ngay dưới banner khi chưa cuộn qua banner
+        if (scrolled >= bh) {
+          header.style.top = '0px';
+        } else {
+          header.style.top = (bh - scrolled) + 'px';
+        }
+      }
 
-      // Tạo biến CSS để các element khác tự đẩy xuống (như .page-body)
-      document.documentElement.style.setProperty('--promo-banner-height', bh + 'px');
-    }
+      function applyInitialLayout() {
+        const header = getHeader();
+        if (!header) return;
 
-    // Vì header được tải bất đồng bộ qua common.js fetch, ta cần thử cập nhật định kỳ cho đến khi header xuất hiện
-    let checkHeaderInterval = setInterval(function() {
-      if (getHeader()) {
+        const bh = banner.offsetHeight;
+
+        // Set header ngay dưới banner
+        header.style.top = bh + 'px';
+
+        // Tạo biến CSS để các element khác tự đẩy xuống (như .page-body)
+        document.documentElement.style.setProperty('--promo-banner-height', bh + 'px');
+      }
+
+      // Vì header được tải bất đồng bộ qua common.js fetch, ta cần thử cập nhật định kỳ cho đến khi header xuất hiện
+      let checkHeaderInterval = setInterval(function () {
+        if (getHeader()) {
+          applyInitialLayout();
+          updateLayout();
+          clearInterval(checkHeaderInterval);
+        }
+      }, 50);
+
+      // Timeout phòng hờ nếu header load quá nhanh
+      setTimeout(applyInitialLayout, 50);
+      window.addEventListener('scroll', updateLayout, { passive: true });
+      window.addEventListener('resize', function () {
         applyInitialLayout();
         updateLayout();
-        clearInterval(checkHeaderInterval);
-      }
-    }, 50);
+      }, { passive: true });
 
-    // Timeout phòng hờ nếu header load quá nhanh
-    setTimeout(applyInitialLayout, 50);
-    window.addEventListener('scroll', updateLayout, { passive: true });
-    window.addEventListener('resize', function () {
-      applyInitialLayout();
-      updateLayout();
-    }, { passive: true });
+      // Countdown for banner
+      function updateBannerCountdown() {
+        const now = new Date();
+        let isUpcoming = now < START_DATE;
+        let targetDate = isUpcoming ? START_DATE : END_DATE;
+        let diff = targetDate - now;
 
-    // Countdown for banner
-    function updateBannerCountdown() {
-      const now = new Date();
-      let isUpcoming = now < START_DATE;
-      let targetDate = isUpcoming ? START_DATE : END_DATE;
-      let diff = targetDate - now;
-
-      if (diff <= 0 && isUpcoming) {
-        isUpcoming = false;
-        targetDate = END_DATE;
-        diff = targetDate - now;
-        const lbl = document.getElementById('promo-banner-label');
-        if (lbl) lbl.innerHTML = `Giảm đến <strong style="color:#d4a853;">${discount}%</strong> — Kết thúc sau:`;
-        const btnText = document.getElementById('promo-banner-btn-text');
-        if (btnText) btnText.innerText = 'MUA NGAY';
-      }
-
-      if (diff <= 0) return;
-      const d = Math.floor(diff / 864e5);
-      const h = Math.floor((diff / 36e5) % 24);
-      const m = Math.floor((diff / 6e4) % 60);
-      const s = Math.floor((diff / 1e3) % 60);
-      const el = (id) => document.getElementById(id);
-      if (el('promo-days')) el('promo-days').textContent = String(d).padStart(2, '0');
-      if (el('promo-hours')) el('promo-hours').textContent = String(h).padStart(2, '0');
-      if (el('promo-minutes')) el('promo-minutes').textContent = String(m).padStart(2, '0');
-      if (el('promo-seconds')) el('promo-seconds').textContent = String(s).padStart(2, '0');
-    }
-    updateBannerCountdown();
-    setInterval(updateBannerCountdown, 1000);
-
-    // ══════════════════════════════════════════════
-    // 2. POPUP — chỉ hiện 1 lần/session
-    // ══════════════════════════════════════════════
-    if (sessionStorage.getItem('promoPopupShown')) return;
-
-    setTimeout(function () {
-      const overlay = document.createElement('div');
-      overlay.id = 'promo-popup-overlay';
-
-      let bannerHtml = '';
-      if (campaign.bannerImage) {
-        let imgUrl = campaign.bannerImage;
-
-        // Make sure upload path begins with a slash
-        let uploadIdx = imgUrl.indexOf('uploads/');
-        if (uploadIdx !== -1) {
-             imgUrl = '/' + imgUrl.substring(uploadIdx);
+        if (diff <= 0 && isUpcoming) {
+          isUpcoming = false;
+          targetDate = END_DATE;
+          diff = targetDate - now;
+          const lbl = document.getElementById('promo-banner-label');
+          if (lbl) lbl.innerHTML = `Giảm đến <strong style="color:#d4a853;">${discount}%</strong> — Kết thúc sau:`;
+          const btnText = document.getElementById('promo-banner-btn-text');
+          if (btnText) btnText.innerText = 'MUA NGAY';
         }
 
-        if (imgUrl.startsWith('/uploads/')) {
-          let dynamicBase = '';
-          
-          if (window.PhucGiaTienAPI && window.PhucGiaTienAPI.apiBase && window.PhucGiaTienAPI.apiBase.startsWith('http')) {
+        if (diff <= 0) return;
+        const d = Math.floor(diff / 864e5);
+        const h = Math.floor((diff / 36e5) % 24);
+        const m = Math.floor((diff / 6e4) % 60);
+        const s = Math.floor((diff / 1e3) % 60);
+        const el = (id) => document.getElementById(id);
+        if (el('promo-days')) el('promo-days').textContent = String(d).padStart(2, '0');
+        if (el('promo-hours')) el('promo-hours').textContent = String(h).padStart(2, '0');
+        if (el('promo-minutes')) el('promo-minutes').textContent = String(m).padStart(2, '0');
+        if (el('promo-seconds')) el('promo-seconds').textContent = String(s).padStart(2, '0');
+      }
+      updateBannerCountdown();
+      setInterval(updateBannerCountdown, 1000);
+
+      // ══════════════════════════════════════════════
+      // 2. POPUP — chỉ hiện 1 lần/session
+      // ══════════════════════════════════════════════
+      if (sessionStorage.getItem('promoPopupShown')) return;
+
+      setTimeout(function () {
+        const overlay = document.createElement('div');
+        overlay.id = 'promo-popup-overlay';
+
+        let bannerHtml = '';
+        if (campaign.bannerImage) {
+          let imgUrl = campaign.bannerImage;
+
+          // Make sure upload path begins with a slash
+          let uploadIdx = imgUrl.indexOf('uploads/');
+          if (uploadIdx !== -1) {
+            imgUrl = '/' + imgUrl.substring(uploadIdx);
+          }
+
+          if (imgUrl.startsWith('/uploads/')) {
+            let dynamicBase = '';
+
+            if (window.PhucGiaTienAPI && window.PhucGiaTienAPI.apiBase && window.PhucGiaTienAPI.apiBase.startsWith('http')) {
               dynamicBase = window.PhucGiaTienAPI.apiBase.replace(/\/api\/?$/, '');
-          } else if ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055') {
+            } else if ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055') {
               dynamicBase = 'http://localhost:5055';
-          }
-          
-          imgUrl = dynamicBase + imgUrl;
-        } else if (!imgUrl.startsWith('http')) {
-          let dynamicBase = '';
-          if (window.PhucGiaTienAPI && window.PhucGiaTienAPI.apiBase && window.PhucGiaTienAPI.apiBase.startsWith('http')) {
+            }
+
+            imgUrl = dynamicBase + imgUrl;
+          } else if (!imgUrl.startsWith('http')) {
+            let dynamicBase = '';
+            if (window.PhucGiaTienAPI && window.PhucGiaTienAPI.apiBase && window.PhucGiaTienAPI.apiBase.startsWith('http')) {
               dynamicBase = window.PhucGiaTienAPI.apiBase.replace(/\/api\/?$/, '');
+            }
+            imgUrl = dynamicBase + (imgUrl.startsWith('/') ? '' : '/') + imgUrl;
           }
-          imgUrl = dynamicBase + (imgUrl.startsWith('/') ? '' : '/') + imgUrl;
+          bannerHtml = `<img src="${imgUrl}" class="promo-popup__image" alt="Promo" width="600" height="300" decoding="async">`;
         }
-        bannerHtml = `<img src="${imgUrl}" class="promo-popup__image" alt="Promo">`;
-      }
 
-      const popupTitle = isUpcoming ? `Sắp diễn ra<span> ${campaignName}</span>` : `Ưu đãi<span> ${campaignName}</span>`;
-      const popupCta = isUpcoming ? 'Xem trước ưu đãi' : 'Mua Sắm Ngay';
+        const popupTitle = isUpcoming ? `Sắp diễn ra<span> ${campaignName}</span>` : `Ưu đãi<span> ${campaignName}</span>`;
+        const popupCta = isUpcoming ? 'Xem trước ưu đãi' : 'Mua Sắm Ngay';
 
-      overlay.innerHTML = `
+        overlay.innerHTML = `
         <div id="promo-popup-card">
           <button class="promo-popup__close" id="close-promo-popup" aria-label="Đóng">&times;</button>
           ${bannerHtml}
@@ -528,24 +528,24 @@
         </div>
       `;
 
-      document.body.appendChild(overlay);
+        document.body.appendChild(overlay);
 
-      // Animate in
-      requestAnimationFrame(() => {
+        // Animate in
         requestAnimationFrame(() => {
-          overlay.style.opacity = '1';
-          document.getElementById('promo-popup-card').style.transform = 'scale(1) translateY(0)';
+          requestAnimationFrame(() => {
+            overlay.style.opacity = '1';
+            document.getElementById('promo-popup-card').style.transform = 'scale(1) translateY(0)';
+          });
         });
-      });
 
-      // Popup countdown
-      function updatePopupCountdown() {
-        const now = new Date();
-        let isUpcomingPopup = now < START_DATE;
-        let targetDate = isUpcomingPopup ? START_DATE : END_DATE;
-        let diff = targetDate - now;
+        // Popup countdown
+        function updatePopupCountdown() {
+          const now = new Date();
+          let isUpcomingPopup = now < START_DATE;
+          let targetDate = isUpcomingPopup ? START_DATE : END_DATE;
+          let diff = targetDate - now;
 
-        if (diff <= 0 && isUpcomingPopup) {
+          if (diff <= 0 && isUpcomingPopup) {
             isUpcomingPopup = false;
             targetDate = END_DATE;
             diff = targetDate - now;
@@ -553,41 +553,41 @@
             if (pTitle) pTitle.innerHTML = `Ưu đãi<span> ${campaignName}</span>`;
             const pBtn = document.getElementById('popup-btn-text');
             if (pBtn) pBtn.innerText = 'Mua Sắm Ngay';
-        }
+          }
 
-        if (diff <= 0) {
+          if (diff <= 0) {
             clearInterval(popupTimer);
             return;
+          }
+          const d = Math.floor(diff / 864e5);
+          const h = Math.floor((diff / 36e5) % 24);
+          const m = Math.floor((diff / 6e4) % 60);
+          const s = Math.floor((diff / 1e3) % 60);
+          const el = (id) => document.getElementById(id);
+          if (el('popup-days')) el('popup-days').textContent = String(d).padStart(2, '0');
+          if (el('popup-hours')) el('popup-hours').textContent = String(h).padStart(2, '0');
+          if (el('popup-mins')) el('popup-mins').textContent = String(m).padStart(2, '0');
+          if (el('popup-secs')) el('popup-secs').textContent = String(s).padStart(2, '0');
         }
-        const d = Math.floor(diff / 864e5);
-        const h = Math.floor((diff / 36e5) % 24);
-        const m = Math.floor((diff / 6e4) % 60);
-        const s = Math.floor((diff / 1e3) % 60);
-        const el = (id) => document.getElementById(id);
-        if (el('popup-days')) el('popup-days').textContent = String(d).padStart(2, '0');
-        if (el('popup-hours')) el('popup-hours').textContent = String(h).padStart(2, '0');
-        if (el('popup-mins')) el('popup-mins').textContent = String(m).padStart(2, '0');
-        if (el('popup-secs')) el('popup-secs').textContent = String(s).padStart(2, '0');
-      }
-      updatePopupCountdown();
-      const popupTimer = setInterval(updatePopupCountdown, 1000);
+        updatePopupCountdown();
+        const popupTimer = setInterval(updatePopupCountdown, 1000);
 
-      // Close logic
-      function closePopup() {
-        const card = document.getElementById('promo-popup-card');
-        overlay.style.opacity = '0';
-        if (card) { card.style.transform = 'scale(0.9) translateY(20px)'; }
-        clearInterval(popupTimer);
-        setTimeout(() => overlay.remove(), 450);
-        sessionStorage.setItem('promoPopupShown', 'true');
-      }
+        // Close logic
+        function closePopup() {
+          const card = document.getElementById('promo-popup-card');
+          overlay.style.opacity = '0';
+          if (card) { card.style.transform = 'scale(0.9) translateY(20px)'; }
+          clearInterval(popupTimer);
+          setTimeout(() => overlay.remove(), 450);
+          sessionStorage.setItem('promoPopupShown', 'true');
+        }
 
-      document.getElementById('close-promo-popup').addEventListener('click', closePopup);
-      document.getElementById('btn-explore-promo').addEventListener('click', closePopup);
-      overlay.addEventListener('click', (e) => { if (e.target === overlay) closePopup(); });
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePopup(); });
+        document.getElementById('close-promo-popup').addEventListener('click', closePopup);
+        document.getElementById('btn-explore-promo').addEventListener('click', closePopup);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) closePopup(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePopup(); });
 
-    }, 1800); // Hiện sau 1.8 giây
+      }, 1800); // Hiện sau 1.8 giây
     } // End initPromo
   });
 })();

@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: /cart.html
+Disallow: /checkout.html
+Disallow: /login.html
+Disallow: /forgot-password.html
+Disallow: /order-success.html
+Disallow: /order-tracking.html
+Disallow: /temp_configs.json
+Disallow: /scratch_products.json
+
+Allow: /
+
+Sitemap: https://phucgiatien.vn/sitemap.xml

@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
   <meta name="description"
     content="Đăng nhập hoặc Đăng ký tài khoản Phúc Gia Tiên để mua sắm và theo dõi đơn hàng gốm sứ.">
   <title>Tài khoản – Phúc Gia Tiên</title>
@@ -572,7 +573,9 @@
       }
 
       // Validate Phone
-      if (!phone || phone.length < 10 || !/^[0-9]+$/.test(phone)) {
+      var digitsOnly = phone.replace(/\D/g, '');
+      var isValidPhone = /^(0[35789][0-9]{8}|84[35789][0-9]{8})$/.test(digitsOnly);
+      if (!phone || !isValidPhone) {
         if (errPhone) errPhone.style.display = 'block';
         ok = false;
       } else {
@@ -657,3 +660,4 @@
 </body>
 
 </html>
+

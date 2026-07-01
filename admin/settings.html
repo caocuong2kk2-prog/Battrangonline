@@ -1529,7 +1529,7 @@
 
       // ── Load config ───────────────────────────
       function loadConfig() {
-        var API_BASE = (window.AdminData && window.AdminData.apiBase) || ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' ? 'http://localhost:5055/api' : '/api');
+        var API_BASE = (window.AdminData && window.AdminData.apiBase) || (window.location.port !== '5055' && window.location.port !== '7275' ? 'http://localhost:5055/api' : '/api');
         fetch(API_BASE + '/site-config')
           .then(function (r) { return r.json(); })
           .then(function (apiConfig) {
@@ -1795,7 +1795,7 @@
         };
 
         // Gửi lưu cấu hình site
-        var API_BASE = (window.AdminData && window.AdminData.apiBase) || ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055' ? 'http://localhost:5055/api' : '/api');
+        var API_BASE = (window.AdminData && window.AdminData.apiBase) || (window.location.port !== '5055' && window.location.port !== '7275' ? 'http://localhost:5055/api' : '/api');
         fetch(API_BASE + '/site-config', {
           method: 'POST',
           headers: {

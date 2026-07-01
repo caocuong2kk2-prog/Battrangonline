@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using System.Linq;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace BatTrang.API.Controllers.Admin
 {
@@ -97,6 +98,16 @@ namespace BatTrang.API.Controllers.Admin
                 }
             }
 
+            if (user.Role == "admin" && req.Role != "admin")
+            {
+                var allUsers = await _adminUserRepo.GetAllAsync();
+                var adminCount = allUsers.Count(u => u.Role == "admin");
+                if (adminCount <= 1)
+                {
+                    return BadRequest(new { message = "Không thể hủy quyền của tài khoản Admin cuối cùng trong hệ thống." });
+                }
+            }
+
             user.Name = req.Name;
             user.Username = req.Username;
             user.Role = req.Role;
@@ -120,7 +131,7 @@ namespace BatTrang.API.Controllers.Admin
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var currentUserIdStr = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            var currentUserIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? User.FindFirst("sub")?.Value ?? User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
             if (currentUserIdStr != null && int.TryParse(currentUserIdStr, out int currentUserId))
             {
                 if (id == currentUserId)
@@ -133,6 +144,16 @@ namespace BatTrang.API.Controllers.Admin
             if (user == null)
             {
                 return NotFound();
+            }
+
+            if (user.Role == "admin")
+            {
+                var allUsers = await _adminUserRepo.GetAllAsync();
+                var adminCount = allUsers.Count(u => u.Role == "admin");
+                if (adminCount <= 1)
+                {
+                    return BadRequest(new { message = "Không thể xóa tài khoản Admin cuối cùng trong hệ thống." });
+                }
             }
 
             await _adminUserRepo.DeleteAsync(user);

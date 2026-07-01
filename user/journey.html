@@ -11,49 +11,84 @@
   <meta property="og:image" content="https://phucgiatien.vn/assets/images/journey-hero.jpg">
   <meta property="og:type" content="website">
   <title>Hành Trình – Phúc Gia Tiên</title>
+  <meta name="geo.region" content="VN-HN">
+  <meta name="geo.placename" content="Gia Lâm, Hà Nội">
+  <meta name="geo.position" content="20.981165;105.911641">
+  <meta name="ICBM" content="20.981165, 105.911641">
+  <link rel="canonical" href="https://phucgiatien.vn/journey.html">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/layout.css?v=20260701_v4">
+  <link rel="stylesheet" href="css/responsive.css?v=20260701_v4">
   <style>
     /* ===== JOURNEY PAGE SPECIFIC STYLES ===== */
 
-
-    /* Story Tabs */
+    /* Premium Story Tabs Navigation (Optimized for PC & Mobile UX) */
     .story-tabs {
       display: flex;
+      width: fit-content;
+      max-width: 100%;
+      margin: 0 auto var(--space-8);
       flex-wrap: wrap;
-      gap: var(--space-2);
-      border-bottom: 1px solid var(--color-border);
-      margin-bottom: var(--space-8);
-      padding-bottom: 0;
+      justify-content: center;
+      gap: 8px;
+      padding: 6px;
+      background: #ffffff;
+      border: 1px solid rgba(200, 146, 42, 0.35);
+      border-radius: 9999px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
     }
 
     .story-tab-btn {
-      padding: var(--space-3) var(--space-5);
+      padding: 10px 24px;
       font-size: var(--fs-sm);
-      font-weight: var(--fw-semibold);
-      color: var(--color-primary-light);
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
+      font-weight: 600;
+      color: #5a4632;
+      border: 1px solid transparent;
+      border-radius: 9999px;
       white-space: nowrap;
       background: transparent;
       cursor: pointer;
-      transition: all var(--transition-fast);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
     }
 
     .story-tab-btn:hover {
-      color: var(--color-primary-dark);
-      opacity: 1;
+      color: #b8860b;
+      background: rgba(200, 146, 42, 0.12);
+      border-color: rgba(200, 146, 42, 0.3);
     }
 
     .story-tab-btn.active {
-      color: var(--color-accent);
-      border-bottom-color: var(--color-accent);
-      font-weight: var(--fw-bold);
+      color: #ffffff !important;
+      background: linear-gradient(135deg, #c8922a, #dfa538) !important;
+      border-color: #c8922a !important;
+      font-weight: 700 !important;
+      box-shadow: 0 4px 14px rgba(200, 146, 42, 0.45) !important;
+      transform: translateY(-1px);
+    }
+
+    /* Mobile UX: Hiển thị trọn vẹn 100% các chủ đề thành chùm viên thuốc đẹp mắt, không bắt khách hàng vuốt ngang */
+    @media (max-width: 640px) {
+      .story-tabs {
+        width: 100%;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        gap: 8px;
+        border-radius: 0;
+      }
+      .story-tab-btn {
+        background: #ffffff;
+        border: 1px solid rgba(200, 146, 42, 0.3);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        padding: 8.5px 15px;
+        font-size: 13px;
+      }
     }
 
     .story-panel {

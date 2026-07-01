@@ -2,7 +2,13 @@
 (function(){'use strict';
 
 var ADMIN_SESSION_KEY='pgt_admin_session';
-var PUBLIC_PAGES=["login"];
+var PUBLIC_PAGES=["login", "login.html", "forgot-password", "forgot-password.html"];
+
+// ── Clean Address Bar URL (Strip .html automatically without reload) ──
+if (window.location.pathname && window.location.pathname.endsWith('.html') && !window.location.pathname.endsWith('/404.html')) {
+  var cleanUrl = window.location.pathname.replace(/\.html$/i, '') + window.location.search + window.location.hash;
+  window.history.replaceState(null, '', cleanUrl);
+}
 
 // ── Anti-flicker Sidebar Collapse State Check ──
 if (localStorage.getItem('sidebar-collapsed') === 'true') {
@@ -11,8 +17,9 @@ if (localStorage.getItem('sidebar-collapsed') === 'true') {
 
 // ── Auth Guard ──
 function isPublicPage(){
-  var page=location.pathname.split('/').pop()||"./";
-  return PUBLIC_PAGES.some(function(p){return page===p;});
+  var page = location.pathname.split('/').filter(Boolean).pop() || "";
+  var cleanPage = page.replace(/\.html$/i, "");
+  return PUBLIC_PAGES.some(function(p){ return cleanPage === p.replace(/\.html$/i, ""); });
 }
 function getAdminSession(){
   try{return JSON.parse(localStorage.getItem(ADMIN_SESSION_KEY)||'null');}catch(e){return null;}
@@ -162,6 +169,9 @@ window.openModal=function(id){
   _modalPrevFocus = document.activeElement;
   m.classList.add('is-open');
   document.body.style.overflow='hidden';
+  m.querySelectorAll('select').forEach(function(sel) {
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+  });
 
   // Focus first input/textarea inside modal
   setTimeout(function(){
@@ -1364,5 +1374,80 @@ document.addEventListener('DOMContentLoaded',function(){
   initNotificationDropdown();
 
 });
+
+// ── Auto WebP Compression Helper & Interceptor ──
+window.compressToWebP = function(file, maxDimension, quality) {
+  return new Promise(function(resolve) {
+    if (!file || !file.type || !file.type.startsWith('image/') || file.type === 'image/gif' || file.type === 'image/svg+xml' || file.type === 'image/webp') {
+      return resolve(file);
+    }
+    maxDimension = maxDimension || 1600;
+    quality = quality !== undefined ? quality : 0.82;
+
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        var w = img.width;
+        var h = img.height;
+        if (w > maxDimension || h > maxDimension) {
+          if (w > h) {
+            h = Math.round((h * maxDimension) / w);
+            w = maxDimension;
+          } else {
+            w = Math.round((w * maxDimension) / h);
+            h = maxDimension;
+          }
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(function(blob) {
+          if (!blob) return resolve(file);
+          var origName = file.name || 'image.jpg';
+          var baseName = origName.substring(0, origName.lastIndexOf('.')) || origName;
+          var webpName = baseName + '.webp';
+          try {
+            var webpFile = new File([blob], webpName, { type: 'image/webp', lastModified: Date.now() });
+            if (webpFile.size >= file.size && file.type === 'image/webp') resolve(file);
+            else resolve(webpFile);
+          } catch(err) {
+            blob.name = webpName;
+            resolve(blob);
+          }
+        }, 'image/webp', quality);
+      };
+      img.onerror = function() { resolve(file); };
+      img.src = e.target.result;
+    };
+    reader.onerror = function() { resolve(file); };
+    reader.readAsDataURL(file);
+  });
+};
+
+var origFetch = window.fetch;
+window.fetch = function(url, options) {
+  if (url && typeof url === 'string' && url.indexOf('/upload') !== -1 && options && options.body && (typeof FormData !== 'undefined') && (options.body instanceof FormData)) {
+    var formData = options.body;
+    var file = formData.get('file');
+    if (file && file instanceof File && file.type && file.type.startsWith('image/') && file.type !== 'image/gif' && file.type !== 'image/svg+xml') {
+      return window.compressToWebP(file).then(function(compressedFile) {
+        var newFormData = new FormData();
+        formData.forEach(function(value, key) {
+          if (key === 'file') {
+            newFormData.append('file', compressedFile);
+          } else {
+            newFormData.append(key, value);
+          }
+        });
+        var newOptions = Object.assign({}, options, { body: newFormData });
+        return origFetch.call(window, url, newOptions);
+      });
+    }
+  }
+  return origFetch.apply(window, arguments);
+};
 
 }());
