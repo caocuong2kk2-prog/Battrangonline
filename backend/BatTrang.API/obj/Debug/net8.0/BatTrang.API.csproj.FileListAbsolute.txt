@@ -200,3 +200,11 @@ H:\WORK\Battrangonline\backend\BatTrang.API\obj\Debug\net8.0\refint\BatTrang.API
 H:\WORK\Battrangonline\backend\BatTrang.API\obj\Debug\net8.0\BatTrang.API.pdb
 H:\WORK\Battrangonline\backend\BatTrang.API\obj\Debug\net8.0\BatTrang.API.genruntimeconfig.cache
 H:\WORK\Battrangonline\backend\BatTrang.API\obj\Debug\net8.0\ref\BatTrang.API.dll
+H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\SkiaSharp.dll
+H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\runtimes\osx\native\libSkiaSharp.dylib
+H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\runtimes\win-arm64\native\libSkiaSharp.dll
+H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\runtimes\win-arm64\native\libSkiaSharp.pdb
+H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\runtimes\win-x64\native\libSkiaSharp.dll
+H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\runtimes\win-x64\native\libSkiaSharp.pdb
+H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\runtimes\win-x86\native\libSkiaSharp.dll
+H:\WORK\Battrangonline\backend\BatTrang.API\bin\Debug\net8.0\runtimes\win-x86\native\libSkiaSharp.pdb

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BatTrang.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e776761035db3c4ee9b1c5ff066fc9bc6c6d160b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+20d48b0263e2ba871fc5bd5326abce3ddd30a9ca")]
 [assembly: System.Reflection.AssemblyProductAttribute("BatTrang.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BatTrang.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

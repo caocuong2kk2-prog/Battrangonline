@@ -42,21 +42,28 @@
   }
   </script>
   <!-- Preconnect & Preload -->
-  <link rel="preconnect" href="https://phucgiatien.vn">
-  <link rel="preload" as="image" href="/assets/images/home_bg.webp" fetchpriority="high">
-  <link rel="preload" as="style" href="css/layout.css?v=8">
-  <link rel="preload" as="style" href="css/home.css?v=20260701_smarthint">
+  <link rel="preconnect" href="https://battrangonline.vn" crossorigin>
+  <link rel="preload" as="image" href="assets/images/home_bg.webp" fetchpriority="high">
+  <link rel="preload" as="style" href="css/layout.css?v=9">
+  <link rel="preload" as="style" href="css/home.css?v=20260701_fix7">
+  <link rel="preload" as="style" href="css/responsive.css?v=20260701_hoverflip">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&display=swap"
-    rel="stylesheet">
+    rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&family=Montserrat:wght@400;500;600;700;800;900&display=swap">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  </noscript>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="css/layout.css?v=8">
-  <link rel="stylesheet" href="css/home.css?v=20260701_smarthint">
+  <link rel="stylesheet" href="css/layout.css?v=9">
+  <link rel="stylesheet" href="css/home.css?v=20260701_fix7">
   <link rel="stylesheet" href="css/responsive.css?v=20260701_hoverflip">
 
       <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -72,7 +79,7 @@
     <!-- ========== HERO ========== -->
     <section class="hero" aria-label="Giới thiệu Phúc Gia Tiên">
       <div class="hero__bg">
-        <img class="hero__bg-img js-config-home-banner-img" id="hero-main-bg" alt="" role="presentation" fetchpriority="high">
+        <img class="hero__bg-img js-config-home-banner-img" id="hero-main-bg" src="assets/images/home_bg.webp" alt="" role="presentation" fetchpriority="high">
         <script>
           (function(){
             var src = "assets/images/home_bg.webp";
@@ -235,10 +242,10 @@
                 <p class="process-step__desc js-config-proc-1-desc">Chọn lựa và nhào đất sét Bát Tràng đúng độ dẻo</p>
                 <span class="process-flip-hint"></span>
               </div>
-              <div class="process-flip-back" style="background-image: url('assets/images/process-1.png');">
+              <div class="process-flip-back" style="background-image: url('assets/images/process-1.webp');">
                 <div class="process-flip-back__overlay">
                   <span class="process-flip-back__step">Công đoạn 01</span>
-                  <h4 class="process-flip-back__title">Nhào Luyện Đất</h4>
+                  <h3 class="process-flip-back__title">Nhào Luyện Đất</h3>
                   <p class="process-flip-back__text">Đất cao lanh tuyển chọn được nghệ nhân ủ và nhào nặn thủ công hàng nghìn lần để đạt độ dẻo mịn tuyệt đối trước khi lên bàn xoay.</p>
                 </div>
               </div>
@@ -264,10 +271,10 @@
                 <p class="process-step__desc js-config-proc-2-desc">Vuốt đất trên bàn xoay bằng đôi bàn tay điêu luyện</p>
                 <span class="process-flip-hint"></span>
               </div>
-              <div class="process-flip-back" style="background-image: url('assets/images/process-2.png');">
+              <div class="process-flip-back" style="background-image: url('assets/images/process-2.webp');">
                 <div class="process-flip-back__overlay">
                   <span class="process-flip-back__step">Công đoạn 02</span>
-                  <h4 class="process-flip-back__title">Vuốt Gốm Bàn Xoay</h4>
+                  <h3 class="process-flip-back__title">Vuốt Gốm Bàn Xoay</h3>
                   <p class="process-flip-back__text">Dưới đôi bàn tay điêu luyện của nghệ nhân, khối đất sét vô tri trượt quay tròn mượt mà biến hóa thành hình dáng lộc bình thanh thoát.</p>
                 </div>
               </div>
@@ -293,10 +300,10 @@
                 <p class="process-step__desc js-config-proc-3-desc">Trang trí hoa văn truyền thống bằng bút lông thủ công</p>
                 <span class="process-flip-hint"></span>
               </div>
-              <div class="process-flip-back" style="background-image: url('assets/images/process-3.png');">
+              <div class="process-flip-back" style="background-image: url('assets/images/process-3.webp');">
                 <div class="process-flip-back__overlay">
                   <span class="process-flip-back__step">Công đoạn 03</span>
-                  <h4 class="process-flip-back__title">Chấm Bút Họa Lam</h4>
+                  <h3 class="process-flip-back__title">Chấm Bút Họa Lam</h3>
                   <p class="process-flip-back__text">Từng nét cọ bút lông thủ công tỉ mỉ chấm lam vẽ hoa sen, rồng phượng uyển chuyển, thổi hồn sống động vào từng thớ gốm mộc.</p>
                 </div>
               </div>
@@ -321,10 +328,10 @@
                 <p class="process-step__desc js-config-proc-4-desc">Nung ở nhiệt độ 1.280°C trong lò truyền thống</p>
                 <span class="process-flip-hint"></span>
               </div>
-              <div class="process-flip-back" style="background-image: url('assets/images/process-4.png');">
+              <div class="process-flip-back" style="background-image: url('assets/images/process-4.webp');">
                 <div class="process-flip-back__overlay">
                   <span class="process-flip-back__step">Công đoạn 04</span>
-                  <h4 class="process-flip-back__title">Lửa Thử Vàng 1.280°C</h4>
+                  <h3 class="process-flip-back__title">Lửa Thử Vàng 1.280°C</h3>
                   <p class="process-flip-back__text">Nung liên tục ròng rã suốt ngày đêm trong ngọn lửa rực hồng 1.280°C để sương gốm kết khối kiên cố và men chảy trong vắt vĩnh cửu.</p>
                 </div>
               </div>
@@ -349,10 +356,10 @@
                 <p class="process-step__desc js-config-proc-5-desc">Kiểm tra, đánh bóng và đóng gói tác phẩm hoàn hảo</p>
                 <span class="process-flip-hint"></span>
               </div>
-              <div class="process-flip-back" style="background-image: url('assets/images/process-5.png');">
+              <div class="process-flip-back" style="background-image: url('assets/images/process-5.webp');">
                 <div class="process-flip-back__overlay">
                   <span class="process-flip-back__step">Công đoạn 05</span>
-                  <h4 class="process-flip-back__title">Tuyệt Tác Xuất Xưởng</h4>
+                  <h3 class="process-flip-back__title">Tuyệt Tác Xuất Xưởng</h3>
                   <p class="process-flip-back__text">Từng tác phẩm ra lò được kiểm tra âm thanh, độ bóng men khắt khe trước khi bọc gói trân trọng trao gửi đến tay quý khách hàng.</p>
                 </div>
               </div>
@@ -394,9 +401,9 @@
   <!-- JS -->
   <script src="js/api.js?v=2" defer></script>
   <script src="js/cart.js" defer></script>
-  <script src="js/promo.js?v=8" defer></script>
-  <script src="js/common.js?v=5" defer></script>
-  <script src="js/home.js?v=7" defer></script>
+  <script src="js/promo.js?v=20260701_perf" defer></script>
+  <script src="js/common.js?v=20260701_fix3" defer></script>
+  <script src="js/home.js?v=20260701_perf2" defer></script>
 </body>
 
 </html>

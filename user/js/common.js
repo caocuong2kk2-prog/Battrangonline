@@ -713,6 +713,16 @@ function populateHeaderMegaMenu() {
         window.location.href = targetUrl;
       });
     }
+    
+    // Click anywhere on body leads to detail (except CTA button which is handled separately)
+    var bodyEl = article.querySelector('.product-card__body');
+    if (bodyEl) {
+      bodyEl.addEventListener('click', function (e) {
+        if (!e.target.closest('button')) {
+          window.location.href = targetUrl;
+        }
+      });
+    }
 
     return article;
   };

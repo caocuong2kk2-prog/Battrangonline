@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "5gaM+Zn9mjY=",
+  "dgSpecHash": "2mpk20xwKMQ=",
   "success": true,
   "projectFilePath": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\BatTrang.API.csproj",
   "expectedPackageFiles": [
@@ -76,6 +76,9 @@
     "C:\\Users\\CCKSoftware\\.nuget\\packages\\runtime.ubuntu.14.04-x64.runtime.native.system.security.cryptography.openssl\\4.3.0\\runtime.ubuntu.14.04-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
     "C:\\Users\\CCKSoftware\\.nuget\\packages\\runtime.ubuntu.16.04-x64.runtime.native.system.security.cryptography.openssl\\4.3.0\\runtime.ubuntu.16.04-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
     "C:\\Users\\CCKSoftware\\.nuget\\packages\\runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl\\4.3.0\\runtime.ubuntu.16.10-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
+    "C:\\Users\\CCKSoftware\\.nuget\\packages\\skiasharp\\4.148.0\\skiasharp.4.148.0.nupkg.sha512",
+    "C:\\Users\\CCKSoftware\\.nuget\\packages\\skiasharp.nativeassets.macos\\4.148.0\\skiasharp.nativeassets.macos.4.148.0.nupkg.sha512",
+    "C:\\Users\\CCKSoftware\\.nuget\\packages\\skiasharp.nativeassets.win32\\4.148.0\\skiasharp.nativeassets.win32.4.148.0.nupkg.sha512",
     "C:\\Users\\CCKSoftware\\.nuget\\packages\\superpower\\3.0.0\\superpower.3.0.0.nupkg.sha512",
     "C:\\Users\\CCKSoftware\\.nuget\\packages\\swashbuckle.aspnetcore\\6.7.3\\swashbuckle.aspnetcore.6.7.3.nupkg.sha512",
     "C:\\Users\\CCKSoftware\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.7.3\\swashbuckle.aspnetcore.swagger.6.7.3.nupkg.sha512",

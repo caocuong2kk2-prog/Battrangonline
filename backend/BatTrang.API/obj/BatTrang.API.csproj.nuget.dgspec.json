@@ -83,6 +83,10 @@
               "target": "Package",
               "version": "[2025.7.0, )"
             },
+            "SkiaSharp": {
+              "target": "Package",
+              "version": "[4.148.0, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.7.3, )"

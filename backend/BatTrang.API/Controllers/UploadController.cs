@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using SkiaSharp;
 
 namespace BatTrang.API.Controllers
 {
@@ -18,27 +19,74 @@ namespace BatTrang.API.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest("No file uploaded.");
 
-            if (file.Length > 5 * 1024 * 1024)
-                return BadRequest("File size exceeds 5MB limit.");
+            if (file.Length > 10 * 1024 * 1024)
+                return BadRequest("File size exceeds 10MB limit.");
 
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".mp4", ".mov", ".avi", ".webm" };
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            var isImage = Array.IndexOf(new[] { ".jpg", ".jpeg", ".png", ".webp" }, extension) >= 0;
+            var isGif = extension == ".gif";
+            var isVideo = Array.IndexOf(new[] { ".mp4", ".mov", ".avi", ".webm" }, extension) >= 0;
 
-            if (Array.IndexOf(allowedExtensions, extension) < 0)
+            if (!isImage && !isGif && !isVideo)
                 return BadRequest($"Invalid file type: {extension}");
 
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
 
-            // SECURITY PATCH: Use Path.GetFileName to prevent Directory Traversal attacks (e.g. file.FileName = "../../../shell.php")
-            var safeFileName = Path.GetFileName(file.FileName);
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + safeFileName;
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            var safeFileName = Path.GetFileNameWithoutExtension(file.FileName);
+            // Replace invalid characters just in case
+            safeFileName = string.Join("_", safeFileName.Split(Path.GetInvalidFileNameChars()));
+            
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + safeFileName + extension;
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            // If it's a static image (not GIF, not Video), process and convert to WebP
+            if (isImage)
             {
-                await file.CopyToAsync(stream);
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + safeFileName + ".webp";
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = file.OpenReadStream())
+                using (var inputStream = new SKManagedStream(stream))
+                using (var original = SKBitmap.Decode(inputStream))
+                {
+                    if (original != null)
+                    {
+                        var targetWidth = original.Width;
+                        var targetHeight = original.Height;
+
+                        if (original.Width > 1200)
+                        {
+                            targetWidth = 1200;
+                            targetHeight = (int)((double)original.Height / original.Width * targetWidth);
+                        }
+
+                        using (var resized = original.Resize(new SKImageInfo(targetWidth, targetHeight), new SKSamplingOptions(SKFilterMode.Linear)))
+                        using (var image = SKImage.FromBitmap(resized))
+                        using (var data = image.Encode(SKEncodedImageFormat.Webp, 80))
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            data.SaveTo(fileStream);
+                        }
+                    }
+                    else
+                    {
+                        // Fallback if Skia fails to decode
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(fileStream);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // For GIFs or Videos, save directly without compression
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
             }
 
             var fileUrl = $"/uploads/{uniqueFileName}";

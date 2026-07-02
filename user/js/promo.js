@@ -382,31 +382,36 @@
         return document.getElementById('site-header');
       }
 
+      let cachedBannerHeight = 0;
+
       function updateLayout() {
         const header = getHeader();
         if (!header) return;
-        const bh = banner.offsetHeight;
-        const scrolled = window.scrollY;
-
-        // Header luôn ngay dưới banner khi chưa cuộn qua banner
-        if (scrolled >= bh) {
-          header.style.top = '0px';
-        } else {
-          header.style.top = (bh - scrolled) + 'px';
-        }
+        
+        requestAnimationFrame(() => {
+          const scrolled = window.scrollY;
+          // Header luôn ngay dưới banner khi chưa cuộn qua banner
+          if (scrolled >= cachedBannerHeight) {
+            header.style.top = '0px';
+          } else {
+            header.style.top = (cachedBannerHeight - scrolled) + 'px';
+          }
+        });
       }
 
       function applyInitialLayout() {
-        const header = getHeader();
-        if (!header) return;
+        requestAnimationFrame(() => {
+          if (banner) {
+            cachedBannerHeight = banner.offsetHeight;
+          }
+          const header = getHeader();
+          if (!header) return;
 
-        const bh = banner.offsetHeight;
-
-        // Set header ngay dưới banner
-        header.style.top = bh + 'px';
-
-        // Tạo biến CSS để các element khác tự đẩy xuống (như .page-body)
-        document.documentElement.style.setProperty('--promo-banner-height', bh + 'px');
+          // Set header ngay dưới banner
+          header.style.top = cachedBannerHeight + 'px';
+          // Tạo biến CSS để các element khác tự đẩy xuống (như .page-body)
+          document.documentElement.style.setProperty('--promo-banner-height', cachedBannerHeight + 'px');
+        });
       }
 
       // Vì header được tải bất đồng bộ qua common.js fetch, ta cần thử cập nhật định kỳ cho đến khi header xuất hiện
