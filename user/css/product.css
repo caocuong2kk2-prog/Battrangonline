@@ -205,40 +205,67 @@
   gap: 10px;
 }
 
-/* List Structure */
+/* === SCROLL FADE WRAPPER === */
+.category-tree-wrapper {
+  position: relative;
+}
+
+/* Gradient báo hiệu còn nội dung bên dưới */
+.category-tree-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 5px;
+  height: 72px;
+  background: linear-gradient(to bottom, transparent 0%, #f8f2ec 100%);
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  opacity: 1;
+  z-index: 5;
+}
+
+.category-tree-wrapper.no-scroll-fade::after {
+  opacity: 0;
+}
+
+/* === CATEGORY TREE (scroll xảy ra tại đây) === */
 .category-tree {
   list-style: none;
   padding: 0;
   margin: 0;
   max-height: calc(100vh - 200px);
   overflow-y: auto;
-  padding-right: 12px;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 146, 42, 0.65) rgba(59, 38, 18, 0.06);
 }
 
-.category-tree::-webkit-scrollbar {
-  width: 6px; /* slightly wider for visibility */
+.products-sidebar .category-tree::-webkit-scrollbar {
+  width: 5px;
 }
 
-.category-tree::-webkit-scrollbar-track {
-  background-color: rgba(59, 38, 18, 0.04); /* Visible track */
+.products-sidebar .category-tree::-webkit-scrollbar-track {
+  background-color: rgba(59, 38, 18, 0.07);
   border-radius: 6px;
+  margin: 4px 0;
 }
 
-.category-tree::-webkit-scrollbar-thumb {
-  background-color: rgba(200, 146, 42, 0.4);
+.products-sidebar .category-tree::-webkit-scrollbar-thumb {
+  background-color: rgba(200, 146, 42, 0.75);
   border-radius: 6px;
+  border: none;
 }
 
-.category-tree::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(200, 146, 42, 0.7);
+.products-sidebar .category-tree::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(200, 146, 42, 1);
 }
 
 .category-tree li {
   margin-bottom: 4px;
-  /* Removed bottom border to make it cleaner with full-row highlights */
 }
 
-/* Header wrapper (Contains the link AND the toggle button) */
+
 .cat-header {
   display: flex;
   align-items: center;
@@ -448,17 +475,18 @@
   .products-sidebar.is-open .products-sidebar__title::after {
     transform: rotate(180deg);
   }
-  .category-tree {
+  .category-tree-wrapper {
     display: none;
-    max-height: 350px;
-    padding-right: 8px;
     margin-top: 16px;
-    padding-top: 16px;
     border-top: 1px solid var(--color-border);
+    padding-top: 8px;
   }
-  .products-sidebar.is-open .category-tree {
+  .products-sidebar.is-open .category-tree-wrapper {
     display: block;
     animation: fadeIn 0.3s ease;
+  }
+  .category-tree {
+    max-height: 350px;
   }
 }
 

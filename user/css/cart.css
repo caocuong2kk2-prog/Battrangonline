@@ -487,6 +487,16 @@
   .cart-item {
     grid-template-columns: 20px 72px 1fr;
     grid-template-rows: auto auto;
+    gap: var(--space-3);
+  }
+
+  .cart-item__name {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .cart-summary__title {
+    font-size: var(--fs-lg);
   }
 
   .cart-item__right {

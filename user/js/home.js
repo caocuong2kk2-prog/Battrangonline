@@ -224,17 +224,33 @@
     var nextBtn = document.getElementById('conveyor-next-btn');
     var slideStep = 334; // 1 card (310px) + gap (24px)
 
+    function scrollToIndex(direction) {
+      if (isAnimating) return;
+      var currentScroll = conveyor.scrollLeft;
+      var currentIdx = Math.round(currentScroll / slideStep);
+      var targetIdx = currentIdx + direction;
+      var targetScroll = targetIdx * slideStep;
+      var changeAmount = targetScroll - currentScroll;
+
+      // Tránh việc dịch chuyển quá ít khi đang lướt dở
+      if (direction > 0 && changeAmount < 50) {
+        changeAmount += slideStep;
+      } else if (direction < 0 && changeAmount > -50) {
+        changeAmount -= slideStep;
+      }
+
+      smoothScrollToTarget(changeAmount, 500);
+    }
+
     if (prevBtn) {
       prevBtn.addEventListener('click', function () {
-        if (isAnimating) return; // Tránh spam click chồng chéo animation
-        smoothScrollToTarget(-slideStep, 500); // Trượt trong 500ms
+        scrollToIndex(-1);
       });
     }
 
     if (nextBtn) {
       nextBtn.addEventListener('click', function () {
-        if (isAnimating) return;
-        smoothScrollToTarget(slideStep, 500);
+        scrollToIndex(1);
       });
     }
   }

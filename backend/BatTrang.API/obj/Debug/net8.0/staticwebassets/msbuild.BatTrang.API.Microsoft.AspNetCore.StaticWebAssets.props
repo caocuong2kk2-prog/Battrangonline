@@ -1,5 +1,21 @@
 ﻿<Project>
   <ItemGroup>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\placeholder.webp))">
+      <SourceType>Package</SourceType>
+      <SourceId>BatTrang.API</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/BatTrang.API</BasePath>
+      <RelativePath>placeholder.webp</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\placeholder.webp))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\03d6774d-6510-4387-9e4b-9a281551b76e_z7871574032181_37200cb1f8ebe64580d53220435b8d6d.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
@@ -624,6 +640,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b8c1abd6-c41b-4f60-b078-13fde1812b05_z7875233607059_56c0554a6217ba237569c7c1799bc76c.jpg))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b91aff55-ecbe-4657-81f4-1d4074da7f49_ChatGPT Image 08_28_57 3 thg 7, 2026.webp))">
+      <SourceType>Package</SourceType>
+      <SourceId>BatTrang.API</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/BatTrang.API</BasePath>
+      <RelativePath>uploads/b91aff55-ecbe-4657-81f4-1d4074da7f49_ChatGPT Image 08_28_57 3 thg 7, 2026.webp</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\b91aff55-ecbe-4657-81f4-1d4074da7f49_ChatGPT Image 08_28_57 3 thg 7, 2026.webp))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\baa03c92-4693-4c31-8172-8fe8a997741e_z7812881801161_24ae6bd4ed42ac1bedc77ff43cc471c6.jpg))">
       <SourceType>Package</SourceType>
       <SourceId>BatTrang.API</SourceId>
@@ -671,22 +703,6 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\c8606bbd-d5b6-49ea-a749-43a8cacd57e5_z7812881837696_7eb8549865d75cbb06cb3973893e3f2f.jpg))</OriginalItemSpec>
-    </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d4223a9f-28b0-4830-b44c-e4643e22fe03_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png))">
-      <SourceType>Package</SourceType>
-      <SourceId>BatTrang.API</SourceId>
-      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
-      <BasePath>_content/BatTrang.API</BasePath>
-      <RelativePath>uploads/d4223a9f-28b0-4830-b44c-e4643e22fe03_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png</RelativePath>
-      <AssetKind>All</AssetKind>
-      <AssetMode>All</AssetMode>
-      <AssetRole>Primary</AssetRole>
-      <RelatedAsset></RelatedAsset>
-      <AssetTraitName></AssetTraitName>
-      <AssetTraitValue></AssetTraitValue>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d4223a9f-28b0-4830-b44c-e4643e22fe03_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\d77055e0-2cf4-441d-a374-cf1f465d7e78_z7871574032181_37200cb1f8ebe64580d53220435b8d6d.jpg))">
       <SourceType>Package</SourceType>

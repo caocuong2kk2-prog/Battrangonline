@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BatTrang.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+20d48b0263e2ba871fc5bd5326abce3ddd30a9ca")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6d40fd7ae065928f6244b82dde9e9a32d345bfce")]
 [assembly: System.Reflection.AssemblyProductAttribute("BatTrang.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BatTrang.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

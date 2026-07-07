@@ -1,6 +1,10 @@
 {
   "Files": [
     {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\placeholder.webp",
+      "PackagePath": "staticwebassets\\placeholder.webp"
+    },
+    {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\03d6774d-6510-4387-9e4b-9a281551b76e_z7871574032181_37200cb1f8ebe64580d53220435b8d6d.jpg",
       "PackagePath": "staticwebassets\\uploads\\03d6774d-6510-4387-9e4b-9a281551b76e_z7871574032181_37200cb1f8ebe64580d53220435b8d6d.jpg"
     },
@@ -157,6 +161,10 @@
       "PackagePath": "staticwebassets\\uploads\\b8c1abd6-c41b-4f60-b078-13fde1812b05_z7875233607059_56c0554a6217ba237569c7c1799bc76c.jpg"
     },
     {
+      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\b91aff55-ecbe-4657-81f4-1d4074da7f49_ChatGPT Image 08_28_57 3 thg 7, 2026.webp",
+      "PackagePath": "staticwebassets\\uploads\\b91aff55-ecbe-4657-81f4-1d4074da7f49_ChatGPT Image 08_28_57 3 thg 7, 2026.webp"
+    },
+    {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\baa03c92-4693-4c31-8172-8fe8a997741e_z7812881801161_24ae6bd4ed42ac1bedc77ff43cc471c6.jpg",
       "PackagePath": "staticwebassets\\uploads\\baa03c92-4693-4c31-8172-8fe8a997741e_z7812881801161_24ae6bd4ed42ac1bedc77ff43cc471c6.jpg"
     },
@@ -167,10 +175,6 @@
     {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\c8606bbd-d5b6-49ea-a749-43a8cacd57e5_z7812881837696_7eb8549865d75cbb06cb3973893e3f2f.jpg",
       "PackagePath": "staticwebassets\\uploads\\c8606bbd-d5b6-49ea-a749-43a8cacd57e5_z7812881837696_7eb8549865d75cbb06cb3973893e3f2f.jpg"
-    },
-    {
-      "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\d4223a9f-28b0-4830-b44c-e4643e22fe03_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png",
-      "PackagePath": "staticwebassets\\uploads\\d4223a9f-28b0-4830-b44c-e4643e22fe03_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png"
     },
     {
       "Id": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\d77055e0-2cf4-441d-a374-cf1f465d7e78_z7871574032181_37200cb1f8ebe64580d53220435b8d6d.jpg",

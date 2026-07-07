@@ -6,6 +6,95 @@
 (function () {
   'use strict';
 
+  function getNormalizedPath(url) {
+    if (!url) return '';
+    var path = url;
+    if (path.includes('imageproxy?url=')) {
+      var match = path.match(/url=([^&]+)/);
+      if (match && match[1]) {
+        path = decodeURIComponent(match[1]);
+      }
+    }
+    var qIdx = path.indexOf('?');
+    if (qIdx !== -1) {
+      path = path.substring(0, qIdx);
+    }
+    if (path.indexOf('://') !== -1) {
+      try {
+        var u = new URL(path);
+        path = u.pathname;
+      } catch (e) {}
+    }
+    return path.replace(/^\/+/, '').toLowerCase();
+  }
+
+  window.handleMainImageError = function (img) {
+    var thumbs = document.querySelectorAll('.product-thumbnail');
+    if (thumbs.length <= 1) {
+      img.src = '/user/assets/images/placeholder.webp';
+      img.onerror = null;
+      return;
+    }
+
+    var errorSrc = img.src;
+    var errorPath = getNormalizedPath(errorSrc);
+    var errorIndex = -1;
+
+    thumbs.forEach(function (t, idx) {
+      var tPath = getNormalizedPath(t.dataset.src);
+      if (tPath === errorPath) {
+        errorIndex = idx;
+      }
+    });
+
+    // Nếu không khớp trực tiếp URL, fallback về active index
+    if (errorIndex === -1) {
+      thumbs.forEach(function (t, idx) {
+        if (t.classList.contains('active')) {
+          errorIndex = idx;
+        }
+      });
+    }
+
+    if (errorIndex !== -1) {
+      thumbs[errorIndex].classList.add('broken');
+      thumbs[errorIndex].style.display = 'none';
+    }
+
+    var nextThumb = null;
+    for (var i = 0; i < thumbs.length; i++) {
+      if (!thumbs[i].classList.contains('broken') && thumbs[i].style.display !== 'none') {
+        nextThumb = thumbs[i];
+        break;
+      }
+    }
+
+    if (nextThumb) {
+      nextThumb.click();
+    } else {
+      img.src = '/user/assets/images/placeholder.webp';
+      img.onerror = null;
+    }
+  };
+
+  window.handleThumbnailError = function (img) {
+    var btn = img.closest('.product-thumbnail');
+    if (btn) {
+      btn.classList.add('broken');
+      btn.style.display = 'none';
+      
+      // Nếu thumbnail bị lỗi trùng với ảnh chính đang hiển thị, trigger handleMainImageError
+      var mainImg = document.getElementById('gallery-main-media');
+      if (mainImg && mainImg.tagName === 'IMG') {
+        var mainPath = getNormalizedPath(mainImg.src);
+        var thumbPath = getNormalizedPath(btn.dataset.src);
+        if (mainPath === thumbPath) {
+          window.handleMainImageError(mainImg);
+        }
+      }
+    }
+  };
+
   // ====================================================
   // PRODUCT LIST PAGE  (products.html)
   // ====================================================
@@ -1211,7 +1300,7 @@
     if (isLightbox) {
       return '<img src="' + src + '" style="max-width:85vw; max-height:85vh; border-radius:8px; box-shadow: 0 4px 30px rgba(0,0,0,0.7); object-fit:contain; display:block; user-select:none; -webkit-user-drag:none;" draggable="false">';
     } else {
-      return '<img class="product-gallery__main-img" id="gallery-main-media" src="' + src + '" alt="Product Image" style="width:100%;height:100%;object-fit:contain;">';
+      return '<img class="product-gallery__main-img" id="gallery-main-media" src="' + src + '" alt="Product Image" style="width:100%;height:100%;object-fit:contain;" onerror="window.handleMainImageError(this)">';
     }
   }
 
@@ -2403,7 +2492,19 @@
     updateRow('row-spec-pattern', 'spec-pattern', v ? v.patternName : p.patternName);
 
     // Cập nhật ảnh
-    var targetImages = (v && v.images && v.images.length > 0) ? v.images : (p.images || []);
+    var rawImages = (v && v.images && v.images.length > 0) ? v.images : (p.images || []);
+    if (typeof rawImages === 'string') rawImages = [rawImages];
+    var targetImages = (Array.isArray(rawImages) ? rawImages : []).filter(function (img) {
+      if (typeof img !== 'string') return false;
+      var trimmed = img.trim().toLowerCase();
+      if (trimmed === '' || trimmed === 'null' || trimmed === 'undefined' || trimmed.includes('/null') || trimmed.includes('/undefined')) {
+        return false;
+      }
+      if (trimmed.includes('placeholder.jpg') || trimmed.includes('placeholder.webp') || trimmed.includes('placeholder.png')) {
+        return false;
+      }
+      return true;
+    });
     if (targetImages.length === 0) targetImages = ['assets/images/placeholder.jpg'];
     var firstMedia = targetImages[0];
 
@@ -2452,7 +2553,7 @@
         }
         mediaType = 'iframe';
       } else {
-        innerHtml = '<img src="' + src + '" alt="ảnh ' + (i + 1) + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;">';
+        innerHtml = '<img src="' + src + '" alt="ảnh ' + (i + 1) + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;" onerror="window.handleThumbnailError(this)">';
         mediaType = 'image';
       }
       return '<button class="product-thumbnail' + (i === 0 ? ' active' : '') + '" data-src="' + src + '" data-type="' + mediaType + '" aria-label="Ảnh ' + (i + 1) + '" style="position:relative;overflow:hidden;">' + innerHtml + '</button>';

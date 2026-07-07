@@ -12,6 +12,9 @@
       body.page-body {
         transition: padding-top 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
       }
+      main#main-content {
+        margin-top: var(--promo-banner-height, 0px) !important;
+      }
       #site-header {
         transition: background 0.3s ease, box-shadow 0.3s ease !important;
       }
@@ -44,8 +47,8 @@
         align-items: center;
         justify-content: center;
         gap: 20px;
-        padding: 9px 20px;
-        flex-wrap: wrap;
+        padding: 8px 20px;
+        flex-wrap: nowrap;
         position: relative;
         z-index: 1;
       }
@@ -59,6 +62,7 @@
         letter-spacing: 0.18em;
         text-transform: uppercase;
         font-family: var(--font-body, 'Be Vietnam Pro', sans-serif);
+        white-space: nowrap;
       }
       .promo-banner__sparks::before,
       .promo-banner__sparks::after {
@@ -77,12 +81,13 @@
         font-weight: 500;
         font-family: var(--font-body, 'Be Vietnam Pro', sans-serif);
         letter-spacing: 0.04em;
-        opacity: 0.7;
+        opacity: 0.8;
+        white-space: nowrap;
       }
       #promo-countdown {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         font-family: 'Courier New', Courier, monospace;
         font-size: 14px;
         font-weight: 700;
@@ -90,13 +95,14 @@
         background: rgba(212,168,83,0.12);
         border: 1px solid rgba(212,168,83,0.3);
         border-radius: 4px;
-        padding: 3px 12px;
+        padding: 3px 10px;
         letter-spacing: 0.05em;
+        white-space: nowrap;
       }
       .promo-cd-unit {
         display: inline-flex;
         align-items: baseline;
-        gap: 4px;
+        gap: 3px;
       }
       .promo-cd-num { color: #d4a853; }
       .promo-cd-lbl { color: rgba(255,255,255,0.6); font-size: 10px; font-weight: 500; text-transform: lowercase; font-family: var(--font-body, sans-serif); }
@@ -123,11 +129,57 @@
         box-shadow: 0 4px 18px rgba(212,168,83,0.5);
         transform: translateY(-1px);
       }
-      
-      /* ---- PAGE BODY OVERRIDE ---- */
-      .page-body {
-        padding-top: calc(var(--header-height) + var(--promo-banner-height, 0px)) !important;
+
+      /* Responsive adjustments for banner */
+      @media (max-width: 1200px) {
+        .promo-banner__sparks {
+          display: none;
+        }
+        #promo-banner-inner {
+          gap: 15px;
+        }
       }
+
+      @media (max-width: 900px) {
+        .promo-banner__label {
+          font-size: 12px;
+        }
+        #promo-countdown {
+          font-size: 13px;
+          padding: 2px 8px;
+        }
+        .promo-banner__cta {
+          padding: 4px 12px;
+          font-size: 10px;
+        }
+        #promo-banner-inner {
+          gap: 10px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        #promo-banner-inner {
+          flex-wrap: wrap;
+          padding: 6px 12px;
+          gap: 8px;
+          justify-content: center;
+        }
+        .promo-banner__label {
+          font-size: 11.5px;
+          width: auto;
+          text-align: center;
+        }
+        #promo-countdown {
+          font-size: 12px;
+          padding: 2px 6px;
+        }
+        .promo-banner__cta {
+          width: 100%;
+          justify-content: center;
+          padding: 5px 10px;
+        }
+      }
+
 
       /* ---- POPUP ---- */
       #promo-popup-overlay {
@@ -146,9 +198,7 @@
         content: '';
         position: absolute;
         inset: 0;
-        background: rgba(10,6,2,0.88);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
+        background: rgba(10,6,2,0.95);
       }
       #promo-popup-card {
         position: relative;
@@ -313,12 +363,10 @@
       @media (max-width: 768px) {
         #promo-popup-card { width: 92%; max-width: 440px; }
         .promo-popup__image { max-height: 220px; }
-        .promo-popup__body { padding: 28px 20px 30px; }
-        .promo-popup__title { font-size: 28px; }
+        .promo-popup__body { padding: 24px 16px; }
+        .promo-popup__title { font-size: 26px; }
         .promo-cd-block { min-width: 50px; padding: 8px; }
         .promo-cd-block__num { font-size: 20px; }
-        #promo-banner-inner { gap: 10px; padding: 8px 12px; }
-        .promo-banner__sparks { font-size: 10px; }
       }
     `;
     document.head.appendChild(style);
@@ -383,53 +431,39 @@
       }
 
       let cachedBannerHeight = 0;
+      let layoutBlocked = false;
 
-      function updateLayout() {
-        const header = getHeader();
-        if (!header) return;
-        
+      function requestLayoutUpdate() {
+        if (layoutBlocked) return;
+        layoutBlocked = true;
         requestAnimationFrame(() => {
-          const scrolled = window.scrollY;
-          // Header luôn ngay dưới banner khi chưa cuộn qua banner
-          if (scrolled >= cachedBannerHeight) {
-            header.style.top = '0px';
-          } else {
-            header.style.top = (cachedBannerHeight - scrolled) + 'px';
-          }
-        });
-      }
-
-      function applyInitialLayout() {
-        requestAnimationFrame(() => {
-          if (banner) {
-            cachedBannerHeight = banner.offsetHeight;
-          }
           const header = getHeader();
-          if (!header) return;
-
-          // Set header ngay dưới banner
-          header.style.top = cachedBannerHeight + 'px';
-          // Tạo biến CSS để các element khác tự đẩy xuống (như .page-body)
-          document.documentElement.style.setProperty('--promo-banner-height', cachedBannerHeight + 'px');
+          if (header) {
+            if (banner) {
+              cachedBannerHeight = banner.offsetHeight;
+              document.documentElement.style.setProperty('--promo-banner-height', cachedBannerHeight + 'px');
+            }
+            const scrolled = window.scrollY;
+            if (scrolled >= cachedBannerHeight) {
+              header.style.top = '0px';
+            } else {
+              header.style.top = (cachedBannerHeight - scrolled) + 'px';
+            }
+          }
+          layoutBlocked = false;
         });
       }
 
       // Vì header được tải bất đồng bộ qua common.js fetch, ta cần thử cập nhật định kỳ cho đến khi header xuất hiện
       let checkHeaderInterval = setInterval(function () {
         if (getHeader()) {
-          applyInitialLayout();
-          updateLayout();
+          requestLayoutUpdate();
           clearInterval(checkHeaderInterval);
         }
       }, 50);
 
-      // Timeout phòng hờ nếu header load quá nhanh
-      setTimeout(applyInitialLayout, 50);
-      window.addEventListener('scroll', updateLayout, { passive: true });
-      window.addEventListener('resize', function () {
-        applyInitialLayout();
-        updateLayout();
-      }, { passive: true });
+      window.addEventListener('scroll', requestLayoutUpdate, { passive: true });
+      window.addEventListener('resize', requestLayoutUpdate, { passive: true });
 
       // Countdown for banner
       function updateBannerCountdown() {

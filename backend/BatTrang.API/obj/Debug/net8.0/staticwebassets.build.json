@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "KWmTMWq4SLWWUxxwVP1BGh/aK8iwHISWKlCpKvmpKvM=",
+  "Hash": "lg/rhSycwjbWgn84zGN+zBs+83VDmkDdEFDeC5YTH2w=",
   "Source": "BatTrang.API",
   "BasePath": "_content/BatTrang.API",
   "Mode": "Default",
@@ -16,6 +16,25 @@
     }
   ],
   "Assets": [
+    {
+      "Identity": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\placeholder.webp",
+      "SourceId": "BatTrang.API",
+      "SourceType": "Discovered",
+      "ContentRoot": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\",
+      "BasePath": "_content/BatTrang.API",
+      "RelativePath": "placeholder.webp",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\placeholder.webp"
+    },
     {
       "Identity": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\03d6774d-6510-4387-9e4b-9a281551b76e_z7871574032181_37200cb1f8ebe64580d53220435b8d6d.jpg",
       "SourceId": "BatTrang.API",
@@ -758,6 +777,25 @@
       "OriginalItemSpec": "wwwroot\\uploads\\b8c1abd6-c41b-4f60-b078-13fde1812b05_z7875233607059_56c0554a6217ba237569c7c1799bc76c.jpg"
     },
     {
+      "Identity": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\b91aff55-ecbe-4657-81f4-1d4074da7f49_ChatGPT Image 08_28_57 3 thg 7, 2026.webp",
+      "SourceId": "BatTrang.API",
+      "SourceType": "Discovered",
+      "ContentRoot": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\",
+      "BasePath": "_content/BatTrang.API",
+      "RelativePath": "uploads/b91aff55-ecbe-4657-81f4-1d4074da7f49_ChatGPT Image 08_28_57 3 thg 7, 2026.webp",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\b91aff55-ecbe-4657-81f4-1d4074da7f49_ChatGPT Image 08_28_57 3 thg 7, 2026.webp"
+    },
+    {
       "Identity": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\baa03c92-4693-4c31-8172-8fe8a997741e_z7812881801161_24ae6bd4ed42ac1bedc77ff43cc471c6.jpg",
       "SourceId": "BatTrang.API",
       "SourceType": "Discovered",
@@ -813,25 +851,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\c8606bbd-d5b6-49ea-a749-43a8cacd57e5_z7812881837696_7eb8549865d75cbb06cb3973893e3f2f.jpg"
-    },
-    {
-      "Identity": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\d4223a9f-28b0-4830-b44c-e4643e22fe03_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png",
-      "SourceId": "BatTrang.API",
-      "SourceType": "Discovered",
-      "ContentRoot": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\",
-      "BasePath": "_content/BatTrang.API",
-      "RelativePath": "uploads/d4223a9f-28b0-4830-b44c-e4643e22fe03_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\uploads\\d4223a9f-28b0-4830-b44c-e4643e22fe03_1118c0f9-cc1f-492d-8fae-5d57bbfc46ed.png"
     },
     {
       "Identity": "H:\\WORK\\Battrangonline\\backend\\BatTrang.API\\wwwroot\\uploads\\d77055e0-2cf4-441d-a374-cf1f465d7e78_z7871574032181_37200cb1f8ebe64580d53220435b8d6d.jpg",

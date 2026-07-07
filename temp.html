@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <script>
+    (function(){
+      var hasPromo = true;
+      try {
+        var cached = localStorage.getItem('pgt_active_campaign');
+        if (cached === 'none') {
+          hasPromo = false;
+        }
+      } catch(e){}
+      document.documentElement.setAttribute('data-has-promo', hasPromo ? 'true' : 'false');
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Phúc Gia Tiên – Tinh hoa g?m s? th? công Bát Tràng. L?c bình, d? th?, tranh g?m cao c?p, ch? tác 100% th? công b?i ngh? nhân lành ngh?.">
+  <meta name="keywords" content="g?m s? Bát Tràng, l?c bình th? công, d? th? g?m s?, tranh g?m, Phúc Gia Tiên">
+  <meta property="og:title" content="Phúc Gia Tiên – G?m S? Th? Công Bát Tràng">
+  <meta property="og:description" content="Tinh hoa g?m s? th? công Bát Tràng – 2 v? ch?ng – 1 xu?ng – 1 hành trình.">
+  <meta property="og:image" content="https://phucgiatien.vn/assets/images/home_bg.webp">
+  <meta property="og:type" content="website">
+  <title>Phúc Gia Tiên – G?m S? Th? Công Bát Tràng</title>
+  <!-- GEO SEO -->
+  <meta name="geo.region" content="VN-HN">
+  <meta name="geo.placename" content="Gia Lâm, Hà N?i">
+  <meta name="geo.position" content="20.981165;105.911641">
+  <meta name="ICBM" content="20.981165, 105.911641">
+  <link rel="canonical" href="https://phucgiatien.vn/">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Phúc Gia Tiên",
+    "description": "G?m s? th? công Bát Tràng cao c?p",
+    "image": "https://phucgiatien.vn/assets/images/logo.png",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Bát Tràng",
+      "addressLocality": "Gia Lâm",
+      "addressRegion": "Hà N?i",
+      "addressCountry": "VN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 20.981165,
+      "longitude": 105.911641
+    },
+    "telephone": "0989.123.456",
+    "url": "https://phucgiatien.vn/"
+  }
+  </script>
+  <!-- Preconnect & Preload -->
+  <link rel="preconnect" href="https://battrangonline.vn" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="image" href="assets/images/home_bg.webp" fetchpriority="high">
+
+  <!-- Google Fonts (non-render-blocking) -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&family=Montserrat:wght@400;500;600;700;800;900&display=optional">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&family=Montserrat:wght@400;500;600;700;800;900&display=optional" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&family=Montserrat:wght@400;500;600;700;800;900&display=optional" rel="stylesheet"></noscript>
+
+  <style id="critical-css">@font-face{font-family:'Montserrat Fallback';src:local('Arial');size-adjust:113.6%;ascent-override:84%;descent-override:22%;line-height-override:normal}@font-face{font-family:'Be Vietnam Pro Fallback';src:local('Arial');size-adjust:100%;ascent-override:95%;descent-override:25%;line-height-override:normal}@font-face{font-family:'Cormorant Garamond Fallback';src:local('Times New Roman');size-adjust:113%;ascent-override:88%;descent-override:22%;line-height-override:normal}:root{--promo-banner-height:40px;--color-primary:#3B2612;--color-primary-dark:#2C1A0C;--color-primary-light:#5C3A1E;--color-accent:#C8922A;--color-accent-hover:#E5B85A;--color-bg-dark:#f9f2ec;--color-bg-mid:#2C1A0C;--color-bg-card:#fbf7f3;--color-bg-overlay:rgba(26,15,5,0.85);--color-text-primary:#F5EDD8;--color-text-black:#000;--color-text-muted:#7A6A58;--color-text-dark:#1A0F05;--color-border:rgba(200,146,42,0.25);--color-border-hover:rgba(200,146,42,0.6);--font-heading:'Montserrat','Montserrat Fallback',sans-serif;--font-body:'Be Vietnam Pro','Be Vietnam Pro Fallback',sans-serif;--fs-xs:.75rem;--fs-sm:.875rem;--fs-base:1rem;--fs-md:1.125rem;--fs-lg:1.25rem;--fs-xl:1.5rem;--fs-2xl:2rem;--fs-3xl:2.5rem;--fs-4xl:3.5rem;--fw-normal:400;--fw-medium:500;--fw-semibold:600;--fw-bold:700;--space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;--space-12:3rem;--space-16:4rem;--space-20:5rem;--space-24:6rem;--max-width:1280px;--header-height:72px;--nav-height:60px;--radius-sm:4px;--radius-md:8px;--radius-lg:12px;--radius-xl:20px;--radius-full:9999px;--shadow-sm:0 1px 3px rgba(0,0,0,.4);--shadow-md:0 4px 16px rgba(0,0,0,.5);--shadow-lg:0 8px 32px rgba(0,0,0,.6);--shadow-gold:0 4px 20px rgba(212,168,83,.25);--transition-fast:.15s ease;--transition-normal:.3s ease;--transition-slow:.5s ease}html[data-has-promo="false"]{--promo-banner-height:0px!important}*,::after,::before{box-sizing:border-box;margin:0;padding:0}html{font-size:16px;scroll-behavior:smooth;-webkit-text-size-adjust:100%}body{font-family:var(--font-body);font-size:var(--fs-base);font-weight:var(--fw-normal);color:var(--color-text-primary);background-color:var(--color-bg-dark);line-height:1.6;-webkit-font-smoothing:antialiased}img,video{max-width:100%;height:auto;display:block}a{color:inherit;text-decoration:none}ol,ul{list-style:none}button{cursor:pointer;border:none;background:0 0;font-family:inherit}input,select,textarea{font-family:inherit;font-size:inherit}.container{width:100%;max-width:var(--max-width);margin:0 auto;padding:0 var(--space-6)}#header-placeholder{min-height:calc(var(--header-height) + var(--promo-banner-height, 0px))}#site-header{position:sticky;top:0;left:0;right:0;z-index:1000;height:auto;min-height:calc(var(--header-height) + var(--promo-banner-height, 0px));display:flex;flex-direction:column;background:rgba(26,15,5,.98);border-bottom:1px solid rgba(200,146,42,.15)}#site-header .container{height:var(--header-height)}.header-inner{display:flex;align-items:center;justify-content:space-between;height:100%}.site-logo{display:flex;align-items:center;gap:var(--space-3);flex-shrink:0}.site-logo__img{width:44px;height:44px;object-fit:contain}.site-logo__text{display:flex;flex-direction:column;line-height:1.1}.site-logo__name{font-family:var(--font-heading);font-size:var(--fs-md);font-weight:var(--fw-bold);color:var(--color-accent)}.site-logo__tagline{font-size:var(--fs-xs);color:var(--color-text-muted);letter-spacing:.08em;text-transform:uppercase}#site-nav{display:flex;align-items:center;gap:var(--space-1);height:100%}.nav-list{display:flex;align-items:center;height:100%;gap:var(--space-1)}.nav-list__item{position:relative;display:flex;align-items:center}.nav-list__link{display:block;position:relative;padding:var(--space-2) var(--space-4);font-size:var(--fs-sm);font-weight:var(--fw-medium);color:var(--color-text-primary);border-radius:var(--radius-sm);white-space:nowrap}.header-actions{display:flex;align-items:center;gap:var(--space-2);margin-left:auto}.header-action-btn{position:relative;display:flex;align-items:center;justify-content:center;width:40px;height:40px;color:var(--color-text-primary);border-radius:50%}.header-action-icon{width:20px;height:20px}.nav-toggle{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;padding:4px}.nav-toggle__bar{display:block;width:22px;height:2px;background:var(--color-text-primary);border-radius:var(--radius-full)}.hero{position:relative;min-height:60vh;display:flex;align-items:flex-start;padding-top:16vh;overflow:hidden}.hero__bg{position:absolute;inset:0;z-index:0}.hero__bg-img{width:100%;height:100%;object-fit:cover;object-position:center}.hero__overlay{position:absolute;inset:0;background:linear-gradient(105deg,rgba(26,15,5,.92) 0,rgba(26,15,5,.65) 55%,rgba(26,15,5,.28) 100%)}.hero__content{position:relative;z-index:1;max-width:700px}.hero__label{display:inline-flex;align-items:center;gap:var(--space-2);font-size:var(--fs-xs);font-weight:var(--fw-semibold);color:var(--color-accent);letter-spacing:.18em;text-transform:uppercase;margin-bottom:var(--space-5)}.hero__title{font-family:'Cormorant Garamond','Cormorant Garamond Fallback',var(--font-heading);font-size:var(--fs-4xl);font-weight:var(--fw-bold);color:var(--color-text-primary);line-height:1.15;margin-bottom:var(--space-3)}.hero__title span{color:var(--color-accent);display:block}.hero__subtitle{font-family:var(--font-heading);font-size:var(--fs-xl);color:var(--color-accent);font-style:italic;margin-bottom:var(--space-5)}.hero__desc{font-size:var(--fs-md);color:var(--color-text-muted);line-height:1.8;margin-bottom:var(--space-8);max-width:480px}.hero__cta-group{display:flex;align-items:center;gap:var(--space-4);flex-wrap:wrap;margin-bottom:1.5rem}.hero__scroll{position:absolute;bottom:var(--space-8);left:50%;transform:translateX(-50%);z-index:1;display:flex;flex-direction:column;align-items:center;gap:var(--space-2);font-size:var(--fs-xs);color:var(--color-text-muted);background:0 0;border:none;cursor:pointer;font-family:inherit}.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);padding:var(--space-3) var(--space-8);font-size:var(--fs-sm);font-weight:var(--fw-semibold);border-radius:var(--radius-sm);border:1px solid transparent;cursor:pointer;white-space:nowrap}.btn--primary{background:var(--color-primary);color:var(--color-text-primary);border-color:var(--color-primary-light)}.btn--outline{background:0 0;color:var(--color-text-primary);border-color:rgba(255,255,255,.3)}.btn--lg{padding:var(--space-4) var(--space-10);font-size:var(--fs-base)}.section{padding:var(--space-8) 0}.section--dark{background:#f8f2ec}.section-header{text-align:center;margin-bottom:var(--space-12)}.section-header__label{display:inline-block;font-size:var(--fs-xs);font-weight:var(--fw-semibold);color:var(--color-text-black);letter-spacing:.15em;text-transform:uppercase}.section-header__title{font-family:var(--font-heading);font-size:var(--fs-3xl);font-weight:var(--fw-bold);color:var(--color-text-black);line-height:1.2}body,html{overflow-x:clip;max-width:100vw}main#main-content{overflow-x:hidden}@media(max-width:768px){:root{--fs-4xl:2.2rem;--fs-3xl:1.75rem;--fs-2xl:1.5rem;--header-height:60px;--promo-banner-height:80px}.nav-toggle{display:flex!important}.hero{min-height:480px!important;padding-top:100px!important}}@media(max-width:640px){:root{--promo-banner-height:140px}}.story-teaser{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-16);align-items:center}.story-teaser__media{position:relative;border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 24px 60px rgba(26,15,5,.18)}.story-teaser__img{width:100%;height:480px;object-fit:cover;display:block;transition:transform var(--transition-slow)}.story-teaser__media:hover .story-teaser__img{transform:scale(1.04)}.story-teaser__media::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(26,15,5,.3) 0,transparent 50%);pointer-events:none}.story-teaser__badge{position:absolute;bottom:var(--space-5);left:var(--space-5);z-index:2;background:var(--color-bg-overlay);backdrop-filter:blur(8px);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:var(--space-3) var(--space-5);font-size:var(--fs-sm);color:var(--color-accent);font-style:italic;font-family:var(--font-heading)}.story-teaser__content{display:flex;flex-direction:column;gap:var(--space-5)}.js-config-home-story-text .section-header__label{margin-bottom:var(--space-5)}.js-config-home-story-text h2,.story-teaser__quote{font-family:var(--font-heading);font-size:var(--fs-2xl);font-weight:var(--fw-bold);color:var(--color-text-black)!important;line-height:1.3;position:relative;margin-bottom:var(--space-4)}.js-config-home-story-text,.js-config-home-story-text p,.story-teaser__text{font-size:var(--fs-base);color:var(--color-text-black)!important;line-height:1.8}.js-config-home-story-text p{margin-bottom:var(--space-4)}@media (max-width:900px){.story-teaser{grid-template-columns:1fr;gap:var(--space-8)}.story-teaser[style*=row-reverse]{direction:ltr!important}.story-teaser__media{border-radius:var(--radius-xl);max-height:320px;overflow:hidden}.story-teaser__img{height:320px;object-position:center 20%}.story-teaser__content{gap:var(--space-4)}}@media (max-width:600px){.story-teaser{grid-template-columns:1fr;gap:0}.story-teaser__media{border-radius:var(--radius-lg) var(--radius-lg) 0 0;max-height:260px;box-shadow:none}.story-teaser__img{height:260px;border-radius:0}.story-teaser__content{background:#fff;padding:var(--space-8) var(--space-5) var(--space-6);border-radius:0 0 var(--radius-lg) var(--radius-lg);gap:var(--space-3);box-shadow:0 12px 30px rgba(26,15,5,.08)}.js-config-home-story-text h2,.story-teaser__quote{font-size:var(--fs-xl)!important}.js-config-home-story-text p,.story-teaser__text{font-size:var(--fs-sm)}}</style>
+
+  <!-- Full CSS (non-render-blocking, loaded async) -->
+  <link rel="preload" href="css/all.min.css?v=20260707_fix16" as="style" onload="this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="css/all.min.css?v=20260707_fix16"></noscript>
+
+      <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
+
+<body class="page-body">
+
+  <!-- ========== HEADER ========== -->
+  <div id="header-placeholder"></div>
+
+  <main id="main-content">
+
+    <!-- ========== HERO ========== -->
+    <section class="hero" aria-label="Gi?i thi?u Phúc Gia Tiên">
+      <div class="hero__bg">
+        <img class="hero__bg-img js-config-home-banner-img" id="hero-main-bg" 
+             src="/api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&amp;w=1920&amp;q=70&amp;h=1080" 
+             srcset="/api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&amp;w=768&amp;q=65&amp;h=1024 768w, /api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&amp;w=1920&amp;q=70&amp;h=1080 1920w" 
+             sizes="100vw" 
+             alt="" role="presentation" fetchpriority="high">
+        <script>
+          (function(){
+            function getProxyUrl(url, w, q, h) {
+              if (!url) return '';
+              var cleanUrl = url;
+              if (cleanUrl.startsWith('assets/')) {
+                cleanUrl = '/' + cleanUrl;
+              }
+              if (cleanUrl.startsWith('/') && !cleanUrl.startsWith('//')) {
+                var base = '';
+                if ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055') {
+                  base = 'http://localhost:5055';
+                } else {
+                  base = window.location.origin;
+                }
+                cleanUrl = base + cleanUrl;
+              }
+              var isLocal = cleanUrl.includes('battrangonline.vn') || cleanUrl.includes(window.location.hostname) || cleanUrl.includes('localhost') || cleanUrl.includes('/uploads/');
+              if (cleanUrl && !cleanUrl.startsWith('data:') && isLocal) {
+                var apiBase = '/api';
+                var proxy = apiBase + '/imageproxy?url=' + encodeURIComponent(cleanUrl) + '&w=' + w + '&q=' + q;
+                if (h) proxy += '&h=' + h;
+                return proxy;
+              }
+              return cleanUrl;
+            }
+
+            try {
+              var c = JSON.parse(sessionStorage.getItem('pgt_site_config'));
+              if (c && c.homeBanner) {
+                var img = document.getElementById('hero-main-bg');
+                if (img) {
+                  var n = getProxyUrl(c.homeBanner, 1920, 70, 1080).replace('.jpeg', '.webp').replace('.jpg', '.webp');
+                  var o = getProxyUrl(c.homeBanner, 768, 65, 1024).replace('.jpeg', '.webp').replace('.jpg', '.webp');
+                  img.src = n;
+                  img.srcset = o + " 768w, " + n + " 1920w";
+                  img.sizes = "100vw";
+                }
+              }
+            } catch(e){}
+          })();
+        </script>
+        <div class="hero__overlay"></div>
+      </div>
+      <div class="container">
+        <div class="hero__content">
+          <span class="hero__label">Ngh? Nhân Bát Tràng</span>
+          <h1 class="hero__title">
+            <span class="js-config-store-name">PHÚC GIA TIÊN</span>
+            <span class="js-config-slogan">Tinh Hoa G?m S? Th? Công</span>
+          </h1>
+          <p class="hero__subtitle">Giá Tr? Truy?n Ð?i</p>
+          <p class="hero__desc js-config-slogan-text">
+            Tinh hoa g?m s? th? công Bát Tràng — noi luu gi? giá tr? truy?n th?ng và ngh? thu?t ch? tác qua nhi?u th? h?.
+          </p>
+          <div class="hero__cta-group">
+            <a class="btn btn--primary btn--lg" href="products" id="hero-btn-products"
+              style="text-transform: uppercase;">XEM S?N PH?M</a>
+            <a class="btn btn--outline btn--lg" href="journey" id="hero-btn-story"
+              style="text-transform: uppercase; color: var(--color-text-primary); border-color: var(--color-text-primary);">XEM
+              HÀNH TRÌNH</a>
+          </div>
+        </div>
+      </div>
+      <!-- Nút cu?n xu?ng: click d? smooth scroll t?i n?i dung phía du?i -->
+      <button
+        class="hero__scroll"
+        id="hero-scroll-btn"
+        aria-label="Cu?n xu?ng xem n?i dung"
+        title="Cu?n xu?ng"
+      >
+        <span>Cu?n xu?ng</span>
+        <span class="hero__scroll-arrow"></span>
+      </button>
+    </section>
+
+
+
+    <!-- ========== STORY TEASER ========== -->
+    <section id="hero-next-section" class="section section--dark" aria-labelledby="story-heading">
+      <div class="container">
+        <div class="story-teaser" style="flex-direction: row-reverse;">
+          <div class="story-teaser__media reveal-right">
+            <img class="story-teaser__img js-config-home-story-img"
+              src="/api/imageproxy?url=%2Fassets%2Fimages%2Fabout-workshop.jpg&w=600&q=65"
+              srcset="/api/imageproxy?url=%2Fassets%2Fimages%2Fabout-workshop.jpg&w=400&q=60 400w, /api/imageproxy?url=%2Fassets%2Fimages%2Fabout-workshop.jpg&w=600&q=65 600w, /api/imageproxy?url=%2Fassets%2Fimages%2Fabout-workshop.jpg&w=800&q=65 800w"
+              sizes="(max-width: 600px) 100vw, (max-width: 900px) 90vw, 50vw"
+              alt="Ðôi v? ch?ng ngh? nhân Phúc Gia Tiên" loading="lazy" width="600" height="400" decoding="async">
+          </div>
+          <div class="story-teaser__content reveal-left">
+            <div class="js-config-home-story-text">
+              <span class="section-header__label">Câu Chuy?n C?a Chúng Tôi</span>
+              <h2 id="story-heading" class="story-teaser__quote">
+                2 v? ch?ng – 1 xu?ng –<br>1 hành trình
+              </h2>
+              <p class="story-teaser__text">
+                Chúng tôi b?t d?u t? con s? 0. T? tay h?c ngh?, t? làm,
+                t? th?t b?i và d?ng d?y. Phúc Gia Tiên không ch? làm g?m,
+                chúng tôi t?o ra giá tr? d? truy?n l?i cho th? h? sau.
+              </p>
+            </div>
+            <a class="btn btn--primary" href="journey" id="story-read-more-btn">XEM CÂU CHUY?N</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== FEATURED PRODUCTS ========== -->
+    <section class="section home-products" aria-labelledby="featured-products-heading">
+      <div class="container">
+        <!-- Header hàng ngang m?i ch?a c? Tiêu d? và Nút di?u hu?ng -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--space-10);">
+          <div class="section-header" style="text-align: left; margin-bottom: 0;">
+            <span class="section-header__label">Tinh Hoa Bát Tràng</span>
+            <h2 id="featured-products-heading" class="section-header__title" style="font-size:var(--fs-3xl);margin-top:var(--space-2);">
+              S?N PH?M N?I B?T
+            </h2>
+            <p class="section-header__desc" style="margin-top:var(--space-3);">
+              T?ng tác ph?m là k?t tinh c?a d?t, l?a và dôi bàn tay ngh? nhân.
+            </p>
+          </div>
+          
+          <!-- C?m nút di?u hu?ng d?t phía trên -->
+          <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+            <button class="conveyor-arrow-top" id="conveyor-prev-btn" aria-label="Xem s?n ph?m tru?c">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <button class="conveyor-arrow-top" id="conveyor-next-btn" aria-label="Xem s?n ph?m ti?p theo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Container b?c bang chuy?n -->
+      <div class="products-conveyor-container">
+        <!-- Full-width conveyor belt -->
+        <div class="products-conveyor" id="home-product-conveyor" aria-live="polite" aria-label="S?n ph?m n?i b?t">
+          <div class="products-track" id="home-product-track">
+            <!-- Skeleton placeholders hi?n tru?c khi JS load xong -->
+            <div class="home-product-skeleton"><div class="skeleton-img skeleton-block"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:60%"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:40%"></div></div></div></div>
+            <div class="home-product-skeleton"><div class="skeleton-img skeleton-block"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:70%"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:45%"></div></div></div></div>
+            <div class="home-product-skeleton"><div class="skeleton-img skeleton-block"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:55%"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:38%"></div></div></div></div>
+            <div class="home-product-skeleton"><div class="skeleton-img skeleton-block"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:65%"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:42%"></div></div></div></div>
+            <div class="home-product-skeleton"><div class="skeleton-img skeleton-block"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:58%"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:36%"></div></div></div></div>
+            <div class="home-product-skeleton"><div class="skeleton-img skeleton-block"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:72%"></div><div class="skeleton-body"><div class="skeleton-line skeleton-block" style="width:44%"></div></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <div style="text-align:center;margin-top:var(--space-10);">
+          <a class="btn btn--primary btn--lg" href="products" id="home-more-products-btn"
+            style="text-transform: uppercase;">XEM T?T C? S?N PH?M</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== PROCESS SECTION ========== -->
+    <section class="section process-section" aria-labelledby="process-heading">
+      <div class="container">
+        <div class="section-header">
+          <h2 id="process-heading" class="section-header__title">Quy Trình Ch? Tác</h2>
+          <p class="section-header__desc">T? d?t sét d?n tác ph?m ngh? thu?t – 5 công do?n th? công t? m?.</p>
+        </div>
+        <div class="process-steps" role="list">
+
+          <!-- Bu?c 1: Chu?n b? d?t -->
+          <div class="process-step-flip" role="listitem" onclick="this.classList.toggle('is-flipped')">
+            <div class="process-flip-inner">
+              <div class="process-flip-front">
+                <span class="process-step__badge">BU?C 01</span>
+                <div class="process-step__icon-wrap">
+                  <svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <ellipse cx="24" cy="36" rx="16" ry="5"/>
+                    <path d="M8 36 C8 28 14 24 24 24 C34 24 40 28 40 36"/>
+                    <path d="M18 24 C17 18 16 13 17 10 C17.5 8 19 8 19.5 10 L20 18"/>
+                    <path d="M21 23 C20.5 17 20 12 21 9 C21.5 7 23 7 23.5 9 L24 18"/>
+                    <path d="M24 23 C24 17 24 12 25 9 C25.5 7 27 7 27.5 9 L28 18"/>
+                    <path d="M27 23 C27.5 18 28 13 30 10.5 C31 9 32.5 9.5 32 12 L31 19"/>
+                  </svg>
+                </div>
+                <p class="process-step__label js-config-proc-1-title">1. Chu?n b? d?t</p>
+                <p class="process-step__desc js-config-proc-1-desc">Ch?n l?a và nhào d?t sét Bát Tràng dúng d? d?o</p>
+                <span class="process-flip-hint"></span>
+              </div>
+              <div class="process-flip-back" style="background-image: url('assets/images/process-1.webp');">
+                <div class="process-flip-back__overlay">
+                  <span class="process-flip-back__step">Công do?n 01</span>
+                  <h3 class="process-flip-back__title">Nhào Luy?n Ð?t</h3>
+                  <p class="process-flip-back__text">Ð?t cao lanh tuy?n ch?n du?c ngh? nhân ? và nhào n?n th? công hàng nghìn l?n d? d?t d? d?o m?n tuy?t d?i tru?c khi lên bàn xoay.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bu?c 2: T?o hình -->
+          <div class="process-step-flip" role="listitem" onclick="this.classList.toggle('is-flipped')">
+            <div class="process-flip-inner">
+              <div class="process-flip-front">
+                <span class="process-step__badge">BU?C 02</span>
+                <div class="process-step__icon-wrap">
+                  <svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <ellipse cx="24" cy="39" rx="15" ry="4"/>
+                    <line x1="24" y1="35" x2="24" y2="39"/>
+                    <path d="M18 35 C16 28 15 20 18 14 Q24 10 30 14 C33 20 32 28 30 35 Z"/>
+                    <ellipse cx="24" cy="14" rx="6" ry="2.5"/>
+                    <path d="M14 22 Q11 22 10 25 Q11 28 14 27"/>
+                    <path d="M34 22 Q37 22 38 25 Q37 28 34 27"/>
+                  </svg>
+                </div>
+                <p class="process-step__label js-config-proc-2-title">2. T?o hình</p>
+                <p class="process-step__desc js-config-proc-2-desc">Vu?t d?t trên bàn xoay b?ng dôi bàn tay diêu luy?n</p>
+                <span class="process-flip-hint"></span>
+              </div>
+              <div class="process-flip-back" style="background-image: url('assets/images/process-2.webp');">
+                <div class="process-flip-back__overlay">
+                  <span class="process-flip-back__step">Công do?n 02</span>
+                  <h3 class="process-flip-back__title">Vu?t G?m Bàn Xoay</h3>
+                  <p class="process-flip-back__text">Du?i dôi bàn tay diêu luy?n c?a ngh? nhân, kh?i d?t sét vô tri tru?t quay tròn mu?t mà bi?n hóa thành hình dáng l?c bình thanh thoát.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bu?c 3: V? tay -->
+          <div class="process-step-flip" role="listitem" onclick="this.classList.toggle('is-flipped')">
+            <div class="process-flip-inner">
+              <div class="process-flip-front">
+                <span class="process-step__badge">BU?C 03</span>
+                <div class="process-step__icon-wrap">
+                  <svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 40 C15 33 15 22 18 16 Q24 12 30 16 C33 22 33 33 31 40 Z"/>
+                    <ellipse cx="24" cy="16" rx="6" ry="2.5"/>
+                    <path d="M20 27 Q24 23 28 27"/>
+                    <path d="M19 31 Q24 26 29 31"/>
+                    <line x1="35" y1="10" x2="28" y2="26"/>
+                    <path d="M35 10 L38 7 L37 12 Z" fill="currentColor"/>
+                  </svg>
+                </div>
+                <p class="process-step__label js-config-proc-3-title">3. V? tay</p>
+                <p class="process-step__desc js-config-proc-3-desc">Trang trí hoa van truy?n th?ng b?ng bút lông th? công</p>
+                <span class="process-flip-hint"></span>
+              </div>
+              <div class="process-flip-back" style="background-image: url('assets/images/process-3.webp');">
+                <div class="process-flip-back__overlay">
+                  <span class="process-flip-back__step">Công do?n 03</span>
+                  <h3 class="process-flip-back__title">Ch?m Bút H?a Lam</h3>
+                  <p class="process-flip-back__text">T?ng nét c? bút lông th? công t? m? ch?m lam v? hoa sen, r?ng phu?ng uy?n chuy?n, th?i h?n s?ng d?ng vào t?ng th? g?m m?c.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bu?c 4: Nung lò -->
+          <div class="process-step-flip" role="listitem" onclick="this.classList.toggle('is-flipped')">
+            <div class="process-flip-inner">
+              <div class="process-flip-front">
+                <span class="process-step__badge">BU?C 04</span>
+                <div class="process-step__icon-wrap">
+                  <svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 38 L8 22 Q8 10 24 10 Q40 10 40 22 L40 38 Z"/>
+                    <path d="M17 38 L17 30 Q17 26 24 26 Q31 26 31 30 L31 38"/>
+                    <path d="M22 35 C21 32 22 28 24 26 C26 28 27 32 26 35"/>
+                    <path d="M16 10 C15 7 17 5 16 3"/>
+                    <path d="M32 10 C31 7 33 5 32 3"/>
+                  </svg>
+                </div>
+                <p class="process-step__label js-config-proc-4-title">4. Nung lò</p>
+                <p class="process-step__desc js-config-proc-4-desc">Nung ? nhi?t d? 1.280°C trong lò truy?n th?ng</p>
+                <span class="process-flip-hint"></span>
+              </div>
+              <div class="process-flip-back" style="background-image: url('assets/images/process-4.webp');">
+                <div class="process-flip-back__overlay">
+                  <span class="process-flip-back__step">Công do?n 04</span>
+                  <h3 class="process-flip-back__title">L?a Th? Vàng 1.280°C</h3>
+                  <p class="process-flip-back__text">Nung liên t?c ròng rã su?t ngày dêm trong ng?n l?a r?c h?ng 1.280°C d? suong g?m k?t kh?i kiên c? và men ch?y trong v?t vinh c?u.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bu?c 5: Hoàn thi?n -->
+          <div class="process-step-flip" role="listitem" onclick="this.classList.toggle('is-flipped')">
+            <div class="process-flip-inner">
+              <div class="process-flip-front">
+                <span class="process-step__badge">BU?C 05</span>
+                <div class="process-step__icon-wrap">
+                  <svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 42 C14 35 13 24 17 16 Q24 10 31 16 C35 24 34 35 32 42 Z"/>
+                    <ellipse cx="24" cy="16" rx="7" ry="3"/>
+                    <line x1="8" y1="12" x2="12" y2="12"/>
+                    <line x1="38" y1="18" x2="42" y2="18"/>
+                    <line x1="37" y1="8" x2="40" y2="11"/>
+                  </svg>
+                </div>
+                <p class="process-step__label js-config-proc-5-title">5. Hoàn thi?n</p>
+                <p class="process-step__desc js-config-proc-5-desc">Ki?m tra, dánh bóng và dóng gói tác ph?m hoàn h?o</p>
+                <span class="process-flip-hint"></span>
+              </div>
+              <div class="process-flip-back" style="background-image: url('assets/images/process-5.webp');">
+                <div class="process-flip-back__overlay">
+                  <span class="process-flip-back__step">Công do?n 05</span>
+                  <h3 class="process-flip-back__title">Tuy?t Tác Xu?t Xu?ng</h3>
+                  <p class="process-flip-back__text">T?ng tác ph?m ra lò du?c ki?m tra âm thanh, d? bóng men kh?t khe tru?c khi b?c gói trân tr?ng trao g?i d?n tay quý khách hàng.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== CTA BANNER ========== -->
+    <section class="cta-banner" aria-labelledby="cta-heading">
+      <div class="hero__bg">
+        <img class="hero__bg-img js-config-cta-banner-img" src="assets/images/bg.webp" alt="" role="presentation" loading="lazy" width="1920" height="1080" decoding="async">
+        <div class="hero__overlay" style="background: rgba(26, 15, 5, 0.65);"></div>
+      </div>
+      <div class="container" style="position: relative; z-index: 1;">
+        <div class="cta-banner__content reveal">
+          <h2 id="cta-heading" class="cta-banner__title">
+            B?n mu?n s? h?u m?t s?n ph?m<br>mang giá tr? truy?n th?ng?
+          </h2>
+          <p class="cta-banner__desc">
+            Liên h? ngay v?i chúng tôi d? du?c tu v?n và d?t hàng s?n ph?m g?m s? th? công Bát Tràng.
+          </p>
+          <div class="cta-banner__actions" style="display: flex; gap: var(--space-4); justify-content: center;">
+            <a class="btn btn--primary btn--lg" href="contact" id="cta-contact-btn">LIÊN H? NGAY</a>
+            <a class="btn btn--outline btn--lg js-config-phone-link" href="tel:0989123456" id="cta-call-btn"
+              style="color: var(--color-text-primary); border-color: var(--color-text-primary);">G?I NGAY: <span class="js-config-phone-text">0989 123 456</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <div id="footer-placeholder"></div>
+
+  <!-- JS -->
+  <script src="js/api.min.js?v=20260707_fix13" defer></script>
+  <script src="js/cart.min.js?v=20260707_fix13" defer></script>
+  <script src="js/promo.min.js?v=20260707_fix13" defer></script>
+  <script src="js/common.min.js?v=20260707_fix16" defer></script>
+  <script src="js/home.min.js?v=20260707_fix13" defer></script>
+</body>
+
+</html>
+
