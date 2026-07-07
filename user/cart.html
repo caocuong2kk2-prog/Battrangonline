@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -13,9 +13,9 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/layout.min.css?v=20260707_fix27">
-  <link rel="stylesheet" href="css/cart.min.css?v=20260707_fix27">
-  <link rel="stylesheet" href="css/responsive.min.css?v=20260707_fix27">
+  <link rel="stylesheet" href="css/layout.min.css?v=20260707_fix41">
+  <link rel="stylesheet" href="css/cart.min.css?v=20260707_fix41">
+  <link rel="stylesheet" href="css/responsive.min.css?v=20260707_fix41">
       <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head>
 
@@ -60,13 +60,9 @@
                 </button>
               </div>
             </div>
-            <div>
-              <button class="cart-select-all-btn" id="cart-select-all-btn" aria-label="Chọn tất cả">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                <span id="select-all-label">Bỏ chọn tất cả</span>
-              </button>
+            <div class="cart-select-all-wrap">
+              <input type="checkbox" id="cart-select-all-checkbox" class="cart-select-all-checkbox">
+              <label for="cart-select-all-checkbox" id="select-all-label" class="cart-select-all-label">Bỏ chọn tất cả</label>
             </div>
 
             <!-- Cart Item List -->
@@ -75,7 +71,7 @@
             </div>
 
             <!-- Empty Cart State -->
-            <div class="cart-empty" id="cart-empty" hidden>
+            <div class="cart-empty" id="cart-empty" style="display: none;">
               <div class="cart-empty__icon">🏺</div>
               <h3 class="cart-empty__title">Giỏ hàng của bạn đang trống</h3>
               <p class="cart-empty__desc">Hãy khám phá bộ sưu tập gốm sứ thủ công Bát Tràng cao cấp của chúng tôi.</p>
@@ -153,10 +149,10 @@
   <!-- FOOTER -->
   <div id="footer-placeholder"></div>
 
-  <script src="js/api.min.js?v=20260707_fix27"></script>
-  <script src="js/promo.min.js?v=20260707_fix27"></script>
-  <script src="js/common.min.js?v=20260707_fix27"></script>
-  <script src="js/cart.min.js?v=20260707_fix27"></script>
+  <script src="js/api.min.js?v=20260707_fix41"></script>
+  <script src="js/promo.min.js?v=20260707_fix41"></script>
+  <script src="js/common.min.js?v=20260707_fix41"></script>
+  <script src="js/cart.min.js?v=20260707_fix41"></script>
 </body>
 
 </html>

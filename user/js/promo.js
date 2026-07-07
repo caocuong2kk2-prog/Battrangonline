@@ -9,31 +9,17 @@
     style.id = 'promo-styles';
     style.textContent = `
       /* ---- TOP PROMO BANNER ---- */
-      body.page-body {
-        transition: padding-top 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
-      }
-      main#main-content {
-        margin-top: var(--promo-banner-height, 0px) !important;
-      }
       #site-header {
         transition: background 0.3s ease, box-shadow 0.3s ease !important;
       }
       #top-promo-banner {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1001;
+        position: relative;
+        z-index: 999; /* Lower than site-header z-index (1000) to prevent subpixel border overlap */
         background: linear-gradient(90deg, #1a0f05 0%, #2c1a08 25%, #1a0f05 50%, #2c1a08 75%, #1a0f05 100%);
-        border-bottom: 1px solid rgba(200,146,42,0.4);
+        border-bottom: 1.5px solid rgba(200, 146, 42, 0.5); /* Gold dividing line */
         padding: 0;
         overflow: hidden;
         margin: 0;
-        transform: translateY(-100%);
-        animation: slideDownBanner 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      }
-      @keyframes slideDownBanner {
-        to { transform: translateY(0); }
       }
       #top-promo-banner::before {
         content: '';
@@ -132,51 +118,74 @@
 
       /* Responsive adjustments for banner */
       @media (max-width: 1200px) {
-        .promo-banner__sparks {
-          display: none;
-        }
         #promo-banner-inner {
-          gap: 15px;
+          flex-wrap: wrap;
+          gap: 10px 15px;
+          padding: 8px 20px;
+        }
+        .promo-banner__sparks {
+          width: 100%;
+          justify-content: center;
+          font-size: 10.5px;
         }
       }
 
       @media (max-width: 900px) {
         .promo-banner__label {
-          font-size: 12px;
-        }
-        #promo-countdown {
-          font-size: 13px;
-          padding: 2px 8px;
-        }
-        .promo-banner__cta {
-          padding: 4px 12px;
-          font-size: 10px;
-        }
-        #promo-banner-inner {
-          gap: 10px;
-        }
-      }
-
-      @media (max-width: 768px) {
-        #promo-banner-inner {
-          flex-wrap: wrap;
-          padding: 6px 12px;
-          gap: 8px;
-          justify-content: center;
-        }
-        .promo-banner__label {
           font-size: 11.5px;
-          width: auto;
-          text-align: center;
         }
         #promo-countdown {
           font-size: 12px;
           padding: 2px 6px;
         }
         .promo-banner__cta {
+          padding: 4px 12px;
+          font-size: 9.5px;
+        }
+        #promo-banner-inner {
+          gap: 8px 10px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        #promo-banner-inner {
+          flex-wrap: wrap;
+          padding: 6px 10px;
+          gap: 5px 10px;
+          justify-content: center;
+          align-items: center;
+        }
+        .promo-banner__sparks {
           width: 100%;
           justify-content: center;
-          padding: 5px 10px;
+          font-size: 9.5px;
+          letter-spacing: 0.1em;
+          margin-bottom: 2px;
+          display: flex;
+        }
+        .promo-banner__sparks::before,
+        .promo-banner__sparks::after {
+          width: 16px;
+        }
+        .promo-banner__label {
+          font-size: 11px;
+          text-align: center;
+          margin: 0;
+        }
+        #promo-countdown {
+          font-size: 11px;
+          padding: 2px 4px;
+          gap: 3px;
+        }
+        .promo-cd-lbl {
+          font-size: 8.5px;
+        }
+        .promo-banner__cta {
+          width: auto;
+          padding: 4px 12px;
+          font-size: 9.5px;
+          letter-spacing: 0.06em;
+          margin-top: 2px;
         }
       }
 
@@ -437,18 +446,9 @@
         if (layoutBlocked) return;
         layoutBlocked = true;
         requestAnimationFrame(() => {
-          const header = getHeader();
-          if (header) {
-            if (banner) {
-              cachedBannerHeight = banner.offsetHeight;
-              document.documentElement.style.setProperty('--promo-banner-height', cachedBannerHeight + 'px');
-            }
-            const scrolled = window.scrollY;
-            if (scrolled >= cachedBannerHeight) {
-              header.style.top = '0px';
-            } else {
-              header.style.top = (cachedBannerHeight - scrolled) + 'px';
-            }
+          if (banner) {
+            cachedBannerHeight = banner.offsetHeight;
+            document.documentElement.style.setProperty('--promo-banner-height', cachedBannerHeight + 'px');
           }
           layoutBlocked = false;
         });
@@ -497,9 +497,11 @@
       setInterval(updateBannerCountdown, 1000);
 
       // ══════════════════════════════════════════════
-      // 2. POPUP — chỉ hiện 1 lần/session
-      // ══════════════════════════════════════════════
-      if (sessionStorage.getItem('promoPopupShown')) return;
+      let promoPopupShown = false;
+      try {
+        promoPopupShown = sessionStorage.getItem('promoPopupShown');
+      } catch (e) {}
+      if (promoPopupShown) return;
 
       setTimeout(function () {
         const overlay = document.createElement('div');
@@ -618,7 +620,9 @@
           if (card) { card.style.transform = 'scale(0.9) translateY(20px)'; }
           clearInterval(popupTimer);
           setTimeout(() => overlay.remove(), 450);
-          sessionStorage.setItem('promoPopupShown', 'true');
+          try {
+            sessionStorage.setItem('promoPopupShown', 'true');
+          } catch (e) {}
         }
 
         document.getElementById('close-promo-popup').addEventListener('click', closePopup);

@@ -104,9 +104,46 @@
     var isAnimating = false; // Đánh dấu khi đang chạy animation nút bấm
     var resumeTimeout = null;
     var autoCycleInterval = null;
+    var slideStep = 334; // 1 card (310px) + gap (24px)
 
     // Chiều rộng của 1 nửa track (phần 12 sản phẩm gốc)
     var trackHalfW = track.scrollWidth / 2;
+
+    // Snaps the conveyor to the nearest card on finger/mouse release
+    function snapToNearestCard(dragDistance, startScroll) {
+      if (isAnimating) return;
+
+      var currentScroll = conveyor.scrollLeft;
+      var targetIdx;
+
+      // Threshold is 30px of drag to trigger card change
+      var threshold = 30;
+
+      if (startScroll !== undefined) {
+        var startIdx = Math.round(startScroll / slideStep);
+        if (Math.abs(dragDistance) > threshold) {
+          if (dragDistance > 0) {
+            targetIdx = startIdx + 1;
+          } else {
+            targetIdx = startIdx - 1;
+          }
+        } else {
+          targetIdx = startIdx;
+        }
+      } else {
+        var currentIdx = currentScroll / slideStep;
+        if (Math.abs(dragDistance) > threshold) {
+          if (dragDistance > 0) targetIdx = Math.ceil(currentIdx);
+          else targetIdx = Math.floor(currentIdx);
+        } else {
+          targetIdx = Math.round(currentIdx);
+        }
+      }
+
+      var targetScroll = targetIdx * slideStep;
+      var changeAmount = targetScroll - currentScroll;
+      smoothScrollToTarget(changeAmount, 350);
+    }
 
     // 1. Tự động cuộn 8 giây một lần (cho người lớn tuổi dễ quan sát)
     function startAutoCycle() {
@@ -131,16 +168,64 @@
         startAutoCycle();
       }
     });
-    conveyor.addEventListener('touchstart', function () {
+    var touchStartX = 0;
+    var touchStartY = 0;
+    var touchScrollStart = 0;
+    var isTouching = false;
+    var isSwipeDirectionDecided = false;
+    var isHorizontalSwipe = false;
+
+    conveyor.addEventListener('touchstart', function (e) {
       isPaused = true;
+      isTouching = true;
+      isSwipeDirectionDecided = false;
+      isHorizontalSwipe = false;
       if (autoCycleInterval) clearInterval(autoCycleInterval);
-    }, { passive: true });
-    conveyor.addEventListener('touchend', function () {
+      touchStartX = e.touches[0].pageX;
+      touchStartY = e.touches[0].pageY;
+      touchScrollStart = conveyor.scrollLeft;
       clearTimeout(resumeTimeout);
-      resumeTimeout = setTimeout(function () {
-        isPaused = false;
-        startAutoCycle();
-      }, 1500);
+    }, { passive: true });
+
+    conveyor.addEventListener('touchmove', function (e) {
+      if (!isTouching) return;
+
+      var currentX = e.touches[0].pageX;
+      var currentY = e.touches[0].pageY;
+      var diffX = currentX - touchStartX;
+      var diffY = currentY - touchStartY;
+
+      if (!isSwipeDirectionDecided) {
+        if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
+          isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY);
+          isSwipeDirectionDecided = true;
+        }
+      }
+
+      if (isSwipeDirectionDecided && isHorizontalSwipe) {
+        if (e.cancelable) {
+          e.preventDefault();
+        }
+        var walk = diffX * 1.5; // swipe sensitivity
+        var newScrollLeft = touchScrollStart - walk;
+
+        if (newScrollLeft >= trackHalfW) {
+          newScrollLeft -= trackHalfW;
+          touchScrollStart -= trackHalfW;
+        } else if (newScrollLeft <= 0) {
+          newScrollLeft += trackHalfW;
+          touchScrollStart += trackHalfW;
+        }
+
+        conveyor.scrollLeft = newScrollLeft;
+      }
+    }, { passive: false });
+
+    conveyor.addEventListener('touchend', function () {
+      if (!isTouching) return;
+      isTouching = false;
+      var dragDistance = conveyor.scrollLeft - touchScrollStart;
+      snapToNearestCard(dragDistance, touchScrollStart);
     }, { passive: true });
 
     // 2. Kéo thả chuột để trượt (Drag to Scroll) kèm Infinite Wrap thông minh
@@ -156,10 +241,8 @@
     window.addEventListener('mouseup', function () {
       if (!isDown) return;
       isDown = false;
-      resumeTimeout = setTimeout(function () {
-        isPaused = false;
-        startAutoCycle();
-      }, 1500);
+      var dragDistance = conveyor.scrollLeft - scrollLeftStart;
+      snapToNearestCard(dragDistance, scrollLeftStart);
     });
 
     conveyor.addEventListener('mousemove', function (e) {
@@ -224,7 +307,6 @@
 
     var prevBtn = document.getElementById('conveyor-prev-btn');
     var nextBtn = document.getElementById('conveyor-next-btn');
-    var slideStep = 334; // 1 card (310px) + gap (24px)
 
     function scrollToIndex(direction) {
       if (isAnimating) return;

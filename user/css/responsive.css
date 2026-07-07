@@ -97,9 +97,21 @@
     align-items: stretch;
     gap: 0;
     width: 100%;
+    height: auto !important;
+  }
+
+  .nav-list__item {
+    width: 100%;
+    display: block;
+    height: auto !important;
   }
 
   .nav-list__link {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
     font-size: 1.1rem;
     padding: var(--space-3) var(--space-4);
     border-bottom: none;

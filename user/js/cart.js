@@ -332,12 +332,12 @@
     }
 
     // Select all / Deselect all
-    var selectAllBtn = document.getElementById('cart-select-all-btn');
-    if (selectAllBtn) {
-      selectAllBtn.addEventListener('click', function () {
+    var selectAllCb = document.getElementById('cart-select-all-checkbox');
+    if (selectAllCb) {
+      selectAllCb.addEventListener('change', function () {
+        var isChecked = selectAllCb.checked;
         var cart = loadCart();
-        var allSelected = cart.length > 0 && cart.every(function (i) { return i.selected; });
-        cart.forEach(function (i) { i.selected = !allSelected; });
+        cart.forEach(function (i) { i.selected = isChecked; });
         saveCart(cart);
         renderCart();
       });
@@ -433,19 +433,14 @@
       return renderCartItem(item);
     }).join('');
 
-    // Update select all button label and icon
-    var selectAllBtn = document.getElementById('cart-select-all-btn');
+    // Update select all checkbox and label
+    var selectAllCb = document.getElementById('cart-select-all-checkbox');
     var selectAllLabel = document.getElementById('select-all-label');
-    if (selectAllBtn && selectAllLabel) {
+    if (selectAllCb) {
       var allSelected = cart.length > 0 && cart.every(function (i) { return i.selected; });
-      selectAllLabel.textContent = allSelected ? 'Bỏ chọn tất cả' : 'Chọn tất cả';
-      var svgEl = selectAllBtn.querySelector('svg');
-      if (svgEl) {
-        if (allSelected) {
-          svgEl.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>';
-        } else {
-          svgEl.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
-        }
+      selectAllCb.checked = allSelected;
+      if (selectAllLabel) {
+        selectAllLabel.textContent = allSelected ? 'Bỏ chọn tất cả' : 'Chọn tất cả';
       }
     }
 

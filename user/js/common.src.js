@@ -23,6 +23,32 @@ window.addEventListener('error', function(e) {
 (function () {
   'use strict';
 
+  // Safe Storage Wrapper to prevent SecurityErrors in restricted environments like Zalo or Private browsing
+  const safeStorage = {
+    session: {
+      getItem: function (key) {
+        try { return sessionStorage.getItem(key); } catch (e) { return null; }
+      },
+      setItem: function (key, value) {
+        try { sessionStorage.setItem(key, value); } catch (e) {}
+      },
+      removeItem: function (key) {
+        try { sessionStorage.removeItem(key); } catch (e) {}
+      }
+    },
+    local: {
+      getItem: function (key) {
+        try { return localStorage.getItem(key); } catch (e) { return null; }
+      },
+      setItem: function (key, value) {
+        try { localStorage.setItem(key, value); } catch (e) {}
+      },
+      removeItem: function (key) {
+        try { localStorage.removeItem(key); } catch (e) {}
+      }
+    }
+  };
+
   // Helper to get robust path for shared components
   function getComponentPath(fileName) {
     const pathname = window.location.pathname.toLowerCase();
@@ -38,17 +64,16 @@ window.addEventListener('error', function(e) {
   async function loadComponents() {
     const headerPh = document.getElementById('header-placeholder');
     const footerPh = document.getElementById('footer-placeholder');
-    
     async function fetchComponent(fileName) {
       const url = getComponentPath(fileName);
-      const cacheKey = 'pgt_cache_' + fileName + '_v5';
-      const cached = sessionStorage.getItem(cacheKey);
+      const cacheKey = 'pgt_cache_' + fileName + '_v7';
+      const cached = safeStorage.session.getItem(cacheKey);
       if (cached) return cached;
       try {
         const res = await fetch(url);
         if (res.ok) {
           const text = await res.text();
-          sessionStorage.setItem(cacheKey, text);
+          safeStorage.session.setItem(cacheKey, text);
           return text;
         }
       } catch (e) {}
@@ -214,29 +239,21 @@ function populateHeaderMegaMenu() {
       inner.appendChild(navToggle);
     }
 
-    // Sticky header on scroll using IntersectionObserver
-    // Sentinel is placed right before the header (which might now be after the promo banner)
-    const sentinel = document.createElement('div');
-    sentinel.style.position = 'absolute';
-    // Position it at the very top of the page, height can be small
-    sentinel.style.top = '0';
-    sentinel.style.left = '0';
-    sentinel.style.width = '100%';
-    sentinel.style.height = '10px'; // Detect scroll past top 10px
-    sentinel.style.pointerEvents = 'none';
-    sentinel.style.visibility = 'hidden';
-    document.body.appendChild(sentinel);
-
-    const observer = new IntersectionObserver(function(entries) {
-      const entry = entries[0];
-      if (!entry.isIntersecting) {
+    // Sticky header on scroll: trigger .scrolled state only when the promo banner is fully scrolled out of view
+    function checkHeaderScroll() {
+      const promoBanner = document.getElementById('top-promo-banner');
+      const bannerHeight = promoBanner ? promoBanner.offsetHeight : 0;
+      if (window.scrollY > bannerHeight + 2) {
         header.classList.add('scrolled');
+        document.body.classList.add('scrolled');
       } else {
         header.classList.remove('scrolled');
+        document.body.classList.remove('scrolled');
       }
-    }, { rootMargin: '0px', threshold: 0 });
-    
-    observer.observe(sentinel);
+    }
+
+    window.addEventListener('scroll', checkHeaderScroll, { passive: true });
+    checkHeaderScroll(); // Run once initially
 
     // Mobile nav toggle
     if (navToggle && siteNav) {
@@ -244,7 +261,6 @@ function populateHeaderMegaMenu() {
         const isOpen = siteNav.classList.toggle('is-open');
         navToggle.classList.toggle('is-open', isOpen);
         navToggle.setAttribute('aria-expanded', String(isOpen));
-        document.body.style.overflow = isOpen ? 'hidden' : '';
       });
 
       siteNav.querySelectorAll('.nav-list__link').forEach(function (link) {
@@ -252,7 +268,6 @@ function populateHeaderMegaMenu() {
           siteNav.classList.remove('is-open');
           navToggle.classList.remove('is-open');
           navToggle.setAttribute('aria-expanded', 'false');
-          document.body.style.overflow = '';
         });
       });
 
@@ -261,7 +276,6 @@ function populateHeaderMegaMenu() {
           siteNav.classList.remove('is-open');
           navToggle.classList.remove('is-open');
           navToggle.setAttribute('aria-expanded', 'false');
-          document.body.style.overflow = '';
         }
       });
     }
@@ -532,13 +546,13 @@ function populateHeaderMegaMenu() {
   // 3. AUTH SERVICE (Customer session management)
   // ======================================================
   window.logoutCustomer = function () {
-    localStorage.removeItem('current_user');
-    localStorage.removeItem('customer_token');
-    sessionStorage.removeItem('current_user');
-    sessionStorage.removeItem('customer_token');
+    safeStorage.local.removeItem('current_user');
+    safeStorage.local.removeItem('customer_token');
+    safeStorage.session.removeItem('current_user');
+    safeStorage.session.removeItem('customer_token');
     // Clear guest traces for privacy when logging out of a shared device
-    localStorage.removeItem('pgt_last_address');
-    localStorage.removeItem('pgt_orders');
+    safeStorage.local.removeItem('pgt_last_address');
+    safeStorage.local.removeItem('pgt_orders');
     window.showToast('Đã đăng xuất thành công!', 'success');
     setTimeout(() => window.location.reload(), 1000);
   };

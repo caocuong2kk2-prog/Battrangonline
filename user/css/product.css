@@ -1989,10 +1989,7 @@
   color: #825300;
   line-height: 1.4;
   text-align: left;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  display: block;
 }
 .product-card__gift .gift-icon {
   color: #825300;
