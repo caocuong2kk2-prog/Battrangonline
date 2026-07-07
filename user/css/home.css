@@ -370,7 +370,7 @@
 /* ── Track: không dùng CSS animation nữa mà dùng JS scroll ── */
 .products-track {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   gap: var(--space-6);
   width: max-content;
   min-height: 440px;
@@ -386,12 +386,19 @@
 .products-track .product-card {
   width: 310px;
   flex-shrink: 0;
-  height: auto;
-  /* Chặn layout/paint leak ra ngoài → Safari iOS không recalculate từng card khi track transform */
-  contain: layout style paint;
+  height: auto !important;
+  align-self: stretch !important;
+  display: flex !important;
+  flex-direction: column !important;
   /* Tách mỗi card thành GPU layer riêng → tránh repaint toàn bộ track khi 1 card thay đổi */
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
+}
+
+.products-track .product-card__body {
+  display: flex !important;
+  flex-direction: column !important;
+  flex-grow: 1 !important;
 }
 
 
@@ -441,12 +448,6 @@
   height: 24px;
 }
 
-/* ── Enhanced Product Card (Override for Track) ── */
-.products-track .product-card {
-  width: 310px;
-  flex-shrink: 0;
-  height: auto;
-}
 
 /* Tắt hiệu ứng hover transform trên thiết bị cảm ứng → tránh stutter khi vuốt */
 @media (hover: none), (pointer: coarse) {

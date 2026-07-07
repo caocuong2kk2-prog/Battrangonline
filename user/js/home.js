@@ -102,56 +102,52 @@
     var scrollLeftStart;
     var isPaused = false;
     var isAnimating = false; // Đánh dấu khi đang chạy animation nút bấm
-    var autoScrollSpeed = 0.6; // px mỗi frame
     var resumeTimeout = null;
-    var animationFrameId = null;
+    var autoCycleInterval = null;
 
     // Chiều rộng của 1 nửa track (phần 12 sản phẩm gốc)
     var trackHalfW = track.scrollWidth / 2;
 
-    // 1. Tự động cuộn trôi êm ái
-    var virtualScrollLeft = conveyor.scrollLeft;
-    var wasPaused = false;
-
-    function autoScroll() {
-      var currentlyPaused = isPaused || isDown || isAnimating;
-      
-      if (currentlyPaused) {
-        wasPaused = true;
-      } else {
-        if (wasPaused) {
-          // Chỉ đồng bộ lại tọa độ 1 lần duy nhất sau khi người dùng tương tác xong (kéo thả, click)
-          virtualScrollLeft = conveyor.scrollLeft;
-          wasPaused = false;
+    // 1. Tự động cuộn 8 giây một lần (cho người lớn tuổi dễ quan sát)
+    function startAutoCycle() {
+      if (autoCycleInterval) clearInterval(autoCycleInterval);
+      autoCycleInterval = setInterval(function () {
+        if (!isPaused && !isDown && !isAnimating) {
+          scrollToIndex(1);
         }
-        
-        virtualScrollLeft += autoScrollSpeed;
-
-        if (virtualScrollLeft >= trackHalfW) {
-          virtualScrollLeft -= trackHalfW;
-        }
-        
-        conveyor.scrollLeft = virtualScrollLeft;
-      }
-
-      animationFrameId = requestAnimationFrame(autoScroll);
+      }, 8000);
     }
 
-    animationFrameId = requestAnimationFrame(autoScroll);
+    startAutoCycle();
 
     // Dừng trôi khi di chuột vào hoặc chạm tay
-    conveyor.addEventListener('mouseenter', function () { isPaused = true; });
-    conveyor.addEventListener('mouseleave', function () { if (!isDown) isPaused = false; });
-    conveyor.addEventListener('touchstart', function () { isPaused = true; }, { passive: true });
+    conveyor.addEventListener('mouseenter', function () {
+      isPaused = true;
+      if (autoCycleInterval) clearInterval(autoCycleInterval);
+    });
+    conveyor.addEventListener('mouseleave', function () {
+      if (!isDown) {
+        isPaused = false;
+        startAutoCycle();
+      }
+    });
+    conveyor.addEventListener('touchstart', function () {
+      isPaused = true;
+      if (autoCycleInterval) clearInterval(autoCycleInterval);
+    }, { passive: true });
     conveyor.addEventListener('touchend', function () {
       clearTimeout(resumeTimeout);
-      resumeTimeout = setTimeout(function () { isPaused = false; }, 1500);
+      resumeTimeout = setTimeout(function () {
+        isPaused = false;
+        startAutoCycle();
+      }, 1500);
     }, { passive: true });
 
     // 2. Kéo thả chuột để trượt (Drag to Scroll) kèm Infinite Wrap thông minh
     conveyor.addEventListener('mousedown', function (e) {
       isDown = true;
       isPaused = true;
+      if (autoCycleInterval) clearInterval(autoCycleInterval);
       startX = e.pageX - conveyor.offsetLeft;
       scrollLeftStart = conveyor.scrollLeft;
       clearTimeout(resumeTimeout);
@@ -160,7 +156,10 @@
     window.addEventListener('mouseup', function () {
       if (!isDown) return;
       isDown = false;
-      resumeTimeout = setTimeout(function () { isPaused = false; }, 1500);
+      resumeTimeout = setTimeout(function () {
+        isPaused = false;
+        startAutoCycle();
+      }, 1500);
     });
 
     conveyor.addEventListener('mousemove', function (e) {
@@ -213,7 +212,10 @@
         } else {
           isAnimating = false;
           clearTimeout(resumeTimeout);
-          resumeTimeout = setTimeout(function () { isPaused = false; }, 1500);
+          resumeTimeout = setTimeout(function () {
+            isPaused = false;
+            startAutoCycle();
+          }, 1500);
         }
       }
 
@@ -226,6 +228,10 @@
 
     function scrollToIndex(direction) {
       if (isAnimating) return;
+
+      // Reset the auto cycle timer on manual navigation
+      startAutoCycle();
+
       var currentScroll = conveyor.scrollLeft;
       var currentIdx = Math.round(currentScroll / slideStep);
       var targetIdx = currentIdx + direction;
