@@ -9,6 +9,9 @@
   // --------------------------------------------------
   // 1. FEATURED PRODUCTS - conveyor belt (12 cards, infinite loop)
   // --------------------------------------------------
+  // Start loading featured products immediately in parallel with DOM parsing
+  var featuredProductsPromise = (window.PhucGiaTienAPI) ? PhucGiaTienAPI.getFeaturedProducts(12) : null;
+
   // --------------------------------------------------
   // 1. FEATURED PRODUCTS - conveyor belt with active drag & button controls
   // --------------------------------------------------
@@ -17,7 +20,10 @@
     var track = document.getElementById('home-product-track');
     if (!conveyor || !track) return;
 
-    PhucGiaTienAPI.getFeaturedProducts(12).then(function (products) {
+    var apiCall = featuredProductsPromise || (window.PhucGiaTienAPI ? PhucGiaTienAPI.getFeaturedProducts(12) : null);
+    if (!apiCall) return;
+
+    apiCall.then(function (products) {
       // Xóa skeleton
       track.innerHTML = '';
 

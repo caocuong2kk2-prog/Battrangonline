@@ -3,6 +3,7 @@ using BatTrang.Core.Entities;
 using BatTrang.Core.Interfaces;
 using BatTrang.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,13 +12,17 @@ namespace BatTrang.Infrastructure.Repositories
 {
     public class ProductRepository : Repository<Product>, IProductRepository
     {
-        public ProductRepository(AppDbContext context) : base(context)
+        private readonly IMemoryCache _cache;
+
+        public ProductRepository(AppDbContext context, IMemoryCache cache) : base(context)
         {
+            _cache = cache;
         }
 
         public async Task<PaginatedResult<Product>> GetProductsAsync(ProductFilterDto filter)
         {
             var query = _context.Products
+                .AsNoTracking()
                 .Include(p => p.Category)
                 .Include(p => p.Variants)
                     .ThenInclude(v => v.Images)
@@ -174,6 +179,7 @@ namespace BatTrang.Infrastructure.Repositories
         public async Task<Product?> GetProductBySlugAsync(string slug)
         {
             var query = _context.Products
+                .AsNoTracking()
                 .Include(p => p.Category)
                     .ThenInclude(c => c.Parent)
                 .Include(p => p.Variants)
@@ -211,32 +217,46 @@ namespace BatTrang.Infrastructure.Repositories
 
         public async Task<IReadOnlyList<Product>> GetFeaturedProductsAsync(int limit)
         {
-            return await _context.Products
-                .Include(p => p.Category)
-                .Include(p => p.Variants)
-                    .ThenInclude(v => v.Images)
-                .Include(p => p.Variants)
-                    .ThenInclude(v => v.Size)
-                .Include(p => p.Variants)
-                    .ThenInclude(v => v.GlazeLine)
-                .Include(p => p.Variants)
-                    .ThenInclude(v => v.ProductType)
-                .Include(p => p.Variants)
-                    .ThenInclude(v => v.Material)
-                .Include(p => p.Variants)
-                    .ThenInclude(v => v.Color)
-                .Include(p => p.Variants)
-                    .ThenInclude(v => v.Pattern)
-                .AsSplitQuery()
-                .OrderByDescending(p => p.TotalSold) // Prioritize best-selling products
-                .ThenByDescending(p => p.Id)
-                .Take(limit)
-                .ToListAsync();
+            string cacheKey = $"featured_products_{limit}";
+            if (!_cache.TryGetValue(cacheKey, out IReadOnlyList<Product>? featuredProducts) || featuredProducts == null)
+            {
+                featuredProducts = await _context.Products
+                    .AsNoTracking()
+                    .Include(p => p.Category)
+                    .Include(p => p.Variants)
+                        .ThenInclude(v => v.Images)
+                    .Include(p => p.Variants)
+                        .ThenInclude(v => v.Size)
+                    .Include(p => p.Variants)
+                        .ThenInclude(v => v.GlazeLine)
+                    .Include(p => p.Variants)
+                        .ThenInclude(v => v.ProductType)
+                    .Include(p => p.Variants)
+                        .ThenInclude(v => v.Material)
+                    .Include(p => p.Variants)
+                        .ThenInclude(v => v.Color)
+                    .Include(p => p.Variants)
+                        .ThenInclude(v => v.Pattern)
+                    .AsSplitQuery()
+                    .OrderByDescending(p => p.TotalSold) // Prioritize best-selling products
+                    .ThenByDescending(p => p.Id)
+                    .Take(limit)
+                    .ToListAsync();
+
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(10))
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(3));
+
+                _cache.Set(cacheKey, featuredProducts, cacheOptions);
+            }
+
+            return featuredProducts;
         }
 
         public async Task<Product?> GetProductWithImagesAsync(int id)
         {
             return await _context.Products
+                .AsNoTracking()
                 .Include(p => p.Category)
                     .ThenInclude(c => c.Parent)
                 .Include(p => p.Variants)
