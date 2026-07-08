@@ -180,14 +180,14 @@ namespace BatTrang.API.Controllers
 
                     using var subset = new SKBitmap();
                     originalBitmap.ExtractSubset(subset, SKRectI.Create(x, y, cropWidth, cropHeight));
-                    finalBitmap = subset.Resize(new SKImageInfo(w, h), SKSamplingOptions.Default);
+                    finalBitmap = subset.Resize(new SKImageInfo(w, h), new SKSamplingOptions(SKFilterMode.Linear));
                     resized = true;
                 }
                 else if (w > 0 && w < originalBitmap.Width)
                 {
                     int height = (int)Math.Round((double)originalBitmap.Height * w / originalBitmap.Width);
-                    // Use Default sampling for resize
-                    finalBitmap = originalBitmap.Resize(new SKImageInfo(w, height), SKSamplingOptions.Default);
+                    // Use Linear sampling for resize
+                    finalBitmap = originalBitmap.Resize(new SKImageInfo(w, height), new SKSamplingOptions(SKFilterMode.Linear));
                     resized = true;
                 }
 
@@ -216,15 +216,7 @@ namespace BatTrang.API.Controllers
 
         private IActionResult ReturnPlaceholder()
         {
-            var placeholderPath = Path.Combine(_env.ContentRootPath, "..", "..", "user", "assets", "images", "placeholder.webp");
-            placeholderPath = Path.GetFullPath(placeholderPath);
-            if (System.IO.File.Exists(placeholderPath))
-            {
-                Response.Headers["Cache-Control"] = "public, max-age=2592000"; // 30 days
-                var stream = new FileStream(placeholderPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                return File(stream, "image/webp");
-            }
-            return NotFound();
+            return NotFound("Image not found or failed to process.");
         }
 
         private string ResolveLocalFilePath(string decodedPath)

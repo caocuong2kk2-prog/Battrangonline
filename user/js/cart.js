@@ -504,6 +504,8 @@
     var stockStatusHtml = '';
     var maxStock = 99;
     var giftHtml = '';
+    var allImages = [item.image || 'assets/images/placeholder.webp'];
+    
     if (window.cartProductsMap && window.cartProductsMap[item.slug]) {
       var pData = window.cartProductsMap[item.slug];
       var liveStock = findMatchingStock(item, pData);
@@ -515,6 +517,26 @@
         stockStatusHtml = '<span class="cart-item__stock-status low-stock" style="color:#a45a32; font-size:11px; font-weight:600; margin-left:12px;">Chỉ còn ' + liveStock + ' sản phẩm</span>';
       } else {
         stockStatusHtml = '<span class="cart-item__stock-status in-stock" style="color:#2e7d32; font-size:11px; font-weight:600; margin-left:12px;">Còn hàng (' + liveStock + ')</span>';
+      }
+
+      var pVariants = Array.isArray(pData.variants) ? pData.variants : [];
+      var pImages = Array.isArray(pData.images) ? pData.images : (typeof pData.images === "string" && pData.images.trim() ? [pData.images] : []);
+      var fetchedImages = pImages.concat(pVariants.reduce(function(acc, v) {
+        var vImgs = Array.isArray(v.images) ? v.images : (typeof v.images === "string" && v.images.trim() ? [v.images] : []);
+        return acc.concat(vImgs);
+      }, [])).filter(function(img) {
+        if (typeof img !== 'string') return false;
+        var trimmed = img.trim().toLowerCase();
+        if (trimmed === '' || trimmed === 'null' || trimmed === 'undefined' || trimmed.includes('/null') || trimmed.includes('/undefined')) {
+          return false;
+        }
+        if (trimmed.includes('placeholder.jpg') || trimmed.includes('placeholder.webp') || trimmed.includes('placeholder.png')) {
+          return false;
+        }
+        return true;
+      });
+      if (fetchedImages.length > 0) {
+        allImages = fetchedImages;
       }
     }
 
@@ -544,7 +566,7 @@
       '<a class="cart-item__img-link" href="/' + item.slug + '">',
       (item.image && item.image.match(/\.(mp4|mov|avi|webm|ogg)$/i)
         ? '<video class="cart-item__img" src="' + item.image + '" autoplay loop muted playsinline style="object-fit:cover;"></video>'
-        : '<img class="cart-item__img" src="' + (item.image || 'assets/images/placeholder.webp') + '" alt="' + item.name + '" loading="lazy">'),
+        : '<img class="cart-item__img" src="' + (item.image || 'assets/images/placeholder.webp') + '" alt="' + item.name + '" loading="lazy" data-fallback-images=\'' + JSON.stringify(allImages).replace(/'/g, '&apos;').replace(/"/g, '&quot;') + '\' data-fallback-index="0" onerror="window.handleImageFallback(this)">'),
       '</a>',
       '<div class="cart-item__details">',
       '<h3 class="cart-item__title"><a href="/' + item.slug + '" style="color:var(--color-bg-mid);text-decoration:none">' + displayName + '</a></h3>',

@@ -716,6 +716,9 @@ function populateHeaderMegaMenu() {
           }
           img.removeAttribute('srcset');
           img.src = nextImgSrc;
+          if (img.getAttribute('data-co-lb-src')) {
+            img.setAttribute('data-co-lb-src', nextImgSrc);
+          }
           return;
         }
       } catch(e) {}
@@ -723,7 +726,11 @@ function populateHeaderMegaMenu() {
     img.onerror = null;
     img.removeAttribute('srcset');
     var pn2 = window.location.pathname.toLowerCase();
-    img.src = (pn2 === '/user' || pn2.startsWith('/user/')) ? '/user/assets/images/placeholder.webp' : '/assets/images/placeholder.webp';
+    var placeholder = (pn2 === '/user' || pn2.startsWith('/user/')) ? '/user/assets/images/placeholder.webp' : '/assets/images/placeholder.webp';
+    img.src = placeholder;
+    if (img.getAttribute('data-co-lb-src')) {
+      img.setAttribute('data-co-lb-src', placeholder);
+    }
   };
 
   window.buildProductCard = function(p, i, isEager) {
@@ -816,12 +823,12 @@ function populateHeaderMegaMenu() {
     var srcsetHtml = '';
     if (typeof window.resolveImgUrl === 'function') {
       if (!isLocalVid && !isPlatformVid) {
-         var src300 = window.resolveImgUrl(imgSrc, imgSrc, 300, 40);
-         var src360 = window.resolveImgUrl(imgSrc, imgSrc, 360, 40);
+         var src300 = window.resolveImgUrl(imgSrc, imgSrc, 300, 85);
+         var src360 = window.resolveImgUrl(imgSrc, imgSrc, 360, 85);
          imgSrc = src360; // fallback
          srcsetHtml = ' srcset="' + src300 + ' 300w, ' + src360 + ' 360w" sizes="(max-width: 768px) 50vw, 25vw"';
       } else {
-          imgSrc = window.resolveImgUrl(imgSrc, imgSrc, 360, 40);
+          imgSrc = window.resolveImgUrl(imgSrc, imgSrc, 360, 85);
       }
     }
 
@@ -891,7 +898,9 @@ function populateHeaderMegaMenu() {
       var cached = sessionStorage.getItem(CONFIG_KEY);
       if (cached) {
         window.PGT_CONFIG = JSON.parse(cached);
-        // Không return ở đây để API vẫn tiếp tục gọi ngầm và cập nhật dữ liệu mới nhất
+        if (typeof applyDynamicConfig === 'function') {
+          applyDynamicConfig();
+        }
       }
     } catch (e) { }
 
@@ -928,6 +937,17 @@ function populateHeaderMegaMenu() {
 
   function resolveImgUrl(url, defaultUrl, width, quality, height) {
     if (!url) return defaultUrl;
+    if (url.toLowerCase().includes('placeholder')) {
+      var resolved = url;
+      if (resolved.startsWith('assets/')) {
+        var basePath = (function () {
+          var pn = window.location.pathname.toLowerCase();
+          return (pn === '/user' || pn.startsWith('/user/')) ? '/user/' : '/';
+        })();
+        resolved = basePath + resolved;
+      }
+      return resolved;
+    }
     var resolved = url;
     var isLocalUpload = false;
 
@@ -963,7 +983,7 @@ function populateHeaderMegaMenu() {
     if (resolved && !resolved.startsWith('data:') && (isLocalOrProd || isLocalUpload)) {
       var proxyApiBase = (window.PhucGiaTienAPI && window.PhucGiaTienAPI.apiBase) || '/api';
       var w = width || 800;
-      var q = quality || 75;
+      var q = quality || 85;
       
       var proxyUrl = resolved;
       // Use relative URL to avoid WAF block for same-domain requests
@@ -1208,8 +1228,8 @@ function populateHeaderMegaMenu() {
          try {
            localStorage.setItem('pgt_home_banner', config.homeBanner);
          } catch(e){}
-         var deskSrc = resolveImgUrl(config.homeBanner, '', 1920, 70, 1080).replace('.jpeg', '.webp').replace('.jpg', '.webp');
-         var mobSrc = resolveImgUrl(config.homeBanner, '', 768, 65, 1024).replace('.jpeg', '.webp').replace('.jpg', '.webp');
+          var deskSrc = resolveImgUrl(config.homeBanner, '', 1920, 85, 1080).replace('.jpeg', '.webp').replace('.jpg', '.webp');
+          var mobSrc = resolveImgUrl(config.homeBanner, '', 768, 80, 1024).replace('.jpeg', '.webp').replace('.jpg', '.webp');
          el.src = deskSrc;
          el.srcset = mobSrc + ' 768w, ' + deskSrc + ' 1920w';
          el.sizes = '100vw';
@@ -1221,8 +1241,8 @@ function populateHeaderMegaMenu() {
         el.removeAttribute('src');
         el.removeAttribute('srcset');
       } else {
-         var deskSrc = resolveImgUrl(config.ctaBanner, 'assets/images/bg.webp', 1920, 70, 1080).replace('.jpeg', '.webp').replace('.jpg', '.webp');
-         var mobSrc = resolveImgUrl(config.ctaBanner, 'assets/images/bg.webp', 768, 65, 1024).replace('.jpeg', '.webp').replace('.jpg', '.webp');
+         var deskSrc = resolveImgUrl(config.ctaBanner, 'assets/images/bg.webp', 1920, 85, 1080).replace('.jpeg', '.webp').replace('.jpg', '.webp');
+         var mobSrc = resolveImgUrl(config.ctaBanner, 'assets/images/bg.webp', 768, 80, 1024).replace('.jpeg', '.webp').replace('.jpg', '.webp');
          el.src = deskSrc;
          el.srcset = mobSrc + ' 768w, ' + deskSrc + ' 1920w';
          el.sizes = '100vw';
@@ -1251,10 +1271,10 @@ function populateHeaderMegaMenu() {
     });
     document.querySelectorAll('.js-config-home-story-img').forEach(function (el) {
       var imgPath = config.homeStoryImg;
-      if (!imgPath || imgPath === 'assets/images/story-couple.jpg' || imgPath === 'assets/images/about-workshop.jpg') {
+      if (!imgPath) {
         return;
       }
-      var resolved = resolveImgUrl(imgPath, '', 800, 82);
+      var resolved = resolveImgUrl(imgPath, '', 900, 85);
       if (resolved && el.getAttribute('src') !== resolved) {
         el.removeAttribute('srcset');
         if (el.getAttribute('loading') === 'lazy') {

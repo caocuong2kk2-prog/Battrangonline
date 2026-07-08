@@ -1309,3 +1309,20 @@ textarea.form-control {
   border-radius: 10px;
 }
 
+/* Prevent iOS zoom-in on input focus by setting font-size to 16px */
+@media (max-width: 768px) {
+  .form-control,
+  .custom-select-trigger,
+  .custom-select-option,
+  .custom-select-search input,
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="number"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+

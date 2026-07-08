@@ -44,8 +44,8 @@
   <!-- Preconnect & Preload -->
   <link rel="preconnect" href="https://battrangonline.vn" crossorigin>
   <link rel="preload" as="image" 
-        href="/api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&w=1920&q=70&h=1080"
-        imagesrcset="/api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&w=768&q=65&h=1024 768w, /api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&w=1920&q=70&h=1080 1920w"
+        href="/api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&w=1920&q=85&h=1080"
+        imagesrcset="/api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&w=768&q=80&h=1024 768w, /api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&w=1920&q=85&h=1080 1920w"
         imagesizes="100vw"
         fetchpriority="high">
   <link rel="preload" as="style" href="css/home-bundle.min.css?v=20260707_fix53">
@@ -165,8 +165,8 @@
     <section class="hero" aria-label="Giới thiệu Phúc Gia Tiên">
       <div class="hero__bg">
         <img class="hero__bg-img js-config-home-banner-img" id="hero-main-bg" 
-             src="/api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&w=1920&q=70&h=1080" 
-             srcset="/api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&w=768&q=65&h=1024 768w, /api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&w=1920&q=70&h=1080 1920w"
+             src="/api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&w=1920&q=85&h=1080" 
+             srcset="/api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&w=768&q=80&h=1024 768w, /api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&w=1920&q=85&h=1080 1920w"
              sizes="100vw"
              alt="" role="presentation" fetchpriority="high" width="1920" height="1080">
         <script>
@@ -185,8 +185,8 @@
               }
             } catch(e){}
             if (src !== defaultPath) {
-              var deskSrc = "/api/imageproxy?url=" + encodeURIComponent(src) + "&w=1920&q=70&h=1080";
-              var mobSrc = "/api/imageproxy?url=" + encodeURIComponent(src) + "&w=768&q=65&h=1024";
+              var deskSrc = "/api/imageproxy?url=" + encodeURIComponent(src) + "&w=1920&q=85&h=1080";
+              var mobSrc = "/api/imageproxy?url=" + encodeURIComponent(src) + "&w=768&q=80&h=1024";
               var img = document.getElementById('hero-main-bg');
               img.src = deskSrc;
               img.srcset = mobSrc + " 768w, " + deskSrc + " 1920w";
@@ -234,8 +234,33 @@
       <div class="container">
         <div class="story-teaser" style="flex-direction: row-reverse;">
           <div class="story-teaser__media reveal-right">
-            <img class="story-teaser__img js-config-home-story-img" src="/api/imageproxy?url=%2Fassets%2Fimages%2Fabout-workshop.jpg&w=480&q=65"
-               alt="Đôi vợ chồng nghệ nhân Phúc Gia Tiên" loading="lazy" width="480" height="320" style="object-fit: cover;">
+            <img class="story-teaser__img js-config-home-story-img" id="home-story-img" src="/api/imageproxy?url=%2Fuploads%2Fb91aff55-ecbe-4657-81f4-1d4074da7f49_ChatGPT%2520Image%252008_28_57%25203%2520thg%25207%252C%25202026.webp&w=900&q=85"
+               alt="Đôi vợ chồng nghệ nhân Phúc Gia Tiên" loading="lazy" width="900" height="600" style="object-fit: cover;">
+            <script>
+              try {
+                var cached = sessionStorage.getItem('pgt_site_config');
+                if (cached) {
+                  var config = JSON.parse(cached);
+                  var imgPath = config.homeStoryImg;
+                  if (imgPath) {
+                    var resolved = imgPath;
+                    if (resolved.startsWith('assets/')) resolved = '/' + resolved;
+                    var dynamicBase = '';
+                    if ((window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') && window.location.port !== '5055') {
+                      dynamicBase = 'http://localhost:5055';
+                    }
+                    if (!dynamicBase) dynamicBase = window.location.origin;
+                    if (resolved.startsWith('/')) resolved = dynamicBase + resolved;
+                    var proxyEndpoint = '/api/imageproxy?url=' + encodeURIComponent(resolved) + '&w=900&q=85';
+                    var img = document.getElementById('home-story-img');
+                    if (img) {
+                      img.removeAttribute('srcset');
+                      img.src = proxyEndpoint;
+                    }
+                  }
+                }
+              } catch(e){}
+            </script>
           </div>
           <div class="story-teaser__content reveal-left">
             <div class="js-config-home-story-text">

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -282,37 +282,72 @@
               else imgUrl = 'assets/images/placeholder.webp';
             }
 
+            var allImages = [imgUrl || 'assets/images/placeholder.webp'];
+            var rawFallback = item.fallbackImages || item.images;
+            if (Array.isArray(rawFallback) && rawFallback.length > 0) {
+              allImages = rawFallback;
+            } else if (item.slug && window.cartProductsMap && window.cartProductsMap[item.slug]) {
+              var pData = window.cartProductsMap[item.slug];
+              var pVariants = Array.isArray(pData.variants) ? pData.variants : [];
+              var pImages = Array.isArray(pData.images) ? pData.images : (typeof pData.images === "string" && pData.images.trim() ? [pData.images] : []);
+              var fetchedImages = pImages.concat(pVariants.reduce(function(acc, v) {
+                var vImgs = Array.isArray(v.images) ? v.images : (typeof v.images === "string" && v.images.trim() ? [v.images] : []);
+                return acc.concat(vImgs);
+              }, [])).filter(function(img) {
+                if (typeof img !== 'string') return false;
+                var trimmed = img.trim().toLowerCase();
+                if (trimmed === '' || trimmed === 'null' || trimmed === 'undefined' || trimmed.includes('/null') || trimmed.includes('/undefined')) {
+                  return false;
+                }
+                if (trimmed.includes('placeholder.jpg') || trimmed.includes('placeholder.webp') || trimmed.includes('placeholder.png')) {
+                  return false;
+                }
+                return true;
+              });
+              if (fetchedImages.length > 0) {
+                allImages = fetchedImages;
+              }
+            }
+
+            var fbAttr = '';
+            if (allImages && allImages.length > 0) {
+              fbAttr = ' data-fallback-images=\'' + JSON.stringify(allImages).replace(/'/g, '&apos;').replace(/"/g, '&quot;') + '\' data-fallback-index="0" onerror="window.handleImageFallback(this)"';
+            }
+
             var isVideo = /\.(mp4|mov|avi|webm|ogg)$/i.test(imgUrl);
             var mediaHtml = isVideo
-              ? '<video src="' + imgUrl + '" autoplay loop muted playsinline style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.15); flex-shrink: 0;"></video>'
-              : '<img src="' + imgUrl + '" alt="' + item.name + '" style="width: 48px; height: 48px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.15); flex-shrink: 0;">';
+              ? '<video src="' + imgUrl + '" autoplay loop muted playsinline style="width: 64px; height: 64px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.12); flex-shrink: 0;"></video>'
+              : '<img src="' + imgUrl + '" alt="' + item.name + '" style="width: 64px; height: 64px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.12); flex-shrink: 0;"' + fbAttr + '>';
 
             var displayName = item.size ? item.name + ' - ' + item.size : item.name;
 
             var giftHtml = '';
             if (item.gifts && item.gifts.length > 0) {
-              giftHtml = '<div style="margin-top:8px; padding:6px 8px; border-radius:4px; background:rgba(255,152,0,0.05); border:1px dashed rgba(255,152,0,0.2);">';
-              item.gifts.forEach(function(g) {
+              giftHtml = '<div style="margin-top:2px; padding:8px 12px; border-radius:6px; background:rgba(200,146,42,0.04); border:1px dashed rgba(200,146,42,0.2); width: 100%; box-sizing: border-box;">';
+              item.gifts.forEach(function(g, idx) {
                 var gQty = g.quantity ? (g.quantity * item.qty) : item.qty;
-                giftHtml += '<div style="font-size:11px; color:#ffb74d; display:flex; align-items:center; gap:6px; margin-bottom:4px;">';
-                giftHtml += '<img src="' + (g.imageUrl || 'assets/images/placeholder.webp') + '" style="width:20px; height:20px; object-fit:cover; border-radius:3px; border:1px solid rgba(255,152,0,0.3); cursor:zoom-in;" onclick="if(window.showImageModal) window.showImageModal(\'' + (g.imageUrl || 'assets/images/placeholder.webp') + '\', \'' + g.name.replace(/'/g, "\\'") + '\')">';
-                giftHtml += '<span style="line-height:1.2; flex-grow:1;">Quà tặng: <strong style="color:#fff;">' + g.name + '</strong> <b style="color:#ff9800; margin-left:2px;">x' + gQty + '</b></span>';
+                var mb = (idx === item.gifts.length - 1) ? '0' : '6px';
+                giftHtml += '<div style="font-size:11.5px; color:#ffb74d; display:flex; align-items:center; gap:8px; margin-bottom:' + mb + ';">';
+                giftHtml += '<img src="' + (g.imageUrl || 'assets/images/placeholder.webp') + '" style="width:24px; height:24px; object-fit:cover; border-radius:4px; border:1px solid rgba(200,146,42,0.3); cursor:zoom-in; flex-shrink: 0;" onclick="if(window.showImageModal) window.showImageModal(\'' + (g.imageUrl || 'assets/images/placeholder.webp') + '\', \'' + g.name.replace(/'/g, "\\'") + '\')">';
+                giftHtml += '<span style="line-height:1.3; flex-grow:1; color:rgba(255,255,255,0.85); text-align:left;">Quà tặng: <strong style="color:#fff; font-weight:500;">' + g.name + '</strong> <b style="color:var(--color-accent); margin-left:2px;">x' + gQty + '</b></span>';
                 giftHtml += '</div>';
               });
               giftHtml += '</div>';
             }
 
             return [
-              '<div class="success-item-row" style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-3); border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: var(--space-2);">',
-                '<div style="display: flex; align-items: center; gap: var(--space-3);">',
-                  mediaHtml,
-                  '<div style="display: flex; flex-direction: column; text-align: left;">',
-                    (item.productId ? '<a href="product-detail.html?id=' + item.productId + '" target="_blank" class="success-item-row__name" style="color: #ffffff; font-weight: 500; font-size: var(--fs-sm); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color=\'var(--color-accent)\'" onmouseout="this.style.color=\'#ffffff\'">' + displayName + '</a>' : '<span class="success-item-row__name" style="color: #ffffff; font-weight: 500; font-size: var(--fs-sm);">' + displayName + '</span>'),
-                    '<span style="font-size: var(--fs-xs); color: rgba(255,255,255,0.5); margin-top: 2px;">Số lượng: ' + item.qty + '</span>',
-                    giftHtml,
+              '<div class="success-item-row" style="display: flex; flex-direction: column; gap: 10px; padding: 12px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; margin-bottom: 12px; border-bottom: none;">',
+                '<div style="display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); width: 100%;">',
+                  '<div style="display: flex; align-items: flex-start; gap: var(--space-3); flex: 1; min-width: 0;">',
+                    mediaHtml,
+                    '<div style="display: flex; flex-direction: column; text-align: left; min-width: 0; flex: 1;">',
+                      (item.productId ? '<a href="product-detail.html?id=' + item.productId + '" target="_blank" class="success-item-row__name" style="color: #ffffff; font-weight: 600; font-size: var(--fs-sm); text-decoration: none; transition: color 0.2s; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4;" onmouseover="this.style.color=\'var(--color-accent)\'" onmouseout="this.style.color=\'#ffffff\'">' + displayName + '</a>' : '<span class="success-item-row__name" style="color: #ffffff; font-weight: 600; font-size: var(--fs-sm); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4;">' + displayName + '</span>'),
+                      '<span style="font-size: var(--fs-xs); color: rgba(255,255,255,0.45); margin-top: 4px;">Số lượng: ' + item.qty + '</span>',
+                    '</div>',
                   '</div>',
+                  '<span class="success-item-row__price" style="color: var(--color-accent); font-weight: 600; font-size: var(--fs-sm); margin-top: 2px; flex-shrink: 0; text-align: right;">' + priceVal + '</span>',
                 '</div>',
-                '<span class="success-item-row__price" style="color: var(--color-accent); font-weight: 600; font-size: var(--fs-sm);">' + priceVal + '</span>',
+                giftHtml,
               '</div>'
             ].join('');
           }).join('');

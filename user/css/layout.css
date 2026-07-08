@@ -494,17 +494,15 @@ select {
      All values verified against WCAG AA (4.5:1) and AAA (7:1) */
   --color-text-muted: #D9C9B0;
   /* contrast ~7.8:1 on #2C1A0C */
-  --color-accent: #E5C07B;
-  /* contrast ~9.1:1 on #2C1A0C */
+  --color-accent: #C8922A;
   background: var(--color-bg-mid);
   border-top: 1px solid var(--color-border);
   padding: var(--space-16) 0 0;
 }
 
-/* Explicit high-contrast overrides for every element Lighthouse flags */
+/* Explicit overrides to match header yellow color */
 #site-footer .footer-section__title {
-  color: #F0D080 !important;
-  /* contrast ~11.2:1 on #2C1A0C */
+  color: #C8922A !important;
 }
 
 #site-footer .footer-contact-list__item,
@@ -515,8 +513,7 @@ select {
 }
 
 #site-footer .footer-map-link {
-  color: #F0D080 !important;
-  /* contrast ~11.2:1 */
+  color: #C8922A !important;
 }
 
 #site-footer .footer-links__item {
@@ -545,7 +542,7 @@ select {
 }
 
 #site-footer .site-logo__name {
-  color: #F0D080 !important;
+  color: #C8922A !important;
 }
 
 .footer-grid {
@@ -583,7 +580,7 @@ select {
   border-radius: var(--radius-full);
   background: rgba(212, 168, 83, 0.12);
   border: 1px solid var(--color-border);
-  color: #E5C07B;
+  color: var(--color-accent);
   font-size: var(--fs-sm);
   transition: background var(--transition-fast),
     border-color var(--transition-fast),
@@ -602,7 +599,7 @@ select {
   font-family: var(--font-heading);
   font-size: var(--fs-base);
   font-weight: var(--fw-semibold);
-  color: #E5C07B;
+  color: var(--color-accent);
   margin-bottom: var(--space-5);
   padding-bottom: var(--space-3);
   border-bottom: 1px solid var(--color-border);

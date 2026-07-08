@@ -21,7 +21,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=optional" rel="stylesheet">
   </noscript>
   <link rel="stylesheet" href="css/layout.min.css?v=20260707_fix53">
-  <link rel="stylesheet" href="css/checkout.css">
+  <link rel="stylesheet" href="css/checkout.css?v=20260708_fix01">
   <link rel="stylesheet" href="css/responsive.min.css?v=20260707_fix53">
   <style>
     /* Đặt nền body khớp với section kem, ẩn đường kẻ header */
@@ -622,16 +622,16 @@
           if (inputEmail && user.email) inputEmail.value = user.email;
         }
 
-        // Heal cart items if price is missing or NaN
-        var needsHeal = selectedItems.some(function (item) {
-          return item.price === undefined || item.price === null || isNaN(item.price);
-        });
+        // Fetch product details for selected items to build fallback images and heal prices
+        if (window.PhucGiaTienAPI) {
+          var fetchPromises = selectedItems.map(function (item) {
+            return window.PhucGiaTienAPI.getProductBySlug(item.slug)
+              .then(function (p) {
+                if (!window.cartProductsMap) window.cartProductsMap = {};
+                window.cartProductsMap[item.slug] = p;
 
-        if (needsHeal && window.PhucGiaTienAPI) {
-          var healPromises = selectedItems.map(function (item) {
-            if (item.price === undefined || item.price === null || isNaN(item.price)) {
-              return window.PhucGiaTienAPI.getProductBySlug(item.slug)
-                .then(function (p) {
+                // Heal price if needed
+                if (item.price === undefined || item.price === null || isNaN(item.price)) {
                   item.price = p.basePrice || (p.variants && p.variants.length ? p.variants[0].price : 0);
                   if (!item.size && p.variants && p.variants.length) {
                     item.size = p.variants[0].size;
@@ -644,15 +644,14 @@
                     mainItem.size = item.size || mainItem.size;
                     localStorage.setItem('pgt_cart', JSON.stringify(mainCart));
                   }
-                })
-                .catch(function (err) {
-                  console.error('Failed to heal checkout item', err);
-                });
-            }
-            return Promise.resolve();
+                }
+              })
+              .catch(function (err) {
+                console.error('Failed to fetch checkout item data', err);
+              });
           });
 
-          Promise.all(healPromises).then(function () {
+          Promise.all(fetchPromises).then(function () {
             renderSummary(selectedItems);
             setupFormSubmit(selectedItems);
             initAddressSystem();
@@ -690,7 +689,7 @@
         var total = subtotal;
 
         // Helper: build thumbnail HTML – handles image and video sources
-        function buildThumb(src, alt) {
+        function buildThumb(src, alt, fallbackImgs) {
           if (!src) {
             return '<div class="checkout-item-row__img checkout-item-row__img--placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>';
           }
@@ -700,7 +699,11 @@
           if (isVideo) {
             return '<video class="checkout-item-row__img" src="' + norm + '" muted playsinline preload="metadata" ' + cursor + ' data-co-lb-src="' + norm + '"></video>';
           }
-          return '<img class="checkout-item-row__img" src="' + norm + '" alt="' + (alt || '') + '" loading="lazy" ' + cursor + ' data-co-lb-src="' + norm + '">';
+          var fbAttr = '';
+          if (fallbackImgs && fallbackImgs.length > 0) {
+            fbAttr = ' data-fallback-images=\'' + JSON.stringify(fallbackImgs).replace(/'/g, '&apos;').replace(/"/g, '&quot;') + '\' data-fallback-index="0" onerror="window.handleImageFallback(this)"';
+          }
+          return '<img class="checkout-item-row__img" src="' + norm + '" alt="' + (alt || '') + '" loading="lazy" ' + cursor + ' data-co-lb-src="' + norm + '"' + fbAttr + '>';
         }
 
         // Render item rows
@@ -719,9 +722,33 @@
               giftHtml += '</div>';
             }
 
+            var allImages = [item.image || 'assets/images/placeholder.webp'];
+            if (window.cartProductsMap && window.cartProductsMap[item.slug]) {
+              var pData = window.cartProductsMap[item.slug];
+              var pVariants = Array.isArray(pData.variants) ? pData.variants : [];
+              var pImages = Array.isArray(pData.images) ? pData.images : (typeof pData.images === "string" && pData.images.trim() ? [pData.images] : []);
+              var fetchedImages = pImages.concat(pVariants.reduce(function(acc, v) {
+                var vImgs = Array.isArray(v.images) ? v.images : (typeof v.images === "string" && v.images.trim() ? [v.images] : []);
+                return acc.concat(vImgs);
+              }, [])).filter(function(img) {
+                if (typeof img !== 'string') return false;
+                var trimmed = img.trim().toLowerCase();
+                if (trimmed === '' || trimmed === 'null' || trimmed === 'undefined' || trimmed.includes('/null') || trimmed.includes('/undefined')) {
+                  return false;
+                }
+                if (trimmed.includes('placeholder.jpg') || trimmed.includes('placeholder.webp') || trimmed.includes('placeholder.png')) {
+                  return false;
+                }
+                return true;
+              });
+              if (fetchedImages.length > 0) {
+                allImages = fetchedImages;
+              }
+            }
+
             return [
               '<div class="checkout-item-row">',
-              buildThumb(item.image, item.name),
+              buildThumb(item.image, item.name, allImages),
               '<div class="checkout-item-row__info">',
               '<a href="product-detail.html?id=' + item.id + '" target="_blank" class="checkout-item-row__name" style="text-decoration: none; display: block; transition: color 0.2s;" onmouseover="this.style.color=\'var(--color-accent)\'" onmouseout="this.style.color=\'\'">' + (item.size ? item.name + ' - ' + item.size : item.name) + '</a>',
               '<p class="checkout-item-row__qty">Số lượng: <strong>' + item.qty + '</strong></p>',
@@ -871,7 +898,30 @@
                     customerNote: notes,
                     paymentMethod: 'Thanh toán khi nhận hàng (COD)',
                     items: items.map(function (i) {
-                      return { productId: i.id, name: i.name, qty: i.qty, price: i.price, image: i.image, size: i.size, gifts: i.gifts };
+                      var allImages = [i.image || 'assets/images/placeholder.webp'];
+                      if (window.cartProductsMap && window.cartProductsMap[i.slug]) {
+                        var pData = window.cartProductsMap[i.slug];
+                        var pVariants = Array.isArray(pData.variants) ? pData.variants : [];
+                        var pImages = Array.isArray(pData.images) ? pData.images : (typeof pData.images === "string" && pData.images.trim() ? [pData.images] : []);
+                        var fetchedImages = pImages.concat(pVariants.reduce(function(acc, v) {
+                          var vImgs = Array.isArray(v.images) ? v.images : (typeof v.images === "string" && v.images.trim() ? [v.images] : []);
+                          return acc.concat(vImgs);
+                        }, [])).filter(function(img) {
+                          if (typeof img !== 'string') return false;
+                          var trimmed = img.trim().toLowerCase();
+                          if (trimmed === '' || trimmed === 'null' || trimmed === 'undefined' || trimmed.includes('/null') || trimmed.includes('/undefined')) {
+                            return false;
+                          }
+                          if (trimmed.includes('placeholder.jpg') || trimmed.includes('placeholder.webp') || trimmed.includes('placeholder.png')) {
+                            return false;
+                          }
+                          return true;
+                        });
+                        if (fetchedImages.length > 0) {
+                          allImages = fetchedImages;
+                        }
+                      }
+                      return { productId: i.id, name: i.name, qty: i.qty, price: i.price, image: i.image, size: i.size, gifts: i.gifts, slug: i.slug, fallbackImages: allImages };
                     }),
                     subtotal: subtotal,
                     total: total,
@@ -951,7 +1001,30 @@
                 customerNote: notes,
                 paymentMethod: 'Thanh toán khi nhận hàng (COD)',
                 items: items.map(function (i) {
-                  return { name: i.name, qty: i.qty, price: i.price, image: i.image, size: i.size, gifts: i.gifts };
+                  var allImages = [i.image || 'assets/images/placeholder.webp'];
+                  if (window.cartProductsMap && window.cartProductsMap[i.slug]) {
+                    var pData = window.cartProductsMap[i.slug];
+                    var pVariants = Array.isArray(pData.variants) ? pData.variants : [];
+                    var pImages = Array.isArray(pData.images) ? pData.images : (typeof pData.images === "string" && pData.images.trim() ? [pData.images] : []);
+                    var fetchedImages = pImages.concat(pVariants.reduce(function(acc, v) {
+                      var vImgs = Array.isArray(v.images) ? v.images : (typeof v.images === "string" && v.images.trim() ? [v.images] : []);
+                      return acc.concat(vImgs);
+                    }, [])).filter(function(img) {
+                      if (typeof img !== 'string') return false;
+                      var trimmed = img.trim().toLowerCase();
+                      if (trimmed === '' || trimmed === 'null' || trimmed === 'undefined' || trimmed.includes('/null') || trimmed.includes('/undefined')) {
+                        return false;
+                      }
+                      if (trimmed.includes('placeholder.jpg') || trimmed.includes('placeholder.webp') || trimmed.includes('placeholder.png')) {
+                        return false;
+                      }
+                      return true;
+                    });
+                    if (fetchedImages.length > 0) {
+                      allImages = fetchedImages;
+                    }
+                  }
+                  return { productId: i.id, name: i.name, qty: i.qty, price: i.price, image: i.image, size: i.size, gifts: i.gifts, slug: i.slug, fallbackImages: allImages };
                 }),
                 subtotal: subtotal,
                 total: total,
