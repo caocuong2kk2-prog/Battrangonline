@@ -87,6 +87,7 @@
   --max-width: 1280px;
   --header-height: 72px;
   --nav-height: 60px;
+  --promo-banner-height: 40px;
 
   /* Borders */
   --radius-sm: 4px;
@@ -993,6 +994,7 @@ body:has(.hero, .page-hero, .checkout-hero, .cart-hero) {
 
 /* ---------- Premium Product Card (Global) ---------- */
 .product-card {
+  contain: content;
   background: #ffffff;
   border: 1px solid rgba(200, 146, 42, 0.15);
   border-radius: var(--radius-xl);
@@ -2334,3 +2336,511 @@ main {
 #site-footer {
   overflow-x: hidden;
 }
+
+/* ========== FLOATING QUICK CONTACT WIDGET (EXTRACTED FROM FOOTER) ========== */
+
+  /* ===== WIDGET CONTAINER ===== */
+  .quick-contact-widget {
+    position: fixed;
+    bottom: var(--space-8);
+    right: var(--space-6);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: center;
+    /* Slide-in từ phải khi trang load */
+    transform: translateX(0);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+  }
+
+  /* ===== BACK-TO-TOP (cùng size với contact buttons) ===== */
+  #back-to-top {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--color-accent, #c8a97e);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
+    /* Hidden by default: trượt ra phải + fade out */
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(80px);
+    transition:
+      opacity 0.35s ease,
+      transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-shrink: 0;
+  }
+
+  #back-to-top.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+
+  #back-to-top:hover {
+    transform: translateX(0) scale(1.1);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  #back-to-top svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ===== CONTACT BUTTONS ===== */
+  .quick-contact-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    text-decoration: none;
+    flex-shrink: 0;
+    /* KHÔNG overflow:hidden ở đây — phone cần ::before/::after ra ngoài biên */
+    overflow: visible;
+  }
+
+  .quick-contact-btn:hover {
+    transform: scale(1.12);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.38);
+  }
+
+  /* --- Phone: beacon pulse + ring-ring vibrate --- */
+  .quick-contact-btn--phone {
+    background: linear-gradient(135deg, #28a745, #1e7e34); /* Xanh lá gọi điện chuẩn nhận diện */
+    color: #fff;
+  }
+  .quick-contact-btn--phone:hover {
+    background: linear-gradient(135deg, #34ce57, #28a745);
+  }
+
+  .quick-contact-btn--phone::before,
+  .quick-contact-btn--phone::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: rgba(40, 167, 69, 0.55);
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+    transition: background 0.3s ease;
+  }
+  .quick-contact-btn--phone:hover::before,
+  .quick-contact-btn--phone:hover::after {
+    background: rgba(52, 206, 87, 0.65);
+  }
+
+  .quick-contact-btn--phone::before {
+    animation: phoneBeacon 2.5s ease-out infinite;
+  }
+
+  .quick-contact-btn--phone::after {
+    animation: phoneBeacon 2.5s ease-out infinite 1.25s;
+  }
+
+  .quick-contact-btn--phone .btn-icon {
+    width: 28px;
+    height: 28px;
+    position: relative;
+    z-index: 1;
+    animation: phoneVibrate 4s ease-in-out infinite;
+  }
+
+  /* --- Zalo: full SVG icon (Luôn hiển thị màu xanh chuẩn nhận diện) --- */
+  .quick-contact-btn--zalo {
+    background: transparent;
+    padding: 0;
+    overflow: hidden;
+  }
+  .quick-contact-btn--zalo svg {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: block;
+  }
+  .zalo-bg-circle {
+    fill: url(#zaloGrad); /* Màu xanh Zalo chuẩn */
+    transition: filter 0.3s ease;
+  }
+  .quick-contact-btn--zalo:hover .zalo-bg-circle {
+    filter: brightness(1.1);
+  }
+
+  /* --- Messenger: full SVG icon (Luôn hiển thị màu gradient chuẩn) --- */
+  .quick-contact-btn--messenger {
+    background: transparent;
+    padding: 0;
+    overflow: hidden;
+  }
+  .quick-contact-btn--messenger svg {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: block;
+  }
+  .mess-bg-circle {
+    fill: url(#messGrad); /* Màu gradient Messenger chuẩn */
+    transition: filter 0.3s ease;
+  }
+  .quick-contact-btn--messenger:hover .mess-bg-circle {
+    filter: brightness(1.1);
+  }
+
+  /* ===== KEYFRAMES ===== */
+
+  /* Beacon pulse: nở từ size nút → lớn gấp đôi → mờ dần */
+  @keyframes phoneBeacon {
+    0% {
+      transform: scale(1);
+      opacity: 0.7;
+    }
+
+    70% {
+      transform: scale(2.2);
+      opacity: 0;
+    }
+
+    100% {
+      transform: scale(2.2);
+      opacity: 0;
+    }
+  }
+
+  /* Ring-ring: 2 lần rung mỗi 4s — giống điện thoại thật đổ chuông */
+  @keyframes phoneVibrate {
+
+    /* Nghỉ ban đầu */
+    0% {
+      transform: rotate(0deg) scale(1);
+    }
+
+    /* Ring lần 1: 5-20% = 0.2s–0.8s */
+    5% {
+      transform: rotate(-22deg) scale(1.12);
+    }
+
+    8% {
+      transform: rotate(20deg) scale(1.12);
+    }
+
+    11% {
+      transform: rotate(-22deg) scale(1.12);
+    }
+
+    14% {
+      transform: rotate(20deg) scale(1.12);
+    }
+
+    17% {
+      transform: rotate(-18deg) scale(1.08);
+    }
+
+    20% {
+      transform: rotate(10deg) scale(1.04);
+    }
+
+    23% {
+      transform: rotate(0deg) scale(1);
+    }
+
+    /* Nghỉ ngắn: 23-48% */
+    48% {
+      transform: rotate(0deg) scale(1);
+    }
+
+    /* Ring lần 2: 48-63% */
+    51% {
+      transform: rotate(-22deg) scale(1.12);
+    }
+
+    54% {
+      transform: rotate(20deg) scale(1.12);
+    }
+
+    57% {
+      transform: rotate(-22deg) scale(1.12);
+    }
+
+    60% {
+      transform: rotate(20deg) scale(1.12);
+    }
+
+    63% {
+      transform: rotate(-15deg) scale(1.06);
+    }
+
+    66% {
+      transform: rotate(8deg) scale(1.02);
+    }
+
+    70% {
+      transform: rotate(0deg) scale(1);
+    }
+
+    /* Nghỉ dài: 70-100% */
+    100% {
+      transform: rotate(0deg) scale(1);
+    }
+  }
+
+  @media print {
+    .quick-contact-widget {
+      display: none !important;
+    }
+  }
+
+  /* ===== QUICK CONTACT TOGGLE BUTTON ===== */
+  .quick-contact-toggle {
+    display: none; /* Hidden on Desktop */
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--color-accent, #c8a97e);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    z-index: 1000;
+    flex-shrink: 0;
+    outline: none;
+  }
+  .quick-contact-toggle svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.3s ease;
+  }
+  .quick-contact-toggle .toggle-icon-close {
+    display: none;
+  }
+
+  /* ===== CONTACT LIST WRAPPER ===== */
+  .quick-contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  /* ===== MOBILE RESPONSIVENESS ===== */
+  @media (max-width: 768px) {
+    .quick-contact-widget {
+      bottom: 85px; /* Push up above sticky add to cart */
+      right: 8px; /* Close to right edge */
+      gap: 10px; /* Gap between visible elements */
+    }
+    
+    /* Contact list container on mobile with height collapse logic */
+    .quick-contact-list {
+      height: 0;
+      min-height: 0; /* Allow collapsing in flex layout */
+      overflow: hidden; /* Hide overflow when collapsed */
+      opacity: 0;
+      visibility: hidden;
+      margin-top: -10px; /* Cancels one flexbox gap to prevent mid-air floating back-to-top button */
+      transition: height 0.3s ease, opacity 0.3s ease, transform 0.3s ease, margin-top 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      width: 100%;
+    }
+    
+    .quick-contact-widget.is-open .quick-contact-list {
+      height: 134px; /* 3 buttons * 38px + 2 gaps * 10px = 134px */
+      overflow: visible; /* Allow hover scale expansions to render without clipping */
+      opacity: 1;
+      visibility: visible;
+      margin-top: 0;
+    }
+
+    /* Toggle button layout on mobile */
+    .quick-contact-toggle {
+      display: flex; /* Show on mobile */
+      width: 44px;
+      height: 44px;
+    }
+    .quick-contact-toggle svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Hide contact buttons by default on mobile (within list container) */
+    .quick-contact-btn {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0) translateY(30px);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+      width: 38px;
+      height: 38px;
+    }
+    .quick-contact-btn--phone .btn-icon {
+      width: 18px;
+      height: 18px;
+    }
+    .quick-contact-btn--zalo svg, .quick-contact-btn--messenger svg {
+      width: 38px;
+      height: 38px;
+    }
+
+    /* Back-to-top button size adjustment */
+    #back-to-top {
+      width: 38px;
+      height: 38px;
+    }
+
+    /* Staggered delay when opening */
+    .quick-contact-widget.is-open .quick-contact-btn--messenger {
+      transition-delay: 0s;
+    }
+    .quick-contact-widget.is-open .quick-contact-btn--zalo {
+      transition-delay: 0.05s;
+    }
+    .quick-contact-widget.is-open .quick-contact-btn--phone {
+      transition-delay: 0.1s;
+    }
+
+    /* Staggered delay when closing */
+    .quick-contact-widget:not(.is-open) .quick-contact-btn--phone {
+      transition-delay: 0s;
+    }
+    .quick-contact-widget:not(.is-open) .quick-contact-btn--zalo {
+      transition-delay: 0.05s;
+    }
+    .quick-contact-widget:not(.is-open) .quick-contact-btn--messenger {
+      transition-delay: 0.1s;
+    }
+
+    /* Show buttons when open */
+    .quick-contact-widget.is-open .quick-contact-btn {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1) translateY(0);
+    }
+
+    /* Toggle button animation when open */
+    .quick-contact-widget.is-open .quick-contact-toggle {
+      background: var(--color-primary, #3b2612);
+      transform: rotate(90deg);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    .quick-contact-widget.is-open .quick-contact-toggle .toggle-icon-chat {
+      display: none;
+    }
+    .quick-contact-widget.is-open .quick-contact-toggle .toggle-icon-close {
+      display: block;
+    }
+  }
+
+  /* ===== FOOTER OVERRIDES & MAP COLUMN ===== */
+  @media (min-width: 1025px) {
+    .footer-grid {
+      grid-template-columns: 1.8fr 0.9fr 1.3fr 1.5fr !important;
+    }
+  }
+
+  .footer-map-container {
+    margin-top: var(--space-4);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(200, 146, 42, 0.15);
+    height: 180px;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    background: rgba(200, 146, 42, 0.02);
+  }
+
+  .footer-map-container iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border: 0 !important;
+  }
+
+@media (max-width: 768px) {
+  :root {
+    --promo-banner-height: 58px;
+  }
+}
+
+/* ==========================================================================
+   PERFORMANCE OPTIMIZATIONS (Main-Thread Work, Style & Layout, CLS)
+   ========================================================================== */
+
+/* 1. Scroll Reveal Animations (Hardware Accelerated) */
+.reveal, .reveal-left, .reveal-right {
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal {
+  transform: translateY(30px);
+}
+
+.reveal-left {
+  transform: translateX(-40px);
+}
+
+.reveal-right {
+  transform: translateX(40px);
+}
+
+.reveal.revealed, 
+.reveal-left.revealed, 
+.reveal-right.revealed {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* 2. Content Visibility to optimize main-thread parsing & layout for below-the-fold content */
+.process-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 500px;
+}
+.cta-banner {
+  content-visibility: auto;
+  contain-intrinsic-size: 300px;
+}
+
+
+/* 3. Min-height for product conveyor to prevent Layout Shifts (CLS) during API rendering */
+.products-conveyor-container {
+  min-height: 485px;
+  contain: content;
+}
+@media (max-width: 768px) {
+  .products-conveyor-container {
+    min-height: 440px;
+  }
+  .reveal, .reveal-left, .reveal-right {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -8,15 +8,21 @@
   <meta name="description"
     content="Đăng nhập hoặc Đăng ký tài khoản Phúc Gia Tiên để mua sắm và theo dõi đơn hàng gốm sứ.">
   <title>Tài khoản – Phúc Gia Tiên</title>
-
+  <!-- Preconnect to origin to improve font loading performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap"
-    rel="stylesheet">
+    rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=optional">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=optional"
+    rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=optional" rel="stylesheet">
+  </noscript>
 
-  <link rel="stylesheet" href="css/layout.min.css?v=20260707_fix41">
-  <link rel="stylesheet" href="css/responsive.min.css?v=20260707_fix41">
+  <link rel="stylesheet" href="css/layout.min.css?v=20260707_fix53">
+  <link rel="stylesheet" href="css/responsive.min.css?v=20260707_fix53">
   <style>
     .auth-page-section {
       background-color: #faf7f2;
@@ -317,8 +323,8 @@
     <!-- PAGE HERO BANNER (Dùng hình nền trang chủ) -->
     <section class="page-hero" aria-label="Banner trang tài khoản">
       <div class="page-hero__bg">
-        <img class="js-config-page-banner-img" src="assets/images/home_bg.webp" alt="Tài khoản Phúc Gia Tiên"
-          role="presentation" loading="eager">
+        <img class="js-config-page-banner-img" src="/api/imageproxy?url=%2Fassets%2Fimages%2Fhome_bg.webp&w=800&q=70" alt="Tài khoản Phúc Gia Tiên"
+          role="presentation" loading="eager" width="800" height="220" style="object-fit: cover;">
       </div>
       <div class="container">
         <div class="page-hero__content">
@@ -466,10 +472,10 @@
   <div id="footer-placeholder"></div>
 
   <!-- LOAD COMMON SCRIPT -->
-  <script src="js/api.min.js?v=20260707_fix41"></script>
-  <script src="js/cart.min.js?v=20260707_fix41"></script>
-  <script src="js/promo.min.js?v=20260707_fix41"></script>
-  <script src="js/common.min.js?v=20260707_fix41"></script>
+  <script src="js/api.min.js?v=20260707_fix53" defer></script>
+  <script src="js/cart.min.js?v=20260707_fix53" defer></script>
+  <script src="js/promo.min.js?v=20260707_fix53" defer></script>
+  <script src="js/common.min.js?v=20260707_fix53" defer></script>
 
   <!-- SCRIPT XỬ LÝ FORM LOCAL CỦA LOGIN PAGE -->
   <script>

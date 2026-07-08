@@ -7,16 +7,60 @@
   <meta name="description"
     content="Khám phá bộ sưu tập gốm sứ thủ công Bát Tràng của Phúc Gia Tiên – lộc bình, đồ thờ, tranh gốm, bình hoa cao cấp.">
   <title>Sản Phẩm – Phúc Gia Tiên</title>
+  <!-- Preconnect to origin to improve font loading performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500&display=swap"
-    rel="stylesheet">
+    rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=optional">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=optional"
+    rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=optional" rel="stylesheet">
+  </noscript>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
-  <link rel="stylesheet" href="css/layout.min.css?v=20260707_fix41">
-  <link rel="stylesheet" href="css/product.min.css?v=20260707_fix41">
-  <link rel="stylesheet" href="css/responsive.min.css?v=20260707_fix41">
-      <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="css/layout.min.css?v=20260707_fix53">
+  <link rel="stylesheet" href="css/product.min.css?v=20260707_fix53">
+  <link rel="stylesheet" href="css/responsive.min.css?v=20260707_fix53">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <style>
+    /* Prevent advanced filter sidebar FOUC and slide-out animation on initial load */
+    .advanced-filter-sidebar {
+      position: fixed !important;
+      top: 0 !important;
+      right: 0 !important;
+      width: 420px !important;
+      max-width: 90vw !important;
+      height: 100vh !important;
+      background: #fbf7f3 !important;
+      z-index: 1001 !important;
+      transform: translateX(100%) !important;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    .advanced-filter-sidebar.is-active {
+      transform: translateX(0) !important;
+    }
+    .advanced-filter-overlay {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      background: rgba(0, 0, 0, 0.5) !important;
+      backdrop-filter: blur(4px) !important;
+      z-index: 1000 !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      transition: opacity 0.3s ease, visibility 0.3s ease !important;
+    }
+    .advanced-filter-overlay.is-active {
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+  </style>
 </head>
 
 <body class="page-body">
@@ -267,11 +311,11 @@
   </aside>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
-  <script src="js/api.min.js?v=20260707_fix41"></script>
-  <script src="js/cart.min.js?v=20260707_fix41"></script>
-  <script src="js/promo.min.js?v=20260707_fix41"></script>
-  <script src="js/common.min.js?v=20260707_fix41"></script>
-  <script src="js/product.min.js?v=20260707_fix41"></script>
+  <script src="js/api.min.js?v=20260707_fix53" defer></script>
+  <script src="js/cart.min.js?v=20260707_fix53" defer></script>
+  <script src="js/promo.min.js?v=20260707_fix53" defer></script>
+  <script src="js/common.min.js?v=20260707_fix53" defer></script>
+  <script src="js/product.min.js?v=20260707_fix53" defer></script>
 </body>
 
 </html>

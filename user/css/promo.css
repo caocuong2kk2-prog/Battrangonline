@@ -1,27 +1,23 @@
-/* ============ PROMO BANNER & POPUP STYLES ============ */
+/* ---- TOP PROMO BANNER ---- */
+#site-header {
+  transition: background 0.3s ease, box-shadow 0.3s ease !important;
+}
 #top-promo-banner {
   position: relative;
-  width: 100%;
-  z-index: 999; /* Lower than site-header z-index (1000) to prevent subpixel border overlap */
+  z-index: 999;
   background: linear-gradient(90deg, #1a0f05 0%, #2c1a08 25%, #1a0f05 50%, #2c1a08 75%, #1a0f05 100%);
-  border-bottom: 1.5px solid rgba(200, 146, 42, 0.5); /* Gold dividing line */
+  border-bottom: 1.5px solid rgba(200, 146, 42, 0.5);
   padding: 0;
   overflow: hidden;
   margin: 0;
-  height: auto;
 }
-
 #top-promo-banner::before {
   content: '';
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(200, 146, 42, 0.04) 60px, rgba(200, 146, 42, 0.04) 61px);
+  inset: 0;
+  background: repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(200,146,42,0.04) 60px, rgba(200,146,42,0.04) 61px);
   pointer-events: none;
 }
-
 #promo-banner-inner {
   display: flex;
   align-items: center;
@@ -32,7 +28,6 @@
   position: relative;
   z-index: 1;
 }
-
 .promo-banner__sparks {
   display: flex;
   align-items: center;
@@ -45,7 +40,6 @@
   font-family: var(--font-body, 'Be Vietnam Pro', sans-serif);
   white-space: nowrap;
 }
-
 .promo-banner__sparks::before,
 .promo-banner__sparks::after {
   content: '';
@@ -54,11 +48,9 @@
   height: 1px;
   background: linear-gradient(90deg, transparent, #d4a853);
 }
-
 .promo-banner__sparks::after {
   background: linear-gradient(90deg, #d4a853, transparent);
 }
-
 .promo-banner__label {
   color: #fff;
   font-size: 12.5px;
@@ -68,7 +60,6 @@
   opacity: 0.8;
   white-space: nowrap;
 }
-
 #promo-countdown {
   display: flex;
   align-items: center;
@@ -77,32 +68,20 @@
   font-size: 14px;
   font-weight: 700;
   color: #fff;
-  background: rgba(212, 168, 83, 0.12);
-  border: 1px solid rgba(212, 168, 83, 0.3);
+  background: rgba(212,168,83,0.12);
+  border: 1px solid rgba(212,168,83,0.3);
   border-radius: 4px;
   padding: 3px 10px;
   letter-spacing: 0.05em;
   white-space: nowrap;
 }
-
 .promo-cd-unit {
   display: inline-flex;
   align-items: baseline;
   gap: 3px;
 }
-
-.promo-cd-num {
-  color: #d4a853;
-}
-
-.promo-cd-lbl {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 10px;
-  font-weight: 500;
-  text-transform: lowercase;
-  font-family: var(--font-body, sans-serif);
-}
-
+.promo-cd-num { color: #d4a853; }
+.promo-cd-lbl { color: rgba(255,255,255,0.6); font-size: 10px; font-weight: 500; text-transform: lowercase; font-family: var(--font-body, sans-serif); }
 .promo-banner__cta {
   display: inline-flex;
   align-items: center;
@@ -117,124 +96,125 @@
   text-transform: uppercase;
   letter-spacing: 0.12em;
   font-family: var(--font-body, 'Be Vietnam Pro', sans-serif);
-  box-shadow: 0 2px 10px rgba(212, 168, 83, 0.3);
+  box-shadow: 0 2px 10px rgba(212,168,83,0.3);
   transition: all 0.2s ease;
   white-space: nowrap;
 }
-
 .promo-banner__cta:hover {
   background: linear-gradient(135deg, #e8c070, #d4a853);
-  box-shadow: 0 4px 18px rgba(212, 168, 83, 0.5);
+  box-shadow: 0 4px 18px rgba(212,168,83,0.5);
   transform: translateY(-1px);
 }
 
 /* Responsive adjustments for banner */
 @media (max-width: 1200px) {
-  .promo-banner__sparks {
-    display: none;
-  }
   #promo-banner-inner {
-    gap: 15px;
+    flex-wrap: wrap;
+    gap: 10px 15px;
+    padding: 8px 20px;
+  }
+  .promo-banner__sparks {
+    width: 100%;
+    justify-content: center;
+    font-size: 10.5px;
   }
 }
 
 @media (max-width: 900px) {
   .promo-banner__label {
-    font-size: 12px;
+    font-size: 11.5px;
   }
   #promo-countdown {
-    font-size: 13px;
-    padding: 2px 8px;
+    font-size: 12px;
+    padding: 2px 6px;
   }
   .promo-banner__cta {
     padding: 4px 12px;
-    font-size: 10px;
+    font-size: 9.5px;
   }
   #promo-banner-inner {
-    gap: 10px;
+    gap: 8px 10px;
   }
 }
 
 @media (max-width: 768px) {
-  .promo-banner__sparks {
-    display: none !important; /* Hide decorative sparks to save vertical space on mobile */
-  }
   #promo-banner-inner {
     flex-wrap: wrap;
-    padding: 4px 8px;
-    gap: 4px 10px;
+    padding: 6px 10px;
+    gap: 5px 10px;
     justify-content: center;
+    align-items: center;
+  }
+  .promo-banner__sparks {
+    width: 100%;
+    justify-content: center;
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    margin-bottom: 2px;
+    display: flex;
+  }
+  .promo-banner__sparks::before,
+  .promo-banner__sparks::after {
+    width: 16px;
   }
   .promo-banner__label {
     font-size: 11px;
-    width: auto;
     text-align: center;
-    margin: 2px 0;
+    margin: 0;
   }
   #promo-countdown {
-    font-size: 11.5px;
-    padding: 2px 6px;
-    margin: 2px 0;
+    font-size: 11px;
+    padding: 2px 4px;
+    gap: 3px;
+  }
+  .promo-cd-lbl {
+    font-size: 8.5px;
   }
   .promo-banner__cta {
-    width: auto; /* Allow inline layout next to countdown on wider mobile screens */
-    display: inline-flex;
-    justify-content: center;
-    padding: 4px 10px;
-    font-size: 10.5px;
-    margin: 2px 0;
+    width: auto;
+    padding: 4px 12px;
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    margin-top: 2px;
   }
 }
+
 
 /* ---- POPUP ---- */
 #promo-popup-overlay {
   position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  inset: 0;
   z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
   box-sizing: border-box;
   opacity: 0;
   transition: opacity 0.5s ease;
 }
-
 #promo-popup-overlay::before {
   content: '';
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: rgba(10, 6, 2, 0.95);
+  inset: 0;
+  background: rgba(10,6,2,0.95);
 }
-
 #promo-popup-card {
   position: relative;
-  margin: auto;
-  z-index: 100000;
-  width: calc(100vw - 32px);
+  z-index: 1;
+  width: 100%;
   max-width: 600px;
   background: #110904;
   border-radius: 16px;
   overflow: hidden;
-  transform: scale(0.88);
-  transition: all 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  opacity: 0;
+  transition: opacity 0.4s ease;
   box-shadow:
-    0 0 0 1px rgba(212, 168, 83, 0.3),
-    0 40px 80px rgba(0, 0, 0, 0.8);
+    0 0 0 1px rgba(212,168,83,0.3),
+    0 40px 80px rgba(0,0,0,0.8);
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
 }
-
-#promo-popup-card * {
-  box-sizing: border-box;
-}
-
 .promo-popup__image {
   width: 100%;
   height: auto;
@@ -242,24 +222,22 @@
   object-fit: contain;
   display: block;
   background: #1a0f05;
-  border-bottom: 1px solid rgba(212, 168, 83, 0.2);
+  border-bottom: 1px solid rgba(212,168,83,0.2);
 }
-
 .promo-popup__content-wrapper {
   width: 100%;
   position: relative;
   background: linear-gradient(155deg, #1e1008 0%, #110904 100%);
 }
-
 .promo-popup__close {
   position: absolute;
   top: 12px;
   right: 12px;
   z-index: 20;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0,0,0,0.5);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255,255,255,0.2);
   color: #fff;
   width: 32px;
   height: 32px;
@@ -272,21 +250,18 @@
   transition: all 0.2s ease;
   line-height: 1;
 }
-
 .promo-popup__close:hover {
-  background: rgba(212, 168, 83, 0.15);
-  border-color: rgba(212, 168, 83, 0.5);
+  background: rgba(212,168,83,0.15);
+  border-color: rgba(212,168,83,0.5);
   color: #d4a853;
   transform: rotate(90deg);
 }
-
 .promo-popup__body {
   position: relative;
   z-index: 1;
   padding: 32px 40px 36px;
   text-align: center;
 }
-
 .promo-popup__eyebrow {
   font-size: 11px;
   font-weight: 700;
@@ -296,7 +271,6 @@
   margin-bottom: 12px;
   font-family: var(--font-body, sans-serif);
 }
-
 .promo-popup__title {
   font-family: var(--font-heading, 'Cormorant Garamond', serif);
   font-size: 36px;
@@ -306,26 +280,22 @@
   margin-bottom: 16px;
   letter-spacing: 0.02em;
 }
-
 .promo-popup__title span {
   color: #d4a853;
   font-style: italic;
 }
-
 .promo-popup__desc {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255,255,255,0.65);
   line-height: 1.6;
   margin-bottom: 24px;
   font-family: var(--font-body, sans-serif);
 }
-
 .promo-popup__desc strong {
   color: #d4a853;
   font-size: 16px;
   font-weight: 700;
 }
-
 .promo-popup__countdown {
   display: flex;
   align-items: stretch;
@@ -333,18 +303,16 @@
   gap: 8px;
   margin-bottom: 28px;
 }
-
 .promo-cd-block {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 4px;
   min-width: 60px;
 }
-
 .promo-cd-block__num {
   font-family: 'Courier New', monospace;
   font-size: 24px;
@@ -353,7 +321,6 @@
   line-height: 1;
   margin-bottom: 4px;
 }
-
 .promo-cd-block__lbl {
   font-size: 10px;
   font-weight: 600;
@@ -362,7 +329,6 @@
   color: #d4a853;
   font-family: var(--font-body, sans-serif);
 }
-
 .promo-popup__cta {
   display: inline-flex;
   align-items: center;
@@ -378,45 +344,26 @@
   padding: 16px 40px;
   border-radius: 2px;
   font-family: var(--font-body, 'Be Vietnam Pro', sans-serif);
-  box-shadow: 0 6px 20px rgba(212, 168, 83, 0.25);
+  box-shadow: 0 6px 20px rgba(212,168,83,0.25);
   transition: all 0.35s ease;
   width: 100%;
-  white-space: normal;
-  text-align: center;
 }
-
 .promo-popup__cta:hover {
   background-position: 100% 0;
-  box-shadow: 0 10px 30px rgba(212, 168, 83, 0.4);
+  box-shadow: 0 10px 30px rgba(212,168,83,0.4);
   transform: translateY(-2px);
 }
-
 .promo-popup__fine-print {
   margin-top: 16px;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255,255,255,0.25);
   font-family: var(--font-body, sans-serif);
 }
-
 @media (max-width: 768px) {
-  #promo-popup-card {
-    width: calc(100vw - 32px);
-    max-width: 440px;
-  }
-  .promo-popup__image {
-    max-height: 220px;
-  }
-  .promo-popup__body {
-    padding: 24px 16px;
-  }
-  .promo-popup__title {
-    font-size: 26px;
-  }
-  .promo-cd-block {
-    min-width: 50px;
-    padding: 8px;
-  }
-  .promo-cd-block__num {
-    font-size: 20px;
-  }
+  #promo-popup-card { width: 92%; max-width: 440px; }
+  .promo-popup__image { max-height: 220px; }
+  .promo-popup__body { padding: 24px 16px; }
+  .promo-popup__title { font-size: 26px; }
+  .promo-cd-block { min-width: 50px; padding: 8px; }
+  .promo-cd-block__num { font-size: 20px; }
 }

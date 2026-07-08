@@ -3,382 +3,15 @@
 (function () {
   // ─── Ngày kết thúc sẽ được lấy từ API ────────────────────────
 
-  // ─── Inject CSS keyframes ─────────────────────────────────────────────
+  // ─── Load promo CSS as a file instead of injecting inline styles ───
   if (!document.getElementById('promo-styles')) {
-    const style = document.createElement('style');
-    style.id = 'promo-styles';
-    style.textContent = `
-      /* ---- TOP PROMO BANNER ---- */
-      #site-header {
-        transition: background 0.3s ease, box-shadow 0.3s ease !important;
-      }
-      #top-promo-banner {
-        position: relative;
-        z-index: 999; /* Lower than site-header z-index (1000) to prevent subpixel border overlap */
-        background: linear-gradient(90deg, #1a0f05 0%, #2c1a08 25%, #1a0f05 50%, #2c1a08 75%, #1a0f05 100%);
-        border-bottom: 1.5px solid rgba(200, 146, 42, 0.5); /* Gold dividing line */
-        padding: 0;
-        overflow: hidden;
-        margin: 0;
-      }
-      #top-promo-banner::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(200,146,42,0.04) 60px, rgba(200,146,42,0.04) 61px);
-        pointer-events: none;
-      }
-      #promo-banner-inner {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 20px;
-        padding: 8px 20px;
-        flex-wrap: nowrap;
-        position: relative;
-        z-index: 1;
-      }
-      .promo-banner__sparks {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #d4a853;
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        font-family: var(--font-body, 'Be Vietnam Pro', sans-serif);
-        white-space: nowrap;
-      }
-      .promo-banner__sparks::before,
-      .promo-banner__sparks::after {
-        content: '';
-        display: inline-block;
-        width: 24px;
-        height: 1px;
-        background: linear-gradient(90deg, transparent, #d4a853);
-      }
-      .promo-banner__sparks::after {
-        background: linear-gradient(90deg, #d4a853, transparent);
-      }
-      .promo-banner__label {
-        color: #fff;
-        font-size: 12.5px;
-        font-weight: 500;
-        font-family: var(--font-body, 'Be Vietnam Pro', sans-serif);
-        letter-spacing: 0.04em;
-        opacity: 0.8;
-        white-space: nowrap;
-      }
-      #promo-countdown {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-family: 'Courier New', Courier, monospace;
-        font-size: 14px;
-        font-weight: 700;
-        color: #fff;
-        background: rgba(212,168,83,0.12);
-        border: 1px solid rgba(212,168,83,0.3);
-        border-radius: 4px;
-        padding: 3px 10px;
-        letter-spacing: 0.05em;
-        white-space: nowrap;
-      }
-      .promo-cd-unit {
-        display: inline-flex;
-        align-items: baseline;
-        gap: 3px;
-      }
-      .promo-cd-num { color: #d4a853; }
-      .promo-cd-lbl { color: rgba(255,255,255,0.6); font-size: 10px; font-weight: 500; text-transform: lowercase; font-family: var(--font-body, sans-serif); }
-      .promo-banner__cta {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: linear-gradient(135deg, #d4a853, #b8862f);
-        color: #1a0f05;
-        padding: 5px 16px;
-        border-radius: 3px;
-        text-decoration: none;
-        font-weight: 800;
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.12em;
-        font-family: var(--font-body, 'Be Vietnam Pro', sans-serif);
-        box-shadow: 0 2px 10px rgba(212,168,83,0.3);
-        transition: all 0.2s ease;
-        white-space: nowrap;
-      }
-      .promo-banner__cta:hover {
-        background: linear-gradient(135deg, #e8c070, #d4a853);
-        box-shadow: 0 4px 18px rgba(212,168,83,0.5);
-        transform: translateY(-1px);
-      }
-
-      /* Responsive adjustments for banner */
-      @media (max-width: 1200px) {
-        #promo-banner-inner {
-          flex-wrap: wrap;
-          gap: 10px 15px;
-          padding: 8px 20px;
-        }
-        .promo-banner__sparks {
-          width: 100%;
-          justify-content: center;
-          font-size: 10.5px;
-        }
-      }
-
-      @media (max-width: 900px) {
-        .promo-banner__label {
-          font-size: 11.5px;
-        }
-        #promo-countdown {
-          font-size: 12px;
-          padding: 2px 6px;
-        }
-        .promo-banner__cta {
-          padding: 4px 12px;
-          font-size: 9.5px;
-        }
-        #promo-banner-inner {
-          gap: 8px 10px;
-        }
-      }
-
-      @media (max-width: 768px) {
-        #promo-banner-inner {
-          flex-wrap: wrap;
-          padding: 6px 10px;
-          gap: 5px 10px;
-          justify-content: center;
-          align-items: center;
-        }
-        .promo-banner__sparks {
-          width: 100%;
-          justify-content: center;
-          font-size: 9.5px;
-          letter-spacing: 0.1em;
-          margin-bottom: 2px;
-          display: flex;
-        }
-        .promo-banner__sparks::before,
-        .promo-banner__sparks::after {
-          width: 16px;
-        }
-        .promo-banner__label {
-          font-size: 11px;
-          text-align: center;
-          margin: 0;
-        }
-        #promo-countdown {
-          font-size: 11px;
-          padding: 2px 4px;
-          gap: 3px;
-        }
-        .promo-cd-lbl {
-          font-size: 8.5px;
-        }
-        .promo-banner__cta {
-          width: auto;
-          padding: 4px 12px;
-          font-size: 9.5px;
-          letter-spacing: 0.06em;
-          margin-top: 2px;
-        }
-      }
-
-
-      /* ---- POPUP ---- */
-      #promo-popup-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 99999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        box-sizing: border-box;
-        opacity: 0;
-        transition: opacity 0.5s ease;
-      }
-      #promo-popup-overlay::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: rgba(10,6,2,0.95);
-      }
-      #promo-popup-card {
-        position: relative;
-        z-index: 1;
-        width: 100%;
-        max-width: 600px;
-        background: #110904;
-        border-radius: 16px;
-        overflow: hidden;
-        transform: scale(0.88) translateY(30px);
-        transition: all 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        box-shadow:
-          0 0 0 1px rgba(212,168,83,0.3),
-          0 40px 80px rgba(0,0,0,0.8);
-        display: flex;
-        flex-direction: column;
-      }
-      .promo-popup__image {
-        width: 100%;
-        height: auto;
-        max-height: 350px;
-        object-fit: contain;
-        display: block;
-        background: #1a0f05;
-        border-bottom: 1px solid rgba(212,168,83,0.2);
-      }
-      .promo-popup__content-wrapper {
-        width: 100%;
-        position: relative;
-        background: linear-gradient(155deg, #1e1008 0%, #110904 100%);
-      }
-      .promo-popup__close {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        z-index: 20;
-        background: rgba(0,0,0,0.5);
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-        border: 1px solid rgba(255,255,255,0.2);
-        color: #fff;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        font-size: 18px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-        line-height: 1;
-      }
-      .promo-popup__close:hover {
-        background: rgba(212,168,83,0.15);
-        border-color: rgba(212,168,83,0.5);
-        color: #d4a853;
-        transform: rotate(90deg);
-      }
-      .promo-popup__body {
-        position: relative;
-        z-index: 1;
-        padding: 32px 40px 36px;
-        text-align: center;
-      }
-      .promo-popup__eyebrow {
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.25em;
-        text-transform: uppercase;
-        color: #d4a853;
-        margin-bottom: 12px;
-        font-family: var(--font-body, sans-serif);
-      }
-      .promo-popup__title {
-        font-family: var(--font-heading, 'Cormorant Garamond', serif);
-        font-size: 36px;
-        font-weight: 600;
-        color: #fff;
-        line-height: 1.2;
-        margin-bottom: 16px;
-        letter-spacing: 0.02em;
-      }
-      .promo-popup__title span {
-        color: #d4a853;
-        font-style: italic;
-      }
-      .promo-popup__desc {
-        font-size: 14px;
-        color: rgba(255,255,255,0.65);
-        line-height: 1.6;
-        margin-bottom: 24px;
-        font-family: var(--font-body, sans-serif);
-      }
-      .promo-popup__desc strong {
-        color: #d4a853;
-        font-size: 16px;
-        font-weight: 700;
-      }
-      .promo-popup__countdown {
-        display: flex;
-        align-items: stretch;
-        justify-content: center;
-        gap: 8px;
-        margin-bottom: 28px;
-      }
-      .promo-cd-block {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 10px 14px;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 4px;
-        min-width: 60px;
-      }
-      .promo-cd-block__num {
-        font-family: 'Courier New', monospace;
-        font-size: 24px;
-        font-weight: 700;
-        color: #fff;
-        line-height: 1;
-        margin-bottom: 4px;
-      }
-      .promo-cd-block__lbl {
-        font-size: 10px;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: #d4a853;
-        font-family: var(--font-body, sans-serif);
-      }
-      .promo-popup__cta {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #c8922a 0%, #d4a853 40%, #e8c470 70%, #d4a853 100%);
-        background-size: 200% 100%;
-        color: #1a0f05;
-        text-decoration: none;
-        font-weight: 800;
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        padding: 16px 40px;
-        border-radius: 2px;
-        font-family: var(--font-body, 'Be Vietnam Pro', sans-serif);
-        box-shadow: 0 6px 20px rgba(212,168,83,0.25);
-        transition: all 0.35s ease;
-        width: 100%;
-      }
-      .promo-popup__cta:hover {
-        background-position: 100% 0;
-        box-shadow: 0 10px 30px rgba(212,168,83,0.4);
-        transform: translateY(-2px);
-      }
-      .promo-popup__fine-print {
-        margin-top: 16px;
-        font-size: 11px;
-        color: rgba(255,255,255,0.25);
-        font-family: var(--font-body, sans-serif);
-      }
-      @media (max-width: 768px) {
-        #promo-popup-card { width: 92%; max-width: 440px; }
-        .promo-popup__image { max-height: 220px; }
-        .promo-popup__body { padding: 24px 16px; }
-        .promo-popup__title { font-size: 26px; }
-        .promo-cd-block { min-width: 50px; padding: 8px; }
-        .promo-cd-block__num { font-size: 20px; }
-      }
-    `;
-    document.head.appendChild(style);
+    var p = window.location.pathname.toLowerCase();
+    var base = (p === '/user' || p.startsWith('/user/')) ? '/user/' : '';
+    const link = document.createElement('link');
+    link.id = 'promo-styles';
+    link.rel = 'stylesheet';
+    link.href = base + 'css/promo.css?v=20260707_fix42';
+    document.head.appendChild(link);
   }
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -440,30 +73,39 @@
       }
 
       let cachedBannerHeight = 0;
-      let layoutBlocked = false;
 
-      function requestLayoutUpdate() {
-        if (layoutBlocked) return;
-        layoutBlocked = true;
-        requestAnimationFrame(() => {
-          if (banner) {
-            cachedBannerHeight = banner.offsetHeight;
-            document.documentElement.style.setProperty('--promo-banner-height', cachedBannerHeight + 'px');
+      function applyBannerHeight(height) {
+        cachedBannerHeight = height;
+        document.documentElement.style.setProperty('--promo-banner-height', cachedBannerHeight + 'px');
+        // Notify other scripts (like common.js) of the height update
+        document.dispatchEvent(new CustomEvent('promo-banner-ready', { detail: { height: height } }));
+      }
+
+      // Use ResizeObserver to detect banner height changes without forcing reflow
+      if (typeof ResizeObserver !== 'undefined') {
+        const bannerObserver = new ResizeObserver(function (entries) {
+          for (const entry of entries) {
+            const newHeight = entry.contentRect.height;
+            if (newHeight !== cachedBannerHeight) {
+              applyBannerHeight(newHeight);
+            }
           }
-          layoutBlocked = false;
+        });
+        bannerObserver.observe(banner);
+      } else {
+        // Fallback: measure once after layout settles
+        requestAnimationFrame(function () {
+          applyBannerHeight(banner.offsetHeight);
         });
       }
 
       // Vì header được tải bất đồng bộ qua common.js fetch, ta cần thử cập nhật định kỳ cho đến khi header xuất hiện
       let checkHeaderInterval = setInterval(function () {
         if (getHeader()) {
-          requestLayoutUpdate();
+          // Header appeared — let ResizeObserver handle height, just clear the interval
           clearInterval(checkHeaderInterval);
         }
       }, 50);
-
-      window.addEventListener('scroll', requestLayoutUpdate, { passive: true });
-      window.addEventListener('resize', requestLayoutUpdate, { passive: true });
 
       // Countdown for banner
       function updateBannerCountdown() {
@@ -534,7 +176,15 @@
             }
             imgUrl = dynamicBase + (imgUrl.startsWith('/') ? '' : '/') + imgUrl;
           }
-          bannerHtml = `<img src="${imgUrl}" class="promo-popup__image" alt="Promo" width="600" height="300" decoding="async">`;
+          let resolvedImgUrl = imgUrl;
+          let srcsetAttr = '';
+          if (typeof window.resolveImgUrl === 'function') {
+            let urlMobile = window.resolveImgUrl(imgUrl, imgUrl, 360, 70);
+            let urlDesktop = window.resolveImgUrl(imgUrl, imgUrl, 600, 75);
+            resolvedImgUrl = urlDesktop;
+            srcsetAttr = `srcset="${urlMobile} 360w, ${urlDesktop} 600w" sizes="(max-width: 600px) 342px, 600px"`;
+          }
+          bannerHtml = `<img src="${resolvedImgUrl}" ${srcsetAttr} class="promo-popup__image" alt="Promo" width="600" height="300" decoding="async">`;
         }
 
         const popupTitle = isUpcoming ? `Sắp diễn ra<span> ${campaignName}</span>` : `Ưu đãi<span> ${campaignName}</span>`;
@@ -575,7 +225,8 @@
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             overlay.style.opacity = '1';
-            document.getElementById('promo-popup-card').style.transform = 'scale(1) translateY(0)';
+            const card = document.getElementById('promo-popup-card');
+            if (card) card.style.opacity = '1';
           });
         });
 
@@ -617,7 +268,7 @@
         function closePopup() {
           const card = document.getElementById('promo-popup-card');
           overlay.style.opacity = '0';
-          if (card) { card.style.transform = 'scale(0.9) translateY(20px)'; }
+          if (card) { card.style.opacity = '0'; }
           clearInterval(popupTimer);
           setTimeout(() => overlay.remove(), 450);
           try {

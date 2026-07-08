@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.IO;
 using System;
+using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Hosting;
 
 namespace BatTrang.API.Controllers
@@ -15,10 +16,15 @@ namespace BatTrang.API.Controllers
         private static readonly HttpClient _httpClient;
         private readonly IWebHostEnvironment _env;
 
+        // Cache failed external URLs to avoid repeated HTTP requests (URL -> expiry time)
+        private static readonly ConcurrentDictionary<string, DateTime> _failedUrlCache = new();
+        private static readonly TimeSpan _failedCacheDuration = TimeSpan.FromMinutes(30);
+
         static ImageProxyController()
         {
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "BatTrangAPI-ImageProxy/1.0");
+            _httpClient.Timeout = TimeSpan.FromSeconds(10); // Don't wait forever for external sources
         }
 
         public ImageProxyController(IWebHostEnvironment env)
@@ -54,7 +60,7 @@ namespace BatTrang.API.Controllers
                     if (string.IsNullOrEmpty(localPath))
                     {
                         Console.WriteLine($"[ImageProxy] Local file not found: {decodedPath}");
-                        return NotFound("Local file not found.");
+                        return ReturnPlaceholder();
                     }
                     stream = new FileStream(localPath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 }
@@ -86,26 +92,52 @@ namespace BatTrang.API.Controllers
                         if (string.IsNullOrEmpty(localPath))
                         {
                             Console.WriteLine($"[ImageProxy] Local file not found: {decodedPath}");
-                            return NotFound("Local file not found.");
+                            return ReturnPlaceholder();
                         }
                         stream = new FileStream(localPath, FileMode.Open, FileAccess.Read, FileShare.Read);
                     }
                     else
                     {
+                        var urlKey = uri.ToString();
+
+                        // Check if this URL recently failed — return placeholder immediately
+                        if (_failedUrlCache.TryGetValue(urlKey, out var expiry))
+                        {
+                            if (DateTime.UtcNow < expiry)
+                            {
+                                return ReturnPlaceholder();
+                            }
+                            _failedUrlCache.TryRemove(urlKey, out _);
+                        }
+
                         // 2. Download external image
-                        var response = await _httpClient.GetAsync(uri);
+                        HttpResponseMessage response;
+                        try
+                        {
+                            response = await _httpClient.GetAsync(uri);
+                        }
+                        catch (TaskCanceledException)
+                        {
+                            // Timeout
+                            _failedUrlCache[urlKey] = DateTime.UtcNow.Add(_failedCacheDuration);
+                            Console.WriteLine($"[ImageProxy] Timeout for URL: {uri}");
+                            return ReturnPlaceholder();
+                        }
+
                         if (!response.IsSuccessStatusCode)
                         {
-                            Console.WriteLine($"[ImageProxy] External source returned {response.StatusCode} for URL: {uri}");
-                            return NotFound($"External source returned {response.StatusCode}");
+                            _failedUrlCache[urlKey] = DateTime.UtcNow.Add(_failedCacheDuration);
+                            // Console.WriteLine($"[ImageProxy] External source returned {response.StatusCode} for URL: {uri}");
+                            return ReturnPlaceholder();
                         }
 
                         // Protect against HTML pages returned as images (anti-hotlink or 404s)
                         string? contentType = response.Content.Headers.ContentType?.MediaType;
                         if (contentType != null && contentType.Contains("text/html"))
                         {
-                            Console.WriteLine($"[ImageProxy] External source returned HTML instead of image for URL: {uri}");
-                            return NotFound("External source returned HTML instead of image.");
+                            _failedUrlCache[urlKey] = DateTime.UtcNow.Add(_failedCacheDuration);
+                            // Console.WriteLine($"[ImageProxy] External source returned HTML instead of image for URL: {uri}");
+                            return ReturnPlaceholder();
                         }
 
                         stream = await response.Content.ReadAsStreamAsync();
@@ -118,8 +150,8 @@ namespace BatTrang.API.Controllers
                 using var originalBitmap = SKBitmap.Decode(stream);
                 if (originalBitmap == null)
                 {
-                    Console.WriteLine($"[ImageProxy] BadRequest: Failed to decode image: {url}");
-                    return BadRequest("Failed to decode image. Format may be unsupported or corrupted.");
+                    Console.WriteLine($"[ImageProxy] Failed to decode image: {url}");
+                    return ReturnPlaceholder();
                 }
 
                 SKBitmap finalBitmap = originalBitmap;

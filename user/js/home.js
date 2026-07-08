@@ -24,25 +24,33 @@
     if (!apiCall) return;
 
     apiCall.then(function (products) {
-      // Xóa skeleton
-      track.innerHTML = '';
-
-      try {
-        // Build 12 cards gốc
-        products.forEach(function (p, i) {
-          if (typeof window.buildProductCard === 'function') {
-            track.appendChild(window.buildProductCard(p, i));
-          }
-        });
-
+      setTimeout(function () {
         if (products.length === 0) {
           track.innerHTML = '<p style="color:var(--color-text-muted);padding:2rem;text-align:center">Không có sản phẩm nào.</p>';
-        } else {
+          return;
+        }
+
+        try {
+          var fragment = document.createDocumentFragment();
+          var originalElements = [];
+
+          // Build 12 cards gốc
+          products.forEach(function (p, i) {
+            if (typeof window.buildProductCard === 'function') {
+              var cardEl = window.buildProductCard(p, i, i < 4);
+              fragment.appendChild(cardEl);
+              originalElements.push(cardEl);
+            }
+          });
+
           // Clone toàn bộ sang bên phải để làm mỏ neo vòng lặp cuộn vô tận
-          var originals = Array.from(track.children);
-          originals.forEach(function (card) {
+          originalElements.forEach(function (card) {
             var clone = card.cloneNode(true);
             clone.setAttribute('aria-hidden', 'true');
+            clone.setAttribute('tabindex', '-1');
+            clone.querySelectorAll('a, button, input, select, textarea').forEach(function (el) {
+              el.setAttribute('tabindex', '-1');
+            });
 
             // Re-bind article click
             clone.addEventListener('click', function () {
@@ -80,20 +88,24 @@
               });
             }
 
-            track.appendChild(clone);
+            fragment.appendChild(clone);
           });
+
+          // Một lần ghi duy nhất vào DOM
+          track.innerHTML = '';
+          track.appendChild(fragment);
 
           // Bắt đầu setup logic điều khiển thông minh
           requestAnimationFrame(function () {
             requestAnimationFrame(function () {
-              setupConveyorControls(conveyor, track);
+              setupConveyorControls(conveyor, track, originalElements.length);
               if (typeof window.initScrollReveal === 'function') window.initScrollReveal();
             });
           });
+        } catch (err) {
+          track.innerHTML = '<p style="color:red;padding:2rem;">Lỗi build thẻ: ' + err.message + '</p>';
         }
-      } catch (err) {
-        track.innerHTML = '<p style="color:red;padding:2rem;">Lỗi build thẻ: ' + err.message + '</p>';
-      }
+      }, 150);
 
     }).catch(function (err) {
       var t = document.getElementById('home-product-track');
@@ -102,7 +114,7 @@
     });
   }
 
-  function setupConveyorControls(conveyor, track) {
+  function setupConveyorControls(conveyor, track, originalCardCount) {
     var isDown = false;
     var startX;
     var scrollLeftStart;
@@ -113,7 +125,7 @@
     var slideStep = 334; // 1 card (310px) + gap (24px)
 
     // Chiều rộng của 1 nửa track (phần 12 sản phẩm gốc)
-    var trackHalfW = track.scrollWidth / 2;
+    var trackHalfW = (originalCardCount || 12) * slideStep;
 
     // Snaps the conveyor to the nearest card on finger/mouse release
     function snapToNearestCard(dragDistance, startScroll) {

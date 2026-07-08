@@ -240,10 +240,11 @@ function populateHeaderMegaMenu() {
     }
 
     // Sticky header on scroll: trigger .scrolled state only when the promo banner is fully scrolled out of view
+    // Cache banner height to avoid forced reflow on every scroll
+    let cachedPromoBannerHeight = 0;
+
     function checkHeaderScroll() {
-      const promoBanner = document.getElementById('top-promo-banner');
-      const bannerHeight = promoBanner ? promoBanner.offsetHeight : 0;
-      if (window.scrollY > bannerHeight + 2) {
+      if (window.scrollY > cachedPromoBannerHeight + 2) {
         header.classList.add('scrolled');
         document.body.classList.add('scrolled');
       } else {
@@ -252,8 +253,34 @@ function populateHeaderMegaMenu() {
       }
     }
 
+    // 1. Listen for the promo banner event (fired when banner is injected or updated)
+    document.addEventListener('promo-banner-ready', function (e) {
+      cachedPromoBannerHeight = e.detail.height;
+      checkHeaderScroll();
+    });
+
+    // 2. Fallback / ResizeObserver: measure only when size actually changes (never on scroll)
+    const promoBanner = document.getElementById('top-promo-banner');
+    if (promoBanner) {
+      if (typeof ResizeObserver !== 'undefined') {
+        const observer = new ResizeObserver(function (entries) {
+          for (const entry of entries) {
+            cachedPromoBannerHeight = entry.contentRect.height;
+            checkHeaderScroll();
+          }
+        });
+        observer.observe(promoBanner);
+      } else {
+        requestAnimationFrame(function () {
+          cachedPromoBannerHeight = promoBanner.offsetHeight;
+          checkHeaderScroll();
+        });
+      }
+    } else {
+      checkHeaderScroll();
+    }
+
     window.addEventListener('scroll', checkHeaderScroll, { passive: true });
-    checkHeaderScroll(); // Run once initially
 
     // Mobile nav toggle
     if (navToggle && siteNav) {
@@ -644,7 +671,7 @@ function populateHeaderMegaMenu() {
 
   function initScrollReveal() {
     const els = document.querySelectorAll('.reveal:not(.revealed), .reveal-left:not(.revealed), .reveal-right:not(.revealed)');
-    if (!els.length || !window.IntersectionObserver) {
+    if (!els.length || !window.IntersectionObserver || window.innerWidth <= 768) {
       document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(function (el) { el.classList.add('revealed'); });
       return;
     }
@@ -789,12 +816,12 @@ function populateHeaderMegaMenu() {
     var srcsetHtml = '';
     if (typeof window.resolveImgUrl === 'function') {
       if (!isLocalVid && !isPlatformVid) {
-         var src300 = window.resolveImgUrl(imgSrc, imgSrc, 300, 50);
-         var src420 = window.resolveImgUrl(imgSrc, imgSrc, 420, 55);
-         imgSrc = src420; // fallback
-         srcsetHtml = ' srcset="' + src300 + ' 300w, ' + src420 + ' 420w" sizes="(max-width: 768px) 50vw, 25vw"';
+         var src300 = window.resolveImgUrl(imgSrc, imgSrc, 300, 40);
+         var src360 = window.resolveImgUrl(imgSrc, imgSrc, 360, 40);
+         imgSrc = src360; // fallback
+         srcsetHtml = ' srcset="' + src300 + ' 300w, ' + src360 + ' 360w" sizes="(max-width: 768px) 50vw, 25vw"';
       } else {
-          imgSrc = window.resolveImgUrl(imgSrc, imgSrc, 420, 55);
+          imgSrc = window.resolveImgUrl(imgSrc, imgSrc, 360, 40);
       }
     }
 
@@ -1227,14 +1254,20 @@ function populateHeaderMegaMenu() {
       if (!imgPath || imgPath === 'assets/images/story-couple.jpg' || imgPath === 'assets/images/about-workshop.jpg') {
         return;
       }
-      var resolved = resolveImgUrl(imgPath, '', 600, 65);
+      var resolved = resolveImgUrl(imgPath, '', 800, 82);
       if (resolved && el.getAttribute('src') !== resolved) {
         el.removeAttribute('srcset');
+        if (el.getAttribute('loading') === 'lazy') {
+          el.setAttribute('loading', 'eager');
+        }
         el.src = resolved;
       }
     });
     document.querySelectorAll('.js-config-about-story-img').forEach(function (el) {
-      el.src = resolveImgUrl(config.aboutStoryImg, 'assets/images/about-workshop.jpg');
+      if (el.getAttribute('loading') === 'lazy') {
+        el.setAttribute('loading', 'eager');
+      }
+      el.src = resolveImgUrl(config.aboutStoryImg, '/api/imageproxy?url=%2Fassets%2Fimages%2Fabout-workshop.jpg&w=800&q=82', 800, 82);
     });
 
 
@@ -1354,41 +1387,47 @@ function populateHeaderMegaMenu() {
     ]);
 
     applyDynamicConfig();
-    initHeader();
-    initFooter();
-    // Khởi tạo lại cho các thành phần động vừa thêm (nếu có)
-    initScrollReveal();
-    initLazyImages();
-    // Sync cart badge count after header is injected into the DOM.
-    // Read directly from localStorage so this works on every page,
-    // regardless of whether cart.js is loaded (avoids timing/dependency issues).
-    (function syncCartBadge() {
-      var badge = document.getElementById('cart-count');
-      if (!badge) {
-        // Self-healing fallback: construct badge element if it's missing in the DOM (e.g. due to server caching)
-        var cartIcon = document.querySelector('.header-action-btn--cart');
-        if (cartIcon) {
-          badge = document.createElement('span');
-          badge.className = 'cart-count-badge';
-          badge.id = 'cart-count';
-          badge.style.display = 'none';
-          badge.textContent = '0';
-          cartIcon.appendChild(badge);
-        }
-      }
-      if (!badge) return;
-      function update() {
-        var count = 0;
-        try {
-          var cart = JSON.parse(localStorage.getItem('pgt_cart') || '[]');
-          count = cart.reduce(function (s, i) { return s + (parseInt(i.qty, 10) || 0); }, 0);
-        } catch (e) { }
-        badge.textContent = count;
-        badge.style.display = count > 0 ? 'flex' : 'none';
-      }
-      update();
-      document.addEventListener('cart-updated', update);
-    })();
+
+    setTimeout(function () {
+      initHeader();
+
+      setTimeout(function () {
+        initFooter();
+        initScrollReveal();
+        initLazyImages();
+
+        // Sync cart badge count after header is injected into the DOM.
+        // Read directly from localStorage so this works on every page,
+        // regardless of whether cart.js is loaded (avoids timing/dependency issues).
+        (function syncCartBadge() {
+          var badge = document.getElementById('cart-count');
+          if (!badge) {
+            // Self-healing fallback: construct badge element if it's missing in the DOM (e.g. due to server caching)
+            var cartIcon = document.querySelector('.header-action-btn--cart');
+            if (cartIcon) {
+              badge = document.createElement('span');
+              badge.className = 'cart-count-badge';
+              badge.id = 'cart-count';
+              badge.style.display = 'none';
+              badge.textContent = '0';
+              cartIcon.appendChild(badge);
+            }
+          }
+          if (!badge) return;
+          function update() {
+            var count = 0;
+            try {
+              var cart = JSON.parse(localStorage.getItem('pgt_cart') || '[]');
+              count = cart.reduce(function (s, i) { return s + (parseInt(i.qty, 10) || 0); }, 0);
+            } catch (e) { }
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'flex' : 'none';
+          }
+          update();
+          document.addEventListener('cart-updated', update);
+        })();
+      }, 1);
+    }, 1);
   }
 
   if (document.readyState === 'loading') {

@@ -25,6 +25,24 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
+
+// Enable Response Compression for high performance text assets (Brotli & Gzip)
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.BrotliCompressionProvider>();
+    options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.GzipCompressionProvider>();
+});
+
+builder.Services.Configure<Microsoft.AspNetCore.ResponseCompression.BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = System.IO.Compression.CompressionLevel.Fastest;
+});
+
+builder.Services.Configure<Microsoft.AspNetCore.ResponseCompression.GzipCompressionProviderOptions>(options =>
+{
+    options.Level = System.IO.Compression.CompressionLevel.Fastest;
+});
 builder.Services.AddMemoryCache();
 builder.Services.AddOutputCache(options =>
 {
@@ -236,6 +254,7 @@ app.UseExceptionHandler(appError =>
 });
 
 app.UseCors("AllowLiveServer");
+app.UseResponseCompression();
 app.UseOutputCache();
 
 // Skip HTTPS redirect in Development (cloudflared/reverse proxy handles SSL)
@@ -269,7 +288,8 @@ app.UseStaticFiles(new StaticFileOptions
     {
         if (ctx.File.Name.EndsWith(".html"))
         {
-            ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            // Allow Bfcache by using no-cache instead of no-store, forcing revalidation on normal load
+            ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, must-revalidate");
             ctx.Context.Response.Headers.Append("Pragma", "no-cache");
             ctx.Context.Response.Headers.Append("Expires", "0");
         }
@@ -298,7 +318,7 @@ if (System.IO.Directory.Exists(adminPath))
         {
             if (ctx.File.Name.EndsWith(".html"))
             {
-                ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+                ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, must-revalidate");
                 ctx.Context.Response.Headers.Append("Pragma", "no-cache");
                 ctx.Context.Response.Headers.Append("Expires", "0");
             }
@@ -328,7 +348,7 @@ if (System.IO.Directory.Exists(affiliatePath))
         {
             if (ctx.File.Name.EndsWith(".html"))
             {
-                ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+                ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, must-revalidate");
                 ctx.Context.Response.Headers.Append("Pragma", "no-cache");
                 ctx.Context.Response.Headers.Append("Expires", "0");
             }
@@ -358,7 +378,7 @@ if (System.IO.Directory.Exists(userPath))
         {
             if (ctx.File.Name.EndsWith(".html"))
             {
-                ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+                ctx.Context.Response.Headers.Append("Cache-Control", "no-cache, must-revalidate");
                 ctx.Context.Response.Headers.Append("Pragma", "no-cache");
                 ctx.Context.Response.Headers.Append("Expires", "0");
             }

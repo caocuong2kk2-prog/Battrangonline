@@ -35,7 +35,14 @@
             throw errObj; // throw the parsed json error
           });
         }
-        return res.json();
+        return res.text().then(function (text) {
+          if (!text) return null;
+          try {
+            return JSON.parse(text);
+          } catch (e) {
+            throw new Error('Invalid JSON response');
+          }
+        });
       });
   }
 
