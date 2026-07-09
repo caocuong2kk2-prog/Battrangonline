@@ -10,7 +10,7 @@ namespace BatTrang.API.Controllers.Admin
 {
     [ApiController]
     [Route("api/admin/[controller]")]
-    [AllowAnonymous] // Allow executing the script easily via Invoke-RestMethod
+    [Authorize(Policy = "AdminOnly")]
     public class ToolsController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -132,8 +132,16 @@ namespace BatTrang.API.Controllers.Admin
                     }
                     string expectedAutoSku = $"{prefix}-{p.Id:D3}";
 
-                    // Nếu Sku trống, hoặc chứa ký tự non-ASCII/dấu tiếng Việt (Ấ, Ố, Đ, v.v.), hoặc đúng bằng chiều dài của auto Sku thì cập nhật chuẩn hóa
-                    if (string.IsNullOrWhiteSpace(p.Sku) || p.Sku.Any(c => c > 127 || c == 'Đ' || c == 'đ') || p.Sku == $"ẤC-{p.Id:D3}" || p.Sku == $"ỐH-{p.Id:D3}" || p.Sku == $"ĐD-{p.Id:D3}" || p.Sku == $"ẤT-{p.Id:D3}" || p.Sku.Length == expectedAutoSku.Length)
+                    // Kiểm tra xem SKU hiện tại có phải là mã tự sinh cũ không (có hậu tố -[Id] và độ dài 5-8 ký tự)
+                    bool isOldAutoSku = !string.IsNullOrEmpty(p.Sku) && 
+                                        p.Sku.Length >= 5 && 
+                                        p.Sku.Length <= 8 && 
+                                        p.Sku.EndsWith($"-{p.Id:D3}");
+
+                    // Nếu Sku trống, hoặc chứa ký tự non-ASCII/dấu tiếng Việt, hoặc là mã tự sinh cũ thì cập nhật chuẩn hóa
+                    if (string.IsNullOrWhiteSpace(p.Sku) || 
+                        p.Sku.Any(c => c > 127 || c == 'Đ' || c == 'đ') || 
+                        isOldAutoSku)
                     {
                         if (p.Sku != expectedAutoSku)
                         {

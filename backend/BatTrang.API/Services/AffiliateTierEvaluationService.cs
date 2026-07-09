@@ -1,5 +1,7 @@
 using BatTrang.Core.Entities;
 using BatTrang.Infrastructure.Data;
+using BatTrang.API.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,7 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace BatTrang.Infrastructure.Services
+namespace BatTrang.API.Services
 {
     public class AffiliateTierEvaluationService : BackgroundService
     {
@@ -28,16 +30,15 @@ namespace BatTrang.Infrastructure.Services
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var now = DateTime.UtcNow;
+                var now = DateTime.UtcNow.AddHours(7);
                 
                 // Kiểm tra xem đã đến mùng 1 hàng tháng lúc 00:00 chưa (chỉ chạy 1 lần)
-                // Để đơn giản, chạy mỗi 24h và kiểm tra nếu ngày == 1
                 if (now.Day == 1)
                 {
                     _logger.LogInformation("Ngày mùng 1: Bắt đầu tiến hành xét duyệt lại xếp hạng của toàn bộ CTV.");
                     try
                     {
-                        await EvaluateTiersAsync();
+                        await EvaluateTiersAsync(stoppingToken);
                     }
                     catch (Exception ex)
                     {
@@ -57,12 +58,13 @@ namespace BatTrang.Infrastructure.Services
             }
         }
 
-        private async Task EvaluateTiersAsync()
+        private async Task EvaluateTiersAsync(CancellationToken stoppingToken)
         {
             using var scope = _serviceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var hubContext = scope.ServiceProvider.GetService<IHubContext<NotificationHub>>();
 
-            var configs = await dbContext.Set<SiteConfig>().ToListAsync();
+            var configs = await dbContext.Set<SiteConfig>().ToListAsync(stoppingToken);
             var configDict = configs.ToDictionary(c => c.Key, c => c.Value);
 
             decimal getDecimal(string key, decimal defaultVal)
@@ -75,19 +77,19 @@ namespace BatTrang.Infrastructure.Services
             decimal diamondMin = getDecimal("AffiliateTierDiamondMinRevenue", 150000000);
 
             // Tính doanh thu tháng trước
-            var lastMonth = DateTime.UtcNow.AddMonths(-1);
+            var lastMonth = DateTime.UtcNow.AddHours(7).AddMonths(-1);
             var targetMonth = lastMonth.Month;
             var targetYear = lastMonth.Year;
 
             // Lấy tất cả CTV đang active
-            var affiliates = await dbContext.Affiliates.Where(a => a.Status == "Active").ToListAsync();
+            var affiliates = await dbContext.Affiliates.Where(a => a.Status == "Active").ToListAsync(stoppingToken);
 
             foreach (var affiliate in affiliates)
             {
                 var monthlyRevenue = await dbContext.Orders
                     .Where(o => o.AffiliateId == affiliate.Id && o.Status == "completed" && 
                                 o.CompletedAt.HasValue && o.CompletedAt.Value.Month == targetMonth && o.CompletedAt.Value.Year == targetYear)
-                    .SumAsync(o => o.Total);
+                    .SumAsync(o => o.Total, stoppingToken);
 
                 string newTier = "Thường";
                 if (monthlyRevenue >= diamondMin) newTier = "Kim Cương";
@@ -104,10 +106,36 @@ namespace BatTrang.Infrastructure.Services
                 {
                     _logger.LogInformation($"CTV {affiliate.Id} thay đổi hạng từ {currentTier} sang {newTier} do doanh thu tháng trước đạt {monthlyRevenue}");
                     affiliate.Tier = newTier;
+
+                    var title = "Cập nhật xếp hạng thành viên 🏆";
+                    var msg = $"Xếp hạng tháng mới của bạn là: {newTier} (Doanh thu tháng {targetMonth}/{targetYear}: {monthlyRevenue:N0}đ).";
+
+                    var affNoti = new BatTrang.Core.Entities.AffiliateNotification
+                    {
+                        AffiliateId = affiliate.Id,
+                        Title = title,
+                        Message = msg,
+                        Type = "tier",
+                        IsRead = false,
+                        CreatedAt = DateTime.UtcNow.AddHours(7)
+                    };
+                    dbContext.Set<BatTrang.Core.Entities.AffiliateNotification>().Add(affNoti);
+
+                    if (hubContext != null)
+                    {
+                        try
+                        {
+                            await hubContext.Clients.Group($"Affiliate_{affiliate.Id}").SendAsync("ReceiveAffiliateNotification", 
+                                title, 
+                                msg, 
+                                "tier", stoppingToken);
+                        }
+                        catch { }
+                    }
                 }
             }
 
-            await dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync(stoppingToken);
             _logger.LogInformation("Đã hoàn tất xét duyệt lại xếp hạng của toàn bộ CTV.");
         }
     }

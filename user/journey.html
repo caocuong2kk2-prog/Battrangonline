@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -78,23 +78,37 @@
       transform: translateY(-1px);
     }
 
-    /* Mobile UX: Hiển thị trọn vẹn 100% các chủ đề thành chùm viên thuốc đẹp mắt, không bắt khách hàng vuốt ngang */
+    /* Mobile UX: Hiển thị linh hoạt dạng đám mây (Tag Cloud) căn giữa, tự co giãn đẹp mắt bất kể số lượng danh mục nhiều hay ít */
     @media (max-width: 640px) {
       .story-tabs {
         width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px 6px;
         background: transparent;
         border: none;
         box-shadow: none;
-        padding: 0;
-        gap: 8px;
+        padding: 0 4px;
         border-radius: 0;
       }
       .story-tab-btn {
         background: #ffffff;
         border: 1px solid rgba(200, 146, 42, 0.3);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-        padding: 8.5px 15px;
-        font-size: 13px;
+        box-shadow: 0 3px 8px rgba(59, 38, 18, 0.04);
+        padding: 7px 12px;
+        font-size: 12px;
+        border-radius: 9999px; /* Dạng viên thuốc mềm mại tự nhiên khi tự do co giãn */
+        text-align: center;
+        white-space: nowrap;
+        font-weight: 600;
+        transition: all 0.25s ease;
+      }
+      .story-tab-btn.active {
+        color: #ffffff !important;
+        background: linear-gradient(135deg, #c8922a, #dfa538) !important;
+        border-color: #c8922a !important;
+        box-shadow: 0 4px 10px rgba(200, 146, 42, 0.3) !important;
       }
     }
 
@@ -257,11 +271,13 @@
       bottom: 0;
       left: 0;
       right: 0;
-      padding: var(--space-3) var(--space-4);
-      background: linear-gradient(to top, rgba(26, 15, 5, 0.9), transparent);
+      padding: var(--space-6) var(--space-4) var(--space-4);
+      background: linear-gradient(to top, rgba(10, 6, 2, 0.95) 0%, rgba(10, 6, 2, 0.6) 60%, transparent 100%);
       font-size: var(--fs-sm);
-      font-weight: var(--fw-medium);
-      color: var(--color-text-primary);
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.45;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
     }
 
     .btn-load-more {

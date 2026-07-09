@@ -1260,11 +1260,18 @@ document.addEventListener('DOMContentLoaded',function(){
         else if (a.type === 'CustomerRegistered') dot = 'blue';
         else if (a.type === 'OrderCancelled' || a.type === 'CancelRequested') dot = 'red';
         
+        var escapeHtml = function(text) {
+          if (!text) return '';
+          var div = document.createElement('div');
+          div.textContent = text;
+          return div.innerHTML;
+        };
+
         return '<div class="noti-item' + unreadClass + '" data-id="' + a.id + '">' +
                  '<div class="noti-dot ' + dot + '"></div>' +
                  '<div class="noti-content">' +
-                   '<div class="noti-text">' + a.message + '</div>' +
-                   '<div class="noti-time">' + timeStr + '</div>' +
+                   '<div class="noti-text">' + escapeHtml(a.message) + '</div>' +
+                   '<div class="noti-time">' + escapeHtml(timeStr) + '</div>' +
                  '</div>' +
                '</div>';
       }).join('');

@@ -46,7 +46,8 @@ namespace BatTrang.API.Controllers.Admin
                 Limit = limit,
                 SearchQuery = search,
                 Category = category,
-                Status = status
+                Status = status,
+                IsAdmin = true
             };
             
             var result = await _productRepo.GetProductsAsync(filter);
@@ -454,11 +455,18 @@ namespace BatTrang.API.Controllers.Admin
 
             var imagesToDelete = product.Variants?.SelectMany(v => v.Images?.Select(i => i.ImageUrl) ?? new List<string>()).ToList() ?? new List<string>();
 
-            await _productRepo.DeleteAsync(product);
-
-            foreach(var img in imagesToDelete)
+            try
             {
-                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(img);
+                await _productRepo.DeleteAsync(product);
+                
+                foreach(var img in imagesToDelete)
+                {
+                    BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(img);
+                }
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+            {
+                return BadRequest(new { message = "Không thể xóa sản phẩm này vì đã có dữ liệu liên quan (ví dụ: đơn hàng)." });
             }
 
             await _cacheStore.EvictByTagAsync("products", default);
@@ -467,25 +475,42 @@ namespace BatTrang.API.Controllers.Admin
         }
 
         [HttpPost("bulk-delete")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> BulkDelete([FromBody] BulkDeleteDto dto)
         {
             if (dto.Ids == null || !dto.Ids.Any()) return BadRequest("Danh sách ID trống.");
+            
+            var failedIds = new List<int>();
             foreach (var id in dto.Ids)
             {
                 var product = await _productRepo.GetProductWithImagesAsync(id);
                 if (product != null)
                 {
                     var imagesToDelete = product.Variants?.SelectMany(v => v.Images?.Select(i => i.ImageUrl) ?? new List<string>()).ToList() ?? new List<string>();
-                    await _productRepo.DeleteAsync(product);
-                    
-                    foreach(var img in imagesToDelete)
+                    try
                     {
-                        BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(img);
+                        await _productRepo.DeleteAsync(product);
+                        
+                        foreach(var img in imagesToDelete)
+                        {
+                            BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(img);
+                        }
+                    }
+                    catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+                    {
+                        failedIds.Add(id);
+                        // Bỏ qua và tiếp tục xóa các sản phẩm khác
                     }
                 }
             }
+            
             await _cacheStore.EvictByTagAsync("products", default);
             await _cacheStore.EvictByTagAsync("filters", default);
+            
+            if (failedIds.Any())
+            {
+                return Ok(new { success = true, message = $"Đã xóa thành công. Có {failedIds.Count} sản phẩm không thể xóa do có dữ liệu liên quan (đơn hàng)." });
+            }
             return NoContent();
         }
 

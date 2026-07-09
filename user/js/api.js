@@ -29,8 +29,9 @@
             var errObj;
             try {
               errObj = JSON.parse(text);
+              errObj.status = res.status;
             } catch (e) {
-              throw new Error('API Error: ' + res.status);
+              errObj = { status: res.status, message: text || ('API Error: ' + res.status) };
             }
             throw errObj; // throw the parsed json error
           });
@@ -172,8 +173,9 @@
       });
     },
 
-    getOrder: function (orderCode) {
-      return _fetch('/orders/' + encodeURIComponent(orderCode));
+    getOrder: function (orderCode, phone) {
+      var qs = phone ? '?phone=' + encodeURIComponent(phone) : '';
+      return _fetch('/orders/' + encodeURIComponent(orderCode) + qs);
     },
 
     registerCustomer: function (customerData) {

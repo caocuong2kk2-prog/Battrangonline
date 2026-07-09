@@ -1,4 +1,4 @@
-using BatTrang.Core.Entities.Affiliate;
+﻿using BatTrang.Core.Entities.Affiliate;
 using BatTrang.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -47,8 +47,8 @@ namespace BatTrang.API.Controllers.Affiliate
             if (string.IsNullOrWhiteSpace(fullName)) return "PGT";
             
             // Explicit Vietnamese character mapping to ensure pure ASCII output
-            string vietnameseChars = "àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ" +
-                                     "ÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸĐ";
+            string vietnameseChars = "├á├íß║íß║ú├ú├óß║ºß║Ñß║¡ß║⌐ß║½─âß║▒ß║»ß║╖ß║│ß║╡├¿├⌐ß║╣ß║╗ß║╜├¬ß╗üß║┐ß╗çß╗âß╗à├¼├¡ß╗ïß╗ë─⌐├▓├│ß╗ìß╗Å├╡├┤ß╗ôß╗æß╗Öß╗òß╗ù╞íß╗¥ß╗¢ß╗úß╗ƒß╗í├╣├║ß╗Ñß╗º┼⌐╞░ß╗½ß╗⌐ß╗▒ß╗¡ß╗»ß╗│├╜ß╗╡ß╗╖ß╗╣─æ" +
+                                     "├Ç├üß║áß║ó├â├éß║ªß║ñß║¼ß║¿ß║¬─éß║░ß║«ß║╢ß║▓ß║┤├ê├ëß║╕ß║║ß║╝├èß╗Çß║╛ß╗åß╗éß╗ä├î├ìß╗èß╗ê─¿├Æ├ôß╗îß╗Ä├ò├öß╗Æß╗Éß╗ÿß╗öß╗û╞áß╗£ß╗Üß╗óß╗₧ß╗á├Ö├Üß╗ñß╗ª┼¿╞»ß╗¬ß╗¿ß╗░ß╗¼ß╗«ß╗▓├¥ß╗┤ß╗╢ß╗╕─É";
             string asciiChars =      "aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyyd" +
                                      "AAAAAAAAAAAAAAAAAEEEEEEEEEEEIIIIIOOOOOOOOOOOOOOOOOUUUUUUUUUUUYYYYYD";
 
@@ -88,12 +88,11 @@ namespace BatTrang.API.Controllers.Affiliate
         }
 
         [HttpPost("register")]
-        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("AuthPolicy")]
         public async Task<IActionResult> Register([FromBody] RegisterAffiliateDto dto)
         {
             if (await _context.Affiliates.AnyAsync(a => a.Email == dto.Email))
             {
-                return BadRequest(new { message = "Email này đã được đăng ký." });
+                return BadRequest(new { message = "Email n├áy ─æ├ú ─æ╞░ß╗úc ─æ─âng k├╜." });
             }
 
             string baseCode = GenerateAffiliateCodeFromName(dto.Name);
@@ -126,15 +125,15 @@ namespace BatTrang.API.Controllers.Affiliate
 
             try
             {
-                var msg = $"CTV mới đăng ký tài khoản: {affiliate.Name} ({affiliate.AffiliateCode})";
+                var msg = $"CTV mß╗¢i ─æ─âng k├╜ t├ái khoß║ún: {affiliate.Name} ({affiliate.AffiliateCode})";
                 var noti = new BatTrang.Core.Entities.Notification { Type = "AffiliateRegistered", Message = msg };
                 _context.Notifications.Add(noti);
                 await _context.SaveChangesAsync();
                 await _hubContext.Clients.Group("Admins").SendAsync("ReceiveNotification", "AffiliateRegistered", msg);
             }
-            catch (Exception ex) { Console.WriteLine($"[SignalR Push Error] Affiliate registration: {ex.Message}"); }
+            catch (Exception) { }
 
-            return Ok(new { success = true, message = "Đăng ký thành công, vui lòng chờ duyệt." });
+            return Ok(new { success = true, message = "─É─âng k├╜ th├ánh c├┤ng, vui l├▓ng chß╗¥ duyß╗çt." });
         }
 
         [HttpPost("login")]
@@ -143,19 +142,16 @@ namespace BatTrang.API.Controllers.Affiliate
         {
             var affiliate = await _context.Affiliates.FirstOrDefaultAsync(a => a.Email == dto.Email);
             if (affiliate == null || string.IsNullOrEmpty(affiliate.PasswordHash))
-                return Unauthorized(new { message = "Email hoặc mật khẩu không đúng." });
+                return Unauthorized(new { message = "Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ─æ├║ng." });
 
             if (!BCrypt.Net.BCrypt.Verify(dto.Password, affiliate.PasswordHash))
-                return Unauthorized(new { message = "Email hoặc mật khẩu không đúng." });
+                return Unauthorized(new { message = "Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ─æ├║ng." });
 
             if (affiliate.Status == "Locked")
-                return Unauthorized(new { message = "Tài khoản của bạn đã bị khóa." });
+                return Unauthorized(new { message = "T├ái khoß║ún cß╗ºa bß║ín ─æ├ú bß╗ï kh├│a." });
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var jwtKey = _config["Jwt:Key"];
-            if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
-                throw new InvalidOperationException("Jwt:Key must be configured with a production-safe value.");
-            var key = Encoding.UTF8.GetBytes(jwtKey);
+            var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? "super_secret_key_12345_for_battrang_dev_env");
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
@@ -186,19 +182,16 @@ namespace BatTrang.API.Controllers.Affiliate
         }
 
         [HttpPost("google-login")]
-        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("AuthPolicy")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDto dto)
         {
             try
             {
                 var clientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
-                if (string.IsNullOrEmpty(clientId))
-                {
-                    return StatusCode(500, new { message = "Hệ thống chưa cấu hình đăng nhập Google." });
-                }
-
                 var settings = new Google.Apis.Auth.GoogleJsonWebSignature.ValidationSettings();
-                settings.Audience = new[] { clientId };
+                if (!string.IsNullOrEmpty(clientId))
+                {
+                    settings.Audience = new[] { clientId };
+                }
 
                 var payload = await Google.Apis.Auth.GoogleJsonWebSignature.ValidateAsync(dto.Credential, settings);
                 var email = payload.Email;
@@ -219,9 +212,9 @@ namespace BatTrang.API.Controllers.Affiliate
                     {
                         Name = name,
                         Email = email,
-                        Phone = "GGL" + Guid.NewGuid().ToString().Substring(0, 8), // Dùng chuỗi ngẫu nhiên để tránh lỗi trùng SĐT (Unique Index)
+                        Phone = "GGL" + Guid.NewGuid().ToString().Substring(0, 8), // D├╣ng chuß╗ùi ngß║½u nhi├¬n ─æß╗â tr├ính lß╗ùi tr├╣ng S─ÉT (Unique Index)
                         AffiliateCode = code,
-                        Status = "Pending", // Trở về trạng thái Chờ duyệt giống y hệt đăng ký thông thường
+                        Status = "Pending", // Trß╗ƒ vß╗ü trß║íng th├íi Chß╗¥ duyß╗çt giß╗æng y hß╗çt ─æ─âng k├╜ th├┤ng th╞░ß╗¥ng
                         CreatedAt = DateTime.UtcNow.AddHours(7)
                     };
                     _context.Affiliates.Add(affiliate);
@@ -229,24 +222,21 @@ namespace BatTrang.API.Controllers.Affiliate
 
                     try
                     {
-                        var msg = $"CTV mới đăng ký qua Google: {affiliate.Name} ({affiliate.AffiliateCode})";
+                        var msg = $"CTV mß╗¢i ─æ─âng k├╜ qua Google: {affiliate.Name} ({affiliate.AffiliateCode})";
                         var noti = new BatTrang.Core.Entities.Notification { Type = "AffiliateRegistered", Message = msg };
                         _context.Notifications.Add(noti);
                         await _context.SaveChangesAsync();
                         await _hubContext.Clients.Group("Admins").SendAsync("ReceiveNotification", "AffiliateRegistered", msg);
                     }
-                    catch (Exception ex) { Console.WriteLine($"[SignalR Push Error] Affiliate registration via Google: {ex.Message}"); }
+                    catch (Exception) { }
                 }
                 else if (affiliate.Status == "Locked")
                 {
-                    return Unauthorized(new { message = "Tài khoản của bạn đã bị khóa." });
+                    return Unauthorized(new { message = "T├ái khoß║ún cß╗ºa bß║ín ─æ├ú bß╗ï kh├│a." });
                 }
 
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var jwtKey = _config["Jwt:Key"];
-                if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
-                    throw new InvalidOperationException("Jwt:Key must be configured with a production-safe value.");
-                var key = Encoding.UTF8.GetBytes(jwtKey);
+                var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? "super_secret_key_12345_for_battrang_dev_env");
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new[]
@@ -278,7 +268,7 @@ namespace BatTrang.API.Controllers.Affiliate
             catch (Exception ex)
             {
                 var fullError = ex.Message + (ex.InnerException != null ? " | " + ex.InnerException.Message : "");
-                return BadRequest(new { message = "Đăng nhập Google thất bại", error = fullError });
+                return BadRequest(new { message = "─É─âng nhß║¡p Google thß║Ñt bß║íi", error = fullError });
             }
         }
 
@@ -322,7 +312,7 @@ namespace BatTrang.API.Controllers.Affiliate
 
             await _context.SaveChangesAsync();
 
-            return Ok(new { success = true, message = "Cập nhật thông tin thành công." });
+            return Ok(new { success = true, message = "Cß║¡p nhß║¡t th├┤ng tin th├ánh c├┤ng." });
         }
 
         [HttpGet("stats")]
@@ -333,12 +323,12 @@ namespace BatTrang.API.Controllers.Affiliate
             var profile = await _context.Affiliates.FindAsync(id);
             if (profile == null) return Unauthorized();
 
-            // ── Date range (default = tháng hiện tại) ──
+            // ΓöÇΓöÇ Date range (default = th├íng hiß╗çn tß║íi) ΓöÇΓöÇ
             var nowVn = DateTime.UtcNow.AddHours(7);
             var dateFrom = from.HasValue ? from.Value.Date : new DateTime(nowVn.Year, nowVn.Month, 1);
             var dateTo = to.HasValue ? to.Value.Date.AddDays(1).AddTicks(-1) : new DateTime(nowVn.Year, nowVn.Month, DateTime.DaysInMonth(nowVn.Year, nowVn.Month), 23, 59, 59);
 
-            // Hoa hồng: lọc theo khoảng thời gian
+            // Hoa hß╗ông: lß╗ìc theo khoß║úng thß╗¥i gian
             var commissions = await _context.Commissions
                 .Where(c => c.AffiliateId == id && c.Status != "Refunded" && c.CreatedAt >= dateFrom && c.CreatedAt <= dateTo)
                 .ToListAsync();
@@ -347,12 +337,12 @@ namespace BatTrang.API.Controllers.Affiliate
             var pendingCommission = commissions.Where(c => c.Status == "Pending").Sum(c => c.CommissionAmount);
             var approvedCommission = commissions.Where(c => c.Status == "Approved").Sum(c => c.CommissionAmount);
             
-            // "Tổng hoa hồng thực nhận" = đã duyệt + đã thanh toán
+            // "Tß╗òng hoa hß╗ông thß╗▒c nhß║¡n" = ─æ├ú duyß╗çt + ─æ├ú thanh to├ín
             var totalEarned = totalPaid + approvedCommission;
 
-            // Tính hoa hồng tạm tính từ đơn đang xử lý CHƯA có Commission record (tránh đếm trùng)
+            // T├¡nh hoa hß╗ông tß║ím t├¡nh tß╗½ ─æ╞ín ─æang xß╗¡ l├╜ CH╞»A c├│ Commission record (tr├ính ─æß║┐m tr├╣ng)
             var ordersWithCommission = await _context.Commissions
-                .Where(c => c.AffiliateId == id && c.Status != "Refunded")
+                .Where(c => c.AffiliateId == id)
                 .Select(c => c.OrderId)
                 .Distinct()
                 .ToListAsync();
@@ -362,7 +352,7 @@ namespace BatTrang.API.Controllers.Affiliate
                 .Where(o => o.AffiliateId == id
                          && o.Status != "completed" && o.Status != "cancelled"
                          && o.CreatedAt >= dateFrom && o.CreatedAt <= dateTo
-                         && !ordersWithCommission.Contains(o.Id))  // chỉ đơn CHƯA có Commission
+                         && !ordersWithCommission.Contains(o.Id))  // chß╗ë ─æ╞ín CH╞»A c├│ Commission
                 .ToListAsync();
 
             if (inProgressOrders.Any())
@@ -384,7 +374,7 @@ namespace BatTrang.API.Controllers.Affiliate
             }
 
 
-            // Số dư tổng (không lọc theo date để luôn hiển thị số dư chính xác)
+            // Sß╗æ d╞░ tß╗òng (kh├┤ng lß╗ìc theo date ─æß╗â lu├┤n hiß╗ân thß╗ï sß╗æ d╞░ ch├¡nh x├íc)
             var allWithdrawals = await _context.WithdrawalRequests.Where(w => w.AffiliateId == id).ToListAsync();
             var totalWithdrawn = allWithdrawals.Where(w => w.Status == "Paid").Sum(w => w.Amount);
             var pendingWithdrawal = allWithdrawals.Where(w => w.Status == "Pending").Sum(w => w.Amount);
@@ -392,7 +382,7 @@ namespace BatTrang.API.Controllers.Affiliate
             var allEarned = allCommissions.Where(c => c.Status == "Paid" || c.Status == "Approved").Sum(c => c.CommissionAmount);
             var availableBalance = allEarned - totalWithdrawn - pendingWithdrawal;
 
-            // Thống kê lọc theo date range
+            // Thß╗æng k├¬ lß╗ìc theo date range
             var totalOrders = await _context.Orders.CountAsync(o => o.AffiliateId == id && o.CreatedAt >= dateFrom && o.CreatedAt <= dateTo);
             var completedOrders = await _context.Orders.CountAsync(o => o.AffiliateId == id && o.Status == "completed" && o.CreatedAt >= dateFrom && o.CreatedAt <= dateTo);
             var validClicks = await _context.AffiliateClicks.CountAsync(ac => ac.AffiliateId == id && ac.ClickedAt >= dateFrom && ac.ClickedAt <= dateTo);
@@ -403,7 +393,7 @@ namespace BatTrang.API.Controllers.Affiliate
                 conversionRate = Math.Round(((double)totalOrders / validClicks) * 100, 2);
             }
 
-            // ── Kỳ trước (same duration, shifted back) để tính % tăng trưởng ──
+            // ΓöÇΓöÇ Kß╗│ tr╞░ß╗¢c (same duration, shifted back) ─æß╗â t├¡nh % t─âng tr╞░ß╗ƒng ΓöÇΓöÇ
             var duration = dateTo - dateFrom;
             var prevDateTo = dateFrom.AddTicks(-1);
             var prevDateFrom = prevDateTo - duration;
@@ -416,7 +406,7 @@ namespace BatTrang.API.Controllers.Affiliate
                 .Where(c => c.AffiliateId == id && c.Status == "Pending" && c.CreatedAt >= prevDateFrom && c.CreatedAt <= prevDateTo)
                 .SumAsync(c => c.CommissionAmount);
 
-            // Top 5 Products (lọc theo date range)
+            // Top 5 Products (lß╗ìc theo date range)
             var completedOrderItems = await _context.Orders
                 .Where(o => o.AffiliateId == id && o.Status == "completed" && o.CreatedAt >= dateFrom && o.CreatedAt <= dateTo)
                 .SelectMany(o => o.Items)
@@ -458,7 +448,7 @@ namespace BatTrang.API.Controllers.Affiliate
                 EstimatedCommission = Math.Round(p.TotalRevenue * (commissionRatesTop.ContainsKey(p.ProductId) ? commissionRatesTop[p.ProductId] : 0) / 100, 2)
             }).ToList();
 
-            // Doanh thu tháng này (luôn lấy tháng hiện tại để tính rank, không lọc theo date range)
+            // Doanh thu th├íng n├áy (lu├┤n lß║Ñy th├íng hiß╗çn tß║íi ─æß╗â t├¡nh rank, kh├┤ng lß╗ìc theo date range)
             var currentMonth = nowVn.Month;
             var currentYear = nowVn.Year;
             var monthlyRevenue = await _context.Orders
@@ -498,13 +488,13 @@ namespace BatTrang.API.Controllers.Affiliate
                 monthlyRevenue,
                 tierConfig,
                 topProducts,
-                // Kỳ trước (để tính % tăng trưởng ở frontend)
+                // Kß╗│ tr╞░ß╗¢c (─æß╗â t├¡nh % t─âng tr╞░ß╗ƒng ß╗ƒ frontend)
                 prevTotalOrders,
                 prevCompletedOrders,
                 prevValidClicks,
                 prevTotalOrderValue,
                 prevPendingCommission,
-                // Thời gian cập nhật dữ liệu
+                // Thß╗¥i gian cß║¡p nhß║¡t dß╗» liß╗çu
                 updatedAt = nowVn.ToString("HH:mm dd/MM/yyyy")
             });
         }
@@ -521,7 +511,7 @@ namespace BatTrang.API.Controllers.Affiliate
             var dateFrom = from.HasValue ? from.Value.Date : new DateTime(nowVn.Year, nowVn.Month, 1);
             var dateTo = to.HasValue ? to.Value.Date.AddDays(1).AddTicks(-1) : new DateTime(nowVn.Year, nowVn.Month, DateTime.DaysInMonth(nowVn.Year, nowVn.Month), 23, 59, 59);
 
-            // Lấy toàn bộ clicks trong khoảng (load về bộ nhớ rồi group by Date do EF Core có thể không map được .Date với Sqlite/MySQL tuỳ phiên bản)
+            // Lß║Ñy to├án bß╗Ö clicks trong khoß║úng (load vß╗ü bß╗Ö nhß╗¢ rß╗ôi group by Date do EF Core c├│ thß╗â kh├┤ng map ─æ╞░ß╗úc .Date vß╗¢i Sqlite/MySQL tuß╗│ phi├¬n bß║ún)
             var allClicks = await _context.AffiliateClicks
                 .Where(c => c.AffiliateId == id && c.ClickedAt >= dateFrom && c.ClickedAt <= dateTo)
                 .ToListAsync();
@@ -529,7 +519,7 @@ namespace BatTrang.API.Controllers.Affiliate
                 .GroupBy(c => c.ClickedAt.Date)
                 .ToDictionary(g => g.Key, g => g.Count());
 
-            // Đơn hàng và tính toán hoa hồng
+            // ─É╞ín h├áng v├á t├¡nh to├ín hoa hß╗ông
             var inProgressOrders = await _context.Orders
                 .Include(o => o.Items)
                 .Where(o => o.AffiliateId == id && o.CreatedAt >= dateFrom && o.CreatedAt <= dateTo && o.Status != "cancelled")
@@ -571,7 +561,7 @@ namespace BatTrang.API.Controllers.Affiliate
                 }
             }
 
-            // Tạo chuỗi ngày
+            // Tß║ío chuß╗ùi ng├áy
             var results = new List<object>();
             for (var d = dateFrom.Date; d <= dateTo.Date; d = d.AddDays(1))
             {
@@ -654,7 +644,7 @@ namespace BatTrang.API.Controllers.Affiliate
                 .OrderByDescending(o => o.CreatedAt)
                 .ToListAsync();
 
-            // Lấy danh sách hoa hồng đã được ghi nhận cho các đơn hàng này
+            // Lß║Ñy danh s├ích hoa hß╗ông ─æ├ú ─æ╞░ß╗úc ghi nhß║¡n cho c├íc ─æ╞ín h├áng n├áy
             var orderIds = orders.Select(o => o.Id).ToList();
             var commissions = await _context.Commissions
                 .Where(c => orderIds.Contains(c.OrderId))
@@ -738,7 +728,7 @@ namespace BatTrang.API.Controllers.Affiliate
             var profile = await _context.Affiliates.FindAsync(id);
             if (profile == null) return Unauthorized();
 
-            // 1. Lấy danh sách hoa hồng chính thức trong database
+            // 1. Lß║Ñy danh s├ích hoa hß╗ông ch├¡nh thß╗⌐c trong database
             var dbCommissions = await _context.Commissions
                 .Include(c => c.Order)
                 .Where(c => c.AffiliateId == id)
@@ -756,14 +746,13 @@ namespace BatTrang.API.Controllers.Affiliate
                 })
                 .ToListAsync();
 
-            // 2. Tìm các đơn hàng giới thiệu đang xử lý (chưa hoàn thành, chưa hủy)
+            // 2. T├¼m c├íc ─æ╞ín h├áng giß╗¢i thiß╗çu ─æang xß╗¡ l├╜ (ch╞░a ho├án th├ánh, ch╞░a hß╗ºy)
             var inProgressOrders = await _context.Orders
                 .Include(o => o.Items)
                 .Where(o => o.AffiliateId == id && o.Status != "completed" && o.Status != "cancelled")
                 .ToListAsync();
 
-            var inProgressOrderCodes = inProgressOrders.Select(o => o.OrderCode).ToList();
-            var resultList = dbCommissions.Where(c => !(c.Status == "Refunded" && inProgressOrderCodes.Contains(c.OrderCode))).ToList();
+            var resultList = new System.Collections.Generic.List<CommissionItemDto>(dbCommissions);
 
             if (inProgressOrders.Any())
             {
@@ -793,7 +782,7 @@ namespace BatTrang.API.Controllers.Affiliate
                         CommissionAmount = Math.Round(estimatedCommission, 2),
                         BaseCommissionAmount = Math.Round(estimatedCommission, 2),
                         TierBonusAmount = 0,
-                        Status = "Pending", // Hiển thị dưới dạng "Chờ duyệt"
+                        Status = "Pending", // Hiß╗ân thß╗ï d╞░ß╗¢i dß║íng "Chß╗¥ duyß╗çt"
                         CreatedAt = order.CreatedAt
                     });
                 }
@@ -809,18 +798,18 @@ namespace BatTrang.API.Controllers.Affiliate
         {
             int id = GetCurrentAffiliateId();
             var profile = await _context.Affiliates.FindAsync(id);
-            if (profile == null || profile.Status != "Active") return BadRequest(new { message = "Tài khoản chưa được duyệt." });
+            if (profile == null || profile.Status != "Active") return BadRequest(new { message = "T├ái khoß║ún ch╞░a ─æ╞░ß╗úc duyß╗çt." });
 
-            if (dto.Amount < 100000) return BadRequest(new { message = "Số tiền rút tối thiểu là 100,000đ" });
+            if (dto.Amount < 100000) return BadRequest(new { message = "Sß╗æ tiß╗ün r├║t tß╗æi thiß╗âu l├á 100,000─æ" });
 
             if (string.IsNullOrWhiteSpace(profile.BankName) || 
                 string.IsNullOrWhiteSpace(profile.BankAccount) || 
                 string.IsNullOrWhiteSpace(profile.BankOwner))
             {
-                return BadRequest(new { message = "Vui lòng cập nhật đầy đủ thông tin Tài khoản Ngân hàng tại trang Thông Tin Tài Khoản trước khi rút tiền." });
+                return BadRequest(new { message = "Vui l├▓ng cß║¡p nhß║¡t ─æß║ºy ─æß╗º th├┤ng tin T├ái khoß║ún Ng├ón h├áng tß║íi trang Th├┤ng Tin T├ái Khoß║ún tr╞░ß╗¢c khi r├║t tiß╗ün." });
             }
 
-            // 1. Chặn tuyệt đối nếu ĐANG CÓ lệnh chờ duyệt (dù là mấy ngày trước)
+            // 1. Chß║╖n tuyß╗çt ─æß╗æi nß║┐u ─ÉANG C├ô lß╗çnh chß╗¥ duyß╗çt (d├╣ l├á mß║Ñy ng├áy tr╞░ß╗¢c)
             using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
             try
             {
@@ -829,7 +818,7 @@ namespace BatTrang.API.Controllers.Affiliate
                 if (hasPendingRequest)
                 {
                     await transaction.RollbackAsync();
-                    return BadRequest(new { message = "Bạn đang có 1 yêu cầu rút tiền chờ xử lý. Vui lòng đợi Admin duyệt trước khi tạo yêu cầu mới." });
+                    return BadRequest(new { message = "Bß║ín ─æang c├│ 1 y├¬u cß║ºu r├║t tiß╗ün chß╗¥ xß╗¡ l├╜. Vui l├▓ng ─æß╗úi Admin duyß╗çt tr╞░ß╗¢c khi tß║ío y├¬u cß║ºu mß╗¢i." });
                 }
 
                 var commissions = await _context.Commissions.Where(c => c.AffiliateId == id).ToListAsync();
@@ -843,7 +832,7 @@ namespace BatTrang.API.Controllers.Affiliate
                 if (dto.Amount > availableBalance)
                 {
                     await transaction.RollbackAsync();
-                    return BadRequest(new { message = "Số dư khả dụng không đủ." });
+                    return BadRequest(new { message = "Sß╗æ d╞░ khß║ú dß╗Ñng kh├┤ng ─æß╗º." });
                 }
 
                 var request = new BatTrang.Core.Entities.WithdrawalRequest
@@ -860,20 +849,20 @@ namespace BatTrang.API.Controllers.Affiliate
 
                 try
                 {
-                    var msg = $"CTV {profile.Name} vừa yêu cầu rút {request.Amount.ToString("N0")}đ hoa hồng.";
+                    var msg = $"CTV {profile.Name} vß╗½a y├¬u cß║ºu r├║t {request.Amount.ToString("N0")}─æ hoa hß╗ông.";
                     var noti = new BatTrang.Core.Entities.Notification { Type = "WithdrawalRequested", Message = msg };
                     _context.Notifications.Add(noti);
                     await _context.SaveChangesAsync();
                     await _hubContext.Clients.Group("Admins").SendAsync("ReceiveNotification", "WithdrawalRequested", msg);
                 }
-                catch (Exception ex) { Console.WriteLine($"[SignalR Push Error] Affiliate withdrawal: {ex.Message}"); }
+                catch (Exception) { }
 
-                return Ok(new { success = true, message = "Đã gửi yêu cầu rút tiền thành công." });
+                return Ok(new { success = true, message = "─É├ú gß╗¡i y├¬u cß║ºu r├║t tiß╗ün th├ánh c├┤ng." });
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                return StatusCode(500, new { message = "Lỗi xử lý yêu cầu rút tiền. Vui lòng thử lại sau.", detail = ex.Message });
+                return StatusCode(500, new { message = "Lß╗ùi xß╗¡ l├╜ y├¬u cß║ºu r├║t tiß╗ün. Vui l├▓ng thß╗¡ lß║íi sau.", detail = ex.Message });
             }
         }
 
@@ -900,27 +889,26 @@ namespace BatTrang.API.Controllers.Affiliate
 
         [HttpPost("forgot-password")]
         [AllowAnonymous]
-        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("AuthPolicy")]
         public async Task<IActionResult> ForgotPassword([FromBody] BatTrang.API.Controllers.ForgotPasswordRequest request)
         {
-            if (string.IsNullOrWhiteSpace(request.EmailOrPhone)) return BadRequest(new { message = "Vui lòng nhập Email." });
+            if (string.IsNullOrWhiteSpace(request.EmailOrPhone)) return BadRequest(new { message = "Vui l├▓ng nhß║¡p Email." });
 
             var affiliate = await _context.Affiliates.FirstOrDefaultAsync(a => a.Email == request.EmailOrPhone);
             
             if (affiliate == null || string.IsNullOrEmpty(affiliate.Email))
             {
-                return Ok(new { message = "Nếu tài khoản tồn tại, hướng dẫn khôi phục mật khẩu đã được gửi đến Email của bạn." });
+                return BadRequest(new { message = "T├ái khoß║ún kh├┤ng tß╗ôn tß║íi tr├¬n hß╗ç thß╗æng." });
             }
 
             if (affiliate.Status == "Locked")
             {
-                return BadRequest(new { message = "Tài khoản của bạn đã bị khóa." });
+                return BadRequest(new { message = "T├ái khoß║ún cß╗ºa bß║ín ─æ├ú bß╗ï kh├│a." });
             }
 
-            // Kiểm tra cooldown (60s)
+            // Kiß╗âm tra cooldown (60s)
             if (affiliate.LastResetSentAt.HasValue && (DateTime.UtcNow.AddHours(7) - affiliate.LastResetSentAt.Value).TotalSeconds < 60)
             {
-                return BadRequest(new { message = "Vui lòng đợi 60 giây trước khi yêu cầu gửi lại Email khôi phục." });
+                return BadRequest(new { message = "Vui l├▓ng ─æß╗úi 60 gi├óy tr╞░ß╗¢c khi y├¬u cß║ºu gß╗¡i lß║íi Email kh├┤i phß╗Ñc." });
             }
 
             // 2. Max attempts per day (Reset attempts logic)
@@ -931,7 +919,7 @@ namespace BatTrang.API.Controllers.Affiliate
 
             if (affiliate.ResetAttempts >= 5)
             {
-                return BadRequest(new { message = "Bạn đã yêu cầu khôi phục quá nhiều lần trong ngày. Vui lòng thử lại sau 24h." });
+                return BadRequest(new { message = "Bß║ín ─æ├ú y├¬u cß║ºu kh├┤i phß╗Ñc qu├í nhiß╗üu lß║ºn trong ng├áy. Vui l├▓ng thß╗¡ lß║íi sau 24h." });
             }
 
             // Sinh Token for link
@@ -941,12 +929,7 @@ namespace BatTrang.API.Controllers.Affiliate
             affiliate.ResetToken = BCrypt.Net.BCrypt.HashPassword(safeToken); // Hash Token
             affiliate.ResetTokenExpiresAt = DateTime.UtcNow.AddHours(7).AddMinutes(30);
 
-            var configuredBaseUrl = _config["SiteConfig:FrontendBaseUrl"] ?? _config["FrontendBaseUrl"];
-            if (string.IsNullOrWhiteSpace(configuredBaseUrl))
-            {
-                return StatusCode(500, new { message = "Lỗi hệ thống: Chưa cấu hình FrontendBaseUrl." });
-            }
-            var baseUrl = configuredBaseUrl.TrimEnd('/');
+            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
             var resetLink = $"{baseUrl}/affiliate/forgot-password.html?token={safeToken}&email={affiliate.Email}";
             await _notificationService.SendPasswordResetEmailAsync(affiliate.Email, resetLink);
 
@@ -954,35 +937,34 @@ namespace BatTrang.API.Controllers.Affiliate
             affiliate.LastResetSentAt = DateTime.UtcNow.AddHours(7);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Nếu tài khoản tồn tại, hướng dẫn khôi phục mật khẩu đã được gửi đến Email của bạn." });
+            return Ok(new { message = "H╞░ß╗¢ng dß║½n kh├┤i phß╗Ñc mß║¡t khß║⌐u ─æ├ú ─æ╞░ß╗úc gß╗¡i ─æß║┐n Email cß╗ºa bß║ín." });
         }
 
         [HttpPost("reset-password")]
         [AllowAnonymous]
-        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("AuthPolicy")]
         public async Task<IActionResult> ResetPassword([FromBody] BatTrang.API.Controllers.ResetPasswordRequest request)
         {
             var affiliate = await _context.Affiliates.FirstOrDefaultAsync(a => a.Email == request.EmailOrPhone);
             if (affiliate == null || affiliate.ResetTokenExpiresAt == null || affiliate.ResetTokenExpiresAt < DateTime.UtcNow.AddHours(7))
             {
-                return BadRequest(new { message = "Yêu cầu khôi phục đã hết hạn. Vui lòng thử lại." });
+                return BadRequest(new { message = "Y├¬u cß║ºu kh├┤i phß╗Ñc ─æ├ú hß║┐t hß║ín. Vui l├▓ng thß╗¡ lß║íi." });
             }
 
             if (!BCrypt.Net.BCrypt.Verify(request.TokenOrOtp, affiliate.ResetToken))
             {
-                return BadRequest(new { message = "Mã xác nhận không chính xác hoặc không hợp lệ." });
+                return BadRequest(new { message = "M├ú x├íc nhß║¡n kh├┤ng ch├¡nh x├íc hoß║╖c kh├┤ng hß╗úp lß╗ç." });
             }
 
-            // Đặt lại mật khẩu
+            // ─Éß║╖t lß║íi mß║¡t khß║⌐u
             affiliate.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
             
-            // Xóa token
+            // X├│a token
             affiliate.ResetToken = null;
             affiliate.ResetTokenExpiresAt = null;
             
             await _context.SaveChangesAsync();
 
-            return Ok(new { success = true, message = "Đổi mật khẩu thành công!" });
+            return Ok(new { success = true, message = "─Éß╗òi mß║¡t khß║⌐u th├ánh c├┤ng!" });
         }
 
 

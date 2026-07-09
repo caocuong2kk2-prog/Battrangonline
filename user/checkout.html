@@ -491,6 +491,7 @@
               if (guestAddress && !(localStorage.getItem('customer_token') || sessionStorage.getItem('customer_token'))) {
                 try {
                   var data = JSON.parse(guestAddress);
+                  savedAddresses = [data];
                   if (data.recipientName && nameInput) nameInput.value = data.recipientName;
                   if (data.phone && phoneInput) phoneInput.value = data.phone;
                   if (data.email && emailInput) emailInput.value = data.email;
@@ -866,11 +867,20 @@
           var isExistingAddress = false;
           if (typeof savedAddresses !== 'undefined' && savedAddresses.length > 0) {
             isExistingAddress = savedAddresses.some(function (a) {
+              var aPhone = (a.phone || '').replace(/\D/g, '');
+              var payloadPhone = (addrPayload.phone || '').replace(/\D/g, '');
+              
+              var aName = (a.recipientName || '').toLowerCase().trim();
+              var payloadName = (addrPayload.recipientName || '').toLowerCase().trim();
+              
+              var aDetail = (a.detailAddress || '').toLowerCase().trim();
+              var payloadDetail = (addrPayload.detailAddress || '').toLowerCase().trim();
+              
               return a.provinceCode == addrPayload.provinceCode &&
                 a.wardCode == addrPayload.wardCode &&
-                a.detailAddress.toLowerCase().trim() === addrPayload.detailAddress.toLowerCase().trim() &&
-                a.phone === addrPayload.phone &&
-                a.recipientName.toLowerCase().trim() === addrPayload.recipientName.toLowerCase().trim();
+                aDetail === payloadDetail &&
+                aPhone === payloadPhone &&
+                aName === payloadName;
             });
           }
 

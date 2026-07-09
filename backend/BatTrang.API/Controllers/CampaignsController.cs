@@ -22,7 +22,7 @@ namespace BatTrang.API.Controllers
         [HttpGet("active")]
         public async Task<IActionResult> GetActiveCampaign()
         {
-            var now = DateTime.UtcNow;
+            var now = DateTime.UtcNow.AddHours(7);
             
             // Lấy chiến dịch đang active, trong khoảng thời gian diễn ra
             var campaign = await _context.Campaigns

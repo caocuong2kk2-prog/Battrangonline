@@ -116,7 +116,7 @@ namespace BatTrang.API.Controllers
                             customer = new Customer
                             {
                                 Name = dto.Customer,
-                                Phone = dto.Phone,
+                                Phone = cleanInputPhone,
                                 Email = normalizedEmail,
                                 Address = dto.Address,
                                 Status = "active",
@@ -176,7 +176,7 @@ namespace BatTrang.API.Controllers
                         CustomerId = customer.Id,
                         AffiliateId = affiliateId,
                         CustomerName = dto.Customer,
-                        CustomerPhone = dto.Phone,
+                        CustomerPhone = cleanInputPhone,
                         CustomerEmail = dto.Email,
                         Address = dto.Address,
                         CustomerNote = dto.CustomerNote,
@@ -202,11 +202,22 @@ namespace BatTrang.API.Controllers
                             .Include(p => p.Variants).ThenInclude(v => v.Material)
                             .Include(p => p.Variants).ThenInclude(v => v.ProductType)
                             .AsSplitQuery()
-                            .FirstOrDefaultAsync(p => p.Id == item.Id);
-                        if (product != null)
+                            .FirstOrDefaultAsync(p => p.Id == item.Id && p.Status == "active");
+                        if (product == null)
                         {
-                            var variant = product.Variants.FirstOrDefault(v => v.Size?.Name == item.Size) ?? product.Variants.FirstOrDefault();
-                            if (variant == null) continue;
+                            await transaction.RollbackAsync();
+                            return BadRequest(new { message = $"Sản phẩm (ID: {item.Id}) hiện không tồn tại hoặc đã ngừng kinh doanh. Vui lòng cập nhật lại giỏ hàng." });
+                        }
+
+                        var variant = product.Variants.FirstOrDefault(v => v.Size?.Name == item.Size) ?? product.Variants.FirstOrDefault();
+                        if (variant == null)
+                        {
+                            await transaction.RollbackAsync();
+                            return BadRequest(new { message = $"Biến thể kích thước '{item.Size}' của sản phẩm '{product.Name}' hiện không tồn tại hoặc đã ngừng kinh doanh." });
+                        }
+
+                        if (product != null && variant != null)
+                        {
 
                             // Kiểm tra kho
                             if (variant.Stock < item.Qty)
@@ -310,7 +321,7 @@ namespace BatTrang.API.Controllers
                     // Notifications
                     try
                     {
-                        var msg = $"Đơn hàng mới {order.OrderCode} vừa được đặt bởi {order.CustomerName}!";
+                        var msg = $"Đơn hàng mới {order.OrderCode} vừa được đặt bởi {System.Net.WebUtility.HtmlEncode(order.CustomerName)}!";
                         var noti = new BatTrang.Core.Entities.Notification { Type = "OrderPlaced", Message = msg };
                         _context.Notifications.Add(noti);
 
@@ -551,100 +562,137 @@ namespace BatTrang.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> CancelOrder(string orderCode, [FromBody] BatTrang.Core.DTOs.CancelOrderRequestDto request)
         {
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            var cacheKey = $"TrackFailed_{ipAddress}";
+            if (_cache.TryGetValue(cacheKey, out int failedAttempts) && failedAttempts >= 5)
+            {
+                return StatusCode(429, new { message = "Bạn đã nhập sai quá nhiều lần. Vui lòng thử lại sau 1 giờ." });
+            }
+
             var order = await _orderRepo.GetByOrderCodeAsync(orderCode);
-            if (order == null) return NotFound(new { message = "Không tìm thấy đơn hàng" });
+            if (order == null)
+            {
+                IncrementFailedAttempts(cacheKey);
+                return NotFound(new { message = "Không tìm thấy đơn hàng hoặc Số điện thoại không khớp." });
+            }
 
             // Xác thực: số điện thoại phải khớp
             var orderPhoneVal = NormalizePhoneNumber(order.CustomerPhone);
             var reqPhoneVal = NormalizePhoneNumber(request.Phone);
             if (string.IsNullOrWhiteSpace(reqPhoneVal) || orderPhoneVal != reqPhoneVal)
             {
+                IncrementFailedAttempts(cacheKey);
                 return Unauthorized(new { message = "Số điện thoại không khớp với đơn hàng." });
             }
 
+            _cache.Remove(cacheKey);
+
             if (order.Status == "pending")
             {
-                // Khách tự hủy ngay lập tức
-                order.Status = "cancelled";
-                order.IsCancelRequested = false;
-                order.CancelReason = "Khách hàng tự hủy" + (!string.IsNullOrWhiteSpace(request.Reason) ? ": " + request.Reason : "");
-                order.CancelRequestedAt = DateTime.UtcNow.AddHours(7);
-                order.CancelledAt = DateTime.UtcNow.AddHours(7);
-                await _orderRepo.UpdateAsync(order);
-
-                // Hoàn kho ngay
-                var _stockService = HttpContext.RequestServices.GetService<BatTrang.Infrastructure.Services.StockService>();
-                var _productRepo = HttpContext.RequestServices.GetService<BatTrang.Core.Interfaces.IProductRepository>();
-                if (_stockService != null && _productRepo != null)
+                int maxRetry = 3;
+                for (int r = 0; r < maxRetry; r++)
                 {
-                    foreach (var item in order.Items)
+                    using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+                    try
                     {
-                        if (item.IsGift && item.GiftId.HasValue)
+                        // Khách tự hủy ngay lập tức
+                        order.Status = "cancelled";
+                        order.IsCancelRequested = false;
+                        order.CancelReason = "Khách hàng tự hủy" + (!string.IsNullOrWhiteSpace(request.Reason) ? ": " + request.Reason : "");
+                        order.CancelRequestedAt = DateTime.UtcNow.AddHours(7);
+                        order.CancelledAt = DateTime.UtcNow.AddHours(7);
+                        await _orderRepo.UpdateAsync(order);
+
+                        // Hoàn kho ngay
+                        var _stockService = HttpContext.RequestServices.GetService<BatTrang.Infrastructure.Services.StockService>();
+                        var _productRepo = HttpContext.RequestServices.GetService<BatTrang.Core.Interfaces.IProductRepository>();
+                        if (_stockService != null && _productRepo != null)
                         {
-                            var gift = await _context.Gifts.FindAsync(item.GiftId.Value);
-                            if (gift != null && gift.Stock.HasValue)
+                            foreach (var item in order.Items)
                             {
-                                gift.Stock += item.Quantity;
-                                _context.Gifts.Update(gift);
-                            }
-                        }
-                        else
-                        {
-                            var product = await _productRepo.GetProductWithImagesAsync(item.ProductId);
-                            if (product != null)
-                            {
-                                var variant = product.Variants.FirstOrDefault(v => v.Size?.Name == item.Size) ?? product.Variants.FirstOrDefault();
-                                if (variant != null)
+                                if (item.IsGift && item.GiftId.HasValue)
                                 {
-                                    await _stockService.AdjustStockAsync(variant.Id, item.Quantity);
+                                    var gift = await _context.Gifts.FindAsync(item.GiftId.Value);
+                                    if (gift != null && gift.Stock.HasValue)
+                                    {
+                                        gift.Stock += item.Quantity;
+                                        _context.Gifts.Update(gift);
+                                    }
+                                }
+                                else
+                                {
+                                    var product = await _productRepo.GetProductWithImagesAsync(item.ProductId);
+                                    if (product != null)
+                                    {
+                                        var variant = product.Variants.FirstOrDefault(v => v.Size?.Name == item.Size) ?? product.Variants.FirstOrDefault();
+                                        if (variant != null)
+                                        {
+                                            await _stockService.AdjustStockAsync(variant.Id, item.Quantity, saveChanges: false);
+                                        }
+                                    }
                                 }
                             }
+                            await _context.SaveChangesAsync();
+                            await _cacheStore.EvictByTagAsync("products", default);
                         }
-                    }
-                    await _context.SaveChangesAsync();
-                    await _cacheStore.EvictByTagAsync("products", default);
-                }
 
-                try
-                {
-                    var reasonStr = !string.IsNullOrWhiteSpace(request.Reason) ? $" (Lý do: {request.Reason})" : "";
-                    var msg = $"Khách hàng vừa tự hủy đơn hàng #{order.OrderCode}.{reasonStr}";
-                    var noti = new BatTrang.Core.Entities.Notification { Type = "OrderCancelled", Message = msg };
-                    _context.Notifications.Add(noti);
+                        var reasonStr = !string.IsNullOrWhiteSpace(request.Reason) ? $" (Lý do: {request.Reason})" : "";
+                        var msg = $"Khách hàng vừa tự hủy đơn hàng #{order.OrderCode}.{reasonStr}";
+                        var noti = new BatTrang.Core.Entities.Notification { Type = "OrderCancelled", Message = msg };
+                        _context.Notifications.Add(noti);
 
-                    // Thông báo cho CTV nếu đơn có affiliate
-                    if (order.AffiliateId.HasValue)
-                    {
-                        var affMsg = $"⚠️ Đơn hàng #{order.OrderCode} đã bị hủy bởi khách hàng.{reasonStr} Hoa hồng từ đơn này sẽ không được tính.";
-                        var adminAffMsg = $"Đơn hàng #{order.OrderCode} (có CTV giới thiệu) vừa bị khách hủy.{reasonStr}";
-                        
-                        _context.Set<BatTrang.Core.Entities.AffiliateNotification>().Add(new BatTrang.Core.Entities.AffiliateNotification
+                        // Thông báo cho CTV nếu đơn có affiliate
+                        if (order.AffiliateId.HasValue)
                         {
-                            AffiliateId = order.AffiliateId.Value,
-                            Title = "Đơn hàng bị hủy ❌",
-                            Message = affMsg,
-                            Type = "order",
-                            IsRead = false,
-                            CreatedAt = DateTime.UtcNow.AddHours(7)
-                        });
-                        
-                        _context.Notifications.Add(new BatTrang.Core.Entities.Notification { Type = "OrderCancelled", Message = adminAffMsg });
+                            var affMsg = $"⚠️ Đơn hàng #{order.OrderCode} đã bị hủy bởi khách hàng.{reasonStr} Hoa hồng từ đơn này sẽ không được tính.";
+                            var adminAffMsg = $"Đơn hàng #{order.OrderCode} (có CTV giới thiệu) vừa bị khách hủy.{reasonStr}";
+                            
+                            _context.Set<BatTrang.Core.Entities.AffiliateNotification>().Add(new BatTrang.Core.Entities.AffiliateNotification
+                            {
+                                AffiliateId = order.AffiliateId.Value,
+                                Title = "Đơn hàng bị hủy ❌",
+                                Message = affMsg,
+                                Type = "order",
+                                IsRead = false,
+                                CreatedAt = DateTime.UtcNow.AddHours(7)
+                            });
+                            
+                            _context.Notifications.Add(new BatTrang.Core.Entities.Notification { Type = "OrderCancelled", Message = adminAffMsg });
+                        }
+
+                        await _context.SaveChangesAsync();
+                        await transaction.CommitAsync();
+
+                        try
+                        {
+                            await _hubContext.Clients.Group("Admins").SendAsync("ReceiveNotification", "OrderCancelled", msg);
+
+                            if (order.AffiliateId.HasValue)
+                            {
+                                await _hubContext.Clients.Group($"Affiliate_{order.AffiliateId.Value}").SendAsync("ReceiveAffiliateNotification", 
+                                    "Đơn hàng bị hủy ❌", 
+                                    $"Đơn hàng #{order.OrderCode} đã bị hủy bởi khách hàng. Hoa hồng từ đơn này sẽ không được tính.", 
+                                    "order");
+                            }
+                        }
+                        catch (Exception ex) {
+                            Console.WriteLine($"[SignalR Push Error] Cancel Order Notification: {ex.Message}");
+                        }
+
+                        return Ok(new { success = true, status = "cancelled", message = "Đã hủy đơn hàng thành công." });
                     }
-
-                    await _context.SaveChangesAsync();
-                    await _hubContext.Clients.Group("Admins").SendAsync("ReceiveNotification", "OrderCancelled", msg);
-
-                    if (order.AffiliateId.HasValue)
+                    catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
                     {
-                        await _hubContext.Clients.Group($"Affiliate_{order.AffiliateId.Value}").SendAsync("ReceiveAffiliateNotification", 
-                            "Đơn hàng bị hủy ❌", 
-                            $"Đơn hàng #{order.OrderCode} đã bị hủy bởi khách hàng. Hoa hồng từ đơn này sẽ không được tính.", 
-                            "order");
+                        await transaction.RollbackAsync();
+                        _context.ChangeTracker.Clear();
+                        if (r == maxRetry - 1) return StatusCode(500, new { message = "Hệ thống đang quá tải thao tác, vui lòng thử lại sau." });
+                    }
+                    catch (Exception)
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
                     }
                 }
-                catch (Exception) {}
-
-                return Ok(new { success = true, status = "cancelled", message = "Đã hủy đơn hàng thành công." });
             }
             else if (order.Status == "confirmed")
             {
@@ -663,7 +711,9 @@ namespace BatTrang.API.Controllers
                     await _context.SaveChangesAsync();
                     await _hubContext.Clients.Group("Admins").SendAsync("ReceiveNotification", "CancelRequested", msg);
                 }
-                catch (Exception) {}
+                catch (Exception ex) {
+                    Console.WriteLine($"[Cancel Request Error] Notification: {ex.Message}");
+                }
 
                 return Ok(new { success = true, status = "confirmed", isCancelRequested = true, message = "Đã gửi yêu cầu hủy đơn đến Cửa hàng." });
             }
@@ -803,14 +853,13 @@ namespace BatTrang.API.Controllers
 
         private async Task<string> GenerateOrderCodeAsync()
         {
-            var rnd = new Random();
             for (var i = 0; i < 20; i++)
             {
-                var code = "DH" + DateTime.UtcNow.AddHours(7).ToString("yyMMdd") + rnd.Next(1000, 9999);
+                var code = "DH" + DateTime.UtcNow.AddHours(7).ToString("yyMMdd") + Random.Shared.Next(1000, 9999);
                 if (await _orderRepo.GetByOrderCodeAsync(code) == null)
                     return code;
             }
-            return "DH" + DateTime.UtcNow.AddHours(7).Ticks;
+            return "DH" + DateTime.UtcNow.AddHours(7).ToString("yyMMdd") + Guid.NewGuid().ToString("N").Substring(0, 10).ToUpper();
         }
     }
 }

@@ -72,29 +72,33 @@ namespace BatTrang.Infrastructure.Repositories
             .ToList();
         }
 
+        private string NormalizePhone(string? phone)
+        {
+            if (string.IsNullOrEmpty(phone)) return string.Empty;
+            var digits = new string(phone.Where(char.IsDigit).ToArray());
+            if (digits.StartsWith("84"))
+            {
+                if (digits.Length > 2)
+                    digits = "0" + digits.Substring(2);
+            }
+            return digits;
+        }
+
         public async Task<Customer?> GetByPhoneOrEmailAsync(string? phone, string email)
         {
-            var cleanedPhone = phone?.Trim();
+            var rawPhone = phone?.Trim();
+            var normalizedPhone = NormalizePhone(phone);
             var cleanedEmail = email?.Trim();
 
-            if (string.IsNullOrEmpty(cleanedPhone) && string.IsNullOrEmpty(cleanedEmail))
+            if (string.IsNullOrEmpty(normalizedPhone) && string.IsNullOrEmpty(cleanedEmail))
             {
                 return null;
             }
 
-            if (string.IsNullOrEmpty(cleanedPhone))
-            {
-                return await _context.Customers.FirstOrDefaultAsync(c => !string.IsNullOrEmpty(c.Email) && c.Email == cleanedEmail);
-            }
-
-            if (string.IsNullOrEmpty(cleanedEmail))
-            {
-                return await _context.Customers.FirstOrDefaultAsync(c => !string.IsNullOrEmpty(c.Phone) && c.Phone == cleanedPhone);
-            }
-
             return await _context.Customers.FirstOrDefaultAsync(c => 
-                (!string.IsNullOrEmpty(c.Email) && c.Email == cleanedEmail) || 
-                (!string.IsNullOrEmpty(c.Phone) && c.Phone == cleanedPhone));
+                (!string.IsNullOrEmpty(cleanedEmail) && !string.IsNullOrEmpty(c.Email) && c.Email == cleanedEmail) || 
+                (!string.IsNullOrEmpty(normalizedPhone) && !string.IsNullOrEmpty(c.Phone) && 
+                    (c.Phone == normalizedPhone || c.Phone == rawPhone)));
         }
     }
 }

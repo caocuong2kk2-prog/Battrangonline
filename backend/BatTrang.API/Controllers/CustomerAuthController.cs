@@ -81,7 +81,8 @@ namespace BatTrang.API.Controllers
         [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("AuthPolicy")]
         public async Task<IActionResult> Register([FromBody] CustomerRegisterRequest request)
         {
-            var existingUser = await _customerRepo.GetByPhoneOrEmailAsync(request.Phone, request.Email);
+            var normalizedPhone = NormalizePhoneNumber(request.Phone);
+            var existingUser = await _customerRepo.GetByPhoneOrEmailAsync(normalizedPhone, request.Email);
 
             // Nếu đã tồn tại tài khoản CÓ mật khẩu → từ chối đăng ký
             if (existingUser != null && !string.IsNullOrEmpty(existingUser.PasswordHash))
@@ -91,12 +92,33 @@ namespace BatTrang.API.Controllers
 
             Customer created;
 
+            bool canUpgradeGuest = false;
             if (existingUser != null && string.IsNullOrEmpty(existingUser.PasswordHash))
             {
-                // Khách vãng lai đặt hàng trước → nâng cấp thành tài khoản thật, giữ lịch sử đơn hàng
+                bool emailMatches = !string.IsNullOrEmpty(existingUser.Email) && string.Equals(existingUser.Email, request.Email, StringComparison.OrdinalIgnoreCase);
+                bool phoneMatches = !string.IsNullOrEmpty(existingUser.Phone) && existingUser.Phone == normalizedPhone;
+
+                // Để ngăn chặn Hijacking, nếu Guest có dữ liệu gì thì người đăng ký phải nhập KHỚP dữ liệu đó.
+                bool emailValid = string.IsNullOrEmpty(existingUser.Email) || emailMatches;
+                bool phoneValid = string.IsNullOrEmpty(existingUser.Phone) || phoneMatches;
+                
+                // Phải có ít nhất 1 thông tin khớp và thông tin còn lại không được sai so với lịch sử
+                if ((emailMatches || phoneMatches) && emailValid && phoneValid)
+                {
+                    canUpgradeGuest = true;
+                }
+                else
+                {
+                    return BadRequest(new { message = "Email hoặc Số điện thoại này đã được dùng để mua hàng. Để đăng ký tài khoản và giữ lịch sử, vui lòng nhập chính xác CẢ Email VÀ Số điện thoại bạn từng dùng." });
+                }
+            }
+
+            if (canUpgradeGuest)
+            {
+                // Khách vãng lai đặt hàng trước → nâng cấp thành tài khoản thật một cách an toàn
                 existingUser.Name = request.Name;
                 existingUser.Email = request.Email;
-                existingUser.Phone = request.Phone ?? existingUser.Phone;
+                existingUser.Phone = !string.IsNullOrEmpty(normalizedPhone) ? normalizedPhone : existingUser.Phone;
                 existingUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
                 existingUser.Status = "active";
                 await _customerRepo.UpdateAsync(existingUser);
@@ -109,7 +131,7 @@ namespace BatTrang.API.Controllers
                 {
                     Name = request.Name,
                     Email = request.Email,
-                    Phone = request.Phone,
+                    Phone = normalizedPhone,
                     PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
                     Status = "active",
                     JoinedAt = DateTime.UtcNow.AddHours(7)
@@ -153,7 +175,7 @@ namespace BatTrang.API.Controllers
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? ""));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.UtcNow.AddHours(7).AddDays(30);
+            var expires = DateTime.UtcNow.AddDays(30);
 
             var claims = new[]
             {
@@ -186,7 +208,7 @@ namespace BatTrang.API.Controllers
             
             if (user == null || string.IsNullOrEmpty(user.PasswordHash) || string.IsNullOrEmpty(user.Email))
             {
-                return BadRequest(new { message = "Tài khoản không tồn tại trên hệ thống hoặc chưa được đăng ký thành viên." });
+                return Ok(new { message = "Nếu tài khoản tồn tại, hướng dẫn khôi phục mật khẩu đã được gửi đến Email của bạn." });
             }
 
             if (user.Status == "inactive")
@@ -219,7 +241,12 @@ namespace BatTrang.API.Controllers
             user.ResetToken = BCrypt.Net.BCrypt.HashPassword(safeToken); // Hash Token
             user.ResetTokenExpiresAt = DateTime.UtcNow.AddHours(7).AddMinutes(30);
 
-            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}";
+            var configuredBaseUrl = _config["SiteConfig:FrontendBaseUrl"] ?? _config["FrontendBaseUrl"];
+            if (string.IsNullOrWhiteSpace(configuredBaseUrl))
+            {
+                return StatusCode(500, new { message = "Lỗi hệ thống: Chưa cấu hình FrontendBaseUrl." });
+            }
+            var baseUrl = configuredBaseUrl.TrimEnd('/');
             var resetLink = $"{baseUrl}/forgot-password.html?token={safeToken}&email={user.Email}";
             await _notificationService.SendPasswordResetEmailAsync(user.Email, resetLink);
 
@@ -227,11 +254,12 @@ namespace BatTrang.API.Controllers
             user.LastResetSentAt = DateTime.UtcNow.AddHours(7);
             await _customerRepo.UpdateAsync(user);
 
-            return Ok(new { message = "Hướng dẫn khôi phục mật khẩu đã được gửi đến Email của bạn." });
+            return Ok(new { message = "Nếu tài khoản tồn tại, hướng dẫn khôi phục mật khẩu đã được gửi đến Email của bạn." });
         }
 
         [HttpPost("reset-password")]
         [AllowAnonymous]
+        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("AuthPolicy")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
         {
             var user = await _customerRepo.GetByPhoneOrEmailAsync(request.EmailOrPhone, request.EmailOrPhone);
@@ -255,6 +283,18 @@ namespace BatTrang.API.Controllers
             await _customerRepo.UpdateAsync(user);
 
             return Ok(new { success = true, message = "Đổi mật khẩu thành công!" });
+        }
+
+        private string NormalizePhoneNumber(string? phone)
+        {
+            if (string.IsNullOrEmpty(phone)) return string.Empty;
+            var digits = new string(phone.Where(char.IsDigit).ToArray());
+            if (digits.StartsWith("84"))
+            {
+                if (digits.Length > 2)
+                    digits = "0" + digits.Substring(2);
+            }
+            return digits;
         }
     }
 

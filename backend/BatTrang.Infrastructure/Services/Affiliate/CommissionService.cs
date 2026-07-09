@@ -31,10 +31,14 @@ namespace BatTrang.Infrastructure.Services
 
             // Check if commission already exists for this order
             var existingCommission = await _context.Commissions.FirstOrDefaultAsync(c => c.OrderId == order.Id);
-            if (existingCommission != null) return false; // Already processed
+            if (existingCommission != null && existingCommission.Status != "Refunded")
+            {
+                return false; // Already processed and not refunded
+            }
 
             // TÍNH HOA HỒNG DỰA TRÊN TỪNG SẢN PHẨM (PRODUCT-LEVEL COMMISSION)
             decimal totalCommissionAmount = 0;
+            decimal commissionableTotal = 0;
             
             // Lấy CommissionRate của từng sản phẩm trong đơn hàng (bỏ qua quà tặng có ProductId = 0)
             var productIds = order.Items.Where(i => i.ProductId > 0).Select(i => i.ProductId).Distinct().ToList();
@@ -48,6 +52,12 @@ namespace BatTrang.Infrastructure.Services
                 decimal productRate = item.ProductId > 0 && commissionRates.ContainsKey(item.ProductId) 
                     ? commissionRates[item.ProductId] 
                     : 0;
+
+                if (productRate > 0)
+                {
+                    commissionableTotal += item.Quantity * item.UnitPrice;
+                }
+                
                 totalCommissionAmount += item.Quantity * item.UnitPrice * (productRate / 100);
             }
 
@@ -70,14 +80,15 @@ namespace BatTrang.Infrastructure.Services
             decimal diamondBonus = getDecimal("AffiliateTierDiamondBonus", 5);
 
             // BƯỚC 1: Tính tổng doanh thu tháng hiện tại của CTV để xét thăng hạng
-            var currentMonth = DateTime.UtcNow.Month;
-            var currentYear = DateTime.UtcNow.Year;
+            var nowVn = DateTime.UtcNow.AddHours(7);
+            var currentMonth = nowVn.Month;
+            var currentYear = nowVn.Year;
             
             // Doanh thu chỉ tính từ các đơn đã thanh toán/hoàn thành trong tháng
             var monthlyRevenue = await _context.Orders
                 .Where(o => o.AffiliateId == affiliate.Id && o.Status == "completed" && 
                             o.CompletedAt.HasValue && o.CompletedAt.Value.Month == currentMonth && o.CompletedAt.Value.Year == currentYear)
-                .SumAsync(o => o.Total);
+                .SumAsync(o => (decimal?)o.Total) ?? 0;
 
             // Xác định hạng mới dựa trên doanh thu
             string newTier = "Thường";
@@ -129,36 +140,54 @@ namespace BatTrang.Infrastructure.Services
                 else if (activeTier == "VIP") currentTierBonus = goldBonus; // Map VIP to Gold for now or custom
             }
 
-            // Tính tiền thưởng hạng (dựa trên Tổng giá trị đơn hàng hoặc Tổng hoa hồng gốc?)
-            // "Thưởng thêm %" thường là cộng thêm % hoa hồng trên TỔNG DOANH SỐ của đơn hàng.
+            // Tính tiền thưởng hạng (dựa trên Tổng giá trị đơn hàng CÓ HOA HỒNG)
+            // "Thưởng thêm %" thường là cộng thêm % hoa hồng trên TỔNG DOANH SỐ CÁC SẢN PHẨM CÓ HOA HỒNG của đơn hàng.
             // VD: Hoa hồng gốc 10% (được 1tr) + thưởng thêm 2% (được 200k) -> Tổng 1.2tr
-            decimal tierBonusAmount = order.Total * (currentTierBonus / 100);
+            decimal tierBonusAmount = commissionableTotal * (currentTierBonus / 100);
 
-            // Tính tỷ lệ trung bình gốc để hiển thị (tùy chọn)
-            decimal baseAverageRate = order.Total > 0 ? (totalCommissionAmount / order.Total) * 100 : 0;
-            decimal totalRate = baseAverageRate + currentTierBonus;
-            decimal finalCommission = totalCommissionAmount + tierBonusAmount;
+            // Làm tròn trước khi tính tổng để tránh sai số (VD: 10.01 != 5.00 + 5.00 do làm tròn)
+            decimal roundedBaseCommission = Math.Round(totalCommissionAmount, 2);
+            decimal roundedTierBonus = Math.Round(tierBonusAmount, 2);
+            decimal roundedFinalCommission = roundedBaseCommission + roundedTierBonus;
+            
+            decimal totalRate = order.Total > 0 ? (roundedFinalCommission / order.Total) * 100 : 0;
+            decimal roundedTotalRate = Math.Round(totalRate, 2);
 
-            var commission = new Commission
+            if (existingCommission != null)
             {
-                AffiliateId = order.AffiliateId.Value,
-                OrderId = order.Id,
-                OrderTotalAmount = order.Total,
-                CommissionRate = Math.Round(totalRate, 2),
-                CommissionAmount = Math.Round(finalCommission, 2),
-                BaseCommissionAmount = Math.Round(totalCommissionAmount, 2),
-                TierBonusAmount = Math.Round(tierBonusAmount, 2),
-                Status = "Pending", // Admin can approve later, or auto-approved
-                CreatedAt = DateTime.UtcNow.AddHours(7)
-            };
-
-            _context.Commissions.Add(commission);
+                existingCommission.AffiliateId = order.AffiliateId.Value;
+                existingCommission.OrderTotalAmount = order.Total;
+                existingCommission.CommissionRate = roundedTotalRate;
+                existingCommission.CommissionAmount = roundedFinalCommission;
+                existingCommission.BaseCommissionAmount = roundedBaseCommission;
+                existingCommission.TierBonusAmount = roundedTierBonus;
+                existingCommission.Status = "Pending";
+                existingCommission.ProcessedAt = null;
+                existingCommission.CreatedAt = DateTime.UtcNow.AddHours(7); // Restart the 7-day waiting period
+                _context.Commissions.Update(existingCommission);
+            }
+            else
+            {
+                var commission = new Commission
+                {
+                    AffiliateId = order.AffiliateId.Value,
+                    OrderId = order.Id,
+                    OrderTotalAmount = order.Total,
+                    CommissionRate = roundedTotalRate,
+                    CommissionAmount = roundedFinalCommission,
+                    BaseCommissionAmount = roundedBaseCommission,
+                    TierBonusAmount = roundedTierBonus,
+                    Status = "Pending", // Admin can approve later, or auto-approved
+                    CreatedAt = DateTime.UtcNow.AddHours(7)
+                };
+                _context.Commissions.Add(commission);
+            }
 
             _context.Set<BatTrang.Core.Entities.AffiliateNotification>().Add(new BatTrang.Core.Entities.AffiliateNotification
             {
                 AffiliateId = order.AffiliateId.Value,
                 Title = "Hoa hồng mới được ghi nhận 💰",
-                Message = $"Tuyệt vời! Đơn hàng {order.OrderCode} đã hoàn thành. Bạn nhận được +{Math.Round(finalCommission, 0).ToString("N0")}đ vào ví chờ duyệt.",
+                Message = $"Tuyệt vời! Đơn hàng {order.OrderCode} đã hoàn thành. Bạn nhận được +{Math.Round(roundedFinalCommission, 0).ToString("N0")}đ vào ví chờ duyệt.",
                 Type = "commission",
                 IsRead = false,
                 CreatedAt = DateTime.UtcNow.AddHours(7)
@@ -171,13 +200,13 @@ namespace BatTrang.Infrastructure.Services
         public async Task RevertOrderCommissionAsync(string orderCode)
         {
             var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderCode == orderCode);
-            if (order == null || order.AffiliateId == null) return;
+            if (order == null) return;
 
             var existingCommission = await _context.Commissions.FirstOrDefaultAsync(c => c.OrderId == order.Id);
             if (existingCommission != null && existingCommission.Status != "Refunded")
             {
                 existingCommission.Status = "Refunded";
-                existingCommission.ProcessedAt = DateTime.UtcNow;
+                existingCommission.ProcessedAt = DateTime.UtcNow.AddHours(7);
                 await _context.SaveChangesAsync();
             }
         }

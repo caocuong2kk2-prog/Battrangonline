@@ -18,8 +18,16 @@ namespace BatTrang.Infrastructure.Seed
             await context.Database.MigrateAsync();
 
             var defaultAdmin = await context.AdminUsers.FirstOrDefaultAsync(u => u.Username == "admin");
+            var bootstrapPassword = Environment.GetEnvironmentVariable("ADMIN_BOOTSTRAP_PASSWORD")
+                                    ?? Environment.GetEnvironmentVariable("Admin__BootstrapPassword");
+
             if (defaultAdmin == null)
             {
+                if (string.IsNullOrWhiteSpace(bootstrapPassword) || bootstrapPassword.Length < 12)
+                {
+                    throw new InvalidOperationException("ADMIN_BOOTSTRAP_PASSWORD must be set to a strong value with at least 12 characters before creating the default admin account.");
+                }
+
                 var allAdmins = context.AdminUsers.ToList();
                 if (allAdmins.Any())
                 {
@@ -28,9 +36,9 @@ namespace BatTrang.Infrastructure.Seed
 
                 await context.AdminUsers.AddAsync(new AdminUser
                 {
-                    Name = "Admin Phúc Gia Tiên",
+                    Name = "Admin Phuc Gia Tien",
                     Username = "admin",
-                    Password = BCrypt.Net.BCrypt.HashPassword("admin"),
+                    Password = BCrypt.Net.BCrypt.HashPassword(bootstrapPassword),
                     Role = "admin"
                 });
                 await context.SaveChangesAsync();
@@ -38,11 +46,22 @@ namespace BatTrang.Infrastructure.Seed
             else
             {
                 bool needsSave = false;
-                
+
                 // Update password to Hash if it's currently plaintext (BCrypt hash starts with $2)
                 if (!string.IsNullOrEmpty(defaultAdmin.Password) && !defaultAdmin.Password.StartsWith("$2"))
                 {
                     defaultAdmin.Password = BCrypt.Net.BCrypt.HashPassword(defaultAdmin.Password);
+                    needsSave = true;
+                }
+
+                if (!string.IsNullOrEmpty(defaultAdmin.Password) && BCrypt.Net.BCrypt.Verify("admin", defaultAdmin.Password))
+                {
+                    if (string.IsNullOrWhiteSpace(bootstrapPassword) || bootstrapPassword.Length < 12)
+                    {
+                        throw new InvalidOperationException("Default admin password is unsafe. Set ADMIN_BOOTSTRAP_PASSWORD to rotate it before starting the app.");
+                    }
+
+                    defaultAdmin.Password = BCrypt.Net.BCrypt.HashPassword(bootstrapPassword);
                     needsSave = true;
                 }
 
@@ -51,13 +70,12 @@ namespace BatTrang.Infrastructure.Seed
                     defaultAdmin.Role = "admin";
                     needsSave = true;
                 }
-                
+
                 if (needsSave)
                 {
                     await context.SaveChangesAsync();
                 }
             }
-
             if (!context.Categories.Any())
             {
                 var categories = new List<Category>

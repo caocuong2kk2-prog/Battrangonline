@@ -27,8 +27,9 @@
       });
 
     function initPromo(campaign) {
-      const START_DATE = new Date(campaign.startDate);
-      const END_DATE = new Date(campaign.endDate);
+      const parseSafeDate = (dStr) => dStr ? new Date(dStr.replace(/-/g, '/').replace('T', ' ')) : new Date();
+      const START_DATE = parseSafeDate(campaign.startDate);
+      const END_DATE = parseSafeDate(campaign.endDate);
       const now = new Date();
       const isUpcoming = now < START_DATE;
 

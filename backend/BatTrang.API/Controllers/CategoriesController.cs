@@ -101,7 +101,7 @@ namespace BatTrang.API.Controllers
         /// 3) Gộp danh mục trùng lặp (low-ID không có products -> chuyển products sang old-ID, xóa low-ID)
         /// </summary>
         [HttpGet("migrate-old")]
-        [AllowAnonymous]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> MigrateOld()
         {
             // === OLD DATA: Product_Type_ID -> Product_Type_ParentID ===

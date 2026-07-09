@@ -74,9 +74,9 @@ builder.Services.AddHttpClient<BatTrang.Infrastructure.Services.ReCaptchaService
 builder.Services.AddScoped<BatTrang.Infrastructure.Services.ReCaptchaService>();
 builder.Services.AddSingleton<BatTrang.Infrastructure.Services.FileCleanupService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<BatTrang.Infrastructure.Services.FileCleanupService>());
-builder.Services.AddHostedService<BatTrang.Infrastructure.Services.BadgeUpdateService>();
+builder.Services.AddHostedService<BatTrang.API.Services.BadgeUpdateService>();
 builder.Services.AddHostedService<BatTrang.Infrastructure.Services.NotificationCleanupService>();
-builder.Services.AddHostedService<BatTrang.Infrastructure.Services.AffiliateTierEvaluationService>();
+builder.Services.AddHostedService<BatTrang.API.Services.AffiliateTierEvaluationService>();
 builder.Services.AddHostedService<BatTrang.API.Services.CommissionAutoApproveService>();
 builder.Services.AddHostedService<BatTrang.Infrastructure.Services.DatabaseBackupService>();
 builder.Services.AddHostedService<BatTrang.API.Services.CampaignUpdateService>();
@@ -88,7 +88,8 @@ builder.Services.AddCors(options =>
     {
         if (builder.Environment.IsDevelopment())
         {
-            policy.SetIsOriginAllowed(origin => true)
+            policy.SetIsOriginAllowed(origin => 
+                    System.Text.RegularExpressions.Regex.IsMatch(origin, @"^https?://localhost(:[0-9]+)?$|^https?://127\.0\.0\.1(:[0-9]+)?$"))
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
@@ -159,7 +160,24 @@ builder.Services.AddRateLimiter(options =>
 });
 
 // JWT Authentication
-var jwtKey = builder.Configuration["Jwt:Key"] ?? "default_secret_key_that_is_at_least_32_bytes";
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var jwtAudience = builder.Configuration["Jwt:Audience"];
+
+if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32 || jwtKey.Contains("default_secret_key") || jwtKey.Contains("super_secret_key") || jwtKey.Contains("YOUR_JWT_SECRET_KEY_HERE"))
+{
+    throw new Exception("CRITICAL SECURITY ERROR: Jwt:Key is missing, too short, or using a placeholder. You must configure a strong Jwt:Key (>= 32 characters) in appsettings.json or environment variables.");
+}
+
+if (string.IsNullOrWhiteSpace(jwtIssuer) || jwtIssuer.Contains("YOUR_JWT_ISSUER_HERE"))
+{
+    throw new Exception("CRITICAL SECURITY ERROR: Jwt:Issuer is missing or using a placeholder. You must configure a valid Jwt:Issuer in appsettings.json or environment variables.");
+}
+
+if (string.IsNullOrWhiteSpace(jwtAudience) || jwtAudience.Contains("YOUR_JWT_AUDIENCE_HERE"))
+{
+    throw new Exception("CRITICAL SECURITY ERROR: Jwt:Audience is missing or using a placeholder. You must configure a valid Jwt:Audience in appsettings.json or environment variables.");
+}
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -227,6 +245,14 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+    await next();
+});
+
 // Seed Data
 using (var scope = app.Services.CreateScope())
 {
@@ -238,16 +264,32 @@ app.UseExceptionHandler(appError =>
 {
     appError.Run(async context =>
     {
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
         context.Response.ContentType = "application/json";
         var contextFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
         if (contextFeature != null)
         {
+            if (contextFeature.Error is Microsoft.EntityFrameworkCore.DbUpdateException)
+            {
+                bool isDelete = context.Request.Method == HttpMethods.Delete || 
+                                (context.Request.Path.Value?.Contains("delete", StringComparison.OrdinalIgnoreCase) == true);
+                
+                string msg = isDelete 
+                    ? "Không thể thực hiện thao tác xóa vì dữ liệu này đang được sử dụng ở nơi khác (ví dụ: đã nằm trong đơn hàng hoặc có dữ liệu liên kết)."
+                    : "Lỗi lưu dữ liệu. Có thể do trùng lặp dữ liệu hoặc vi phạm ràng buộc.";
+                
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                await context.Response.WriteAsJsonAsync(new { message = msg });
+                return;
+            }
+
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             // You can log the error here using your logger: _logger.LogError(contextFeature.Error, "Unhandled exception");
+            var isDev = app.Environment.IsDevelopment();
             await context.Response.WriteAsJsonAsync(new
             {
                 StatusCode = context.Response.StatusCode,
-                Message = "Internal Server Error. Please try again later."
+                Message = "Internal Server Error. Please try again later.",
+                Detail = isDev ? contextFeature.Error.Message : null
             });
         }
     });

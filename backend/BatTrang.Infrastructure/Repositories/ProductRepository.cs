@@ -41,12 +41,17 @@ namespace BatTrang.Infrastructure.Repositories
                 .AsSplitQuery()
                 .AsQueryable();
 
+            if (!filter.IsAdmin)
+            {
+                query = query.Where(p => p.Status == "active");
+            }
+
             if (!string.IsNullOrEmpty(filter.Category) && filter.Category != "all")
             {
-                var categorySlugs = _context.Categories
+                var categorySlugs = await _context.Categories
                     .Where(c => c.Slug == filter.Category || (c.Parent != null && c.Parent.Slug == filter.Category))
                     .Select(c => c.Slug)
-                    .ToList();
+                    .ToListAsync();
                 query = query.Where(p => categorySlugs.Contains(p.Category.Slug));
             }
 
@@ -145,17 +150,24 @@ namespace BatTrang.Infrastructure.Repositories
                     // Out-of-stock: All variants have Stock <= 0
                     query = query.Where(p => p.Variants.Count == 0 || p.Variants.All(v => v.Stock <= 0));
                 }
+                else if (filter.Status == "active" || filter.Status == "inactive")
+                {
+                    query = query.Where(p => p.Status == filter.Status);
+                }
             }
 
             switch (filter.Sort)
             {
                 case "price-asc":
-                    query = query.OrderBy(p => p.Variants.Min(v => (decimal?)(v.CampaignPrice ?? v.Price)) ?? 0);
+                    query = query.OrderBy(p => p.Variants.Min(v => (decimal?)(v.CampaignPrice ?? v.Price)) ?? 0).ThenByDescending(p => p.Id);
                     break;
                 case "price-desc":
-                    query = query.OrderByDescending(p => p.Variants.Min(v => (decimal?)(v.CampaignPrice ?? v.Price)) ?? 0);
+                    query = query.OrderByDescending(p => p.Variants.Min(v => (decimal?)(v.CampaignPrice ?? v.Price)) ?? 0).ThenByDescending(p => p.Id);
                     break;
-                case "bestselling": query = query.OrderByDescending(p => p.TotalSold).ThenByDescending(p => p.Id); break; case "newest":
+                case "bestselling": 
+                    query = query.OrderByDescending(p => p.TotalSold).ThenByDescending(p => p.Id); 
+                    break; 
+                case "newest":
                 default:
                     query = query.OrderByDescending(p => p.Id);
                     break;
@@ -221,6 +233,7 @@ namespace BatTrang.Infrastructure.Repositories
             if (!_cache.TryGetValue(cacheKey, out IReadOnlyList<Product>? featuredProducts) || featuredProducts == null)
             {
                 featuredProducts = await _context.Products
+                    .Where(p => p.Status == "active")
                     .AsNoTracking()
                     .Include(p => p.Category)
                     .Include(p => p.Variants)

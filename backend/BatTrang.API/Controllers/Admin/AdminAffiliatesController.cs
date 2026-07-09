@@ -42,7 +42,7 @@ namespace BatTrang.API.Controllers.Admin
         [HttpGet]
         public async Task<IActionResult> GetAffiliates()
         {
-            var affiliates = await _context.Affiliates
+            var affiliatesData = await _context.Affiliates
                 .OrderByDescending(a => a.CreatedAt)
                 .Select(a => new
                 {
@@ -69,6 +69,27 @@ namespace BatTrang.API.Controllers.Admin
                     LastOrderDate = _context.Orders.Where(o => o.AffiliateId == a.Id && o.Status == "completed").Max(o => (System.DateTime?)o.CreatedAt)
                 })
                 .ToListAsync();
+
+            var affiliates = affiliatesData.Select(a => new {
+                a.Id,
+                a.CustomerName,
+                a.CustomerEmail,
+                a.CustomerPhone,
+                a.AffiliateCode,
+                a.Tier,
+                a.Status,
+                CreatedAt = a.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                ApprovedAt = a.ApprovedAt?.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                a.BankName,
+                a.BankAccount,
+                a.BankOwner,
+                a.CCCD,
+                a.TotalSales,
+                a.TotalCommission,
+                a.TotalOrdersCount,
+                LastOrderDate = a.LastOrderDate?.ToString("yyyy-MM-ddTHH:mm:ssZ")
+            });
+
             return Ok(affiliates);
         }
 
@@ -265,7 +286,21 @@ namespace BatTrang.API.Controllers.Admin
                 };
                 _context.Set<BatTrang.Core.Entities.AffiliateNotification>().Add(noti);
                 
-                    await _hubContext.Clients.Group($"Affiliate_{commission.AffiliateId}").SendAsync("ReceiveAffiliateNotification", "Cập nhật hoa hồng", "Bạn có thông báo mới", "sync");
+                await _hubContext.Clients.Group($"Affiliate_{commission.AffiliateId}").SendAsync("ReceiveAffiliateNotification", "Cập nhật hoa hồng", "Bạn có thông báo mới", "sync");
+            }
+            else if (dto.Status.Equals("Paid", System.StringComparison.OrdinalIgnoreCase) && !oldStatus.Equals("Paid", System.StringComparison.OrdinalIgnoreCase))
+            {
+                // Đồng bộ tự động tạo WithdrawalRequest Paid khi Admin thanh toán trực tiếp hoa hồng ngoài luồng rút tiền
+                var manualWithdrawal = new BatTrang.Core.Entities.WithdrawalRequest
+                {
+                    AffiliateId = commission.AffiliateId,
+                    Amount = commission.CommissionAmount,
+                    Status = "Paid",
+                    Note = $"Thanh toán trực tiếp hoa hồng #{commission.Id}",
+                    RequestedAt = System.DateTime.UtcNow.AddHours(7),
+                    ProcessedAt = System.DateTime.UtcNow.AddHours(7)
+                };
+                _context.WithdrawalRequests.Add(manualWithdrawal);
             }
 
             await _context.SaveChangesAsync();
@@ -314,6 +349,38 @@ namespace BatTrang.API.Controllers.Admin
 
             if (dto.Status != oldStatus && (dto.Status == "Paid" || dto.Status == "Rejected"))
             {
+                if (dto.Status == "Paid")
+                {
+                    var totalWithdrawn = await _context.WithdrawalRequests
+                        .Where(w => w.AffiliateId == request.AffiliateId && w.Status == "Paid")
+                        .SumAsync(w => w.Amount);
+                    
+                    totalWithdrawn += request.Amount;
+
+                    var commissionsToMark = await _context.Commissions
+                        .Where(c => c.AffiliateId == request.AffiliateId && (c.Status == "Approved" || c.Status == "Paid"))
+                        .OrderBy(c => c.CreatedAt)
+                        .ToListAsync();
+
+                    decimal runningSum = 0;
+                    foreach (var c in commissionsToMark)
+                    {
+                        runningSum += c.CommissionAmount;
+                        if (runningSum <= totalWithdrawn)
+                        {
+                            if (c.Status != "Paid")
+                            {
+                                c.Status = "Paid";
+                                c.ProcessedAt = System.DateTime.UtcNow.AddHours(7);
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+
                 string title = dto.Status == "Paid" ? "Đã chuyển tiền! 💸" : "Yêu cầu rút tiền bị từ chối ❌";
                 string msg = dto.Status == "Paid" 
                     ? $"Yêu cầu rút {request.Amount:N0}đ của bạn đã được chuyển khoản thành công. {(string.IsNullOrEmpty(dto.Note) ? "" : "Ghi chú: " + dto.Note)}"

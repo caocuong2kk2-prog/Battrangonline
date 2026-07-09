@@ -456,7 +456,7 @@
             var token = localStorage.getItem('customer_token') || sessionStorage.getItem('customer_token');
             if (token) {
               // Save to DB
-              fetch((window.PhucGiaTienAPI.apiBase || 'http://localhost:5055/api') + '/Address/saved', {
+              fetch(((window.PhucGiaTienAPI ? window.PhucGiaTienAPI.apiBase : null) || 'http://localhost:5055/api') + '/Address/saved', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 
 namespace BatTrang.API.Hubs
 {
-    [Authorize]
     public class NotificationHub : Hub
     {
         public override async Task OnConnectedAsync()

@@ -22,7 +22,7 @@ namespace BatTrang.Infrastructure.Services
         /// <param name="variantId">ID của ProductVariant</param>
         /// <param name="delta">Số lượng thay đổi (Âm: Khách mua, Dương: Hoàn kho)</param>
         /// <returns>True nếu thành công, False nếu không đủ kho hoặc không tìm thấy.</returns>
-        public async Task<(bool Success, int RemainingTotalStock, string? ProductName)> AdjustStockAsync(int variantId, int delta)
+        public async Task<(bool Success, int RemainingTotalStock, string? ProductName)> AdjustStockAsync(int variantId, int delta, bool saveChanges = true)
         {
             const int maxRetryCount = 3;
 
@@ -47,7 +47,6 @@ namespace BatTrang.Infrastructure.Services
                     int totalStock = 0;
                     string? productName = variant.Product?.Name;
 
-                        // Logic tự động Ẩn/Hiện sản phẩm khi hết hàng
                         var product = variant.Product;
                         if (product != null)
                         {
@@ -56,24 +55,12 @@ namespace BatTrang.Infrastructure.Services
                                                             .ToListAsync();
                             
                             totalStock = allVariants.Sum(v => v.Id == variantId ? variant.Stock : v.Stock);
-
-                            if (delta < 0)
-                            {
-                                // Báo hết hàng
-                                if (totalStock <= 0)
-                                {
-                                    product.Status = "inactive";
-                                    _context.Products.Update(product);
-                                }
-                            }
-                            else if (delta > 0 && product.Status == "inactive")
-                            {
-                                product.Status = "active";
-                                _context.Products.Update(product);
-                            }
                         }
 
-                    await _context.SaveChangesAsync();
+                    if (saveChanges)
+                    {
+                        await _context.SaveChangesAsync();
+                    }
                     return (true, totalStock, productName);
                 }
                 catch (DbUpdateConcurrencyException)

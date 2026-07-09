@@ -1228,10 +1228,10 @@ function populateHeaderMegaMenu() {
          try {
            localStorage.setItem('pgt_home_banner', config.homeBanner);
          } catch(e){}
-          var deskSrc = resolveImgUrl(config.homeBanner, '', 1920, 85, 1080).replace('.jpeg', '.webp').replace('.jpg', '.webp');
-          var mobSrc = resolveImgUrl(config.homeBanner, '', 768, 80, 1024).replace('.jpeg', '.webp').replace('.jpg', '.webp');
+          var deskSrc = resolveImgUrl(config.homeBanner, '', 2560, 95);
+          var mobSrc = resolveImgUrl(config.homeBanner, '', 768, 90);
          el.src = deskSrc;
-         el.srcset = mobSrc + ' 768w, ' + deskSrc + ' 1920w';
+         el.srcset = mobSrc + ' 768w, ' + deskSrc + ' 2560w';
          el.sizes = '100vw';
       }
     });
@@ -1241,10 +1241,10 @@ function populateHeaderMegaMenu() {
         el.removeAttribute('src');
         el.removeAttribute('srcset');
       } else {
-         var deskSrc = resolveImgUrl(config.ctaBanner, 'assets/images/bg.webp', 1920, 85, 1080).replace('.jpeg', '.webp').replace('.jpg', '.webp');
-         var mobSrc = resolveImgUrl(config.ctaBanner, 'assets/images/bg.webp', 768, 80, 1024).replace('.jpeg', '.webp').replace('.jpg', '.webp');
+         var deskSrc = resolveImgUrl(config.ctaBanner, 'assets/images/bg.webp', 2560, 95);
+         var mobSrc = resolveImgUrl(config.ctaBanner, 'assets/images/bg.webp', 768, 90);
          el.src = deskSrc;
-         el.srcset = mobSrc + ' 768w, ' + deskSrc + ' 1920w';
+         el.srcset = mobSrc + ' 768w, ' + deskSrc + ' 2560w';
          el.sizes = '100vw';
          el.style.opacity = '1';
       }

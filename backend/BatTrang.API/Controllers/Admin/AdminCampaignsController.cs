@@ -47,7 +47,6 @@ namespace BatTrang.API.Controllers.Admin
         }
 
         [HttpGet("{id}")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();

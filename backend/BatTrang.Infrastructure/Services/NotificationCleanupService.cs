@@ -73,7 +73,7 @@ namespace BatTrang.Infrastructure.Services
             using var scope = _scopeFactory.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            var cutoffDate = DateTime.UtcNow.AddDays(-KeepDays);
+            var cutoffDate = DateTime.UtcNow.AddHours(7).AddDays(-KeepDays);
 
             // Execute SQL delete directly using EF Core 7+ ExecuteDeleteAsync
             var deletedCount = await context.Notifications

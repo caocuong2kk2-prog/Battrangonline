@@ -20,12 +20,10 @@ namespace BatTrang.Infrastructure.Services
         public async Task<bool> VerifyTokenAsync(string token)
         {
             var secretKey = _configuration["ReCaptcha:SecretKey"];
-            if (string.IsNullOrEmpty(secretKey))
+            if (string.IsNullOrEmpty(secretKey) || secretKey.StartsWith("YOUR_", System.StringComparison.OrdinalIgnoreCase))
             {
-                // Nếu chưa cấu hình, tạm thời cho pass để không làm hỏng luồng đặt hàng
-                return true; 
+                return false;
             }
-
             var response = await _httpClient.PostAsync("https://www.google.com/recaptcha/api/siteverify",
                 new FormUrlEncodedContent(new[]
                 {

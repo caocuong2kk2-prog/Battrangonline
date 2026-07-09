@@ -71,17 +71,60 @@ namespace BatTrang.API.Controllers
                     }
                     else
                     {
-                        // Fallback if Skia fails to decode
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await file.CopyToAsync(fileStream);
-                        }
+                        return BadRequest("Invalid image format or corrupted file.");
                     }
                 }
             }
             else
             {
-                // For GIFs or Videos, save directly without compression
+                // Verify magic bytes for GIF and Video
+                byte[] header = new byte[8];
+                using (var stream = file.OpenReadStream())
+                {
+                    if (stream.Length < 8) return BadRequest("File too small.");
+                    stream.Read(header, 0, 8);
+                }
+
+                bool isValidMagicByte = false;
+                if (isGif)
+                {
+                    // GIF87a or GIF89a
+                    if (header[0] == 0x47 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x38 &&
+                        (header[4] == 0x37 || header[4] == 0x39) && header[5] == 0x61)
+                    {
+                        isValidMagicByte = true;
+                    }
+                }
+                else if (isVideo)
+                {
+                    // Basic checks for MP4 (ftyp), WEBM (1A 45 DF A3), AVI (RIFF...AVI)
+                    if (extension == ".webm" && header[0] == 0x1A && header[1] == 0x45 && header[2] == 0xDF && header[3] == 0xA3)
+                    {
+                        isValidMagicByte = true;
+                    }
+                    else if (extension == ".mp4" && header[4] == 0x66 && header[5] == 0x74 && header[6] == 0x79 && header[7] == 0x70) // ftyp
+                    {
+                        isValidMagicByte = true;
+                    }
+                    else if (extension == ".avi" && header[0] == 0x52 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x46) // RIFF
+                    {
+                        isValidMagicByte = true;
+                    }
+                    else if (extension == ".mov" && header[4] == 0x6D && header[5] == 0x6F && header[6] == 0x6F && header[7] == 0x76) // moov
+                    {
+                        isValidMagicByte = true;
+                    }
+                    else if (extension == ".mov" && header[4] == 0x66 && header[5] == 0x74 && header[6] == 0x79 && header[7] == 0x70) // ftyp
+                    {
+                        isValidMagicByte = true;
+                    }
+                }
+
+                if (!isValidMagicByte)
+                {
+                    return BadRequest("Invalid file signature for the uploaded media type.");
+                }
+
                 var filePath = Path.Combine(uploadsFolder, uniqueFileName);
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
@@ -109,6 +152,9 @@ namespace BatTrang.API.Controllers
         {
             if (string.IsNullOrWhiteSpace(url))
                 return BadRequest("URL is empty");
+
+            if (!await BatTrang.API.Helpers.UrlSecurityHelper.IsSafeExternalUrlAsync(url))
+                return BadRequest("Invalid or blocked URL.");
 
             try
             {
@@ -175,12 +221,14 @@ namespace BatTrang.API.Controllers
 
         private async Task<string?> ScrapeOgImage(string url)
         {
+            if (!await BatTrang.API.Helpers.UrlSecurityHelper.IsSafeExternalUrlAsync(url))
+                return null;
+
             try
             {
                 var handler = new System.Net.Http.HttpClientHandler
                 {
-                    AllowAutoRedirect = true,
-                    MaxAutomaticRedirections = 5
+                    AllowAutoRedirect = false
                 };
                 using var httpClient = new System.Net.Http.HttpClient(handler);
 
@@ -194,7 +242,10 @@ namespace BatTrang.API.Controllers
                 httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
                 httpClient.Timeout = TimeSpan.FromSeconds(8);
 
-                var html = await httpClient.GetStringAsync(url);
+                using var response = await BatTrang.API.Helpers.UrlSecurityHelper.FetchSafeExternalResponseAsync(httpClient, url, System.Net.Http.HttpCompletionOption.ResponseContentRead);
+                if (response == null || !response.IsSuccessStatusCode) return null;
+
+                var html = await response.Content.ReadAsStringAsync();
 
                 // Flexible og:image regex — handles both attribute orders and single/double quotes
                 var ogPatterns = new[]

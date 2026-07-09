@@ -74,7 +74,7 @@ namespace BatTrang.API.Controllers
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? ""));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.UtcNow.AddHours(7).AddDays(7);
+            var expires = DateTime.UtcNow.AddDays(7);
 
             var claims = new[]
             {
@@ -141,41 +141,6 @@ namespace BatTrang.API.Controllers
             });
         }
 
-        [HttpPost("recovery-reset")]
-        [AllowAnonymous]
-        [Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("AuthPolicy")]
-        public async Task<IActionResult> RecoveryReset([FromBody] RecoveryResetRequest request)
-        {
-            // Validate input
-            if (string.IsNullOrWhiteSpace(request.RecoveryKey) || string.IsNullOrWhiteSpace(request.NewPassword))
-            {
-                return BadRequest(new { message = "Vui lòng nhập đầy đủ thông tin." });
-            }
-
-            if (request.NewPassword.Length < 6)
-            {
-                return BadRequest(new { message = "Mật khẩu mới phải có ít nhất 6 ký tự." });
-            }
-
-            // Verify recovery key from environment variable
-            var serverKey = _config["ADMIN_RECOVERY_KEY"] ?? Environment.GetEnvironmentVariable("ADMIN_RECOVERY_KEY") ?? "";
-            if (string.IsNullOrEmpty(serverKey) || request.RecoveryKey != serverKey)
-            {
-                return StatusCode(403, new { message = "Mã khôi phục không hợp lệ." });
-            }
-
-            // Reset password for root admin account
-            var adminUser = await _adminUserRepo.GetByUsernameAsync("admin");
-            if (adminUser == null)
-            {
-                return NotFound(new { message = "Không tìm thấy tài khoản quản trị gốc." });
-            }
-
-            adminUser.Password = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
-            await _adminUserRepo.UpdateAsync(adminUser);
-
-            return Ok(new { message = "Đặt lại mật khẩu thành công! Bạn có thể đăng nhập với mật khẩu mới." });
-        }
     }
 
     public class UpdateProfileRequest
@@ -185,9 +150,4 @@ namespace BatTrang.API.Controllers
         public string? NewPassword { get; set; }
     }
 
-    public class RecoveryResetRequest
-    {
-        public string RecoveryKey { get; set; } = null!;
-        public string NewPassword { get; set; } = null!;
-    }
 }

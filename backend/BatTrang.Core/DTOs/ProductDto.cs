@@ -77,6 +77,7 @@ namespace BatTrang.Core.DTOs
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
         public string? Status { get; set; }
+        public bool IsAdmin { get; set; } = false;
     }
 
     public class BulkStatusDto

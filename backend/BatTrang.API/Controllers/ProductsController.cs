@@ -29,6 +29,7 @@ namespace BatTrang.API.Controllers
         [OutputCache(PolicyName = "ProductsCache")]
         public async Task<IActionResult> GetProducts([FromQuery] ProductFilterDto filter)
         {
+            filter.IsAdmin = false;
             var result = await _productRepo.GetProductsAsync(filter);
             
             var productIds = result.Data.Select(p => p.Id).ToList();
@@ -98,7 +99,7 @@ namespace BatTrang.API.Controllers
         public async Task<IActionResult> GetProductBySlug(string slug)
         {
             var p = await _productRepo.GetProductBySlugAsync(slug);
-            if (p == null) return NotFound();
+            if (p == null || p.Status != "active") return NotFound();
 
             var gifts = await _context.ProductGifts
                 .Include(pg => pg.Gift)

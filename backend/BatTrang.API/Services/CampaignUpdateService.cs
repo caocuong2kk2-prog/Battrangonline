@@ -52,7 +52,7 @@ namespace BatTrang.API.Services
             var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var cacheStore = scope.ServiceProvider.GetRequiredService<IOutputCacheStore>();
 
-            var now = DateTime.UtcNow;
+            var now = DateTime.UtcNow.AddHours(7);
             bool dataChanged = false;
 
             // 1. Find active campaigns that are running right now
