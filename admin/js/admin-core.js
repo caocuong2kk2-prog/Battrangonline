@@ -1133,6 +1133,8 @@ document.addEventListener('DOMContentLoaded',function(){
     if (typeof signalR === 'undefined') {
       var script = document.createElement('script');
       script.src = 'https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js';
+      script.integrity = 'sha384-/taWmisziXYpcfnYsumSUmNaiMvG/fF/OJOUCLnqCIYTrpOZy7WbFF6FfIxwOrfL';
+      script.crossOrigin = 'anonymous';
       script.onload = function() {
         connect();
       };

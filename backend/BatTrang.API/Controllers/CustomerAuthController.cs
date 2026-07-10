@@ -113,7 +113,7 @@ namespace BatTrang.API.Controllers
                 }
             }
 
-            if (canUpgradeGuest)
+            if (canUpgradeGuest && existingUser != null)
             {
                 // Khách vãng lai đặt hàng trước → nâng cấp thành tài khoản thật một cách an toàn
                 existingUser.Name = request.Name;

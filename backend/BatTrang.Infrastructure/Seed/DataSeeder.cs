@@ -282,7 +282,7 @@ namespace BatTrang.Infrastructure.Seed
                     new SiteConfig { Key = "shipArea", Value = "Toàn quốc" },
                     new SiteConfig { Key = "logoUrl", Value = "assets/images/logo.png" },
                     new SiteConfig { Key = "homeBanner", Value = "assets/images/home_bg.jpeg" },
-                    new SiteConfig { Key = "ctaBanner", Value = "assets/images/bg.jpeg" },
+                    new SiteConfig { Key = "ctaBanner", Value = "assets/images/bg.webp" },
                     new SiteConfig { Key = "pageBanner", Value = "assets/images/journey-hero.jpg" },
                     new SiteConfig { Key = "productsBanner", Value = "assets/images/products-banner.jpg" },
                     new SiteConfig { Key = "journeyBanner", Value = "assets/images/journey-hero.jpg" },
@@ -889,6 +889,14 @@ namespace BatTrang.Infrastructure.Seed
                     await context.ProductGifts.AddRangeAsync(productGifts);
                     await context.SaveChangesAsync();
                 }
+            }
+
+            // Tự động sửa ctaBanner nếu trỏ tới ảnh cũ đã bị xóa (bg.jpeg hoặc bg.jpg)
+            var ctaConfig = await context.SiteConfigs.FirstOrDefaultAsync(c => c.Key == "ctaBanner");
+            if (ctaConfig != null && (ctaConfig.Value == "assets/images/bg.jpeg" || ctaConfig.Value == "assets/images/bg.jpg"))
+            {
+                ctaConfig.Value = "assets/images/bg.webp";
+                await context.SaveChangesAsync();
             }
 
             await EnsureProductAttributesAndVariantsAsync(context);

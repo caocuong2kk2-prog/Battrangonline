@@ -14,10 +14,12 @@ namespace BatTrang.API.Controllers.Admin
     public class AdminJourneyController : ControllerBase
     {
         private readonly IJourneyRepository _journeyRepo;
+        private readonly BatTrang.Infrastructure.Data.AppDbContext _context;
 
-        public AdminJourneyController(IJourneyRepository journeyRepo)
+        public AdminJourneyController(IJourneyRepository journeyRepo, BatTrang.Infrastructure.Data.AppDbContext context)
         {
             _journeyRepo = journeyRepo;
+            _context = context;
         }
 
         // ── TOPICS CRUD ──────────────────────────────────────────────────────
@@ -159,11 +161,9 @@ namespace BatTrang.API.Controllers.Admin
                 return BadRequest("Chủ đề không tồn tại.");
             }
 
-            // Clean up old files if they are replaced
-            if (video.Url != dto.Url?.Trim() && !string.IsNullOrEmpty(video.Url))
-                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(video.Url);
-            if (video.Thumbnail != dto.Thumbnail?.Trim() && !string.IsNullOrEmpty(video.Thumbnail))
-                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(video.Thumbnail);
+            // Clean up old files safely if they are replaced
+            var oldUrl = video.Url;
+            var oldThumbnail = video.Thumbnail;
 
             video.Title = dto.Title!.Trim();
             video.Url = dto.Url!.Trim();
@@ -172,6 +172,12 @@ namespace BatTrang.API.Controllers.Admin
             video.TopicId = topic.Id;
 
             await _journeyRepo.UpdateVideoAsync(video);
+
+            if (oldUrl != video.Url && !string.IsNullOrEmpty(oldUrl))
+                await SafeDeletePhysicalFileAsync(oldUrl, isThumbnail: false);
+            if (oldThumbnail != video.Thumbnail && !string.IsNullOrEmpty(oldThumbnail))
+                await SafeDeletePhysicalFileAsync(oldThumbnail, isThumbnail: true);
+
             return NoContent();
         }
 
@@ -186,10 +192,33 @@ namespace BatTrang.API.Controllers.Admin
 
             await _journeyRepo.DeleteVideoAsync(video);
 
-            if (!string.IsNullOrEmpty(url)) BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(url);
-            if (!string.IsNullOrEmpty(thumbnail)) BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(thumbnail);
+            if (!string.IsNullOrEmpty(url)) await SafeDeletePhysicalFileAsync(url, isThumbnail: false);
+            if (!string.IsNullOrEmpty(thumbnail)) await SafeDeletePhysicalFileAsync(thumbnail, isThumbnail: true);
 
             return NoContent();
+        }
+        private async Task SafeDeletePhysicalFileAsync(string fileUrl, bool isThumbnail)
+        {
+            if (string.IsNullOrEmpty(fileUrl)) return;
+
+            int count = 0;
+            if (isThumbnail)
+            {
+                count = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.CountAsync(
+                    System.Linq.Queryable.Where(_context.JourneyVideos, v => v.Thumbnail == fileUrl)
+                );
+            }
+            else
+            {
+                count = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.CountAsync(
+                    System.Linq.Queryable.Where(_context.JourneyVideos, v => v.Url == fileUrl)
+                );
+            }
+
+            if (count == 0)
+            {
+                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(fileUrl);
+            }
         }
     }
 }

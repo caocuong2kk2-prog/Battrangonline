@@ -347,15 +347,18 @@ namespace BatTrang.API.Controllers.Admin
             request.TransactionRef = dto.TransactionRef;
             request.ProcessedAt = System.DateTime.UtcNow.AddHours(7);
 
-            if (dto.Status != oldStatus && (dto.Status == "Paid" || dto.Status == "Rejected"))
+            if (dto.Status != oldStatus)
             {
-                if (dto.Status == "Paid")
+                if (dto.Status == "Paid" || oldStatus == "Paid")
                 {
                     var totalWithdrawn = await _context.WithdrawalRequests
-                        .Where(w => w.AffiliateId == request.AffiliateId && w.Status == "Paid")
+                        .Where(w => w.AffiliateId == request.AffiliateId && w.Id != request.Id && w.Status == "Paid")
                         .SumAsync(w => w.Amount);
                     
-                    totalWithdrawn += request.Amount;
+                    if (dto.Status == "Paid")
+                    {
+                        totalWithdrawn += request.Amount;
+                    }
 
                     var commissionsToMark = await _context.Commissions
                         .Where(c => c.AffiliateId == request.AffiliateId && (c.Status == "Approved" || c.Status == "Paid"))
@@ -376,28 +379,35 @@ namespace BatTrang.API.Controllers.Admin
                         }
                         else
                         {
-                            break;
+                            if (c.Status == "Paid")
+                            {
+                                c.Status = "Approved";
+                                c.ProcessedAt = null;
+                            }
                         }
                     }
                 }
 
-                string title = dto.Status == "Paid" ? "Đã chuyển tiền! 💸" : "Yêu cầu rút tiền bị từ chối ❌";
-                string msg = dto.Status == "Paid" 
-                    ? $"Yêu cầu rút {request.Amount:N0}đ của bạn đã được chuyển khoản thành công. {(string.IsNullOrEmpty(dto.Note) ? "" : "Ghi chú: " + dto.Note)}"
-                    : $"Yêu cầu rút {request.Amount:N0}đ của bạn đã bị từ chối. Lý do: {dto.Note}";
-
-                var noti = new BatTrang.Core.Entities.AffiliateNotification
+                if (dto.Status == "Paid" || dto.Status == "Rejected")
                 {
-                    AffiliateId = request.AffiliateId,
-                    Title = title,
-                    Message = msg,
-                    Type = "withdrawal",
-                    IsRead = false,
-                    CreatedAt = System.DateTime.UtcNow.AddHours(7)
-                };
-                _context.Set<BatTrang.Core.Entities.AffiliateNotification>().Add(noti);
-                
-                await _hubContext.Clients.Group($"Affiliate_{request.AffiliateId}").SendAsync("ReceiveAffiliateNotification", title, msg, "sync");
+                    string title = dto.Status == "Paid" ? "Đã chuyển tiền! 💸" : "Yêu cầu rút tiền bị từ chối ❌";
+                    string msg = dto.Status == "Paid" 
+                        ? $"Yêu cầu rút {request.Amount:N0}đ của bạn đã được chuyển khoản thành công. {(string.IsNullOrEmpty(dto.Note) ? "" : "Ghi chú: " + dto.Note)}"
+                        : $"Yêu cầu rút {request.Amount:N0}đ của bạn đã bị từ chối. Lý do: {dto.Note}";
+
+                    var noti = new BatTrang.Core.Entities.AffiliateNotification
+                    {
+                        AffiliateId = request.AffiliateId,
+                        Title = title,
+                        Message = msg,
+                        Type = "withdrawal",
+                        IsRead = false,
+                        CreatedAt = System.DateTime.UtcNow.AddHours(7)
+                    };
+                    _context.Set<BatTrang.Core.Entities.AffiliateNotification>().Add(noti);
+                    
+                    await _hubContext.Clients.Group($"Affiliate_{request.AffiliateId}").SendAsync("ReceiveAffiliateNotification", title, msg, "sync");
+                }
             }
 
             await _context.SaveChangesAsync();

@@ -83,6 +83,11 @@ namespace BatTrang.API.Controllers.Admin
             _context.Gifts.Update(gift);
             await _context.SaveChangesAsync();
 
+            if (gift.ImageUrl != dto.ImageUrl && !string.IsNullOrEmpty(gift.ImageUrl))
+            {
+                await SafeDeletePhysicalFileAsync(gift.ImageUrl);
+            }
+
             await _cacheStore.EvictByTagAsync("products", default);
             return NoContent();
         }
@@ -97,14 +102,18 @@ namespace BatTrang.API.Controllers.Admin
             var linkedProductGifts = _context.ProductGifts.Where(pg => pg.GiftId == id);
             _context.ProductGifts.RemoveRange(linkedProductGifts);
 
-            // Clean up files
-            if (!string.IsNullOrEmpty(gift.ImageUrl))
-            {
-                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(gift.ImageUrl);
-            }
+            var oldImageUrl = gift.ImageUrl;
 
             _context.Gifts.Remove(gift);
             await _context.SaveChangesAsync();
+
+            // Clean up files safely
+            if (!string.IsNullOrEmpty(oldImageUrl))
+            {
+                await SafeDeletePhysicalFileAsync(oldImageUrl);
+            }
+
+
 
             await _cacheStore.EvictByTagAsync("products", default);
             return NoContent();
@@ -115,6 +124,7 @@ namespace BatTrang.API.Controllers.Admin
         {
             if (dto.Ids == null || dto.Ids.Count == 0) return BadRequest(new { message = "Không có quà tặng nào được chọn." });
 
+            var oldImagesToDelete = new List<string>();
             int deleted = 0;
             foreach (var id in dto.Ids)
             {
@@ -124,23 +134,41 @@ namespace BatTrang.API.Controllers.Admin
                     var linkedProductGifts = _context.ProductGifts.Where(pg => pg.GiftId == id);
                     _context.ProductGifts.RemoveRange(linkedProductGifts);
 
-                    if (!string.IsNullOrEmpty(gift.ImageUrl))
-                    {
-                        BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(gift.ImageUrl);
-                    }
-
+                    var oldImageUrl = gift.ImageUrl;
                     _context.Gifts.Remove(gift);
                     deleted++;
+
+                    if (!string.IsNullOrEmpty(oldImageUrl))
+                    {
+                        oldImagesToDelete.Add(oldImageUrl);
+                    }
                 }
             }
 
             if (deleted > 0)
             {
                 await _context.SaveChangesAsync();
+                
+                foreach (var imgUrl in oldImagesToDelete)
+                {
+                    await SafeDeletePhysicalFileAsync(imgUrl);
+                }
                 await _cacheStore.EvictByTagAsync("products", default);
             }
 
             return Ok(new { message = $"Đã xóa {deleted} quà tặng." });
+        }
+        private async Task SafeDeletePhysicalFileAsync(string imageUrl)
+        {
+            if (string.IsNullOrEmpty(imageUrl)) return;
+
+            var giftCount = await _context.Gifts.CountAsync(g => g.ImageUrl == imageUrl);
+            var productImgCount = await _context.ProductImages.CountAsync(i => i.ImageUrl == imageUrl);
+
+            if (giftCount == 0 && productImgCount == 0)
+            {
+                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(imageUrl);
+            }
         }
     }
 

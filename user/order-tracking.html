@@ -625,7 +625,7 @@
   <div id="footer-placeholder"></div>
 
   <!-- SCRIPTS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js" integrity="sha384-/taWmisziXYpcfnYsumSUmNaiMvG/fF/OJOUCLnqCIYTrpOZy7WbFF6FfIxwOrfL" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="js/api.min.js?v=20260709_fix54" defer></script>
   <script src="js/cart.min.js?v=20260709_fix54" defer></script>
   <script src="js/promo.min.js?v=20260709_fix54" defer></script>
@@ -637,6 +637,16 @@
     // ============================================
     (function() {
       'use strict';
+
+      function escapeHtml(unsafe) {
+        if (unsafe === null || unsafe === undefined) return '';
+        return String(unsafe)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
 
       // Map status keys to Vietnamese text and CSS classes
       var STATUS_MAP = {
@@ -791,12 +801,14 @@
             fbAttr = ' data-fallback-images=\'' + JSON.stringify(allImages).replace(/'/g, '&apos;').replace(/"/g, '&quot;') + '\' data-fallback-index="0" onerror="window.handleImageFallback(this)"';
           }
 
+          var escapedImgUrl = escapeHtml(imgUrl);
+          var escapedItemName = escapeHtml(item.name);
           var isVideo = /\.(mp4|mov|avi|webm|ogg)$/i.test(imgUrl);
           var mediaHtml = isVideo
-            ? '<video src="' + imgUrl + '" autoplay loop muted playsinline onclick="openImgModal(this.src)" style="width: 64px; height: 64px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.12); flex-shrink: 0; cursor: pointer;"></video>'
-            : '<img src="' + imgUrl + '" alt="' + item.name + '" onclick="openImgModal(this.src)" style="width: 64px; height: 64px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.12); flex-shrink: 0; cursor: pointer;"' + fbAttr + '>';
+            ? '<video src="' + escapedImgUrl + '" autoplay loop muted playsinline onclick="openImgModal(this.src)" style="width: 64px; height: 64px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.12); flex-shrink: 0; cursor: pointer;"></video>'
+            : '<img src="' + escapedImgUrl + '" alt="' + escapedItemName + '" onclick="openImgModal(this.src)" style="width: 64px; height: 64px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.12); flex-shrink: 0; cursor: pointer;"' + fbAttr + '>';
 
-          var displayName = item.size ? item.name + ' - ' + item.size : item.name;
+          var displayName = escapeHtml(item.size ? item.name + ' - ' + item.size : item.name);
 
           var giftHtml = '';
           if (item.gifts && item.gifts.length > 0) {
@@ -804,9 +816,11 @@
             item.gifts.forEach(function(g, idx) {
               var gQty = g.quantity ? (g.quantity * item.qty) : item.qty;
               var mb = (idx === item.gifts.length - 1) ? '0' : '6px';
+              var escapedGName = escapeHtml(g.name);
+              var escapedGImg = escapeHtml(g.imageUrl || 'assets/images/placeholder.webp');
               giftHtml += '<div style="font-size:11.5px; color:#ffb74d; display:flex; align-items:center; gap:8px; margin-bottom:' + mb + ';">';
-              giftHtml += '<img src="' + (g.imageUrl || 'assets/images/placeholder.webp') + '" style="width:24px; height:24px; object-fit:cover; border-radius:4px; border:1px solid rgba(200,146,42,0.3); cursor:zoom-in; flex-shrink: 0;" onclick="if(window.showImageModal) window.showImageModal(\'' + (g.imageUrl || 'assets/images/placeholder.webp') + '\', \'' + g.name.replace(/'/g, "\\'") + '\')">';
-              giftHtml += '<span style="line-height:1.3; flex-grow:1; color:rgba(255,255,255,0.85); text-align:left;">Quà tặng: <strong style="color:#fff; font-weight:500;">' + g.name + '</strong> <b style="color:var(--color-accent); margin-left:2px;">x' + gQty + '</b></span>';
+              giftHtml += '<img src="' + escapedGImg + '" style="width:24px; height:24px; object-fit:cover; border-radius:4px; border:1px solid rgba(200,146,42,0.3); cursor:zoom-in; flex-shrink: 0;" onclick="if(window.showImageModal) window.showImageModal(\'' + escapedGImg.replace(/'/g, "\\'") + '\', \'' + escapedGName.replace(/'/g, "\\'") + '\')">';
+              giftHtml += '<span style="line-height:1.3; flex-grow:1; color:rgba(255,255,255,0.85); text-align:left;">Quà tặng: <strong style="color:#fff; font-weight:500;">' + escapedGName + '</strong> <b style="color:var(--color-accent); margin-left:2px;">x' + gQty + '</b></span>';
               giftHtml += '</div>';
             });
             giftHtml += '</div>';
@@ -839,19 +853,27 @@
         var timelineCardHtml = renderTimelineHtml(order);
 
         // Map API properties
-        var rName = order.customerName || order.name || 'Quý khách';
-        var rPhone = order.customerPhone || order.phone || '';
-        var rAddress = order.address || '';
-        var rPayment = order.paymentMethod || 'Thanh toán khi nhận hàng (COD)';
+        var rName = escapeHtml(order.customerName || order.name || 'Quý khách');
+        var rPhone = escapeHtml(order.customerPhone || order.phone || '');
+        var rAddress = escapeHtml(order.address || '');
+        var rPayment = escapeHtml(order.paymentMethod || 'Thanh toán khi nhận hàng (COD)');
+        
+        var escapedOrderCode = escapeHtml(order.orderCode);
+        var escapedDate = escapeHtml(window.formatDate ? window.formatDate(order.date) : order.date);
+        var escapedStatusClass = escapeHtml(statusInfo.cls);
+        var escapedStatusText = escapeHtml(statusInfo.text);
+        var escapedTotalVND = escapeHtml(totalVND);
+        var escapedCancelReason = escapeHtml(order.cancelReason);
+        var escapedCustomerNote = escapeHtml(order.customerNote);
 
         return [
           '<div class="order-summary-card">',
             '<div class="order-summary-header">',
               '<div class="order-header-info">',
-                '<span class="order-code-badge">' + order.orderCode + '</span>',
-                '<span class="order-date-label">Ngày đặt: ' + (window.formatDate ? window.formatDate(order.date) : order.date) + '</span>',
+                '<span class="order-code-badge">' + escapedOrderCode + '</span>',
+                '<span class="order-date-label">Ngày đặt: ' + escapedDate + '</span>',
               '</div>',
-              '<span class="order-badge-status ' + statusInfo.cls + '">' + statusInfo.text + '</span>',
+              '<span class="order-badge-status ' + escapedStatusClass + '">' + escapedStatusText + '</span>',
             '</div>',
             '<div class="order-summary-body">',
               '<div class="order-quick-details">',
@@ -861,14 +883,14 @@
               '</div>',
               '<div class="order-total-price">',
                 '<span class="label">Tổng thanh toán</span>',
-                '<span class="price">' + totalVND + '</span>',
+                '<span class="price">' + escapedTotalVND + '</span>',
               '</div>',
             '</div>',
             '<div class="order-summary-footer" style="display:flex; justify-content:flex-end; gap:8px;">',
               (order.isCancelRequested ? '<span style="color:#d97706; font-size:var(--fs-xs); align-self:center; margin-right:auto; font-weight:600;"><i class="fas fa-spinner fa-spin"></i> Đang chờ duyệt hủy</span>' : ''),
-              (!order.isCancelRequested && order.status !== 'cancelled' && order.cancelReason && order.cancelReason.indexOf('Bị từ chối') !== -1 ? '<span style="color:#dc2626; font-size:var(--fs-xs); align-self:center; margin-right:auto; font-weight:600;" title="' + order.cancelReason.replace(/"/g, '&quot;') + '"><i class="fas fa-exclamation-circle"></i> ' + order.cancelReason.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>' : ''),
-              (order.status === 'pending' ? '<button type="button" class="btn-cancel-order" onclick="openCancelModal(\'' + order.orderCode + '\', \'' + rPhone + '\', \'pending\')" style="background:none; border:1px solid #dc2626; color:#dc2626; padding:8px 16px; border-radius:var(--radius-sm); font-size:var(--fs-xs); font-weight:600; cursor:pointer;">HỦY ĐƠN HÀNG</button>' : ''),
-              (order.status === 'confirmed' && !order.isCancelRequested && (!order.cancelReason || order.cancelReason.indexOf('Bị từ chối') === -1) ? '<button type="button" class="btn-cancel-order" onclick="openCancelModal(\'' + order.orderCode + '\', \'' + rPhone + '\', \'confirmed\')" style="background:none; border:1px solid #dc2626; color:#dc2626; padding:8px 16px; border-radius:var(--radius-sm); font-size:var(--fs-xs); font-weight:600; cursor:pointer;">YÊU CẦU HỦY</button>' : ''),
+              (!order.isCancelRequested && order.status !== 'cancelled' && order.cancelReason && order.cancelReason.indexOf('Bị từ chối') !== -1 ? '<span style="color:#dc2626; font-size:var(--fs-xs); align-self:center; margin-right:auto; font-weight:600;" title="' + escapedCancelReason + '"><i class="fas fa-exclamation-circle"></i> ' + escapedCancelReason + '</span>' : ''),
+              (order.status === 'pending' ? '<button type="button" class="btn-cancel-order" onclick="openCancelModal(\'' + escapedOrderCode.replace(/'/g, "\\'") + '\', \'' + rPhone.replace(/'/g, "\\'") + '\', \'pending\')" style="background:none; border:1px solid #dc2626; color:#dc2626; padding:8px 16px; border-radius:var(--radius-sm); font-size:var(--fs-xs); font-weight:600; cursor:pointer;">HỦY ĐƠN HÀNG</button>' : ''),
+              (order.status === 'confirmed' && !order.isCancelRequested && (!order.cancelReason || order.cancelReason.indexOf('Bị từ chối') === -1) ? '<button type="button" class="btn-cancel-order" onclick="openCancelModal(\'' + escapedOrderCode.replace(/'/g, "\\'") + '\', \'' + rPhone.replace(/'/g, "\\'") + '\', \'confirmed\')" style="background:none; border:1px solid #dc2626; color:#dc2626; padding:8px 16px; border-radius:var(--radius-sm); font-size:var(--fs-xs); font-weight:600; cursor:pointer;">YÊU CẦU HỦY</button>' : ''),
               '<button type="button" class="btn-toggle-details" onclick="toggleOrderDetails(' + index + ')">XEM TIẾN TRÌNH & CHI TIẾT</button>',
             '</div>',
             
@@ -881,7 +903,7 @@
                     '<p><strong>' + rName + '</strong></p>',
                     '<p style="color: rgba(255,255,255,0.6); margin-top: 2px;">' + rPhone + '</p>',
                     '<p style="margin-top: 4px; color: rgba(255,255,255,0.45); font-size: var(--fs-xs); line-height: 1.5;">' + rAddress + '</p>',
-                    (order.customerNote ? '<p class="success-grid__note" style="display:block; margin-top:8px; color:var(--accent); font-weight:600;"><i class="fas fa-comment-dots"></i> Lời dặn: ' + order.customerNote + '</p>' : ''),
+                    (order.customerNote ? '<p class="success-grid__note" style="display:block; margin-top:8px; color:var(--accent); font-weight:600;"><i class="fas fa-comment-dots"></i> Lời dặn: ' + escapedCustomerNote + '</p>' : ''),
                   '</div>',
                   '<div>',
                     '<p class="success-grid__title">Hình thức thanh toán</p>',
@@ -1294,7 +1316,7 @@
         if (currentUser && token) {
           if (searchCardContainer) searchCardContainer.style.display = 'none';
           
-          var fullName = currentUser.name || [currentUser.firstName, currentUser.lastName].filter(Boolean).join(' ') || 'Quý khách';
+          var fullName = escapeHtml(currentUser.name || [currentUser.firstName, currentUser.lastName].filter(Boolean).join(' ') || 'Quý khách');
           var titleHtml = '<div style="text-align: center; margin-bottom: var(--space-8);">' +
                           '<h2 class="tracking-title" style="margin-bottom: var(--space-2);">Lịch Sử Đơn Hàng</h2>' +
                           '<p style="color: var(--color-accent); font-weight: 600; font-size: var(--fs-md);">Xin chào, ' + fullName + '</p>' +

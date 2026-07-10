@@ -276,6 +276,8 @@ function renderLayout(activePage, title) {
         if (typeof signalR === 'undefined') {
             const script = document.createElement('script');
             script.src = 'https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js';
+            script.integrity = 'sha384-/taWmisziXYpcfnYsumSUmNaiMvG/fF/OJOUCLnqCIYTrpOZy7WbFF6FfIxwOrfL';
+            script.crossOrigin = 'anonymous';
             script.onload = () => connectAffiliateSignalR(affiliateId);
             document.head.appendChild(script);
         } else {
@@ -286,7 +288,9 @@ function renderLayout(activePage, title) {
     function connectAffiliateSignalR(affiliateId) {
         if (typeof signalR === 'undefined') {
             const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js';
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js';
+            script.integrity = 'sha384-/taWmisziXYpcfnYsumSUmNaiMvG/fF/OJOUCLnqCIYTrpOZy7WbFF6FfIxwOrfL';
+            script.crossOrigin = 'anonymous';
             script.onload = () => initSignalR(affiliateId);
             document.head.appendChild(script);
         } else {

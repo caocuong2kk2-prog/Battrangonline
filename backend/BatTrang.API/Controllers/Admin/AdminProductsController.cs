@@ -327,7 +327,7 @@ namespace BatTrang.API.Controllers.Admin
                 if (r.Images != null)
                 {
                     foreach (var img in r.Images)
-                        BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(img.ImageUrl);
+                        await SafeDeletePhysicalFileAsync(img.ImageUrl);
                 }
                 product.Variants.Remove(r);
             }
@@ -383,7 +383,7 @@ namespace BatTrang.API.Controllers.Admin
                             var orphanedVImages = oldVImages.Where(oldImg => vDto.Images == null || !vDto.Images.Contains(oldImg));
                             foreach (var orphan in orphanedVImages)
                             {
-                                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(orphan);
+                                await SafeDeletePhysicalFileAsync(orphan);
                             }
                             existing.Price = vDto.Price;
                             existing.OriginalPrice = vDto.OriginalPrice;
@@ -461,7 +461,7 @@ namespace BatTrang.API.Controllers.Admin
                 
                 foreach(var img in imagesToDelete)
                 {
-                    BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(img);
+                    await SafeDeletePhysicalFileAsync(img);
                 }
             }
             catch (Microsoft.EntityFrameworkCore.DbUpdateException)
@@ -493,7 +493,7 @@ namespace BatTrang.API.Controllers.Admin
                         
                         foreach(var img in imagesToDelete)
                         {
-                            BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(img);
+                            await SafeDeletePhysicalFileAsync(img);
                         }
                     }
                     catch (Microsoft.EntityFrameworkCore.DbUpdateException)
@@ -582,6 +582,21 @@ namespace BatTrang.API.Controllers.Admin
             }
             return stringBuilder.ToString().Normalize(NormalizationForm.FormC)
                                 .Replace("đ", "d").Replace("Đ", "D");
+        }
+
+        private async Task SafeDeletePhysicalFileAsync(string imageUrl)
+        {
+            if (string.IsNullOrWhiteSpace(imageUrl)) return;
+            
+            // Check if any other ProductImage uses this URL
+            bool isReferencedInProducts = await _context.Set<ProductImage>().AnyAsync(i => i.ImageUrl == imageUrl);
+            // Check if any Gift uses this URL
+            bool isReferencedInGifts = await _context.Gifts.AnyAsync(g => g.ImageUrl == imageUrl);
+            
+            if (!isReferencedInProducts && !isReferencedInGifts)
+            {
+                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(imageUrl);
+            }
         }
     }
 }

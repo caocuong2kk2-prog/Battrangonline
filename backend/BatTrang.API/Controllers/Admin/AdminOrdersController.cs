@@ -443,7 +443,7 @@ namespace BatTrang.API.Controllers.Admin
             bool sendAffiliateCommNoti = false;
             int? affiliateIdForNoti = null;
             bool sendCommCreatedAdminNoti = false;
-            string commCreatedAdminMsg = null;
+            string? commCreatedAdminMsg = null;
             byte[]? invoicePdfBytes = null;
             string? invoiceEmail = null;
             string? invoiceCustomerName = null;

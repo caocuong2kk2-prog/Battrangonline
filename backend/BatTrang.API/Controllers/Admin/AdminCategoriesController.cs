@@ -15,11 +15,13 @@ namespace BatTrang.API.Controllers.Admin
     {
         private readonly ICategoryRepository _categoryRepo;
         private readonly IOutputCacheStore _cacheStore;
+        private readonly BatTrang.Infrastructure.Data.AppDbContext _context;
 
-        public AdminCategoriesController(ICategoryRepository categoryRepo, IOutputCacheStore cacheStore)
+        public AdminCategoriesController(ICategoryRepository categoryRepo, IOutputCacheStore cacheStore, BatTrang.Infrastructure.Data.AppDbContext context)
         {
             _categoryRepo = categoryRepo;
             _cacheStore = cacheStore;
+            _context = context;
         }
 
         [HttpPost]
@@ -53,8 +55,7 @@ namespace BatTrang.API.Controllers.Admin
             var category = await _categoryRepo.GetBySlugAsync(id);
             if (category == null) return NotFound();
 
-            if (category.Icon != dto.Icon && !string.IsNullOrEmpty(category.Icon))
-                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(category.Icon);
+            var oldIcon = category.Icon;
 
             category.Name = dto.Name;
             category.Icon = dto.Icon;
@@ -62,6 +63,11 @@ namespace BatTrang.API.Controllers.Admin
             category.Faqs = dto.Faqs;
             category.ParentId = dto.ParentId > 0 ? dto.ParentId : null;
             await _categoryRepo.UpdateAsync(category);
+
+            if (oldIcon != dto.Icon && !string.IsNullOrEmpty(oldIcon))
+            {
+                await SafeDeletePhysicalFileAsync(oldIcon);
+            }
 
             await _cacheStore.EvictByTagAsync("filters", default);
             return NoContent();
@@ -79,7 +85,7 @@ namespace BatTrang.API.Controllers.Admin
 
             if (!string.IsNullOrEmpty(icon))
             {
-                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(icon);
+                await SafeDeletePhysicalFileAsync(icon);
             }
 
             await _cacheStore.EvictByTagAsync("filters", default);
@@ -91,6 +97,7 @@ namespace BatTrang.API.Controllers.Admin
         {
             if (dto.Ids == null || dto.Ids.Count == 0) return BadRequest("Không có danh mục nào được chọn.");
             
+            var oldIconsToDelete = new System.Collections.Generic.List<string>();
             int deleted = 0;
             foreach(var id in dto.Ids)
             {
@@ -101,7 +108,7 @@ namespace BatTrang.API.Controllers.Admin
                     await _categoryRepo.DeleteAsync(category);
                     if (!string.IsNullOrEmpty(icon))
                     {
-                        BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(icon);
+                        oldIconsToDelete.Add(icon);
                     }
                     deleted++;
                 }
@@ -109,9 +116,27 @@ namespace BatTrang.API.Controllers.Admin
 
             if (deleted > 0)
             {
+                foreach (var icon in oldIconsToDelete)
+                {
+                    await SafeDeletePhysicalFileAsync(icon);
+                }
                 await _cacheStore.EvictByTagAsync("filters", default);
             }
             return Ok(new { message = $"Đã xóa {deleted} danh mục." });
+        }
+
+        private async Task SafeDeletePhysicalFileAsync(string iconUrl)
+        {
+            if (string.IsNullOrEmpty(iconUrl)) return;
+
+            var count = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.CountAsync(
+                System.Linq.Queryable.Where(_context.Categories, c => c.Icon == iconUrl)
+            );
+
+            if (count == 0)
+            {
+                BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(iconUrl);
+            }
         }
     }
 

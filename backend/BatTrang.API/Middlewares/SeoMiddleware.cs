@@ -264,17 +264,22 @@ namespace BatTrang.API.Middlewares
                             finalHtml = Regex.Replace(finalHtml, @"<link\s+rel=[""']canonical[""'][^>]*>", "", RegexOptions.IgnoreCase);
                             finalHtml = Regex.Replace(finalHtml, @"<script\s+type=[""']application/ld\+json[""'][^>]*>.*?</script>", "", RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
+                            var encTitle = System.Net.WebUtility.HtmlEncode(title);
+                            var encDescription = System.Net.WebUtility.HtmlEncode(description);
+                            var encOgImage = System.Net.WebUtility.HtmlEncode(ogImage);
+                            var encUrl = System.Net.WebUtility.HtmlEncode($"{context.Request.Scheme}://{context.Request.Host}/{slug}");
+
                             string headTags = $@"
-  <meta property=""og:title"" content=""{title}"">
-  <meta property=""og:description"" content=""{description}"">
-  <meta property=""og:image"" content=""{ogImage}"">
+  <meta property=""og:title"" content=""{encTitle}"">
+  <meta property=""og:description"" content=""{encDescription}"">
+  <meta property=""og:image"" content=""{encOgImage}"">
   <meta property=""og:type"" content=""product"">
-  <meta property=""og:url"" content=""{context.Request.Scheme}://{context.Request.Host}/{slug}"">
+  <meta property=""og:url"" content=""{encUrl}"">
   <meta name=""twitter:card"" content=""summary_large_image"">
-  <meta name=""twitter:title"" content=""{title}"">
-  <meta name=""twitter:description"" content=""{description}"">
-  <meta name=""twitter:image"" content=""{ogImage}"">
-  <link rel=""canonical"" href=""{context.Request.Scheme}://{context.Request.Host}/{slug}"" />
+  <meta name=""twitter:title"" content=""{encTitle}"">
+  <meta name=""twitter:description"" content=""{encDescription}"">
+  <meta name=""twitter:image"" content=""{encOgImage}"">
+  <link rel=""canonical"" href=""{encUrl}"" />
 {jsonLd}
 </head>";
                             finalHtml = Regex.Replace(finalHtml, @"</head>", headTags, RegexOptions.IgnoreCase);
@@ -348,17 +353,22 @@ namespace BatTrang.API.Middlewares
   }}
   </script>";
 
+                            var encTitle = System.Net.WebUtility.HtmlEncode(title);
+                            var encDescription = System.Net.WebUtility.HtmlEncode(description);
+                            var encOgImage = System.Net.WebUtility.HtmlEncode(ogImage);
+                            var encUrl = System.Net.WebUtility.HtmlEncode($"{context.Request.Scheme}://{context.Request.Host}/danh-muc/{categorySlug}");
+
                             string ogTags = $@"
-  <meta property=""og:title"" content=""{title}"">
-  <meta property=""og:description"" content=""{description}"">
-  <meta property=""og:image"" content=""{ogImage}"">
+  <meta property=""og:title"" content=""{encTitle}"">
+  <meta property=""og:description"" content=""{encDescription}"">
+  <meta property=""og:image"" content=""{encOgImage}"">
   <meta property=""og:type"" content=""website"">
-  <meta property=""og:url"" content=""{context.Request.Scheme}://{context.Request.Host}/danh-muc/{categorySlug}"">
+  <meta property=""og:url"" content=""{encUrl}"">
   <meta name=""twitter:card"" content=""summary_large_image"">
-  <meta name=""twitter:title"" content=""{title}"">
-  <meta name=""twitter:description"" content=""{description}"">
-  <meta name=""twitter:image"" content=""{ogImage}"">
-  <link rel=""canonical"" href=""{context.Request.Scheme}://{context.Request.Host}/danh-muc/{categorySlug}"" />
+  <meta name=""twitter:title"" content=""{encTitle}"">
+  <meta name=""twitter:description"" content=""{encDescription}"">
+  <meta name=""twitter:image"" content=""{encOgImage}"">
+  <link rel=""canonical"" href=""{encUrl}"" />
 {orgSchema}
 </head>";
                             finalHtml = Regex.Replace(finalHtml, @"</head>", ogTags, RegexOptions.IgnoreCase);
@@ -404,13 +414,18 @@ namespace BatTrang.API.Middlewares
                             finalHtml = Regex.Replace(finalHtml, @"<meta\s+name=[""']description[""']\s+content=[""'].*?[""']\s*>", $"<meta name=\"description\" content=\"{description}\">", RegexOptions.IgnoreCase | RegexOptions.Singleline);
                             
                             string ogImage = $"{context.Request.Scheme}://{context.Request.Host}/assets/images/journey-hero.jpg";
+                            var encTitle = System.Net.WebUtility.HtmlEncode(title);
+                            var encDescription = System.Net.WebUtility.HtmlEncode(description);
+                            var encOgImage = System.Net.WebUtility.HtmlEncode(ogImage);
+                            var encUrl = System.Net.WebUtility.HtmlEncode($"{context.Request.Scheme}://{context.Request.Host}/journey?topic={topicSlug}");
+
                             string ogTags = $@"
-  <meta property=""og:title"" content=""{title}"">
-  <meta property=""og:description"" content=""{description}"">
-  <meta property=""og:image"" content=""{ogImage}"">
+  <meta property=""og:title"" content=""{encTitle}"">
+  <meta property=""og:description"" content=""{encDescription}"">
+  <meta property=""og:image"" content=""{encOgImage}"">
   <meta property=""og:type"" content=""website"">
-  <meta property=""og:url"" content=""{context.Request.Scheme}://{context.Request.Host}/journey?topic={topicSlug}"">
-  <link rel=""canonical"" href=""{context.Request.Scheme}://{context.Request.Host}/journey?topic={topicSlug}"" />
+  <meta property=""og:url"" content=""{encUrl}"">
+  <link rel=""canonical"" href=""{encUrl}"" />
 </head>";
                             finalHtml = Regex.Replace(finalHtml, @"</head>", ogTags, RegexOptions.IgnoreCase);
                             
