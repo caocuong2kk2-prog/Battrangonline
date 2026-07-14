@@ -209,6 +209,13 @@ namespace BatTrang.API.Controllers.Admin
                     catch (Exception ex)
                     {
                         Console.WriteLine($"[CRM Link Error] {ex.Message}");
+                        // Detach failed customer entities to prevent context pollution
+                        foreach (var entry in _context.ChangeTracker.Entries<Customer>()
+                            .Where(e => e.State == EntityState.Added).ToList())
+                        {
+                            entry.State = EntityState.Detached;
+                        }
+                        customerId = null;
                     }
 
                     var order = new Order
@@ -327,64 +334,72 @@ namespace BatTrang.API.Controllers.Admin
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    var created = await _orderRepo.GetByOrderCodeAsync(order.OrderCode);
-                    if (created == null) return StatusCode(500, new { message = "Không thể tải đơn hàng vừa tạo" });
-
-                    try
+                    try 
                     {
-                        var msg = $"Đơn hàng #{created.OrderCode} vừa được tạo tại cửa hàng.";
-                        var noti = new BatTrang.Core.Entities.Notification { Type = "OrderPlaced", Message = msg };
-                        _context.Notifications.Add(noti);
-                        await _context.SaveChangesAsync();
+                        var created = await _orderRepo.GetByOrderCodeAsync(order.OrderCode);
+                        if (created == null) return StatusCode(500, new { message = "Không thể tải đơn hàng vừa tạo" });
+
+                        try
+                        {
+                            var msg = $"Đơn hàng #{created.OrderCode} vừa được tạo tại cửa hàng.";
+                            var noti = new BatTrang.Core.Entities.Notification { Type = "OrderPlaced", Message = msg };
+                            _context.Notifications.Add(noti);
+                            await _context.SaveChangesAsync();
+                            
+                            await _hubContext.Clients.Group("Admins").SendAsync("ReceiveNotification", "OrderPlaced", msg);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"[SignalR Push Error] {ex.Message}");
+                        }
+
+                        var productIds = created.Items.Select(i => i.ProductId).Distinct().ToList();
+                        var productImages = await _productRepo.GetProductImagesAsync(productIds);
+                        await _cacheStore.EvictByTagAsync("products", default);
                         
-                        await _hubContext.Clients.Group("Admins").SendAsync("ReceiveNotification", "OrderPlaced", msg);
+                        if (status == "completed")
+                        {
+                            // Cập nhật TotalSold khi tạo đơn hoàn thành ngay
+                            foreach (var item in created.Items)
+                            {
+                                if (item.ProductId > 0 && !item.IsGift)
+                                {
+                                    await _context.Products.Where(p => p.Id == item.ProductId)
+                                        .ExecuteUpdateAsync(s => s.SetProperty(p => p.TotalSold, p => p.TotalSold + item.Quantity));
+                                }
+                            }
+
+                            var _commissionService = HttpContext.RequestServices.GetService<BatTrang.Infrastructure.Services.CommissionService>();
+                            if (_commissionService != null) {
+                                bool commissionCreated = await _commissionService.ProcessOrderCommissionAsync(created.OrderCode);
+                                if (commissionCreated && created.AffiliateId.HasValue)
+                                {
+                                    await _hubContext.Clients.Group($"Affiliate_{created.AffiliateId.Value}").SendAsync("ReceiveAffiliateNotification", "Cập nhật hoa hồng", "Bạn có thông báo mới", "sync");
+                                }
+                                if (commissionCreated)
+                                {
+                                    try
+                                    {
+                                        var msg = $"Đơn hàng #{created.OrderCode} vừa tạo hoa hồng chờ duyệt cho CTV.";
+                                        var noti = new BatTrang.Core.Entities.Notification { Type = "CommissionCreated", Message = msg };
+                                        _context.Notifications.Add(noti);
+                                        await _context.SaveChangesAsync();
+                                        await _hubContext.Clients.Group("Admins").SendAsync("ReceiveNotification", "CommissionCreated", msg);
+                                    }
+                                    catch (Exception ex) {
+                                        Console.WriteLine($"[SignalR Push Error] Commission notification: {ex.Message}");
+                                    }
+                                }
+                            }
+                        }
+                        
+                        return Ok(MapToDto(created, productImages));
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[SignalR Push Error] {ex.Message}");
+                        Console.WriteLine($"[Post-Commit Logic Error] {ex.Message}");
+                        return Ok(new { message = "Đơn hàng đã được tạo thành công, nhưng có lỗi khi xử lý một số tác vụ nền.", orderCode = order.OrderCode });
                     }
-
-                    var productIds = created.Items.Select(i => i.ProductId).Distinct().ToList();
-                    var productImages = await _productRepo.GetProductImagesAsync(productIds);
-                    await _cacheStore.EvictByTagAsync("products", default);
-                    
-                    if (status == "completed")
-                    {
-                        // Cập nhật TotalSold khi tạo đơn hoàn thành ngay
-                        foreach (var item in created.Items)
-                        {
-                            if (item.ProductId > 0 && !item.IsGift)
-                            {
-                                await _context.Products.Where(p => p.Id == item.ProductId)
-                                    .ExecuteUpdateAsync(s => s.SetProperty(p => p.TotalSold, p => p.TotalSold + item.Quantity));
-                            }
-                        }
-
-                        var _commissionService = HttpContext.RequestServices.GetService<BatTrang.Infrastructure.Services.CommissionService>();
-                        if (_commissionService != null) {
-                            bool commissionCreated = await _commissionService.ProcessOrderCommissionAsync(created.OrderCode);
-                            if (commissionCreated && created.AffiliateId.HasValue)
-                            {
-                                await _hubContext.Clients.Group($"Affiliate_{created.AffiliateId.Value}").SendAsync("ReceiveAffiliateNotification", "Cập nhật hoa hồng", "Bạn có thông báo mới", "sync");
-                            }
-                            if (commissionCreated)
-                            {
-                                try
-                                {
-                                    var msg = $"Đơn hàng #{created.OrderCode} vừa tạo hoa hồng chờ duyệt cho CTV.";
-                                    var noti = new BatTrang.Core.Entities.Notification { Type = "CommissionCreated", Message = msg };
-                                    _context.Notifications.Add(noti);
-                                    await _context.SaveChangesAsync();
-                                    await _hubContext.Clients.Group("Admins").SendAsync("ReceiveNotification", "CommissionCreated", msg);
-                                }
-                                catch (Exception ex) {
-                                    Console.WriteLine($"[SignalR Push Error] Commission notification: {ex.Message}");
-                                }
-                            }
-                        }
-                    }
-                    
-                    return Ok(MapToDto(created, productImages));
                 }
                 catch (Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException)
                 {
@@ -418,6 +433,12 @@ namespace BatTrang.API.Controllers.Admin
                     if (order == null) return NotFound();
 
                     var oldStatus = (order.Status ?? "").ToLowerInvariant();
+
+                    if (oldStatus == newStatus && !order.IsCancelRequested) 
+                    {
+                        await transaction.RollbackAsync();
+                        return Ok();
+                    }
 
             order.Status = newStatus;
             order.IsCancelRequested = false; // Xóa cờ xin hủy nếu admin đổi trạng thái
@@ -564,6 +585,11 @@ namespace BatTrang.API.Controllers.Admin
                             var gift = await _context.Gifts.FindAsync(item.GiftId.Value);
                             if (gift != null && gift.Stock.HasValue)
                             {
+                                if (gift.Stock.Value < item.Quantity)
+                                {
+                                    await transaction.RollbackAsync();
+                                    return BadRequest(new { message = $"Không đủ tồn kho quà tặng '{gift.Name}' để khôi phục đơn hàng (còn {gift.Stock}, cần {item.Quantity})." });
+                                }
                                 gift.Stock -= item.Quantity;
                                 _context.Gifts.Update(gift);
                             }
@@ -579,7 +605,8 @@ namespace BatTrang.API.Controllers.Admin
                                     var adjustResult = await _stockService.AdjustStockAsync(variant.Id, -item.Quantity, saveChanges: false);
                                     if (!adjustResult.Success)
                                     {
-                                        throw new Exception($"Không đủ tồn kho để khôi phục đơn hàng cho sản phẩm '{product.Name}'.");
+                                        await transaction.RollbackAsync();
+                                        return BadRequest(new { message = $"Không đủ tồn kho để khôi phục đơn hàng cho sản phẩm '{product.Name}'." });
                                     }
                                 }
                             }
@@ -730,7 +757,14 @@ namespace BatTrang.API.Controllers.Admin
                 return BadRequest(new { message = "Chỉ có thể xóa các đơn hàng đã bị Hủy để đảm bảo không thất thoát tồn kho." });
             }
 
-            await _orderRepo.DeleteAsync(order);
+            try
+            {
+                await _orderRepo.DeleteAsync(order);
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+            {
+                return BadRequest(new { message = "Không thể xóa đơn hàng này do có dữ liệu liên quan." });
+            }
 
             try
             {
@@ -753,7 +787,8 @@ namespace BatTrang.API.Controllers.Admin
         {
             for (var i = 0; i < 20; i++)
             {
-                var code = "DH" + DateTime.UtcNow.AddHours(7).ToString("yyMMdd") + Random.Shared.Next(1000, 9999);
+                var uniquePart = Guid.NewGuid().ToString("N").Substring(0, 5).ToUpper();
+                var code = "DH" + DateTime.UtcNow.AddHours(7).ToString("yyMMdd") + uniquePart;
                 if (await _orderRepo.GetByOrderCodeAsync(code) == null)
                     return code;
             }
@@ -771,7 +806,7 @@ namespace BatTrang.API.Controllers.Admin
                 Address = o.Address,
                 Total = o.Total,
                 Status = o.Status,
-                Date = o.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                Date = o.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss'+07:00'"),
                 CustomerNote = o.CustomerNote,
                 AdminNote = o.AdminNote,
                 IsCancelRequested = o.IsCancelRequested,
@@ -855,6 +890,16 @@ namespace BatTrang.API.Controllers.Admin
                     var productIdsToLoad = ordersToUpdate.SelectMany(o => o.Items).Where(i => i.ProductId > 0 && !i.IsGift).Select(i => i.ProductId).Distinct().ToList();
                     var preloadedProducts = await _context.Products.Where(p => productIdsToLoad.Contains(p.Id)).ToDictionaryAsync(p => p.Id);
 
+                    // Pre-load configs for invoice generation (avoid repeated DB queries in loop)
+                    Dictionary<string, string>? invoiceConfigDict = null;
+                    string? invoiceLogoPath = null;
+                    if (newStatus == "completed")
+                    {
+                        var configs = await _context.SiteConfigs.ToListAsync();
+                        invoiceConfigDict = configs.ToDictionary(c => c.Key, c => c.Value);
+                        invoiceLogoPath = BatTrang.Infrastructure.Services.InvoiceService.ResolveLogoPath();
+                    }
+
                     foreach (var order in ordersToUpdate)
                     {
                         var oldStatus = (order.Status ?? "").ToLowerInvariant();
@@ -912,10 +957,7 @@ namespace BatTrang.API.Controllers.Admin
                                     var fullOrder = await _context.Orders.Include(o => o.Items).FirstOrDefaultAsync(o => o.OrderCode == order.OrderCode);
                                     if (fullOrder != null)
                                     {
-                                        var configs = await _context.SiteConfigs.ToListAsync();
-                                        var configDict = configs.ToDictionary(c => c.Key, c => c.Value);
-                                        var logoPath = BatTrang.Infrastructure.Services.InvoiceService.ResolveLogoPath();
-                                        var pdfBytes = _invoiceService.GenerateInvoicePdf(fullOrder, configDict, logoPath);
+                                        var pdfBytes = _invoiceService.GenerateInvoicePdf(fullOrder, invoiceConfigDict!, invoiceLogoPath);
                                         if (!string.IsNullOrEmpty(fullOrder.CustomerEmail) && !string.IsNullOrEmpty(fullOrder.CustomerName) && !string.IsNullOrEmpty(fullOrder.OrderCode))
                                         {
                                             invoiceEmails.Add((fullOrder.CustomerEmail, fullOrder.CustomerName, fullOrder.OrderCode, pdfBytes));
@@ -1005,6 +1047,11 @@ namespace BatTrang.API.Controllers.Admin
                                         var gift = await _context.Gifts.FindAsync(item.GiftId.Value);
                                         if (gift != null && gift.Stock.HasValue)
                                         {
+                                            if (gift.Stock.Value < item.Quantity)
+                                            {
+                                                await transaction.RollbackAsync();
+                                                return BadRequest(new { message = $"Không đủ tồn kho quà tặng '{gift.Name}' để khôi phục đơn hàng (còn {gift.Stock}, cần {item.Quantity})." });
+                                            }
                                             gift.Stock -= item.Quantity;
                                             _context.Gifts.Update(gift);
                                         }
@@ -1020,7 +1067,8 @@ namespace BatTrang.API.Controllers.Admin
                                                 var adjustResult = await _stockService.AdjustStockAsync(variant.Id, -item.Quantity, saveChanges: false);
                                                 if (!adjustResult.Success)
                                                 {
-                                                    throw new Exception($"Không đủ tồn kho để khôi phục đơn hàng cho sản phẩm '{product.Name}'.");
+                                                    await transaction.RollbackAsync();
+                                                    return BadRequest(new { message = $"Không đủ tồn kho để khôi phục đơn hàng cho sản phẩm '{product.Name}'." });
                                                 }
                                             }
                                         }
@@ -1104,14 +1152,28 @@ namespace BatTrang.API.Controllers.Admin
             if (dto.Ids == null || dto.Ids.Count == 0) return BadRequest(new { message = "Không có đơn hàng nào được chọn" });
             
             int deletedCount = 0;
+            var failedIds = new List<string>();
             foreach (var id in dto.Ids)
             {
                 var order = await _orderRepo.GetByOrderCodeAsync(id);
                 if (order != null && (order.Status ?? "").ToLowerInvariant() == "cancelled")
                 {
-                    await _orderRepo.DeleteAsync(order);
-                    deletedCount++;
+                    try
+                    {
+                        await _orderRepo.DeleteAsync(order);
+                        deletedCount++;
+                    }
+                    catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+                    {
+                        failedIds.Add(id);
+                        _context.ChangeTracker.Clear();
+                    }
                 }
+            }
+            
+            if (failedIds.Any())
+            {
+                return Ok(new { success = true, message = $"Đã xóa {deletedCount} đơn hàng. Có {failedIds.Count} đơn hàng không thể xóa do đang được sử dụng." });
             }
             
             return Ok(new { message = $"Đã xóa {deletedCount} đơn hàng" });

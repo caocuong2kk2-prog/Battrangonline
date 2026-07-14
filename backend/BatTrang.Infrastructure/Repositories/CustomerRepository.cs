@@ -95,10 +95,14 @@ namespace BatTrang.Infrastructure.Repositories
                 return null;
             }
 
-            return await _context.Customers.FirstOrDefaultAsync(c => 
-                (!string.IsNullOrEmpty(cleanedEmail) && !string.IsNullOrEmpty(c.Email) && c.Email == cleanedEmail) || 
-                (!string.IsNullOrEmpty(normalizedPhone) && !string.IsNullOrEmpty(c.Phone) && 
-                    (c.Phone == normalizedPhone || c.Phone == rawPhone)));
+            return await _context.Customers
+                .Where(c => 
+                    (!string.IsNullOrEmpty(cleanedEmail) && !string.IsNullOrEmpty(c.Email) && c.Email == cleanedEmail) || 
+                    (!string.IsNullOrEmpty(normalizedPhone) && !string.IsNullOrEmpty(c.Phone) && 
+                        (c.Phone == normalizedPhone || c.Phone == rawPhone)))
+                .OrderByDescending(c => c.PasswordHash != null && c.PasswordHash != "")
+                .ThenByDescending(c => c.Id)
+                .FirstOrDefaultAsync();
         }
     }
 }

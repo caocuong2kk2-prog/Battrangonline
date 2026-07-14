@@ -15,10 +15,10 @@ namespace BatTrang.Infrastructure.Services
         private readonly HttpClient _httpClient;
         private readonly BatTrang.Core.Interfaces.ISiteConfigRepository _configRepo;
 
-        public NotificationService(IConfiguration config, BatTrang.Core.Interfaces.ISiteConfigRepository configRepo)
+        public NotificationService(IConfiguration config, BatTrang.Core.Interfaces.ISiteConfigRepository configRepo, HttpClient httpClient)
         {
             _config = config;
-            _httpClient = new HttpClient();
+            _httpClient = httpClient;
             _configRepo = configRepo;
         }
 

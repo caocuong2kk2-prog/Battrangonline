@@ -441,7 +441,7 @@ namespace BatTrang.API.Controllers
                 address = MaskAddress(order.Address),
                 total = order.Total,
                 status = order.Status,
-                date = order.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                date = order.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss'+07:00'"),
                 customerNote = order.CustomerNote,
                 adminNote = string.Empty, // Hide admin note from public search
                 isCancelRequested = order.IsCancelRequested,
@@ -491,7 +491,7 @@ namespace BatTrang.API.Controllers
                 address = order.Address,
                 total = order.Total,
                 status = order.Status,
-                date = order.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ"),
+                date = order.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss'+07:00'"),
                 customerNote = order.CustomerNote,
                 adminNote = order.AdminNote,
                 isCancelRequested = order.IsCancelRequested,
@@ -540,7 +540,7 @@ namespace BatTrang.API.Controllers
                 var orderPhone = NormalizePhoneNumber(order.CustomerPhone);
                 var customerPhone = NormalizePhoneNumber(customer.Phone);
                 bool isPhoneMatch = !string.IsNullOrEmpty(orderPhone) && orderPhone == customerPhone;
-                bool isEmailMatch = !string.IsNullOrEmpty(order.CustomerEmail) && order.CustomerEmail.Trim().ToLower() == customer.Email?.Trim().ToLower();
+                bool isEmailMatch = !string.IsNullOrEmpty(order.CustomerEmail) && !string.IsNullOrEmpty(customer.Email) && order.CustomerEmail.Trim().Equals(customer.Email.Trim(), StringComparison.OrdinalIgnoreCase);
 
                 if (isPhoneMatch || isEmailMatch)
                 {
@@ -604,9 +604,8 @@ namespace BatTrang.API.Controllers
                         await _orderRepo.UpdateAsync(order);
 
                         // Hoàn kho ngay
-                        var _stockService = HttpContext.RequestServices.GetService<BatTrang.Infrastructure.Services.StockService>();
-                        var _productRepo = HttpContext.RequestServices.GetService<BatTrang.Core.Interfaces.IProductRepository>();
-                        if (_stockService != null && _productRepo != null)
+                        var stockService = HttpContext.RequestServices.GetService<BatTrang.Infrastructure.Services.StockService>();
+                        if (stockService != null)
                         {
                             foreach (var item in order.Items)
                             {
@@ -627,7 +626,7 @@ namespace BatTrang.API.Controllers
                                         var variant = product.Variants.FirstOrDefault(v => v.Size?.Name == item.Size) ?? product.Variants.FirstOrDefault();
                                         if (variant != null)
                                         {
-                                            await _stockService.AdjustStockAsync(variant.Id, item.Quantity, saveChanges: false);
+                                            await stockService.AdjustStockAsync(variant.Id, item.Quantity, saveChanges: false);
                                         }
                                     }
                                 }
@@ -725,23 +724,23 @@ namespace BatTrang.API.Controllers
         {
             var statusHistory = new List<object>
             {
-                new { status = "pending", time = order.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ssZ") }
+                new { status = "pending", time = order.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss'+07:00'") }
             };
             if (order.ConfirmedAt.HasValue)
             {
-                statusHistory.Add(new { status = "confirmed", time = order.ConfirmedAt.Value.ToString("yyyy-MM-ddTHH:mm:ssZ") });
+                statusHistory.Add(new { status = "confirmed", time = order.ConfirmedAt.Value.ToString("yyyy-MM-ddTHH:mm:ss'+07:00'") });
             }
             if (order.ShippingAt.HasValue)
             {
-                statusHistory.Add(new { status = "shipping", time = order.ShippingAt.Value.ToString("yyyy-MM-ddTHH:mm:ssZ") });
+                statusHistory.Add(new { status = "shipping", time = order.ShippingAt.Value.ToString("yyyy-MM-ddTHH:mm:ss'+07:00'") });
             }
             if (order.CompletedAt.HasValue)
             {
-                statusHistory.Add(new { status = "completed", time = order.CompletedAt.Value.ToString("yyyy-MM-ddTHH:mm:ssZ") });
+                statusHistory.Add(new { status = "completed", time = order.CompletedAt.Value.ToString("yyyy-MM-ddTHH:mm:ss'+07:00'") });
             }
             if (order.CancelledAt.HasValue)
             {
-                statusHistory.Add(new { status = "cancelled", time = order.CancelledAt.Value.ToString("yyyy-MM-ddTHH:mm:ssZ") });
+                statusHistory.Add(new { status = "cancelled", time = order.CancelledAt.Value.ToString("yyyy-MM-ddTHH:mm:ss'+07:00'") });
             }
             return statusHistory;
         }
@@ -803,7 +802,10 @@ namespace BatTrang.API.Controllers
             var parts = address.Split(',');
             if (parts.Length == 0) return string.Empty;
             var street = parts[0].Trim();
-            if (parts.Length == 1) return street;
+            if (parts.Length == 1)
+            {
+                return street.Length > 8 ? street.Substring(0, 8) + "***" : "***";
+            }
             return street + ", ***";
         }
 
@@ -855,7 +857,8 @@ namespace BatTrang.API.Controllers
         {
             for (var i = 0; i < 20; i++)
             {
-                var code = "DH" + DateTime.UtcNow.AddHours(7).ToString("yyMMdd") + Random.Shared.Next(1000, 9999);
+                var uniquePart = Guid.NewGuid().ToString("N").Substring(0, 5).ToUpper();
+                var code = "DH" + DateTime.UtcNow.AddHours(7).ToString("yyMMdd") + uniquePart;
                 if (await _orderRepo.GetByOrderCodeAsync(code) == null)
                     return code;
             }

@@ -55,7 +55,19 @@ namespace BatTrang.API.Services
             var now = DateTime.UtcNow.AddHours(7);
             bool dataChanged = false;
 
-            // 1. Find active campaigns that are running right now
+            // 1. Mark campaigns as ended FIRST so they are excluded from active price computation
+            var expiredCampaigns = await dbContext.Campaigns
+                .Where(c => c.Status == "active" && c.EndDate <= now)
+                .ToListAsync(stoppingToken);
+
+            foreach (var campaign in expiredCampaigns)
+            {
+                campaign.Status = "ended";
+                dataChanged = true;
+                _logger.LogInformation($"Campaign '{campaign.Name}' has automatically ended.");
+            }
+
+            // 2. Find active campaigns that are running right now (expired ones are already marked 'ended')
             var activeCampaigns = await dbContext.Campaigns
                 .Include(c => c.CampaignProducts)
                 .Where(c => c.Status == "active" && c.StartDate <= now && c.EndDate > now)
@@ -70,8 +82,7 @@ namespace BatTrang.API.Services
                 .GroupBy(x => x.ProductId)
                 .ToDictionary(g => g.Key, g => g.Max(x => x.DiscountPercent));
 
-            // Fetch variants for all products currently in db with CampaignPrice set OR those that need it set
-            // Wait, we need to clear CampaignPrice from products NOT in productMaxDiscounts anymore
+            // 3. Clear CampaignPrice from products NOT in any active campaign anymore
             var variantsWithCampaignPrice = await dbContext.ProductVariants
                 .Where(v => v.CampaignPrice != null)
                 .ToListAsync(stoppingToken);
@@ -86,7 +97,7 @@ namespace BatTrang.API.Services
                 }
             }
 
-            // Now apply to variants that should have CampaignPrice
+            // 4. Apply CampaignPrice to variants in active campaigns
             if (productMaxDiscounts.Any())
             {
                 var productIdsToApply = productMaxDiscounts.Keys.ToList();
@@ -105,18 +116,6 @@ namespace BatTrang.API.Services
                         dataChanged = true;
                     }
                 }
-            }
-
-            // 2. Mark campaigns as ended if EndDate <= now
-            var expiredCampaigns = await dbContext.Campaigns
-                .Where(c => c.Status == "active" && c.EndDate <= now)
-                .ToListAsync(stoppingToken);
-
-            foreach (var campaign in expiredCampaigns)
-            {
-                campaign.Status = "ended";
-                dataChanged = true;
-                _logger.LogInformation($"Campaign '{campaign.Name}' has automatically ended.");
             }
 
             if (dataChanged)

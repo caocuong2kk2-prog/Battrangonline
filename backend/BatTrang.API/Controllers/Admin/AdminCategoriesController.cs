@@ -81,7 +81,14 @@ namespace BatTrang.API.Controllers.Admin
 
             var icon = category.Icon;
 
-            await _categoryRepo.DeleteAsync(category);
+            try
+            {
+                await _categoryRepo.DeleteAsync(category);
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+            {
+                return BadRequest(new { message = "Không thể xóa danh mục này do có dữ liệu (ví dụ: sản phẩm) đang sử dụng." });
+            }
 
             if (!string.IsNullOrEmpty(icon))
             {
@@ -98,29 +105,44 @@ namespace BatTrang.API.Controllers.Admin
             if (dto.Ids == null || dto.Ids.Count == 0) return BadRequest("Không có danh mục nào được chọn.");
             
             var oldIconsToDelete = new System.Collections.Generic.List<string>();
+            var failedIds = new System.Collections.Generic.List<string>();
             int deleted = 0;
+            
             foreach(var id in dto.Ids)
             {
                 var category = await _categoryRepo.GetBySlugAsync(id);
                 if (category != null)
                 {
                     var icon = category.Icon;
-                    await _categoryRepo.DeleteAsync(category);
-                    if (!string.IsNullOrEmpty(icon))
+                    try
                     {
-                        oldIconsToDelete.Add(icon);
+                        await _categoryRepo.DeleteAsync(category);
+                        if (!string.IsNullOrEmpty(icon))
+                        {
+                            oldIconsToDelete.Add(icon);
+                        }
+                        deleted++;
                     }
-                    deleted++;
+                    catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+                    {
+                        failedIds.Add(id);
+                        _context.ChangeTracker.Clear();
+                    }
                 }
             }
 
             if (deleted > 0)
             {
-                foreach (var icon in oldIconsToDelete)
+                foreach (var icon in oldIconsToDelete.Distinct())
                 {
                     await SafeDeletePhysicalFileAsync(icon);
                 }
                 await _cacheStore.EvictByTagAsync("filters", default);
+            }
+
+            if (failedIds.Any())
+            {
+                return Ok(new { success = true, message = $"Đã xóa {deleted} danh mục. Có {failedIds.Count} danh mục không thể xóa do đang được sử dụng." });
             }
             return Ok(new { message = $"Đã xóa {deleted} danh mục." });
         }

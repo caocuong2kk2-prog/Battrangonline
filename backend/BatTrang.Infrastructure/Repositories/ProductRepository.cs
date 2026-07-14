@@ -223,6 +223,7 @@ namespace BatTrang.Infrastructure.Repositories
         {
             return await _context.Products
                 .Include(p => p.Variants)
+                .AsNoTracking()
                 .AsSplitQuery()
                 .ToListAsync();
         }

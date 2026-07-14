@@ -126,6 +126,20 @@ namespace BatTrang.API.Controllers
 
             if (!string.IsNullOrEmpty(request.NewPassword))
             {
+                if (string.IsNullOrEmpty(request.CurrentPassword))
+                {
+                    return BadRequest(new { message = "Vui lòng nhập mật khẩu hiện tại để đổi mật khẩu." });
+                }
+
+                bool isCurrentValid = false;
+                try { isCurrentValid = BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.Password); }
+                catch { /* Ignore BCrypt errors for invalid hash formats */ }
+
+                if (!isCurrentValid)
+                {
+                    return BadRequest(new { message = "Mật khẩu hiện tại không chính xác." });
+                }
+
                 user.Password = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
             }
 
@@ -147,6 +161,7 @@ namespace BatTrang.API.Controllers
     {
         public string Name { get; set; } = null!;
         public string Username { get; set; } = null!;
+        public string? CurrentPassword { get; set; }
         public string? NewPassword { get; set; }
     }
 

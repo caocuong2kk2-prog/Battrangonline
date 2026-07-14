@@ -115,6 +115,16 @@ namespace BatTrang.API.Controllers
 
             if (canUpgradeGuest && existingUser != null)
             {
+                // Đảm bảo Email người dùng nhập không bị trùng với một tài khoản thật khác trong hệ thống
+                if (!string.IsNullOrEmpty(request.Email))
+                {
+                    var emailConflict = _context.Customers.Any(c => c.Email == request.Email && c.Id != existingUser.Id);
+                    if (emailConflict)
+                    {
+                        return BadRequest(new { message = "Email này đã được sử dụng bởi một tài khoản khác. Vui lòng chọn Email khác." });
+                    }
+                }
+
                 // Khách vãng lai đặt hàng trước → nâng cấp thành tài khoản thật một cách an toàn
                 existingUser.Name = request.Name;
                 existingUser.Email = request.Email;
@@ -268,7 +278,7 @@ namespace BatTrang.API.Controllers
                 return BadRequest(new { message = "Yêu cầu khôi phục đã hết hạn. Vui lòng thử lại." });
             }
 
-            if (!BCrypt.Net.BCrypt.Verify(request.TokenOrOtp, user.ResetToken))
+            if (string.IsNullOrEmpty(user.ResetToken) || !BCrypt.Net.BCrypt.Verify(request.TokenOrOtp, user.ResetToken))
             {
                 return BadRequest(new { message = "Mã xác nhận không chính xác hoặc không hợp lệ." });
             }

@@ -66,12 +66,11 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IContactRepository, ContactRepository>();
 builder.Services.AddScoped<ISiteConfigRepository, SiteConfigRepository>();
 builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
-builder.Services.AddScoped<BatTrang.Infrastructure.Services.NotificationService>();
+builder.Services.AddHttpClient<BatTrang.Infrastructure.Services.NotificationService>();
 builder.Services.AddScoped<BatTrang.Infrastructure.Services.StockService>();
 builder.Services.AddScoped<BatTrang.Infrastructure.Services.CommissionService>();
 builder.Services.AddScoped<BatTrang.Infrastructure.Services.InvoiceService>();
 builder.Services.AddHttpClient<BatTrang.Infrastructure.Services.ReCaptchaService>();
-builder.Services.AddScoped<BatTrang.Infrastructure.Services.ReCaptchaService>();
 builder.Services.AddSingleton<BatTrang.Infrastructure.Services.FileCleanupService>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<BatTrang.Infrastructure.Services.FileCleanupService>());
 builder.Services.AddHostedService<BatTrang.API.Services.BadgeUpdateService>();
@@ -255,8 +254,9 @@ app.Use(async (context, next) =>
         "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; " +
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
         "font-src 'self' https://fonts.gstatic.com; " +
-        "img-src 'self' data: https://battrangonline.vn https://phucgiatien.vn; " +
+        "img-src 'self' data: https://battrangonline.vn https://phucgiatien.vn https://*.youtube.com https://img.youtube.com https://*.google.com https://*.googleusercontent.com; " +
         "connect-src 'self' ws://localhost:5055 wss://phucgiatien.vn wss://www.phucgiatien.vn; " +
+        "frame-src 'self' https://www.google.com https://*.google.com https://www.youtube.com https://*.youtube.com; " +
         "form-action 'self'; " +
         "frame-ancestors 'none';");
     await next();

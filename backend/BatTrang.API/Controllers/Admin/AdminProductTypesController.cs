@@ -72,10 +72,17 @@ namespace BatTrang.API.Controllers.Admin
         {
             var entity = await _context.ProductTypes.FindAsync(id);
             if (entity == null) return NotFound();
-            _context.ProductTypes.Remove(entity);
-            await _context.SaveChangesAsync();
-            await _cacheStore.EvictByTagAsync("filters", default);
-            return NoContent();
+            try
+            {
+                _context.ProductTypes.Remove(entity);
+                await _context.SaveChangesAsync();
+                await _cacheStore.EvictByTagAsync("filters", default);
+                return NoContent();
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+            {
+                return BadRequest(new { message = "Không thể xóa thuộc tính này do có dữ liệu sản phẩm đang sử dụng." });
+            }
         }
 
         [HttpPost("bulk-delete")]
@@ -84,13 +91,34 @@ namespace BatTrang.API.Controllers.Admin
             if (dto.Ids == null || dto.Ids.Count == 0) return BadRequest(new { message = "Không có mục nào được chọn." });
 
             var entities = await _context.ProductTypes.Where(x => dto.Ids.Contains(x.Id)).ToListAsync();
-            if (entities.Any())
+            int deleted = 0;
+            int failed = 0;
+
+            foreach (var entity in entities)
             {
-                _context.ProductTypes.RemoveRange(entities);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    _context.ProductTypes.Remove(entity);
+                    await _context.SaveChangesAsync();
+                    deleted++;
+                }
+                catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+                {
+                    failed++;
+                    _context.ChangeTracker.Clear();
+                }
+            }
+
+            if (deleted > 0)
+            {
                 await _cacheStore.EvictByTagAsync("filters", default);
             }
-            return Ok(new { message = $"Đã xóa {entities.Count} mục." });
+
+            if (failed > 0)
+            {
+                return Ok(new { message = $"Đã xóa {deleted} mục. Bỏ qua {failed} mục do đang được sử dụng." });
+            }
+            return Ok(new { message = $"Đã xóa {deleted} mục." });
         }
     }
 }

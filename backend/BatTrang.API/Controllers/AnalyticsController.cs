@@ -266,11 +266,13 @@ namespace BatTrang.API.Controllers
                 totalUniqueCustomers = periodPhones.Count;
                 // Đếm khách quay lại: có > 1 đơn hàng (tổng cộng tất cả thời gian) với cùng SĐT
                 repeatCustomers = 0;
-                foreach (var phone in periodPhones)
-                {
-                    var totalOrdersForPhone = await _context.Orders.CountAsync(o => o.CustomerPhone == phone);
-                    if (totalOrdersForPhone > 1) repeatCustomers++;
-                }
+                var phoneOrderCounts = await _context.Orders
+                    .AsNoTracking()
+                    .Where(o => o.CustomerPhone != null && periodPhones.Contains(o.CustomerPhone))
+                    .GroupBy(o => o.CustomerPhone)
+                    .Select(g => new { Phone = g.Key, Count = g.Count() })
+                    .ToListAsync();
+                repeatCustomers = phoneOrderCounts.Count(x => x.Count > 1);
             }
             else
             {

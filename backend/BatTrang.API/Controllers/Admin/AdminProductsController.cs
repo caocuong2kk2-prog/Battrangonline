@@ -10,6 +10,7 @@ using System;
 using System.Text.RegularExpressions;
 using System.Text;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.EntityFrameworkCore;
 
 namespace BatTrang.API.Controllers.Admin
@@ -23,13 +24,15 @@ namespace BatTrang.API.Controllers.Admin
         private readonly ICategoryRepository _categoryRepo;
         private readonly BatTrang.Infrastructure.Data.AppDbContext _context;
         private readonly IOutputCacheStore _cacheStore;
+        private readonly IMemoryCache _cache;
 
-        public AdminProductsController(IProductRepository productRepo, ICategoryRepository categoryRepo, BatTrang.Infrastructure.Data.AppDbContext context, IOutputCacheStore cacheStore)
+        public AdminProductsController(IProductRepository productRepo, ICategoryRepository categoryRepo, BatTrang.Infrastructure.Data.AppDbContext context, IOutputCacheStore cacheStore, IMemoryCache cache)
         {
             _productRepo = productRepo;
             _categoryRepo = categoryRepo;
             _context = context;
             _cacheStore = cacheStore;
+            _cache = cache;
         }
 
         [HttpGet]
@@ -112,6 +115,14 @@ namespace BatTrang.API.Controllers.Admin
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ProductDto dto)
         {
+            if (dto.Variants != null)
+            {
+                foreach (var v in dto.Variants)
+                {
+                    if (v.Price > 1000000000) return BadRequest(new { message = "Giá bán của mỗi phiên bản không được vượt quá 1 tỷ đồng (1.000.000.000 VNĐ)!" });
+                    if (v.Stock > 1000) return BadRequest(new { message = "Số lượng tồn kho của mỗi phiên bản không được vượt quá 1.000 chiếc!" });
+                }
+            }
             if (!string.IsNullOrWhiteSpace(dto.Sku))
             {
                 dto.Sku = RemoveDiacritics(dto.Sku).ToUpperInvariant().Trim();
@@ -171,24 +182,16 @@ namespace BatTrang.API.Controllers.Admin
             {
                 foreach (var v in dto.Variants)
                 {
-                    if (v.Price > 1000000000)
-                    {
-                        return BadRequest(new { message = "Giá bán của mỗi phiên bản không được vượt quá 1 tỷ đồng (1.000.000.000 VNĐ)!" });
-                    }
-                    if (v.Stock > 1000)
-                    {
-                        return BadRequest(new { message = "Số lượng tồn kho của mỗi phiên bản không được vượt quá 1.000 chiếc!" });
-                    }
 
                     if (v.SizeId == null && !string.IsNullOrWhiteSpace(v.SizeName))
                     {
                         var sizeNameStr = v.SizeName.Trim();
-                        var existingSize = _context.Sizes.FirstOrDefault(s => s.Name == sizeNameStr);
+                        var existingSize = await _context.Sizes.FirstOrDefaultAsync(s => s.Name == sizeNameStr);
                         if (existingSize == null)
                         {
                             existingSize = new Size { Name = sizeNameStr, ValueInCm = ParseCmFromName(sizeNameStr) };
                             _context.Sizes.Add(existingSize);
-                            _context.SaveChanges();
+                            await _context.SaveChangesAsync();
                         }
                         v.SizeId = existingSize.Id;
                     }
@@ -229,7 +232,7 @@ namespace BatTrang.API.Controllers.Admin
 
             if (dto.Gifts != null && dto.Gifts.Any())
             {
-                foreach (var gift in dto.Gifts)
+                foreach (var gift in dto.Gifts.GroupBy(g => g.Id).Select(g => g.First()))
                 {
                     _context.ProductGifts.Add(new ProductGift
                     {
@@ -242,7 +245,7 @@ namespace BatTrang.API.Controllers.Admin
             }
             else if (dto.GiftIds != null && dto.GiftIds.Any())
             {
-                foreach (var giftId in dto.GiftIds)
+                foreach (var giftId in dto.GiftIds.Distinct())
                 {
                     _context.ProductGifts.Add(new ProductGift
                     {
@@ -256,6 +259,7 @@ namespace BatTrang.API.Controllers.Admin
 
             dto.Id = product.Id;
             await _cacheStore.EvictByTagAsync("products", default);
+            InvalidateFeaturedCache();
             await _cacheStore.EvictByTagAsync("filters", default);
             return CreatedAtAction(nameof(GetAll), new { id = product.Id }, dto);
         }
@@ -263,6 +267,14 @@ namespace BatTrang.API.Controllers.Admin
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] ProductDto dto)
         {
+            if (dto.Variants != null)
+            {
+                foreach (var vDto in dto.Variants)
+                {
+                    if (vDto.Price > 1000000000) return BadRequest(new { message = "Giá bán của mỗi phiên bản không được vượt quá 1 tỷ đồng (1.000.000.000 VNĐ)!" });
+                    if (vDto.Stock > 1000) return BadRequest(new { message = "Số lượng tồn kho của mỗi phiên bản không được vượt quá 1.000 chiếc!" });
+                }
+            }
             if (!string.IsNullOrWhiteSpace(dto.Sku))
             {
                 dto.Sku = RemoveDiacritics(dto.Sku).ToUpperInvariant().Trim();
@@ -316,19 +328,25 @@ namespace BatTrang.API.Controllers.Admin
             product.MetaDescription = dto.MetaDescription;
             product.Faqs = dto.Faqs;
             product.CommissionRate = dto.CommissionRate ?? 10.0m;
+            product.UpdatedAt = DateTime.UtcNow.AddHours(7);
 
             // Sync variants
             product.Variants ??= new List<ProductVariant>();
             var incomingIds = dto.Variants?.Select(v => v.Id).Where(vId => vId > 0).ToList() ?? new List<int>();
             var toRemove = product.Variants.Where(v => !incomingIds.Contains(v.Id)).ToList();
+            var imagesToDelete = new List<string>();
             foreach (var r in toRemove)
             {
                 // Delete physical files of removed variants
                 if (r.Images != null)
                 {
                     foreach (var img in r.Images)
-                        await SafeDeletePhysicalFileAsync(img.ImageUrl);
+                    {
+                        imagesToDelete.Add(img.ImageUrl);
+                        _context.ProductImages.Remove(img);
+                    }
                 }
+                _context.ProductVariants.Remove(r);
                 product.Variants.Remove(r);
             }
 
@@ -336,24 +354,16 @@ namespace BatTrang.API.Controllers.Admin
             {
                 foreach (var vDto in dto.Variants)
                 {
-                    if (vDto.Price > 1000000000)
-                    {
-                        return BadRequest(new { message = "Giá bán của mỗi phiên bản không được vượt quá 1 tỷ đồng (1.000.000.000 VNĐ)!" });
-                    }
-                    if (vDto.Stock > 1000)
-                    {
-                        return BadRequest(new { message = "Số lượng tồn kho của mỗi phiên bản không được vượt quá 1.000 chiếc!" });
-                    }
 
                     if (vDto.SizeId == null && !string.IsNullOrWhiteSpace(vDto.SizeName))
                     {
                         var sizeNameStr = vDto.SizeName.Trim();
-                        var existingSize = _context.Sizes.FirstOrDefault(s => s.Name == sizeNameStr);
+                        var existingSize = await _context.Sizes.FirstOrDefaultAsync(s => s.Name == sizeNameStr);
                         if (existingSize == null)
                         {
                             existingSize = new Size { Name = sizeNameStr, ValueInCm = ParseCmFromName(sizeNameStr) };
                             _context.Sizes.Add(existingSize);
-                            _context.SaveChanges();
+                            await _context.SaveChangesAsync();
                         }
                         vDto.SizeId = existingSize.Id;
                     }
@@ -370,20 +380,29 @@ namespace BatTrang.API.Controllers.Admin
                             existing.PatternId = vDto.PatternId;
                             existing.GlazeLineId = vDto.GlazeLineId;
                             
-                            var oldVImages = existing.Images?.Select(i => i.ImageUrl).ToList() ?? new List<string>();
                             existing.Images ??= new List<ProductImage>();
-                            existing.Images.Clear();
-                            if (vDto.Images != null)
+                            var newImageUrls = vDto.Images ?? new List<string>();
+                            
+                            var imagesToRemove = existing.Images.Where(i => !newImageUrls.Contains(i.ImageUrl)).ToList();
+                            foreach (var img in imagesToRemove)
                             {
-                                for (int i = 0; i < vDto.Images.Count; i++)
-                                {
-                                    existing.Images.Add(new ProductImage { ImageUrl = vDto.Images[i], SortOrder = i });
-                                }
+                                existing.Images.Remove(img);
+                                _context.ProductImages.Remove(img);
+                                imagesToDelete.Add(img.ImageUrl);
                             }
-                            var orphanedVImages = oldVImages.Where(oldImg => vDto.Images == null || !vDto.Images.Contains(oldImg));
-                            foreach (var orphan in orphanedVImages)
+
+                            for (int i = 0; i < newImageUrls.Count; i++)
                             {
-                                await SafeDeletePhysicalFileAsync(orphan);
+                                var url = newImageUrls[i];
+                                var existingImg = existing.Images.FirstOrDefault(img => img.ImageUrl == url);
+                                if (existingImg != null)
+                                {
+                                    existingImg.SortOrder = i;
+                                }
+                                else
+                                {
+                                    existing.Images.Add(new ProductImage { ImageUrl = url, SortOrder = i });
+                                }
                             }
                             existing.Price = vDto.Price;
                             existing.OriginalPrice = vDto.OriginalPrice;
@@ -413,35 +432,54 @@ namespace BatTrang.API.Controllers.Admin
             await _productRepo.UpdateAsync(product);
 
             // Sync gifts
-            var existingGifts = _context.ProductGifts.Where(pg => pg.ProductId == id).ToList();
-            _context.ProductGifts.RemoveRange(existingGifts);
+            var existingGifts = await _context.ProductGifts.Where(pg => pg.ProductId == id).ToListAsync();
+            var newGiftIds = new HashSet<int>();
+            var newGiftQuantities = new Dictionary<int, int>();
+
             if (dto.Gifts != null && dto.Gifts.Any())
             {
                 foreach (var gift in dto.Gifts)
                 {
-                    _context.ProductGifts.Add(new ProductGift
-                    {
-                        ProductId = id,
-                        GiftId = gift.Id,
-                        Quantity = gift.Quantity > 0 ? gift.Quantity : 1
-                    });
+                    newGiftIds.Add(gift.Id);
+                    newGiftQuantities[gift.Id] = gift.Quantity > 0 ? gift.Quantity : 1;
                 }
             }
             else if (dto.GiftIds != null && dto.GiftIds.Any())
             {
                 foreach (var giftId in dto.GiftIds)
                 {
-                    _context.ProductGifts.Add(new ProductGift
-                    {
-                        ProductId = id,
-                        GiftId = giftId,
-                        Quantity = 1
-                    });
+                    newGiftIds.Add(giftId);
+                    newGiftQuantities[giftId] = 1;
                 }
+            }
+
+            var giftsToRemove = existingGifts.Where(g => !newGiftIds.Contains(g.GiftId)).ToList();
+            _context.ProductGifts.RemoveRange(giftsToRemove);
+
+            foreach (var existingG in existingGifts.Where(g => newGiftIds.Contains(g.GiftId)))
+            {
+                existingG.Quantity = newGiftQuantities.TryGetValue(existingG.GiftId, out int q) ? q : 1;
+            }
+
+            var toAddGiftIds = newGiftIds.Where(gid => !existingGifts.Any(eg => eg.GiftId == gid)).ToList();
+            foreach (var gid in toAddGiftIds)
+            {
+                _context.ProductGifts.Add(new ProductGift
+                {
+                    ProductId = id,
+                    GiftId = gid,
+                    Quantity = newGiftQuantities.TryGetValue(gid, out int q) ? q : 1
+                });
             }
             await _context.SaveChangesAsync();
 
+            foreach(var img in imagesToDelete.Distinct())
+            {
+                await SafeDeletePhysicalFileAsync(img);
+            }
+
             await _cacheStore.EvictByTagAsync("products", default);
+            InvalidateFeaturedCache();
             await _cacheStore.EvictByTagAsync("filters", default);
             return NoContent();
         }
@@ -453,12 +491,12 @@ namespace BatTrang.API.Controllers.Admin
             var product = await _productRepo.GetProductWithImagesAsync(id);
             if (product == null) return NotFound();
 
-            var imagesToDelete = product.Variants?.SelectMany(v => v.Images?.Select(i => i.ImageUrl) ?? new List<string>()).ToList() ?? new List<string>();
+            var imagesToDelete = product.Variants?.SelectMany(v => v.Images?.Select(i => i.ImageUrl) ?? new List<string>()).Distinct().ToList() ?? new List<string>();
 
             try
             {
                 await _productRepo.DeleteAsync(product);
-                
+
                 foreach(var img in imagesToDelete)
                 {
                     await SafeDeletePhysicalFileAsync(img);
@@ -470,6 +508,7 @@ namespace BatTrang.API.Controllers.Admin
             }
 
             await _cacheStore.EvictByTagAsync("products", default);
+            InvalidateFeaturedCache();
             await _cacheStore.EvictByTagAsync("filters", default);
             return NoContent();
         }
@@ -486,7 +525,7 @@ namespace BatTrang.API.Controllers.Admin
                 var product = await _productRepo.GetProductWithImagesAsync(id);
                 if (product != null)
                 {
-                    var imagesToDelete = product.Variants?.SelectMany(v => v.Images?.Select(i => i.ImageUrl) ?? new List<string>()).ToList() ?? new List<string>();
+                    var imagesToDelete = product.Variants?.SelectMany(v => v.Images?.Select(i => i.ImageUrl) ?? new List<string>()).Distinct().ToList() ?? new List<string>();
                     try
                     {
                         await _productRepo.DeleteAsync(product);
@@ -499,12 +538,14 @@ namespace BatTrang.API.Controllers.Admin
                     catch (Microsoft.EntityFrameworkCore.DbUpdateException)
                     {
                         failedIds.Add(id);
-                        // Bỏ qua và tiếp tục xóa các sản phẩm khác
+                        // Bỏ qua và tiếp tục xóa các sản phẩm khác, cần clear ChangeTracker để tránh lỗi cascade
+                        _context.ChangeTracker.Clear();
                     }
                 }
             }
             
             await _cacheStore.EvictByTagAsync("products", default);
+            InvalidateFeaturedCache();
             await _cacheStore.EvictByTagAsync("filters", default);
             
             if (failedIds.Any())
@@ -524,10 +565,12 @@ namespace BatTrang.API.Controllers.Admin
                 if (product != null)
                 {
                     product.Status = dto.Status;
+                    product.UpdatedAt = DateTime.UtcNow.AddHours(7);
                     await _productRepo.UpdateAsync(product);
                 }
             }
             await _cacheStore.EvictByTagAsync("products", default);
+            InvalidateFeaturedCache();
             await _cacheStore.EvictByTagAsync("filters", default);
             return NoContent();
         }
@@ -597,6 +640,12 @@ namespace BatTrang.API.Controllers.Admin
             {
                 BatTrang.API.Helpers.FileHelper.DeletePhysicalFile(imageUrl);
             }
+        }
+
+        private void InvalidateFeaturedCache()
+        {
+            for (int i = 1; i <= 20; i++)
+                _cache.Remove($"featured_products_{i}");
         }
     }
 }

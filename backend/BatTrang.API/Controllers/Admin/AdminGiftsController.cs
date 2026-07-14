@@ -73,6 +73,8 @@ namespace BatTrang.API.Controllers.Admin
             var gift = await _context.Gifts.FindAsync(id);
             if (gift == null) return NotFound();
 
+            var oldImageUrl = gift.ImageUrl;
+
             gift.Name = dto.Name;
             gift.ImageUrl = dto.ImageUrl;
             gift.EstimatedValue = dto.EstimatedValue;
@@ -83,9 +85,9 @@ namespace BatTrang.API.Controllers.Admin
             _context.Gifts.Update(gift);
             await _context.SaveChangesAsync();
 
-            if (gift.ImageUrl != dto.ImageUrl && !string.IsNullOrEmpty(gift.ImageUrl))
+            if (oldImageUrl != dto.ImageUrl && !string.IsNullOrEmpty(oldImageUrl))
             {
-                await SafeDeletePhysicalFileAsync(gift.ImageUrl);
+                await SafeDeletePhysicalFileAsync(oldImageUrl);
             }
 
             await _cacheStore.EvictByTagAsync("products", default);
@@ -104,8 +106,15 @@ namespace BatTrang.API.Controllers.Admin
 
             var oldImageUrl = gift.ImageUrl;
 
-            _context.Gifts.Remove(gift);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Gifts.Remove(gift);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest(new { message = "Không thể xóa quà tặng này vì đã có dữ liệu liên quan." });
+            }
 
             // Clean up files safely
             if (!string.IsNullOrEmpty(oldImageUrl))
@@ -125,35 +134,50 @@ namespace BatTrang.API.Controllers.Admin
             if (dto.Ids == null || dto.Ids.Count == 0) return BadRequest(new { message = "Không có quà tặng nào được chọn." });
 
             var oldImagesToDelete = new List<string>();
+            var failedIds = new List<int>();
             int deleted = 0;
+            
             foreach (var id in dto.Ids)
             {
                 var gift = await _context.Gifts.FindAsync(id);
                 if (gift != null)
                 {
-                    var linkedProductGifts = _context.ProductGifts.Where(pg => pg.GiftId == id);
-                    _context.ProductGifts.RemoveRange(linkedProductGifts);
-
-                    var oldImageUrl = gift.ImageUrl;
-                    _context.Gifts.Remove(gift);
-                    deleted++;
-
-                    if (!string.IsNullOrEmpty(oldImageUrl))
+                    try
                     {
-                        oldImagesToDelete.Add(oldImageUrl);
+                        var linkedProductGifts = _context.ProductGifts.Where(pg => pg.GiftId == id);
+                        _context.ProductGifts.RemoveRange(linkedProductGifts);
+
+                        var oldImageUrl = gift.ImageUrl;
+                        _context.Gifts.Remove(gift);
+                        
+                        await _context.SaveChangesAsync(); // Lưu từng cái để bắt lỗi riêng biệt
+                        deleted++;
+
+                        if (!string.IsNullOrEmpty(oldImageUrl))
+                        {
+                            oldImagesToDelete.Add(oldImageUrl);
+                        }
+                    }
+                    catch (DbUpdateException)
+                    {
+                        failedIds.Add(id);
+                        _context.ChangeTracker.Clear(); // Clear tracker nếu lỗi để tránh lan truyền
                     }
                 }
             }
 
             if (deleted > 0)
             {
-                await _context.SaveChangesAsync();
-                
-                foreach (var imgUrl in oldImagesToDelete)
+                foreach (var imgUrl in oldImagesToDelete.Distinct())
                 {
                     await SafeDeletePhysicalFileAsync(imgUrl);
                 }
                 await _cacheStore.EvictByTagAsync("products", default);
+            }
+
+            if (failedIds.Any())
+            {
+                return Ok(new { success = true, message = $"Đã xóa {deleted} quà tặng. Có {failedIds.Count} quà tặng không thể xóa do đang được sử dụng." });
             }
 
             return Ok(new { message = $"Đã xóa {deleted} quà tặng." });

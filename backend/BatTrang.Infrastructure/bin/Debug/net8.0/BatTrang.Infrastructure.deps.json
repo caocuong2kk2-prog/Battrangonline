@@ -13,7 +13,8 @@
           "Microsoft.EntityFrameworkCore.SqlServer": "8.0.0",
           "Microsoft.EntityFrameworkCore.Tools": "8.0.0",
           "Microsoft.Extensions.Hosting.Abstractions": "8.0.0",
-          "QuestPDF": "2025.7.0"
+          "QuestPDF": "2025.7.0",
+          "System.Linq.Async": "7.0.1"
         },
         "runtime": {
           "BatTrang.Infrastructure.dll": {}
@@ -991,11 +992,42 @@
           }
         }
       },
+      "System.Interactive.Async/7.0.1": {
+        "dependencies": {
+          "System.Linq.AsyncEnumerable": "10.0.6"
+        },
+        "runtime": {
+          "lib/net6.0/System.Interactive.Async.dll": {
+            "assemblyVersion": "7.0.0.0",
+            "fileVersion": "7.0.1.38638"
+          }
+        }
+      },
       "System.IO.Pipelines/6.0.3": {
         "runtime": {
           "lib/net6.0/System.IO.Pipelines.dll": {
             "assemblyVersion": "6.0.0.0",
             "fileVersion": "6.0.522.21309"
+          }
+        }
+      },
+      "System.Linq.Async/7.0.1": {
+        "dependencies": {
+          "System.Interactive.Async": "7.0.1",
+          "System.Linq.AsyncEnumerable": "10.0.6"
+        },
+        "runtime": {
+          "lib/netstandard2.1/System.Linq.Async.dll": {
+            "assemblyVersion": "7.0.0.0",
+            "fileVersion": "7.0.1.38638"
+          }
+        }
+      },
+      "System.Linq.AsyncEnumerable/10.0.6": {
+        "runtime": {
+          "lib/net8.0/System.Linq.AsyncEnumerable.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.626.17701"
           }
         }
       },
@@ -1554,12 +1586,33 @@
       "path": "system.identitymodel.tokens.jwt/6.24.0",
       "hashPath": "system.identitymodel.tokens.jwt.6.24.0.nupkg.sha512"
     },
+    "System.Interactive.Async/7.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-oL1iox7sAJL8i+muGzVMQjDB0axQgOoT5CkwYdap8cQJMkWDWMRErNqhOcZkn31+aKr/uCfgMEdhUARCU4G7gg==",
+      "path": "system.interactive.async/7.0.1",
+      "hashPath": "system.interactive.async.7.0.1.nupkg.sha512"
+    },
     "System.IO.Pipelines/6.0.3": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-ryTgF+iFkpGZY1vRQhfCzX0xTdlV3pyaTTqRu2ETbEv+HlV7O6y7hyQURnghNIXvctl5DuZ//Dpks6HdL/Txgw==",
       "path": "system.io.pipelines/6.0.3",
       "hashPath": "system.io.pipelines.6.0.3.nupkg.sha512"
+    },
+    "System.Linq.Async/7.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-gwQtBHVY/WgqWgAYSe4JspXR+f1FvMbVIW4ixsJpGV/Kj8Nun3zp1ajIdvCWfmac8ektJGVLiJ/OR8JU9nZnMg==",
+      "path": "system.linq.async/7.0.1",
+      "hashPath": "system.linq.async.7.0.1.nupkg.sha512"
+    },
+    "System.Linq.AsyncEnumerable/10.0.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1Ttf7dyLoKXks2bVBVULmDPOSjxaMEE3JRTe/KGEJl3rfepCc4ipUEGMIKa/iBKLSN8rjEedF8Qv3UCtiwaDBw==",
+      "path": "system.linq.asyncenumerable/10.0.6",
+      "hashPath": "system.linq.asyncenumerable.10.0.6.nupkg.sha512"
     },
     "System.Memory/4.5.4": {
       "type": "package",

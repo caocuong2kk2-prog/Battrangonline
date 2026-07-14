@@ -140,6 +140,10 @@
             "QuestPDF": {
               "target": "Package",
               "version": "[2025.7.0, )"
+            },
+            "System.Linq.Async": {
+              "target": "Package",
+              "version": "[7.0.1, )"
             }
           },
           "imports": [

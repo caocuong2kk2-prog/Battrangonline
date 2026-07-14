@@ -218,22 +218,36 @@ namespace BatTrang.API.Controllers.Admin
             if (dto.Ids == null || dto.Ids.Count == 0) return BadRequest(new { message = "Không có CTV nào được chọn" });
             
             int deletedCount = 0;
+            int failedCount = 0;
             foreach (var id in dto.Ids)
             {
                 var profile = await _context.Affiliates.FindAsync(id);
                 if (profile != null)
                 {
-                    // Check if they have orders/commissions to prevent referential integrity errors
-                    bool hasCommissions = await _context.Commissions.AnyAsync(c => c.AffiliateId == id);
-                    if (!hasCommissions) {
-                        _context.Affiliates.Remove(profile);
-                        deletedCount++;
+                    try
+                    {
+                        bool hasCommissions = await _context.Commissions.AnyAsync(c => c.AffiliateId == id);
+                        bool hasOrders = await _context.Orders.AnyAsync(o => o.AffiliateId == id);
+                        
+                        if (!hasCommissions && !hasOrders) {
+                            _context.Affiliates.Remove(profile);
+                            await _context.SaveChangesAsync();
+                            deletedCount++;
+                        }
+                        else
+                        {
+                            failedCount++;
+                        }
+                    }
+                    catch (Microsoft.EntityFrameworkCore.DbUpdateException)
+                    {
+                        failedCount++;
+                        _context.ChangeTracker.Clear();
                     }
                 }
             }
 
-            if (deletedCount > 0) await _context.SaveChangesAsync();
-            return Ok(new { message = $"Đã xóa {deletedCount} CTV (bỏ qua những người đã có hoa hồng/đơn hàng để bảo toàn dữ liệu)" });
+            return Ok(new { message = $"Đã xóa {deletedCount} CTV (bỏ qua {failedCount} người đã có dữ liệu ràng buộc để bảo toàn hệ thống)" });
         }
 
         // --- COMMISSIONS ---

@@ -1,3 +1,4 @@
+using BatTrang.API.Helpers;
 using BatTrang.Core.Entities;
 using BatTrang.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -123,7 +124,7 @@ namespace BatTrang.API.Controllers.Admin
                 Description = dto.Description,
                 TargetUrl = dto.TargetUrl,
                 BannerImage = dto.BannerImage,
-                CampaignProducts = dto.ProductIds?.Select(pid => new CampaignProduct { ProductId = pid }).ToList() ?? new List<CampaignProduct>()
+                CampaignProducts = dto.ProductIds?.Distinct().Select(pid => new CampaignProduct { ProductId = pid }).ToList() ?? new List<CampaignProduct>()
             };
 
             _context.Campaigns.Add(campaign);
@@ -144,6 +145,8 @@ namespace BatTrang.API.Controllers.Admin
             if (dto.StartDate >= dto.EndDate)
                 return BadRequest(new { message = "Thời gian kết thúc phải sau thời gian bắt đầu." });
 
+            var oldBannerImage = campaign.BannerImage;
+
             campaign.Name = dto.Name;
             campaign.StartDate = dto.StartDate;
             campaign.EndDate = dto.EndDate;
@@ -154,14 +157,20 @@ namespace BatTrang.API.Controllers.Admin
             campaign.BannerImage = dto.BannerImage;
 
             // Sync products
-            _context.CampaignProducts.RemoveRange(campaign.CampaignProducts);
-            
-            if (dto.ProductIds != null)
+            var existingProductIds = campaign.CampaignProducts.Select(cp => cp.ProductId).ToList();
+            var newProductIds = dto.ProductIds?.Distinct().ToList() ?? new List<int>();
+
+            var productsToRemove = campaign.CampaignProducts.Where(cp => !newProductIds.Contains(cp.ProductId)).ToList();
+            foreach (var cp in productsToRemove)
             {
-                foreach (var pid in dto.ProductIds)
-                {
-                    campaign.CampaignProducts.Add(new CampaignProduct { ProductId = pid });
-                }
+                campaign.CampaignProducts.Remove(cp);
+                _context.CampaignProducts.Remove(cp);
+            }
+
+            var toAddIds = newProductIds.Where(pid => !existingProductIds.Contains(pid)).ToList();
+            foreach (var pid in toAddIds)
+            {
+                campaign.CampaignProducts.Add(new CampaignProduct { ProductId = pid });
             }
 
             // Also clear CampaignPrice from variants of products that are removed
@@ -169,6 +178,11 @@ namespace BatTrang.API.Controllers.Admin
             // but we might want to manually evict them here if needed. The background worker will do it within 1 minute.
 
             await _context.SaveChangesAsync();
+
+            if (oldBannerImage != dto.BannerImage && !string.IsNullOrEmpty(oldBannerImage))
+            {
+                await SafeDeletePhysicalFileAsync(oldBannerImage);
+            }
 
             return NoContent();
         }
@@ -180,8 +194,22 @@ namespace BatTrang.API.Controllers.Admin
             var campaign = await _context.Campaigns.FindAsync(id);
             if (campaign == null) return NotFound();
 
-            _context.Campaigns.Remove(campaign);
-            await _context.SaveChangesAsync();
+            var oldBannerImage = campaign.BannerImage;
+
+            try
+            {
+                _context.Campaigns.Remove(campaign);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest(new { message = "Không thể xóa chiến dịch này vì đã có dữ liệu liên quan." });
+            }
+
+            if (!string.IsNullOrEmpty(oldBannerImage))
+            {
+                await SafeDeletePhysicalFileAsync(oldBannerImage);
+            }
 
             // Background worker will automatically clear the orphaned CampaignPrices
             return NoContent();
@@ -200,6 +228,18 @@ namespace BatTrang.API.Controllers.Admin
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        private async Task SafeDeletePhysicalFileAsync(string imageUrl)
+        {
+            if (string.IsNullOrEmpty(imageUrl)) return;
+
+            var count = await _context.Campaigns.CountAsync(c => c.BannerImage == imageUrl);
+
+            if (count == 0)
+            {
+                FileHelper.DeletePhysicalFile(imageUrl);
+            }
         }
     }
 
